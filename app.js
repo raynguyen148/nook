@@ -3,6 +3,7 @@
 
   const storage = globalThis.PersonalNotesStorage;
   const PAGE_SIZE = 30;
+  const VIEW_MODE_STORAGE_KEY = "nook:notes-view-mode";
   const collator = new Intl.Collator(undefined, { numeric: true, sensitivity: "base" });
   const shortDateFormatter = new Intl.DateTimeFormat(undefined, {
     month: "short",
@@ -31,6 +32,9 @@
     search: document.querySelector("#search-input"),
     clearSearch: document.querySelector("#clear-search-btn"),
     sort: document.querySelector("#sort-select"),
+    focusView: document.querySelector("#focus-view-btn"),
+    comfortableView: document.querySelector("#comfortable-view-btn"),
+    compactView: document.querySelector("#compact-view-btn"),
     activeFilters: document.querySelector("#active-filters"),
     notesCount: document.querySelector("#notes-count"),
     notesRange: document.querySelector("#notes-range"),
@@ -86,6 +90,7 @@
     typeId: "all",
     tagIds: new Set(),
     sort: "created-desc",
+    viewMode: getStoredViewMode(),
     page: 1,
     editingNoteId: "",
     selectedNoteTagIds: new Set(),
@@ -100,6 +105,68 @@
     managementTab: "types",
     toastTimer: 0,
   };
+
+  function getStoredViewMode() {
+    try {
+      const storedMode = window.localStorage.getItem(VIEW_MODE_STORAGE_KEY);
+      return ["focus", "comfortable", "compact"].includes(storedMode) ? storedMode : "comfortable";
+    } catch {
+      return "comfortable";
+    }
+  }
+
+  function syncViewModeUI() {
+    const viewButtons = [
+      ["focus", elements.focusView],
+      ["comfortable", elements.comfortableView],
+      ["compact", elements.compactView],
+    ];
+    elements.notesList.classList.remove("notes-list--focus", "notes-list--comfortable", "notes-list--compact");
+    elements.notesList.classList.add(`notes-list--${ui.viewMode}`);
+    viewButtons.forEach(([mode, button]) => {
+      const isActive = mode === ui.viewMode;
+      button.classList.toggle("is-active", isActive);
+      button.setAttribute("aria-pressed", String(isActive));
+    });
+  }
+
+  function setViewMode(mode) {
+    if (!["focus", "comfortable", "compact"].includes(mode)) return;
+    if (mode === ui.viewMode) return;
+
+    const cards = [...elements.notesList.querySelectorAll(".note-card")];
+    const before = new Map(cards.map((card) => [card, card.getBoundingClientRect()]));
+    ui.viewMode = mode;
+    syncViewModeUI();
+
+    try {
+      window.localStorage.setItem(VIEW_MODE_STORAGE_KEY, mode);
+    } catch {
+      // The layout still works when browser privacy settings block localStorage.
+    }
+
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    window.requestAnimationFrame(() => {
+      cards.forEach((card) => {
+        const previous = before.get(card);
+        const next = card.getBoundingClientRect();
+        if (!previous || (!next.width && !next.height)) return;
+        const deltaX = previous.left - next.left;
+        const deltaY = previous.top - next.top;
+        const scaleX = previous.width / next.width;
+        const scaleY = previous.height / next.height;
+        if (!deltaX && !deltaY && scaleX === 1 && scaleY === 1) return;
+        card.animate(
+          [
+            { transform: `translate(${deltaX}px, ${deltaY}px) scale(${scaleX}, ${scaleY})`, opacity: 0.86 },
+            { transform: "translate(0, 0) scale(1, 1)", opacity: 1 },
+          ],
+          { duration: 260, easing: "cubic-bezier(0.2, 0.72, 0.2, 1)" },
+        );
+      });
+    });
+  }
 
   function createElement(tagName, options = {}) {
     const element = document.createElement(tagName);
@@ -661,6 +728,7 @@
   }
 
   function renderNotes() {
+    syncViewModeUI();
     const matchingNotes = getVisibleNotes();
     const totalPages = Math.max(1, Math.ceil(matchingNotes.length / PAGE_SIZE));
     ui.page = Math.min(ui.page, totalPages);
@@ -1250,6 +1318,9 @@
       resetToFirstPage();
       renderNotes();
     });
+    elements.focusView.addEventListener("click", () => setViewMode("focus"));
+    elements.comfortableView.addEventListener("click", () => setViewMode("comfortable"));
+    elements.compactView.addEventListener("click", () => setViewMode("compact"));
     elements.noteForm.addEventListener("submit", saveNote);
     elements.closeNoteDialog.addEventListener("click", closeNoteEditor);
     elements.cancelNote.addEventListener("click", closeNoteEditor);

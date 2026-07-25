@@ -125,6 +125,52 @@
                 <option value="title-desc">Title Z–A</option>
               </select>
             </label>
+            <div class="view-mode-control" role="group" aria-label="Note layout">
+              <div class="view-mode-control__choices">
+                <button
+                  id="focus-view-btn"
+                  class="view-mode-button"
+                  type="button"
+                  aria-pressed="true"
+                  aria-label="Focus view: one column"
+                  title="Focus view: one column"
+                >
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <rect x="3.5" y="3.25" width="17" height="4.25" rx="1.2" />
+                    <rect x="3.5" y="9.9" width="17" height="4.25" rx="1.2" />
+                    <rect x="3.5" y="16.55" width="17" height="4.25" rx="1.2" />
+                  </svg>
+                </button>
+                <button
+                  id="comfortable-view-btn"
+                  class="view-mode-button"
+                  type="button"
+                  aria-pressed="false"
+                  aria-label="Comfortable view: two columns"
+                  title="Comfortable view: two columns"
+                >
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <rect x="3.5" y="3.25" width="7.25" height="17.5" rx="1.2" />
+                    <rect x="13.25" y="3.25" width="7.25" height="17.5" rx="1.2" />
+                  </svg>
+                </button>
+                <button
+                  id="compact-view-btn"
+                  class="view-mode-button"
+                  type="button"
+                  aria-pressed="false"
+                  aria-label="Compact view: four columns"
+                  title="Compact view: four columns"
+                >
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <rect x="3.75" y="3.75" width="7.25" height="7.25" rx="1.25" />
+                    <rect x="13" y="3.75" width="7.25" height="7.25" rx="1.25" />
+                    <rect x="3.75" y="13" width="7.25" height="7.25" rx="1.25" />
+                    <rect x="13" y="13" width="7.25" height="7.25" rx="1.25" />
+                  </svg>
+                </button>
+              </div>
+            </div>
           </div>
 
           <div id="active-filters" class="active-filters" aria-live="polite"></div>
