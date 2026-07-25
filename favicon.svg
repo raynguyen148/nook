@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="personal-notes-gradient" x1="12" y1="8" x2="54" y2="58" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#5660d9" />
+      <stop offset="1" stop-color="#7b6bd8" />
+    </linearGradient>
+  </defs>
+  <rect x="3" y="3" width="58" height="58" rx="19" fill="url(#personal-notes-gradient)" />
+  <g fill="none" stroke="#fff" stroke-width="4.6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M17 12h21l9 9v31H17a5 5 0 0 1-5-5V17a5 5 0 0 1 5-5Z" />
+    <path d="M38 12v10h9M21 32h20M21 42h14" />
+  </g>
+</svg>

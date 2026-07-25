@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Nook is a private, offline-first workspace stored in this browser."
+    />
+    <meta name="theme-color" content="#5d63d1" />
+    <title>Nook</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app-shell" aria-label="Nook" aria-busy="true" inert>
+      <aside class="sidebar" aria-label="Note filters">
+        <div class="brand">
+          <span class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9">
+              <path d="M6.5 3.75h8.8l3.2 3.2v13.3H6.5a2 2 0 0 1-2-2v-12.5a2 2 0 0 1 2-2Z" />
+              <path d="M15 3.9v3.6h3.5M8 12h8M8 16h5.5" stroke-linecap="round" />
+            </svg>
+          </span>
+          <span>
+            <strong>Nook</strong>
+            <small>Private workspace</small>
+          </span>
+        </div>
+
+        <div class="storage-status" title="Your data is stored in IndexedDB in this browser.">
+          <span class="status-dot" aria-hidden="true"></span>
+          Offline · stored in this browser
+        </div>
+
+        <div class="filter-heading">
+          <span>Filters</span>
+          <button id="clear-filters-btn" class="text-button" type="button">Clear</button>
+        </div>
+
+        <nav class="filter-navigation" aria-label="Filter by note type">
+          <button id="all-notes-filter" class="sidebar-filter is-active" type="button" aria-pressed="true">
+            <span>All notes</span>
+            <span id="all-notes-count" class="filter-count">0</span>
+          </button>
+          <div id="type-filter-list" class="type-filter-list"></div>
+        </nav>
+
+        <section class="tag-filter-section" aria-labelledby="tag-filter-heading">
+          <div class="filter-section-title">
+            <h2 id="tag-filter-heading">Tags</h2>
+            <span id="tag-filter-count" class="filter-count"></span>
+          </div>
+          <p class="filter-help">Match all selected tags</p>
+          <div id="tag-filter-list" class="tag-filter-list"></div>
+          <p id="tag-filter-empty" class="sidebar-empty is-hidden">No tags yet.</p>
+        </section>
+
+      </aside>
+
+      <section class="workspace">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">Your local library</p>
+            <h1>Personal Notes</h1>
+            <p class="subtitle">A private, offline space for ideas, work, and learning.</p>
+          </div>
+          <div class="topbar-actions">
+            <button
+              id="organize-btn"
+              class="button button-secondary"
+              type="button"
+              title="Manage note types and tags"
+              aria-label="Organize notes"
+            >
+              <span class="button-icon button-icon--organize" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round">
+                  <path d="M4 7h16M4 17h16M8 4v6M16 14v6" />
+                </svg>
+              </span>
+              <span class="button-label">Organize notes</span>
+            </button>
+            <button id="export-btn" class="button button-secondary" type="button" title="Export a JSON backup">
+              <span class="button-icon" aria-hidden="true">↓</span>
+              <span class="button-label">Export</span>
+            </button>
+            <button id="import-btn" class="button button-secondary" type="button" title="Import a JSON backup">
+              <span class="button-icon" aria-hidden="true">↑</span>
+              <span class="button-label">Import</span>
+            </button>
+            <button id="new-note-btn" class="button button-primary" type="button">
+              <span class="button-icon" aria-hidden="true">+</span>
+              <span>New note</span>
+            </button>
+          </div>
+        </header>
+
+        <section class="notes-panel" aria-labelledby="notes-heading">
+          <div class="notes-panel__heading">
+            <div>
+              <p class="eyebrow">Browse</p>
+              <h2 id="notes-heading">All notes</h2>
+            </div>
+            <span id="notes-count" class="notes-count" aria-live="polite"></span>
+          </div>
+
+          <div class="toolbar">
+            <div class="search-field">
+              <label class="sr-only" for="search-input">Search notes</label>
+              <span class="search-icon" aria-hidden="true">⌕</span>
+              <input
+                id="search-input"
+                type="search"
+                autocomplete="off"
+                placeholder="Search title, content, type, or tag…"
+              />
+              <button id="clear-search-btn" class="clear-search is-hidden" type="button" aria-label="Clear search">×</button>
+            </div>
+            <label class="sort-field" for="sort-select">
+              <span>Sort</span>
+              <select id="sort-select">
+                <option value="created-desc">Newest created</option>
+                <option value="created-asc">Oldest created</option>
+                <option value="title-asc">Title A–Z</option>
+                <option value="title-desc">Title Z–A</option>
+              </select>
+            </label>
+          </div>
+
+          <div id="active-filters" class="active-filters" aria-live="polite"></div>
+
+          <div class="results-meta">
+            <span id="notes-range"></span>
+            <span id="sort-description"></span>
+          </div>
+
+          <div id="notes-list" class="notes-list" tabindex="-1" aria-live="polite" aria-busy="true"></div>
+          <nav id="pagination" class="pagination is-hidden" aria-label="Notes pagination"></nav>
+        </section>
+      </section>
+    </main>
+
+    <dialog id="note-dialog" class="app-dialog note-dialog" aria-labelledby="note-dialog-title">
+      <form id="note-form" novalidate>
+        <div class="dialog-header">
+          <div>
+            <p class="eyebrow">Personal note</p>
+            <h2 id="note-dialog-title">New note</h2>
+          </div>
+          <button id="close-note-dialog-btn" class="icon-button" type="button" aria-label="Close note editor">×</button>
+        </div>
+
+        <div class="dialog-body">
+          <input id="note-id" type="hidden" />
+          <label class="field field--title" for="note-title">
+            <span>Title <em aria-hidden="true">*</em></span>
+            <input id="note-title" type="text" maxlength="160" required placeholder="Give this note a clear title" />
+          </label>
+
+          <div class="editor-grid">
+            <label class="field" for="note-type">
+              <span>Note type <em aria-hidden="true">*</em></span>
+              <select id="note-type" required></select>
+            </label>
+            <div class="field tag-editor-field">
+              <span id="note-tags-label">Tags</span>
+              <div class="tag-picker" aria-labelledby="note-tags-label">
+                <div id="selected-note-tags" class="selected-tags" aria-live="polite"></div>
+                <div class="tag-picker__input-row">
+                  <input id="tag-input" type="text" maxlength="48" autocomplete="off" placeholder="Search or create a tag" aria-label="Search or create a tag" />
+                  <button id="add-tag-btn" class="tag-add-button" type="button" aria-label="Add tag">+</button>
+                </div>
+              </div>
+              <div id="tag-suggestions" class="tag-suggestions" aria-live="polite"></div>
+              <p class="field-help">Press Enter to add a tag, or choose a suggestion.</p>
+            </div>
+          </div>
+
+          <label class="field" for="note-content">
+            <span>Content</span>
+            <textarea id="note-content" rows="14" maxlength="50000" placeholder="Write anything you want to keep…"></textarea>
+          </label>
+
+          <div id="note-meta" class="note-meta is-hidden"></div>
+        </div>
+
+        <div class="dialog-footer">
+          <button id="delete-note-btn" class="button button-danger is-hidden" type="button">Delete note</button>
+          <div class="dialog-footer__actions">
+            <button id="cancel-note-btn" class="button button-secondary" type="button">Cancel</button>
+            <button class="button button-primary" type="submit">Save note</button>
+          </div>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="quick-view-dialog" class="app-dialog quick-view-dialog" aria-labelledby="quick-view-title">
+      <div class="dialog-header quick-view-header">
+        <div class="quick-view-heading">
+          <p class="eyebrow">Quick view</p>
+          <h2 id="quick-view-title"></h2>
+        </div>
+        <button id="close-quick-view-btn" class="icon-button" type="button" aria-label="Close quick view">×</button>
+      </div>
+
+      <div class="quick-view-body">
+        <div class="quick-view-context">
+          <div id="quick-view-meta" class="quick-view-meta"></div>
+          <div id="quick-view-tags" class="quick-view-tags" aria-label="Note tags"></div>
+        </div>
+        <article class="quick-view-content-card" aria-labelledby="quick-view-content-label">
+          <p id="quick-view-content-label" class="quick-view-content-label">Content</p>
+          <div id="quick-view-content" class="quick-view-content" tabindex="0"></div>
+        </article>
+        <div id="quick-view-dates" class="quick-view-dates"></div>
+      </div>
+
+      <div class="dialog-footer quick-view-footer">
+        <button id="copy-note-content-btn" class="button button-secondary" type="button">Copy content</button>
+        <div class="dialog-footer__actions">
+          <button id="edit-from-quick-view-btn" class="button button-primary" type="button">Edit note</button>
+          <button id="close-quick-view-footer-btn" class="button button-secondary" type="button">Close</button>
+        </div>
+      </div>
+    </dialog>
+
+    <dialog id="organize-dialog" class="app-dialog organize-dialog" aria-labelledby="organize-dialog-title">
+      <div class="dialog-header">
+        <div>
+          <p class="eyebrow">Library settings</p>
+          <h2 id="organize-dialog-title">Organize notes</h2>
+        </div>
+        <button id="close-organize-dialog-btn" class="icon-button" type="button" aria-label="Close organize notes">×</button>
+      </div>
+
+      <div class="organize-tabs" role="tablist" aria-label="Manage note organization">
+        <button id="types-tab" class="organize-tab is-active" type="button" role="tab" aria-selected="true" aria-controls="types-panel" tabindex="0">Note types</button>
+        <button id="tags-tab" class="organize-tab" type="button" role="tab" aria-selected="false" aria-controls="tags-panel" tabindex="-1">Tags</button>
+      </div>
+
+      <section id="types-panel" class="organize-panel" role="tabpanel" aria-labelledby="types-tab">
+        <p class="dialog-description">A note belongs to one type. Deleting a type moves its notes to the fallback type.</p>
+        <form id="new-type-form" class="create-row">
+          <label class="sr-only" for="new-type-name">New note type name</label>
+          <input id="new-type-name" type="text" maxlength="48" required placeholder="e.g. Meeting" />
+          <label class="sr-only" for="new-type-color">Type color</label>
+          <select id="new-type-color" class="color-select" aria-label="Type color">
+            <option value="indigo">Indigo</option>
+            <option value="sky">Sky</option>
+            <option value="violet">Violet</option>
+            <option value="emerald">Emerald</option>
+            <option value="amber">Amber</option>
+            <option value="rose">Rose</option>
+            <option value="slate">Slate</option>
+          </select>
+          <button class="button button-primary button-compact" type="submit">Add type</button>
+        </form>
+        <div id="types-list" class="management-list"></div>
+      </section>
+
+      <section id="tags-panel" class="organize-panel is-hidden" role="tabpanel" aria-labelledby="tags-tab">
+        <p class="dialog-description">Tags are optional and can be used across many notes.</p>
+        <form id="new-tag-form" class="create-row create-row--tag">
+          <label class="sr-only" for="new-tag-name">New tag name</label>
+          <input id="new-tag-name" type="text" maxlength="48" required placeholder="e.g. todo" />
+          <button class="button button-primary button-compact" type="submit">Add tag</button>
+        </form>
+        <div id="tags-list" class="management-list"></div>
+      </section>
+    </dialog>
+
+    <input id="import-input" type="file" accept="application/json,.json" hidden />
+    <div id="toast" class="toast" role="status" aria-live="polite" aria-atomic="true"></div>
+    <section id="startup-error" class="startup-error is-hidden" aria-live="assertive">
+      <h1>Nook could not start</h1>
+      <p id="startup-error-message"></p>
+    </section>
+    <noscript>
+      <section class="startup-error">
+        <h1>JavaScript is required</h1>
+        <p>Nook needs JavaScript to keep your notes safely in this browser.</p>
+      </section>
+    </noscript>
+
+    <!-- The storage module performs a one-time legacy migration when needed. -->
+    <script src="storage.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
