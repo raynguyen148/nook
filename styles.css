@@ -1089,6 +1089,7 @@ select::-ms-expand {
 
 .empty-state {
   display: grid;
+  grid-column: 1 / -1;
   justify-items: center;
   border: 1px dashed #d8dde7;
   border-radius: 0.85rem;
