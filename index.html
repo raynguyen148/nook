@@ -113,8 +113,18 @@
                 type="search"
                 autocomplete="off"
                 placeholder="Search title, content, type, or tag…"
+                aria-describedby="search-shortcut-help"
               />
-              <button id="clear-search-btn" class="clear-search is-hidden" type="button" aria-label="Clear search">×</button>
+              <span id="search-shortcut" class="search-shortcut" aria-hidden="true">
+                <kbd id="search-shortcut-modifier">⌘</kbd>
+                <kbd>F</kbd>
+              </span>
+              <span id="search-shortcut-help" class="sr-only">Press Command and F to focus search.</span>
+              <button id="clear-search-btn" class="clear-search is-hidden" type="button" aria-label="Clear search">
+                <svg viewBox="0 0 16 16" aria-hidden="true">
+                  <path d="m4.75 4.75 6.5 6.5M11.25 4.75l-6.5 6.5" />
+                </svg>
+              </button>
             </div>
             <label class="sort-field" for="sort-select">
               <span>Sort</span>

@@ -29,7 +29,11 @@
     import: document.querySelector("#import-btn"),
     importInput: document.querySelector("#import-input"),
     newNote: document.querySelector("#new-note-btn"),
+    searchField: document.querySelector(".search-field"),
     search: document.querySelector("#search-input"),
+    searchShortcut: document.querySelector("#search-shortcut"),
+    searchShortcutModifier: document.querySelector("#search-shortcut-modifier"),
+    searchShortcutHelp: document.querySelector("#search-shortcut-help"),
     clearSearch: document.querySelector("#clear-search-btn"),
     sort: document.querySelector("#sort-select"),
     focusView: document.querySelector("#focus-view-btn"),
@@ -115,6 +119,17 @@
     }
   }
 
+  function usesMacKeyboardShortcuts() {
+    const platform = navigator.userAgentData?.platform || navigator.platform || "";
+    return /mac|iphone|ipad|ipod/i.test(platform);
+  }
+
+  function syncSearchShortcutHint() {
+    const usesCommandKey = usesMacKeyboardShortcuts();
+    elements.searchShortcutModifier.textContent = usesCommandKey ? "⌘" : "Ctrl";
+    elements.searchShortcutHelp.textContent = `Press ${usesCommandKey ? "Command" : "Control"} and F to focus search.`;
+  }
+
   function syncViewModeUI() {
     const viewButtons = [
       ["focus", elements.focusView],
@@ -187,6 +202,58 @@
       });
     }
     return element;
+  }
+
+  function normalizedSearchQuery() {
+    return ui.query.trim().toLocaleLowerCase();
+  }
+
+  function appendHighlightedText(element, value) {
+    const text = String(value ?? "");
+    const query = ui.query.trim();
+    const normalizedQuery = normalizedSearchQuery();
+
+    if (!normalizedQuery) {
+      element.textContent = text;
+      return;
+    }
+
+    const normalizedText = text.toLocaleLowerCase();
+    const fragment = document.createDocumentFragment();
+    let cursor = 0;
+    let matchIndex = normalizedText.indexOf(normalizedQuery, cursor);
+
+    while (matchIndex !== -1) {
+      fragment.append(document.createTextNode(text.slice(cursor, matchIndex)));
+      fragment.append(
+        createElement("mark", {
+          className: "search-highlight",
+          text: text.slice(matchIndex, matchIndex + query.length),
+        }),
+      );
+      cursor = matchIndex + query.length;
+      matchIndex = normalizedText.indexOf(normalizedQuery, cursor);
+    }
+
+    fragment.append(document.createTextNode(text.slice(cursor)));
+    element.replaceChildren(fragment);
+  }
+
+  function previewForSearch(noteContent) {
+    const preview = noteContent.replace(/\s+/g, " ").trim();
+    const normalizedQuery = normalizedSearchQuery();
+    if (!preview || !normalizedQuery) return preview || "No content yet.";
+
+    const matchIndex = preview.toLocaleLowerCase().indexOf(normalizedQuery);
+    if (matchIndex === -1) return preview;
+
+    const contextBefore = 58;
+    const contextAfter = 110;
+    const start = Math.max(0, matchIndex - contextBefore);
+    const end = Math.min(preview.length, matchIndex + normalizedQuery.length + contextAfter);
+    const leadingEllipsis = start > 0 ? "…" : "";
+    const trailingEllipsis = end < preview.length ? "…" : "";
+    return `${leadingEllipsis}${preview.slice(start, end).trim()}${trailingEllipsis}`;
   }
 
   function typeFor(id) {
@@ -303,18 +370,13 @@
   }
 
   function getVisibleNotes() {
-    const normalizedQuery = ui.query.trim().toLocaleLowerCase();
+    const normalizedQuery = normalizedSearchQuery();
     const selectedTagIds = [...ui.tagIds];
     const notes = library.notes.filter((note) => {
       if (ui.typeId !== "all" && note.typeId !== ui.typeId) return false;
       if (selectedTagIds.some((tagId) => !note.tagIds.includes(tagId))) return false;
       if (!normalizedQuery) return true;
-      const type = typeFor(note.typeId);
-      const tags = note.tagIds.map(tagFor).filter(Boolean).map(tagLabel);
-      const searchable = [note.title, note.content, type.name, ...tags]
-        .join(" ")
-        .toLocaleLowerCase();
-      return searchable.includes(normalizedQuery);
+      return [note.title, note.content].some((value) => value.toLocaleLowerCase().includes(normalizedQuery));
     });
 
     return notes.sort((left, right) => {
@@ -592,14 +654,12 @@
     const titleButton = createElement("button", {
       className: "note-card__title",
       type: "button",
-      text: note.title,
       attributes: { "aria-label": `Quick view note: ${note.title}` },
     });
+    appendHighlightedText(titleButton, note.title);
     titleButton.addEventListener("click", () => openQuickView(note, titleButton));
-    const preview = createElement("p", {
-      className: "note-card__preview",
-      text: note.content.replace(/\s+/g, " ") || "No content yet.",
-    });
+    const preview = createElement("p", { className: "note-card__preview" });
+    appendHighlightedText(preview, previewForSearch(note.content));
     content.append(meta, titleButton, preview);
 
     const footer = createElement("div", { className: "note-card__footer" });
@@ -747,7 +807,10 @@
       "title-desc": "Title Z–A",
     };
     elements.sortDescription.textContent = `Sorted: ${sortLabels[ui.sort]}`;
-    elements.clearSearch.classList.toggle("is-hidden", !ui.query);
+    const hasSearchQuery = Boolean(ui.query);
+    elements.clearSearch.classList.toggle("is-hidden", !hasSearchQuery);
+    elements.searchShortcut.classList.toggle("is-hidden", hasSearchQuery);
+    elements.searchField.classList.toggle("has-search-query", hasSearchQuery);
     elements.notesList.setAttribute("aria-busy", "false");
 
     if (!pageNotes.length) {
@@ -1374,6 +1437,19 @@
     elements.newTypeForm.addEventListener("submit", addNewType);
     elements.newTagForm.addEventListener("submit", addNewTag);
     document.addEventListener("keydown", (event) => {
+      const usesCommandKey = usesMacKeyboardShortcuts();
+      const matchesSearchShortcut =
+        event.key.toLowerCase() === "f" &&
+        !event.altKey &&
+        !event.shiftKey &&
+        (usesCommandKey ? event.metaKey && !event.ctrlKey : event.ctrlKey && !event.metaKey);
+
+      if (matchesSearchShortcut) {
+        event.preventDefault();
+        elements.search.focus({ preventScroll: true });
+        return;
+      }
+
       const target = event.target;
       const editingText = target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement || target instanceof HTMLSelectElement;
       if (
@@ -1405,6 +1481,7 @@
       const result = await storage.initialize();
       await refreshLibrary();
       bindEvents();
+      syncSearchShortcutHint();
       elements.appShell.inert = false;
       elements.appShell.removeAttribute("inert");
       elements.appShell.setAttribute("aria-busy", "false");

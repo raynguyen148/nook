@@ -1,10 +1,10 @@
 :root {
   --control-height: 2.3125rem;
   --select-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='m4 6 4 4 4-4' stroke='%236d7890' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  --font-sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-display: "Iowan Old Style", "Baskerville", "Palatino Linotype", "Book Antiqua", Palatino, Georgia, serif;
   color-scheme: light;
-  font-family:
-    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-    sans-serif;
+  font-family: var(--font-sans);
   color: #182230;
   background: #f5f7fb;
   font-synthesis: none;
@@ -395,23 +395,26 @@ p {
 h1 {
   margin-bottom: 0.42rem;
   color: #1a2434;
-  font-size: clamp(1.9rem, 3.5vw, 2.65rem);
-  letter-spacing: -0.052em;
-  line-height: 1.03;
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 3.2vw, 2.5rem);
+  font-weight: 500;
+  letter-spacing: -0.045em;
+  line-height: 1.08;
 }
 
 h2 {
   margin-bottom: 0;
   color: #202a3a;
-  font-size: 1.22rem;
+  font-size: 1.16rem;
   letter-spacing: -0.025em;
+  line-height: 1.22;
 }
 
 .subtitle {
   max-width: 34rem;
   margin: 0;
   color: #6c778c;
-  font-size: 0.94rem;
+  font-size: 0.9rem;
   line-height: 1.55;
 }
 
@@ -605,8 +608,43 @@ select::-ms-expand {
 .search-field input {
   height: var(--control-height);
   min-height: var(--control-height);
-  padding: 0 2.25rem;
-  font-size: 0.89rem;
+  padding: 0 4.9rem 0 2.25rem;
+  font-size: 0.86rem;
+}
+
+.search-field.has-search-query input {
+  padding-right: 2.65rem;
+}
+
+.search-field input[type="search"]::-webkit-search-cancel-button {
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.search-shortcut {
+  position: absolute;
+  top: 50%;
+  right: 0.58rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.14rem;
+  min-height: 1.34rem;
+  border: 1px solid #d9dee7;
+  border-radius: 0.34rem;
+  padding: 0.08rem 0.3rem;
+  color: #7a8495;
+  background: #fafbfd;
+  font-family: var(--font-sans);
+  font-size: 0.64rem;
+  font-weight: 650;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.search-shortcut kbd {
+  font: inherit;
 }
 
 .search-field input::placeholder,
@@ -626,11 +664,20 @@ select::-ms-expand {
   place-items: center;
   border: 0;
   border-radius: 50%;
+  padding: 0;
   color: #6f7a8e;
   background: #f1f3f7;
-  font-size: 1.1rem;
-  line-height: 1;
   transform: translateY(-50%);
+}
+
+.clear-search svg {
+  display: block;
+  width: 0.78rem;
+  height: 0.78rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-width: 1.8;
 }
 
 .clear-search:hover {
@@ -920,6 +967,15 @@ select::-ms-expand {
   line-height: 1.55;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
+}
+
+.search-highlight {
+  border-radius: 0.2em;
+  padding: 0 0.08em;
+  color: inherit;
+  background: #fff0bd;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
 }
 
 .note-card__footer {
