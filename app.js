@@ -61,6 +61,9 @@
     addTag: document.querySelector("#add-tag-btn"),
     tagSuggestions: document.querySelector("#tag-suggestions"),
     quickViewDialog: document.querySelector("#quick-view-dialog"),
+    quickViewHeader: document.querySelector(".quick-view-header"),
+    quickViewBody: document.querySelector(".quick-view-body"),
+    quickViewFooter: document.querySelector(".quick-view-footer"),
     quickViewTitle: document.querySelector("#quick-view-title"),
     quickViewMeta: document.querySelector("#quick-view-meta"),
     quickViewTags: document.querySelector("#quick-view-tags"),
@@ -70,6 +73,12 @@
     closeQuickViewFooter: document.querySelector("#close-quick-view-footer-btn"),
     copyNoteContent: document.querySelector("#copy-note-content-btn"),
     editFromQuickView: document.querySelector("#edit-from-quick-view-btn"),
+    confirmationDialog: document.querySelector("#confirmation-dialog"),
+    confirmationTitle: document.querySelector("#confirmation-dialog-title"),
+    confirmationDescription: document.querySelector("#confirmation-dialog-description"),
+    closeConfirmation: document.querySelector("#close-confirmation-dialog-btn"),
+    cancelConfirmation: document.querySelector("#cancel-confirmation-btn"),
+    confirmAction: document.querySelector("#confirm-action-btn"),
     organizeDialog: document.querySelector("#organize-dialog"),
     closeOrganizeDialog: document.querySelector("#close-organize-dialog-btn"),
     typesTab: document.querySelector("#types-tab"),
@@ -106,6 +115,7 @@
     copyInFlight: false,
     restoreViewFocus: true,
     afterQuickViewClose: null,
+    pendingConfirmation: null,
     managementTab: "types",
     toastTimer: 0,
   };
@@ -304,7 +314,7 @@
   }
 
   function activeModalDialog() {
-    return [elements.noteDialog, elements.quickViewDialog, elements.organizeDialog].find((dialog) => dialog.open) || null;
+    return [elements.confirmationDialog, elements.noteDialog, elements.quickViewDialog, elements.organizeDialog].find((dialog) => dialog.open) || null;
   }
 
   function syncToastHost() {
@@ -324,6 +334,41 @@
     ui.toastTimer = window.setTimeout(() => {
       elements.toast.classList.remove("is-visible");
     }, 3600);
+  }
+
+  function requestConfirmation({ title, description, confirmLabel, cancelLabel, tone = "danger" }) {
+    if (elements.confirmationDialog.open || ui.pendingConfirmation) return Promise.resolve(false);
+
+    const invoker = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    elements.confirmationTitle.textContent = title;
+    elements.confirmationDescription.textContent = description;
+    elements.confirmAction.textContent = confirmLabel;
+    elements.cancelConfirmation.textContent = cancelLabel;
+    elements.confirmAction.classList.toggle("button-danger", tone === "danger");
+    elements.confirmAction.classList.toggle("button-primary", tone === "primary");
+    elements.confirmationDialog.returnValue = "";
+
+    return new Promise((resolve) => {
+      ui.pendingConfirmation = { resolve, invoker };
+      elements.confirmationDialog.showModal();
+      syncToastHost();
+      window.requestAnimationFrame(() => elements.cancelConfirmation.focus());
+    });
+  }
+
+  function closeConfirmation(confirmed = false) {
+    if (elements.confirmationDialog.open) elements.confirmationDialog.close(confirmed ? "confirmed" : "cancelled");
+  }
+
+  function finishConfirmationClose() {
+    const pending = ui.pendingConfirmation;
+    const confirmed = elements.confirmationDialog.returnValue === "confirmed";
+    ui.pendingConfirmation = null;
+    if (!pending) return;
+    pending.resolve(confirmed);
+    if (!confirmed && pending.invoker instanceof HTMLElement && pending.invoker.isConnected && !pending.invoker.disabled) {
+      window.requestAnimationFrame(() => pending.invoker.focus());
+    }
   }
 
   function showError(error, fallback = "Something went wrong. Please try again.") {
@@ -546,6 +591,29 @@
       createElement("span", { text: `Last updated ${formatFullDate(note.updatedAt)}` }),
     );
     elements.copyNoteContent.disabled = !note.content.trim() || ui.copyInFlight;
+    if (elements.quickViewDialog.open) scheduleQuickViewHeightSync();
+  }
+
+  function syncQuickViewHeight() {
+    if (!elements.quickViewDialog.open) return;
+
+    // The dialog stays compact for short notes and grows only as far as its
+    // CSS viewport cap. Once it reaches that cap, the body becomes the one
+    // scrollable reading surface.
+    elements.quickViewDialog.style.removeProperty("height");
+    const naturalHeight =
+      elements.quickViewHeader.offsetHeight +
+      elements.quickViewBody.scrollHeight +
+      elements.quickViewFooter.offsetHeight +
+      2;
+    const maxHeight = Number.parseFloat(window.getComputedStyle(elements.quickViewDialog).maxHeight);
+    if (Number.isFinite(maxHeight)) {
+      elements.quickViewDialog.style.height = `${Math.min(Math.ceil(naturalHeight), maxHeight)}px`;
+    }
+  }
+
+  function scheduleQuickViewHeightSync() {
+    window.requestAnimationFrame(syncQuickViewHeight);
   }
 
   function focusQuickViewFallback(invoker) {
@@ -570,6 +638,7 @@
     ui.viewingNoteId = "";
     ui.viewInvoker = null;
     ui.copyInFlight = false;
+    elements.quickViewDialog.style.removeProperty("height");
     ui.restoreViewFocus = true;
     ui.afterQuickViewClose = null;
     if (afterClose) {
@@ -589,6 +658,7 @@
     if (!elements.quickViewDialog.open) elements.quickViewDialog.showModal();
     syncToastHost();
     window.requestAnimationFrame(() => {
+      syncQuickViewHeight();
       elements.quickViewTitle.tabIndex = -1;
       elements.quickViewTitle.focus();
     });
@@ -1064,7 +1134,13 @@
 
   async function deleteNoteWithConfirmation(note) {
     if (!note || ui.noteSaveInFlight) return;
-    if (!window.confirm(`Delete “${note.title}”? You can restore it only from an exported backup.`)) return;
+    const confirmed = await requestConfirmation({
+      title: "Delete note?",
+      description: `“${note.title}” will be permanently deleted. You can restore it only from an exported backup.`,
+      confirmLabel: "Delete note",
+      cancelLabel: "Keep note",
+    });
+    if (!confirmed) return;
     try {
       await storage.deleteNote(note.id);
       await refreshLibrary();
@@ -1164,10 +1240,16 @@
       remove.addEventListener("click", async () => {
         const affected = usageCounts.get(type.id) || 0;
         const fallbackType = typeFor(storage.FALLBACK_TYPE_ID);
-        const confirmation = affected
-          ? `Delete “${type.name}”? ${pluralize(affected, "note")} will move to ${fallbackType.name}.`
-          : `Delete “${type.name}”?`;
-        if (!window.confirm(confirmation)) return;
+        const description = affected
+          ? `“${type.name}” will be deleted. ${pluralize(affected, "note")} will move to ${fallbackType.name}.`
+          : `“${type.name}” will be deleted.`;
+        const confirmed = await requestConfirmation({
+          title: "Delete note type?",
+          description,
+          confirmLabel: "Delete type",
+          cancelLabel: "Keep type",
+        });
+        if (!confirmed) return;
         try {
           await storage.deleteType(type.id);
           await refreshLibrary();
@@ -1220,10 +1302,16 @@
       });
       remove.addEventListener("click", async () => {
         const affected = usageCounts.get(tag.id) || 0;
-        const confirmation = affected
-          ? `Delete “${tagLabel(tag)}”? It will be removed from ${pluralize(affected, "note")}.`
-          : `Delete “${tagLabel(tag)}”?`;
-        if (!window.confirm(confirmation)) return;
+        const description = affected
+          ? `“${tagLabel(tag)}” will be deleted and removed from ${pluralize(affected, "note")}.`
+          : `“${tagLabel(tag)}” will be deleted.`;
+        const confirmed = await requestConfirmation({
+          title: "Delete tag?",
+          description,
+          confirmLabel: "Delete tag",
+          cancelLabel: "Keep tag",
+        });
+        if (!confirmed) return;
         try {
           await storage.deleteTag(tag.id);
           await refreshLibrary();
@@ -1339,8 +1427,13 @@
       const value = JSON.parse(await file.text());
       const preview = storage.inspectBackup(value);
       const { notes, types, tags } = preview.counts;
-      const confirmation = `Import ${pluralize(notes, "note")}, ${pluralize(types, "type")}, and ${pluralize(tags, "tag")}? This will replace the current library.`;
-      if (!window.confirm(confirmation)) return;
+      const confirmed = await requestConfirmation({
+        title: "Replace library?",
+        description: `Import ${pluralize(notes, "note")}, ${pluralize(types, "type")}, and ${pluralize(tags, "tag")}? This will replace the current library.`,
+        confirmLabel: "Import backup",
+        cancelLabel: "Keep library",
+      });
+      if (!confirmed) return;
       await storage.importBackup(value);
       resetToFirstPage();
       ui.typeId = "all";
@@ -1406,6 +1499,11 @@
     elements.copyNoteContent.addEventListener("click", copyQuickViewContent);
     elements.editFromQuickView.addEventListener("click", editFromQuickView);
     elements.quickViewDialog.addEventListener("close", finishQuickViewClose);
+    elements.closeConfirmation.addEventListener("click", () => closeConfirmation());
+    elements.cancelConfirmation.addEventListener("click", () => closeConfirmation());
+    elements.confirmAction.addEventListener("click", () => closeConfirmation(true));
+    elements.confirmationDialog.addEventListener("close", finishConfirmationClose);
+    window.addEventListener("resize", scheduleQuickViewHeightSync);
     elements.tagInput.addEventListener("input", normalizeTagEditorInput);
     elements.tagInput.addEventListener("keydown", (event) => {
       if (event.key === "Enter") {
@@ -1427,7 +1525,7 @@
     });
     elements.addTag.addEventListener("click", addTagFromEditor);
     elements.closeOrganizeDialog.addEventListener("click", closeOrganize);
-    [elements.noteDialog, elements.quickViewDialog, elements.organizeDialog].forEach((dialog) => {
+    [elements.noteDialog, elements.quickViewDialog, elements.confirmationDialog, elements.organizeDialog].forEach((dialog) => {
       dialog.addEventListener("close", () => window.queueMicrotask(syncToastHost));
     });
     elements.typesTab.addEventListener("click", () => setManagementTab("types"));
