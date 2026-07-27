@@ -4,6 +4,7 @@
   const storage = globalThis.PersonalNotesStorage;
   const PAGE_SIZE = 30;
   const VIEW_MODE_STORAGE_KEY = "nook:notes-view-mode";
+  const FILTER_STORAGE_KEY = "nook:active-filters";
   const collator = new Intl.Collator(undefined, { numeric: true, sensitivity: "base" });
   const shortDateFormatter = new Intl.DateTimeFormat(undefined, {
     month: "short",
@@ -97,11 +98,12 @@
     startupErrorMessage: document.querySelector("#startup-error-message"),
   };
 
+  const storedFilters = getStoredFilters();
   const library = { notes: [], types: [], tags: [] };
   const ui = {
     query: "",
-    typeId: "all",
-    tagIds: new Set(),
+    typeId: storedFilters.typeId,
+    tagIds: storedFilters.tagIds,
     sort: "created-desc",
     viewMode: getStoredViewMode(),
     page: 1,
@@ -126,6 +128,38 @@
       return ["focus", "comfortable", "compact"].includes(storedMode) ? storedMode : "comfortable";
     } catch {
       return "comfortable";
+    }
+  }
+
+  function getStoredFilters() {
+    try {
+      const storedFilters = window.localStorage.getItem(FILTER_STORAGE_KEY);
+      if (!storedFilters) return { typeId: "all", tagIds: new Set() };
+      const parsed = JSON.parse(storedFilters);
+      const typeId = typeof parsed?.typeId === "string" && parsed.typeId ? parsed.typeId : "all";
+      const tagIds = new Set(
+        Array.isArray(parsed?.tagIds)
+          ? parsed.tagIds.filter((tagId) => typeof tagId === "string" && tagId)
+          : [],
+      );
+      return { typeId, tagIds };
+    } catch {
+      return { typeId: "all", tagIds: new Set() };
+    }
+  }
+
+  function persistFilters() {
+    try {
+      if (ui.typeId === "all" && ui.tagIds.size === 0) {
+        window.localStorage.removeItem(FILTER_STORAGE_KEY);
+        return;
+      }
+      window.localStorage.setItem(
+        FILTER_STORAGE_KEY,
+        JSON.stringify({ typeId: ui.typeId, tagIds: [...ui.tagIds] }),
+      );
+    } catch {
+      // Filtering still works when browser privacy settings block localStorage.
     }
   }
 
@@ -382,6 +416,7 @@
 
   function setTypeFilter(typeId) {
     ui.typeId = typeId;
+    persistFilters();
     resetToFirstPage();
     renderLibrary();
   }
@@ -389,6 +424,7 @@
   function toggleTagFilter(tagId) {
     if (ui.tagIds.has(tagId)) ui.tagIds.delete(tagId);
     else ui.tagIds.add(tagId);
+    persistFilters();
     resetToFirstPage();
     renderLibrary();
   }
@@ -397,6 +433,7 @@
     ui.query = "";
     ui.typeId = "all";
     ui.tagIds.clear();
+    persistFilters();
     if (!preserveSort) ui.sort = "created-desc";
     elements.search.value = "";
     elements.sort.value = ui.sort;
@@ -407,11 +444,14 @@
   function ensureUiReferencesAreValid() {
     const availableTypeIds = new Set(library.types.map(({ id }) => id));
     const availableTagIds = new Set(library.tags.map(({ id }) => id));
+    const previousTypeId = ui.typeId;
+    const previousTagIds = [...ui.tagIds];
     if (ui.typeId !== "all" && !availableTypeIds.has(ui.typeId)) ui.typeId = "all";
-    ui.tagIds = new Set([...ui.tagIds].filter((tagId) => availableTagIds.has(tagId)));
+    ui.tagIds = new Set(previousTagIds.filter((tagId) => availableTagIds.has(tagId)));
     ui.selectedNoteTagIds = new Set(
       [...ui.selectedNoteTagIds].filter((tagId) => availableTagIds.has(tagId)),
     );
+    if (ui.typeId !== previousTypeId || ui.tagIds.size !== previousTagIds.length) persistFilters();
   }
 
   function getVisibleNotes() {
@@ -513,8 +553,8 @@
     elements.clearFilters.disabled = !ui.query && ui.typeId === "all" && ui.tagIds.size === 0;
   }
 
-  function makeFilterPill(label, onClear) {
-    const chip = createElement("span", { className: "active-filter-pill" });
+  function makeFilterPill(label, onClear, kind = "") {
+    const chip = createElement("span", { className: `active-filter-pill${kind ? ` active-filter-pill--${kind}` : ""}` });
     chip.append(createElement("span", { text: label }));
     const clear = createElement("button", {
       className: "active-filter-pill__clear",
@@ -544,18 +584,20 @@
       fragment.append(
         makeFilterPill(type.name, () => {
           ui.typeId = "all";
+          persistFilters();
           resetToFirstPage();
           renderLibrary();
-        }),
+        }, "type"),
       );
     }
     [...ui.tagIds].map(tagFor).filter(Boolean).forEach((tag) => {
       fragment.append(
         makeFilterPill(tagLabel(tag), () => {
           ui.tagIds.delete(tag.id);
+          persistFilters();
           resetToFirstPage();
           renderLibrary();
-        }),
+        }, "tag"),
       );
     });
     elements.activeFilters.replaceChildren(fragment);
@@ -1438,6 +1480,7 @@
       resetToFirstPage();
       ui.typeId = "all";
       ui.tagIds.clear();
+      persistFilters();
       ui.query = "";
       elements.search.value = "";
       await refreshLibrary();

@@ -803,6 +803,20 @@ select::-ms-expand {
   background: #dfe2ff;
 }
 
+.active-filter-pill--tag {
+  border-color: #d8dde5;
+  color: #596579;
+  background: #f5f6f8;
+}
+
+.active-filter-pill--tag .active-filter-pill__clear {
+  color: #68748a;
+}
+
+.active-filter-pill--tag .active-filter-pill__clear:hover {
+  background: #e3e6eb;
+}
+
 .results-meta {
   display: flex;
   align-items: center;
@@ -891,46 +905,16 @@ select::-ms-expand {
   line-height: 1.15;
 }
 
-.type-badge--indigo {
-  border-color: #d8daf8;
-  color: #545fb9;
-  background: #f0f1ff;
-}
-
-.type-badge--sky {
-  border-color: #cceaf4;
-  color: #247ba0;
-  background: #edfaff;
-}
-
-.type-badge--violet {
-  border-color: #e5d8f6;
-  color: #8055b7;
-  background: #f8f1ff;
-}
-
-.type-badge--emerald {
-  border-color: #cfeee0;
-  color: #247955;
-  background: #effaf4;
-}
-
-.type-badge--amber {
-  border-color: #f2e3bf;
-  color: #9c6b1c;
-  background: #fff9e9;
-}
-
-.type-badge--rose {
-  border-color: #f2d7df;
-  color: #a84d6b;
-  background: #fff3f6;
-}
-
+.type-badge--indigo,
+.type-badge--sky,
+.type-badge--violet,
+.type-badge--emerald,
+.type-badge--amber,
+.type-badge--rose,
 .type-badge--slate {
-  border-color: #e1e5eb;
-  color: #627086;
-  background: #f6f8fa;
+  border-color: #cdd2f4;
+  color: #575fbd;
+  background: #f0f1ff;
 }
 
 .note-card__date {
@@ -1016,9 +1000,9 @@ select::-ms-expand {
 
 .tag-chip:hover,
 .tag-chip.is-selected {
-  border-color: #cdd2f4;
-  color: #575fbd;
-  background: #f0f1ff;
+  border-color: #cbd2dc;
+  color: #4f5b6f;
+  background: #f1f3f6;
 }
 
 .more-tags,
@@ -1302,10 +1286,10 @@ select::-ms-expand {
   max-width: 100%;
   gap: 0.08rem;
   min-height: 1.68rem;
-  border-color: #d6d9f7;
+  border-color: #d5dae2;
   padding: 0.12rem 0.26rem 0.12rem 0.45rem;
-  color: #5963c0;
-  background: #f2f3ff;
+  color: #566276;
+  background: #f3f5f7;
 }
 
 .selected-tag > span {
@@ -1322,14 +1306,14 @@ select::-ms-expand {
   place-items: center;
   border: 0;
   border-radius: 50%;
-  color: #6974c5;
+  color: #68748a;
   background: transparent;
   font-size: 0.78rem;
   line-height: 1;
 }
 
 .selected-tag button:hover {
-  background: #dde0ff;
+  background: #e1e5eb;
 }
 
 .tag-picker__input-row {
@@ -1405,9 +1389,9 @@ select::-ms-expand {
 }
 
 .tag-suggestion:hover {
-  border-color: #cdd2f4;
-  color: #575fbd;
-  background: #f0f1ff;
+  border-color: #cbd2dc;
+  color: #4f5b6f;
+  background: #f1f3f6;
 }
 
 .tag-suggestion--create {
