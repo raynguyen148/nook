@@ -52,6 +52,8 @@
     closeNoteDialog: document.querySelector("#close-note-dialog-btn"),
     cancelNote: document.querySelector("#cancel-note-btn"),
     deleteNote: document.querySelector("#delete-note-btn"),
+    noteSaveShortcutModifier: document.querySelector("#note-save-shortcut-modifier"),
+    noteSaveShortcutHelp: document.querySelector("#note-save-shortcut-help"),
     noteId: document.querySelector("#note-id"),
     noteTitle: document.querySelector("#note-title"),
     noteType: document.querySelector("#note-type"),
@@ -172,6 +174,12 @@
     const usesCommandKey = usesMacKeyboardShortcuts();
     elements.searchShortcutModifier.textContent = usesCommandKey ? "⌘" : "Ctrl";
     elements.searchShortcutHelp.textContent = `Press ${usesCommandKey ? "Command" : "Control"} and F to focus search.`;
+  }
+
+  function syncNoteSaveShortcutHint() {
+    const usesCommandKey = usesMacKeyboardShortcuts();
+    elements.noteSaveShortcutModifier.textContent = usesCommandKey ? "⌘" : "Ctrl";
+    elements.noteSaveShortcutHelp.textContent = `Press ${usesCommandKey ? "Command" : "Control"} and Enter to save this note.`;
   }
 
   function syncViewModeUI() {
@@ -1579,6 +1587,18 @@
     elements.newTagForm.addEventListener("submit", addNewTag);
     document.addEventListener("keydown", (event) => {
       const usesCommandKey = usesMacKeyboardShortcuts();
+      const matchesSaveNoteShortcut =
+        event.key === "Enter" &&
+        !event.altKey &&
+        !event.shiftKey &&
+        (usesCommandKey ? event.metaKey && !event.ctrlKey : event.ctrlKey && !event.metaKey);
+
+      if (matchesSaveNoteShortcut && elements.noteDialog.open) {
+        event.preventDefault();
+        if (!event.repeat && !event.isComposing && !ui.noteSaveInFlight) elements.noteForm.requestSubmit();
+        return;
+      }
+
       const matchesSearchShortcut =
         event.key.toLowerCase() === "f" &&
         !event.altKey &&
@@ -1623,6 +1643,7 @@
       await refreshLibrary();
       bindEvents();
       syncSearchShortcutHint();
+      syncNoteSaveShortcutHint();
       elements.appShell.inert = false;
       elements.appShell.removeAttribute("inert");
       elements.appShell.setAttribute("aria-busy", "false");

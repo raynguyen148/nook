@@ -242,9 +242,23 @@
 
         <div class="dialog-footer">
           <button id="delete-note-btn" class="button button-danger is-hidden" type="button">Delete note</button>
+          <p id="note-save-shortcut" class="note-save-shortcut" aria-hidden="true">
+            <svg class="note-save-shortcut__keyboard" viewBox="0 0 24 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="1.5" y="1.5" width="21" height="15" rx="2.5"></rect>
+              <path d="M5 6h.01M9 6h.01M13 6h.01M17 6h.01M5 10h.01M9 10h.01M13 10h.01M17 10h.01M7.5 13h9"></path>
+            </svg>
+            <span>Press</span>
+            <span class="note-save-shortcut__keys">
+              <kbd id="note-save-shortcut-modifier">⌘</kbd>
+              <span>+</span>
+              <kbd>Enter</kbd>
+            </span>
+            <span>to save note</span>
+          </p>
+          <span id="note-save-shortcut-help" class="sr-only">Press Command and Enter to save this note.</span>
           <div class="dialog-footer__actions">
             <button id="cancel-note-btn" class="button button-secondary" type="button">Cancel</button>
-            <button class="button button-primary" type="submit">Save note</button>
+            <button class="button button-primary" type="submit" aria-describedby="note-save-shortcut-help">Save note</button>
           </div>
         </div>
       </form>

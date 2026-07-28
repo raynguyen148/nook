@@ -1577,6 +1577,45 @@ select::-ms-expand {
   gap: 0.5rem;
 }
 
+.note-save-shortcut {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.48rem;
+  margin: 0;
+  color: #7a8495;
+  font-size: 0.72rem;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.note-save-shortcut__keyboard {
+  width: 1.45rem;
+  height: auto;
+  flex: 0 0 auto;
+  margin-right: 0.05rem;
+  color: #746c64;
+}
+
+.note-save-shortcut__keys {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.36rem;
+}
+
+.note-save-shortcut kbd {
+  min-width: 1.45rem;
+  border: 1px solid #d9dee7;
+  border-bottom-color: #cbd2dc;
+  border-radius: 0.28rem;
+  padding: 0.12rem 0.4rem;
+  color: #596579;
+  background: #fff;
+  box-shadow: 0 1px 0 rgb(55 66 86 / 8%);
+  font: inherit;
+  font-weight: 650;
+  text-align: center;
+}
+
 .organize-dialog {
   width: min(calc(100% - 2rem), 760px);
 }
@@ -2017,6 +2056,10 @@ select::-ms-expand {
   .dialog-footer__actions {
     width: 100%;
     margin-left: 0;
+  }
+
+  .note-save-shortcut {
+    justify-content: center;
   }
 
   .dialog-footer__actions .button,
