@@ -12,7 +12,24 @@
   const MAX_TITLE_LENGTH = 160;
   const MAX_NAME_LENGTH = 48;
   const MAX_CONTENT_LENGTH = 50000;
-  const TYPE_COLORS = ["indigo", "sky", "violet", "emerald", "amber", "rose", "slate"];
+  const TYPE_COLORS = [
+    "indigo",
+    "blue",
+    "sky",
+    "cyan",
+    "teal",
+    "emerald",
+    "green",
+    "lime",
+    "amber",
+    "orange",
+    "red",
+    "rose",
+    "pink",
+    "violet",
+    "purple",
+    "slate",
+  ];
   const STORE = Object.freeze({
     notes: "notes",
     types: "types",

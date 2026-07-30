@@ -242,20 +242,56 @@ textarea:focus-visible {
   background: #2b9bc6;
 }
 
+.type-dot--blue {
+  background: #3d73d8;
+}
+
+.type-dot--cyan {
+  background: #1597ae;
+}
+
+.type-dot--teal {
+  background: #16836f;
+}
+
 .type-dot--violet {
   background: #8c63ce;
+}
+
+.type-dot--purple {
+  background: #7850b8;
 }
 
 .type-dot--emerald {
   background: #269b72;
 }
 
+.type-dot--green {
+  background: #4c9a45;
+}
+
+.type-dot--lime {
+  background: #82a92a;
+}
+
 .type-dot--amber {
   background: #c78b22;
 }
 
+.type-dot--orange {
+  background: #d77b28;
+}
+
+.type-dot--red {
+  background: #c75252;
+}
+
 .type-dot--rose {
   background: #c7607b;
+}
+
+.type-dot--pink {
+  background: #c9589e;
 }
 
 .type-dot--slate {
@@ -1577,23 +1613,108 @@ select::-ms-expand {
   gap: 0.5rem;
 }
 
-.note-save-shortcut {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.48rem;
-  margin: 0;
-  color: #7a8495;
-  font-size: 0.72rem;
-  font-weight: 500;
-  line-height: 1.3;
+.quick-save-note-button {
+  width: 2.4rem;
+  min-width: 2.4rem;
+  height: 2.4rem;
+  padding: 0;
+  border-color: #d8ddef;
+  color: #5863cf;
+  background: #f6f6ff;
 }
 
-.note-save-shortcut__keyboard {
-  width: 1.45rem;
+.quick-save-note-button:hover:not(:disabled) {
+  border-color: #bfc6eb;
+  color: #4652bd;
+  background: #eeeeff;
+}
+
+.quick-save-note-button svg {
+  width: 1.02rem;
+  height: 1.02rem;
+}
+
+.note-save-shortcut {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  margin: 0;
+}
+
+.note-save-shortcut__trigger {
+  display: inline-grid;
+  width: 1.95rem;
+  min-width: 1.95rem;
+  height: 1.95rem;
+  place-items: center;
+  border: 1px solid transparent;
+  border-radius: 0.44rem;
+  padding: 0;
+  color: #7a8495;
+  background: transparent;
+  cursor: help;
+}
+
+.note-save-shortcut__trigger:hover {
+  color: #596579;
+  background: #f5f6f9;
+}
+
+.note-save-shortcut__trigger svg {
+  width: 1.25rem;
   height: auto;
-  flex: 0 0 auto;
-  margin-right: 0.05rem;
-  color: #746c64;
+}
+
+.note-save-shortcut__tooltip {
+  position: absolute;
+  z-index: 2;
+  /*
+   * The shortcut icon sits beside the delete action on desktop. Anchoring the
+   * tooltip's right edge here makes it expand into the dialog's left edge,
+   * where native dialog overflow clips its contents. Open it toward the free
+   * space in the footer instead.
+   */
+  left: 0;
+  bottom: calc(100% + 0.55rem);
+  display: grid;
+  width: max-content;
+  max-width: min(18rem, calc(100vw - 2rem));
+  gap: 0.44rem;
+  border: 1px solid #dfe3ea;
+  border-radius: 0.58rem;
+  padding: 0.64rem 0.7rem;
+  color: #556176;
+  background: #fff;
+  box-shadow: 0 0.65rem 1.6rem rgb(36 46 66 / 14%);
+  font-size: 0.72rem;
+  line-height: 1.3;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(0.2rem);
+  transition: opacity 140ms ease, transform 140ms ease;
+}
+
+.note-save-shortcut:hover .note-save-shortcut__tooltip,
+.note-save-shortcut:focus-within .note-save-shortcut__tooltip {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.note-save-shortcut__tooltip p {
+  margin: 0 0 0.08rem;
+  color: #7a8495;
+  font-size: 0.66rem;
+  font-weight: 750;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.note-save-shortcut__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
 }
 
 .note-save-shortcut__keys {
@@ -1603,7 +1724,7 @@ select::-ms-expand {
 }
 
 .note-save-shortcut kbd {
-  min-width: 1.45rem;
+  min-width: 1.3rem;
   border: 1px solid #d9dee7;
   border-bottom-color: #cbd2dc;
   border-radius: 0.28rem;
@@ -1687,6 +1808,104 @@ select::-ms-expand {
   color: #69758a;
 }
 
+.color-picker {
+  position: relative;
+  min-width: 0;
+}
+
+.color-picker__native {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.color-picker__trigger {
+  display: inline-flex;
+  align-items: center;
+  width: 100%;
+  min-height: var(--control-height);
+  gap: 0.46rem;
+  border: 1px solid #dce2ec;
+  border-radius: 0.62rem;
+  padding: 0 1.85rem 0 0.62rem;
+  color: #556276;
+  background: #fff;
+  font: inherit;
+  font-size: 0.75rem;
+  line-height: 1.2;
+  text-align: left;
+  cursor: pointer;
+  background-image: linear-gradient(45deg, transparent 50%, #728098 50%), linear-gradient(135deg, #728098 50%, transparent 50%);
+  background-position: calc(100% - 0.8rem) calc(50% - 0.1rem), calc(100% - 0.54rem) calc(50% - 0.1rem);
+  background-size: 0.27rem 0.27rem, 0.27rem 0.27rem;
+  background-repeat: no-repeat;
+}
+
+.color-picker__trigger:hover {
+  border-color: #b9c2d3;
+}
+
+.color-picker__trigger:focus-visible {
+  outline: none;
+  border-color: #6976d7;
+  box-shadow: 0 0 0 3px #e3e6fb;
+}
+
+.color-picker__label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.color-picker__menu {
+  position: absolute;
+  z-index: 30;
+  top: calc(100% + 0.32rem);
+  left: 0;
+  min-width: 100%;
+  max-height: 16rem;
+  overflow: auto;
+  border: 1px solid #cbd2de;
+  border-radius: 0.58rem;
+  padding: 0.23rem;
+  box-shadow: 0 0.7rem 1.4rem rgb(42 55 79 / 20%);
+  background: #fff;
+}
+
+.color-picker__option {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: 0.5rem;
+  border: 0;
+  border-radius: 0.36rem;
+  padding: 0.38rem 0.46rem;
+  color: #4e5a6d;
+  background: transparent;
+  font: inherit;
+  font-size: 0.74rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+.color-picker__option:hover,
+.color-picker__option:focus-visible,
+.color-picker__option[aria-selected="true"] {
+  outline: none;
+  color: #3845aa;
+  background: #edf0ff;
+}
+
+.color-picker__option[aria-selected="true"]::after {
+  margin-left: auto;
+  content: "✓";
+  font-weight: 800;
+}
+
 .management-list {
   display: grid;
   gap: 0.43rem;
@@ -1734,7 +1953,15 @@ select::-ms-expand {
 }
 
 .management-row__controls {
-  flex: none;
+  display: grid;
+  flex: 0 0 auto;
+  grid-template-columns: 3.15rem 3.25rem 3.85rem;
+  align-items: center;
+}
+
+.management-row--type .management-row__controls {
+  grid-template-columns: 5.95rem 2.8rem 3.25rem 3.85rem;
+  align-items: center;
 }
 
 .management-row__controls .color-select {
@@ -1746,18 +1973,122 @@ select::-ms-expand {
   font-size: 0.72rem;
 }
 
-.usage-count,
-.fallback-label {
+.create-row .color-picker {
+  width: 7.1rem;
+}
+
+.management-row__controls .color-picker {
+  width: 5.95rem;
+}
+
+.management-row__controls .color-picker__trigger {
+  padding-right: 1.65rem;
+  padding-left: 0.3rem;
+  font-size: 0.72rem;
+}
+
+.usage-count {
   color: #9ca5b4;
   font-size: 0.68rem;
   white-space: nowrap;
 }
 
-.fallback-label {
-  border-radius: 999px;
-  padding: 0.14rem 0.36rem;
-  color: #6e7794;
-  background: #f1f3f7;
+.note-type-picker {
+  position: relative;
+  width: 100%;
+}
+
+.note-type-picker__native {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.note-type-picker__trigger {
+  display: inline-flex;
+  align-items: center;
+  width: 100%;
+  min-height: var(--control-height);
+  gap: 0.48rem;
+  border: 1px solid #dce2ec;
+  border-radius: 0.62rem;
+  padding: 0 2rem 0 0.68rem;
+  color: #556276;
+  background: #fff;
+  font: inherit;
+  font-size: 0.79rem;
+  line-height: 1.2;
+  text-align: left;
+  cursor: pointer;
+  background-image: linear-gradient(45deg, transparent 50%, #728098 50%), linear-gradient(135deg, #728098 50%, transparent 50%);
+  background-position: calc(100% - 0.8rem) calc(50% - 0.1rem), calc(100% - 0.54rem) calc(50% - 0.1rem);
+  background-size: 0.27rem 0.27rem, 0.27rem 0.27rem;
+  background-repeat: no-repeat;
+}
+
+.note-type-picker__trigger:hover {
+  border-color: #b9c2d3;
+}
+
+.note-type-picker__trigger:focus-visible {
+  outline: none;
+  border-color: #6976d7;
+  box-shadow: 0 0 0 3px #e3e6fb;
+}
+
+.note-type-picker__label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.note-type-picker__menu {
+  position: absolute;
+  z-index: 30;
+  top: calc(100% + 0.32rem);
+  left: 0;
+  width: 100%;
+  max-height: 16rem;
+  overflow: auto;
+  border: 1px solid #cbd2de;
+  border-radius: 0.58rem;
+  padding: 0.23rem;
+  box-shadow: 0 0.7rem 1.4rem rgb(42 55 79 / 20%);
+  background: #fff;
+}
+
+.note-type-picker__option {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: 0.5rem;
+  border: 0;
+  border-radius: 0.36rem;
+  padding: 0.42rem 0.46rem;
+  color: #4e5a6d;
+  background: transparent;
+  font: inherit;
+  font-size: 0.78rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+.note-type-picker__option:hover,
+.note-type-picker__option:focus-visible,
+.note-type-picker__option[aria-selected="true"] {
+  outline: none;
+  color: #3845aa;
+  background: #edf0ff;
+}
+
+.note-type-picker__option[aria-selected="true"]::after {
+  margin-left: auto;
+  content: "✓";
+  font-weight: 800;
 }
 
 .tag-marker {
@@ -1765,8 +2096,8 @@ select::-ms-expand {
   height: 0.5rem;
   flex: none;
   border-radius: 50%;
-  background: #858ed5;
-  box-shadow: 0 0 0 3px #f0f1ff;
+  background: #778296;
+  box-shadow: 0 0 0 3px #f1f3f6;
 }
 
 .management-empty {
@@ -2091,10 +2422,13 @@ select::-ms-expand {
   }
 
   .management-row__controls {
+    display: flex;
     justify-content: flex-end;
+    flex-wrap: wrap;
   }
 
-  .management-row__controls .color-select {
+  .management-row__controls .color-select,
+  .management-row__controls .color-picker {
     margin-right: auto;
   }
 

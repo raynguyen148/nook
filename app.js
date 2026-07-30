@@ -15,6 +15,9 @@
     dateStyle: "medium",
     timeStyle: "short",
   });
+  const colorPickerInstances = new WeakMap();
+  const openColorPickers = new Set();
+  let noteTypePicker = null;
 
   const elements = {
     appShell: document.querySelector(".app-shell"),
@@ -51,7 +54,9 @@
     noteDialogTitle: document.querySelector("#note-dialog-title"),
     closeNoteDialog: document.querySelector("#close-note-dialog-btn"),
     cancelNote: document.querySelector("#cancel-note-btn"),
+    quickSaveNote: document.querySelector("#quick-save-note-btn"),
     deleteNote: document.querySelector("#delete-note-btn"),
+    noteQuickSaveShortcutModifier: document.querySelector("#note-quick-save-shortcut-modifier"),
     noteSaveShortcutModifier: document.querySelector("#note-save-shortcut-modifier"),
     noteSaveShortcutHelp: document.querySelector("#note-save-shortcut-help"),
     noteId: document.querySelector("#note-id"),
@@ -114,6 +119,7 @@
     noteEditorSession: 0,
     pendingTagCreation: null,
     noteSaveInFlight: false,
+    noteEditorSnapshot: null,
     viewingNoteId: "",
     viewInvoker: null,
     copyInFlight: false,
@@ -178,8 +184,11 @@
 
   function syncNoteSaveShortcutHint() {
     const usesCommandKey = usesMacKeyboardShortcuts();
-    elements.noteSaveShortcutModifier.textContent = usesCommandKey ? "⌘" : "Ctrl";
-    elements.noteSaveShortcutHelp.textContent = `Press ${usesCommandKey ? "Command" : "Control"} and Enter to save this note.`;
+    const modifier = usesCommandKey ? "⌘" : "Ctrl";
+    const modifierName = usesCommandKey ? "Command" : "Control";
+    elements.noteQuickSaveShortcutModifier.textContent = modifier;
+    elements.noteSaveShortcutModifier.textContent = modifier;
+    elements.noteSaveShortcutHelp.textContent = `Quick save keeps this note open: ${modifierName}, Shift, and S. Save note and close: ${modifierName} and Enter.`;
   }
 
   function syncViewModeUI() {
@@ -957,6 +966,125 @@
     if (![...elements.noteType.options].some((option) => option.value === currentValue)) {
       elements.noteType.value = storage.FALLBACK_TYPE_ID;
     }
+    renderNoteTypePickerOptions();
+  }
+
+  function closeNoteTypePicker() {
+    if (!noteTypePicker) return;
+    noteTypePicker.menu.hidden = true;
+    noteTypePicker.trigger.setAttribute("aria-expanded", "false");
+  }
+
+  function setNoteTypePickerValue(typeId, { focusTrigger = false } = {}) {
+    if (!noteTypePicker) return;
+    const type = typeFor(typeId) || typeFor(storage.FALLBACK_TYPE_ID);
+    if (!type) return;
+
+    elements.noteType.value = type.id;
+    noteTypePicker.dot.className = `type-dot type-dot--${safeTypeColor(type)}`;
+    noteTypePicker.label.textContent = type.name;
+    noteTypePicker.options.forEach((option) => {
+      const selected = option.dataset.typeId === type.id;
+      option.setAttribute("aria-selected", String(selected));
+      option.tabIndex = selected ? 0 : -1;
+    });
+    if (focusTrigger) noteTypePicker.trigger.focus();
+  }
+
+  function renderNoteTypePickerOptions() {
+    if (!noteTypePicker) return;
+    const currentTypeId = elements.noteType.value || storage.FALLBACK_TYPE_ID;
+    const fragment = document.createDocumentFragment();
+    noteTypePicker.options = library.types.map((type) => {
+      const option = createElement("button", {
+        className: "note-type-picker__option",
+        type: "button",
+        text: type.name,
+        dataset: { typeId: type.id },
+        attributes: { role: "option", "aria-selected": "false" },
+      });
+      option.prepend(createElement("span", { className: `type-dot type-dot--${safeTypeColor(type)}`, attributes: { "aria-hidden": "true" } }));
+      return option;
+    });
+    fragment.append(...noteTypePicker.options);
+    noteTypePicker.menu.replaceChildren(fragment);
+    setNoteTypePickerValue(currentTypeId);
+  }
+
+  function enhanceNoteTypeSelect() {
+    if (noteTypePicker) return noteTypePicker;
+
+    const picker = createElement("div", { className: "note-type-picker" });
+    const trigger = createElement("button", {
+      className: "note-type-picker__trigger",
+      type: "button",
+      attributes: {
+        "aria-label": "Note type",
+        "aria-haspopup": "listbox",
+        "aria-expanded": "false",
+      },
+    });
+    const dot = createElement("span", { attributes: { "aria-hidden": "true" } });
+    const label = createElement("span", { className: "note-type-picker__label" });
+    trigger.append(dot, label);
+    const menu = createElement("div", { className: "note-type-picker__menu", attributes: { role: "listbox", "aria-label": "Note type options" } });
+    menu.hidden = true;
+
+    elements.noteType.classList.add("note-type-picker__native");
+    elements.noteType.tabIndex = -1;
+    elements.noteType.setAttribute("aria-hidden", "true");
+    elements.noteType.hidden = true;
+    elements.noteType.parentElement?.insertBefore(picker, elements.noteType);
+    picker.append(elements.noteType, trigger, menu);
+
+    noteTypePicker = { root: picker, trigger, dot, label, menu, options: [] };
+    trigger.addEventListener("click", () => {
+      if (menu.hidden) {
+        openColorPickers.forEach((openPicker) => closeColorPicker(openPicker));
+        menu.hidden = false;
+        trigger.setAttribute("aria-expanded", "true");
+        noteTypePicker.options.find((option) => option.dataset.typeId === elements.noteType.value)?.focus();
+      } else {
+        closeNoteTypePicker();
+      }
+    });
+    trigger.addEventListener("keydown", (event) => {
+      if (["ArrowDown", "ArrowUp", " ", "Enter"].includes(event.key)) {
+        event.preventDefault();
+        if (menu.hidden) trigger.click();
+      }
+    });
+    menu.addEventListener("click", (event) => {
+      const option = event.target.closest(".note-type-picker__option");
+      if (!option) return;
+      setNoteTypePickerValue(option.dataset.typeId, { focusTrigger: true });
+      elements.noteType.dispatchEvent(new Event("change", { bubbles: true }));
+      closeNoteTypePicker();
+    });
+    menu.addEventListener("keydown", (event) => {
+      const currentIndex = noteTypePicker.options.indexOf(document.activeElement);
+      if (event.key === "Escape") {
+        event.preventDefault();
+        closeNoteTypePicker();
+        trigger.focus();
+        return;
+      }
+      if (event.key === "Tab") {
+        closeNoteTypePicker();
+        return;
+      }
+      let nextIndex = currentIndex;
+      if (event.key === "ArrowDown") nextIndex = (currentIndex + 1) % noteTypePicker.options.length;
+      else if (event.key === "ArrowUp") nextIndex = (currentIndex - 1 + noteTypePicker.options.length) % noteTypePicker.options.length;
+      else if (event.key === "Home") nextIndex = 0;
+      else if (event.key === "End") nextIndex = noteTypePicker.options.length - 1;
+      else return;
+      event.preventDefault();
+      noteTypePicker.options[nextIndex].focus();
+    });
+    elements.noteType.addEventListener("change", () => setNoteTypePickerValue(elements.noteType.value));
+    renderNoteTypePickerOptions();
+    return noteTypePicker;
   }
 
   function renderSelectedNoteTags() {
@@ -1041,6 +1169,20 @@
     return elements.noteForm.querySelector('[type="submit"]');
   }
 
+  function getNoteEditorDraft() {
+    return JSON.stringify({
+      id: elements.noteId.value,
+      title: elements.noteTitle.value,
+      typeId: elements.noteType.value,
+      tagIds: [...ui.selectedNoteTagIds].sort(),
+      content: elements.noteContent.value,
+    });
+  }
+
+  function hasUnsavedNoteChanges() {
+    return ui.noteEditorSnapshot !== null && getNoteEditorDraft() !== ui.noteEditorSnapshot;
+  }
+
   function isCurrentNoteEditorSession(session) {
     return ui.noteEditorSession === session && elements.noteDialog.open;
   }
@@ -1048,13 +1190,16 @@
   function syncNoteEditorControls() {
     const isCreatingTag = ui.pendingTagCreation?.session === ui.noteEditorSession;
     const disabled = ui.noteSaveInFlight;
+    const noteTypeControls = noteTypePicker ? [noteTypePicker.trigger, ...noteTypePicker.options] : [];
     [
       elements.noteTitle,
       elements.noteType,
+      ...noteTypeControls,
       elements.noteContent,
       elements.deleteNote,
       elements.cancelNote,
       elements.closeNoteDialog,
+      elements.quickSaveNote,
       ...elements.selectedNoteTags.querySelectorAll("button"),
       ...elements.tagSuggestions.querySelectorAll("button"),
     ].forEach((control) => {
@@ -1084,6 +1229,7 @@
     renderTagSuggestions();
     renderNoteMetadata(note);
     if (!elements.noteDialog.open) elements.noteDialog.showModal();
+    ui.noteEditorSnapshot = getNoteEditorDraft();
     syncToastHost();
     syncNoteEditorControls();
     window.requestAnimationFrame(() => elements.noteTitle.focus());
@@ -1096,6 +1242,22 @@
     if (elements.noteDialog.open) elements.noteDialog.close();
     ui.editingNoteId = "";
     ui.selectedNoteTagIds.clear();
+    ui.noteEditorSnapshot = null;
+  }
+
+  async function requestNoteEditorClose() {
+    if (ui.noteSaveInFlight) return;
+    if (!hasUnsavedNoteChanges()) {
+      closeNoteEditor();
+      return;
+    }
+    const confirmed = await requestConfirmation({
+      title: "Discard unsaved changes?",
+      description: "This note has changes that have not been saved yet.",
+      confirmLabel: "Discard changes",
+      cancelLabel: "Keep editing",
+    });
+    if (confirmed && elements.noteDialog.open) closeNoteEditor();
   }
 
   function selectNoteTag(tagId) {
@@ -1145,7 +1307,7 @@
     return operation;
   }
 
-  async function saveNote(event) {
+  async function saveNote(event, { closeAfterSave = true } = {}) {
     event.preventDefault();
     if (ui.noteSaveInFlight) return;
     const session = ui.noteEditorSession;
@@ -1166,10 +1328,18 @@
     };
     try {
       const isEditing = Boolean(input.id);
-      await storage.saveNote(input);
+      const savedNote = await storage.saveNote(input);
       await refreshLibrary();
-      if (isCurrentNoteEditorSession(session)) closeNoteEditor();
-      showToast(isEditing ? "Note updated." : "Note saved.");
+      if (isCurrentNoteEditorSession(session)) {
+        elements.noteId.value = savedNote.id;
+        ui.editingNoteId = savedNote.id;
+        elements.noteDialogTitle.textContent = "Edit note";
+        elements.deleteNote.classList.remove("is-hidden");
+        renderNoteMetadata(savedNote);
+        ui.noteEditorSnapshot = getNoteEditorDraft();
+        if (closeAfterSave) closeNoteEditor();
+      }
+      showToast(closeAfterSave ? (isEditing ? "Note updated." : "Note saved.") : "Changes saved. Keep editing.");
     } catch (error) {
       if (isCurrentNoteEditorSession(session)) {
         showError(error, "We could not save this note.");
@@ -1232,14 +1402,129 @@
     nextTab.focus();
   }
 
+  function colorLabel(color) {
+    return `${color[0].toUpperCase()}${color.slice(1)}`;
+  }
+
   function createColorOptions(selectedColor) {
     const fragment = document.createDocumentFragment();
     storage.TYPE_COLORS.forEach((color) => {
-      const option = createElement("option", { value: color, text: `${color[0].toUpperCase()}${color.slice(1)}` });
+      const option = createElement("option", { value: color, text: colorLabel(color) });
       option.selected = color === selectedColor;
       fragment.append(option);
     });
     return fragment;
+  }
+
+  function closeColorPicker(picker) {
+    picker.menu.hidden = true;
+    picker.trigger.setAttribute("aria-expanded", "false");
+    openColorPickers.delete(picker);
+  }
+
+  function setColorPickerValue(select, color, { focusTrigger = false } = {}) {
+    const picker = colorPickerInstances.get(select);
+    const nextColor = storage.TYPE_COLORS.includes(color) ? color : storage.TYPE_COLORS[0];
+    select.value = nextColor;
+    if (!picker) return;
+
+    picker.dot.className = `type-dot type-dot--${nextColor}`;
+    picker.label.textContent = colorLabel(nextColor);
+    picker.options.forEach((option) => {
+      const selected = option.dataset.color === nextColor;
+      option.setAttribute("aria-selected", String(selected));
+      option.tabIndex = selected ? 0 : -1;
+    });
+    if (focusTrigger) picker.trigger.focus();
+  }
+
+  function enhanceColorSelect(select) {
+    if (colorPickerInstances.has(select)) return colorPickerInstances.get(select);
+
+    const picker = createElement("div", { className: "color-picker" });
+    const trigger = createElement("button", {
+      className: "color-picker__trigger",
+      type: "button",
+      attributes: {
+        "aria-label": select.getAttribute("aria-label") || "Choose a color",
+        "aria-haspopup": "listbox",
+        "aria-expanded": "false",
+      },
+    });
+    const dot = createElement("span", { attributes: { "aria-hidden": "true" } });
+    const label = createElement("span", { className: "color-picker__label" });
+    trigger.append(dot, label);
+    const menu = createElement("div", { className: "color-picker__menu", attributes: { role: "listbox" } });
+    menu.hidden = true;
+    const options = storage.TYPE_COLORS.map((color) => {
+      const option = createElement("button", {
+        className: "color-picker__option",
+        type: "button",
+        text: colorLabel(color),
+        dataset: { color },
+        attributes: { role: "option", "aria-selected": "false" },
+      });
+      option.prepend(createElement("span", { className: `type-dot type-dot--${color}`, attributes: { "aria-hidden": "true" } }));
+      option.addEventListener("click", () => {
+        setColorPickerValue(select, color, { focusTrigger: true });
+        select.dispatchEvent(new Event("change", { bubbles: true }));
+        closeColorPicker(pickerState);
+      });
+      return option;
+    });
+    menu.append(...options);
+
+    select.classList.add("color-picker__native");
+    select.tabIndex = -1;
+    select.setAttribute("aria-hidden", "true");
+    select.hidden = true;
+    select.parentElement?.insertBefore(picker, select);
+    picker.append(select, trigger, menu);
+
+    const pickerState = { root: picker, select, trigger, dot, label, menu, options };
+    colorPickerInstances.set(select, pickerState);
+    setColorPickerValue(select, select.value);
+
+    trigger.addEventListener("click", () => {
+      if (menu.hidden) {
+        openColorPickers.forEach((openPicker) => closeColorPicker(openPicker));
+        menu.hidden = false;
+        trigger.setAttribute("aria-expanded", "true");
+        openColorPickers.add(pickerState);
+        options.find((option) => option.dataset.color === select.value)?.focus();
+      } else {
+        closeColorPicker(pickerState);
+      }
+    });
+    trigger.addEventListener("keydown", (event) => {
+      if (["ArrowDown", "ArrowUp", " ", "Enter"].includes(event.key)) {
+        event.preventDefault();
+        if (menu.hidden) trigger.click();
+      }
+    });
+    menu.addEventListener("keydown", (event) => {
+      const currentIndex = options.indexOf(document.activeElement);
+      if (event.key === "Escape") {
+        event.preventDefault();
+        closeColorPicker(pickerState);
+        trigger.focus();
+        return;
+      }
+      if (event.key === "Tab") {
+        closeColorPicker(pickerState);
+        return;
+      }
+      let nextIndex = currentIndex;
+      if (event.key === "ArrowDown") nextIndex = (currentIndex + 1) % options.length;
+      else if (event.key === "ArrowUp") nextIndex = (currentIndex - 1 + options.length) % options.length;
+      else if (event.key === "Home") nextIndex = 0;
+      else if (event.key === "End") nextIndex = options.length - 1;
+      else return;
+      event.preventDefault();
+      options[nextIndex].focus();
+    });
+    select.addEventListener("change", () => setColorPickerValue(select, select.value));
+    return pickerState;
   }
 
   function renderTypeManagement() {
@@ -1257,15 +1542,13 @@
         attributes: { "aria-label": `Name for ${type.name}`, maxlength: "48", required: "" },
       });
       main.append(nameInput);
-      if (type.id === storage.FALLBACK_TYPE_ID) {
-        main.append(createElement("span", { className: "fallback-label", text: "Fallback" }));
-      }
       const controls = createElement("div", { className: "management-row__controls" });
       const color = createElement("select", {
         className: "color-select",
         attributes: { "aria-label": `Color for ${type.name}` },
       });
       color.append(createColorOptions(safeTypeColor(type)));
+      const colorPicker = enhanceColorSelect(color);
       const usage = createElement("span", { className: "usage-count", text: pluralize(usageCounts.get(type.id) || 0, "note") });
       const save = createElement("button", { className: "button button-secondary button-compact", type: "submit", text: "Save" });
       const remove = createElement("button", {
@@ -1273,9 +1556,9 @@
         type: "button",
         text: "Delete",
         disabled: type.id === storage.FALLBACK_TYPE_ID,
-        title: type.id === storage.FALLBACK_TYPE_ID ? "This is the fallback type." : "Delete note type",
+        title: type.id === storage.FALLBACK_TYPE_ID ? "General cannot be deleted." : "Delete note type",
       });
-      controls.append(color, usage, save, remove);
+      controls.append(colorPicker.root, usage, save, remove);
       form.append(main, controls);
       form.addEventListener("submit", async (event) => {
         event.preventDefault();
@@ -1427,7 +1710,7 @@
         color: elements.newTypeColor.value,
       });
       elements.newTypeForm.reset();
-      elements.newTypeColor.value = "indigo";
+      setColorPickerValue(elements.newTypeColor, "indigo");
       await refreshLibrary();
       showToast(`Note type “${type.name}” added.`);
     } catch (error) {
@@ -1529,8 +1812,9 @@
     elements.comfortableView.addEventListener("click", () => setViewMode("comfortable"));
     elements.compactView.addEventListener("click", () => setViewMode("compact"));
     elements.noteForm.addEventListener("submit", saveNote);
-    elements.closeNoteDialog.addEventListener("click", closeNoteEditor);
-    elements.cancelNote.addEventListener("click", closeNoteEditor);
+    elements.closeNoteDialog.addEventListener("click", requestNoteEditorClose);
+    elements.cancelNote.addEventListener("click", requestNoteEditorClose);
+    elements.quickSaveNote.addEventListener("click", () => saveNote({ preventDefault() {} }, { closeAfterSave: false }));
     elements.deleteNote.addEventListener("click", () => {
       const note = library.notes.find(({ id }) => id === elements.noteId.value);
       deleteNoteWithConfirmation(note);
@@ -1541,9 +1825,11 @@
       ui.noteSaveInFlight = false;
       ui.editingNoteId = "";
       ui.selectedNoteTagIds.clear();
+      ui.noteEditorSnapshot = null;
     });
     elements.noteDialog.addEventListener("cancel", (event) => {
-      if (ui.noteSaveInFlight) event.preventDefault();
+      event.preventDefault();
+      requestNoteEditorClose();
     });
     elements.closeQuickView.addEventListener("click", () => closeQuickView());
     elements.closeQuickViewFooter.addEventListener("click", () => closeQuickView());
@@ -1585,13 +1871,34 @@
     elements.tagsTab.addEventListener("keydown", handleManagementTabKeydown);
     elements.newTypeForm.addEventListener("submit", addNewType);
     elements.newTagForm.addEventListener("submit", addNewTag);
+    document.addEventListener("pointerdown", (event) => {
+      openColorPickers.forEach((picker) => {
+        if (!picker.select.parentElement.contains(event.target)) closeColorPicker(picker);
+      });
+      if (noteTypePicker && !noteTypePicker.root.contains(event.target)) closeNoteTypePicker();
+    });
     document.addEventListener("keydown", (event) => {
       const usesCommandKey = usesMacKeyboardShortcuts();
+      const hasSaveModifier = usesCommandKey ? event.metaKey && !event.ctrlKey : event.ctrlKey && !event.metaKey;
+      const matchesQuickSaveNoteShortcut =
+        event.key.toLowerCase() === "s" &&
+        !event.altKey &&
+        event.shiftKey &&
+        hasSaveModifier;
+
+      if (matchesQuickSaveNoteShortcut && elements.noteDialog.open) {
+        event.preventDefault();
+        if (!event.repeat && !event.isComposing && !ui.noteSaveInFlight) {
+          saveNote({ preventDefault() {} }, { closeAfterSave: false });
+        }
+        return;
+      }
+
       const matchesSaveNoteShortcut =
         event.key === "Enter" &&
         !event.altKey &&
         !event.shiftKey &&
-        (usesCommandKey ? event.metaKey && !event.ctrlKey : event.ctrlKey && !event.metaKey);
+        hasSaveModifier;
 
       if (matchesSaveNoteShortcut && elements.noteDialog.open) {
         event.preventDefault();
@@ -1641,6 +1948,9 @@
     try {
       const result = await storage.initialize();
       await refreshLibrary();
+      enhanceNoteTypeSelect();
+      elements.newTypeColor.replaceChildren(createColorOptions(elements.newTypeColor.value));
+      enhanceColorSelect(elements.newTypeColor);
       bindEvents();
       syncSearchShortcutHint();
       syncNoteSaveShortcutHint();
