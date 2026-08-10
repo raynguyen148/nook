@@ -23,6 +23,8 @@
     appShell: document.querySelector(".app-shell"),
     allNotesFilter: document.querySelector("#all-notes-filter"),
     allNotesCount: document.querySelector("#all-notes-count"),
+    todayFilter: document.querySelector("#today-filter"),
+    todayFilterCount: document.querySelector("#today-filter-count"),
     typeFilterList: document.querySelector("#type-filter-list"),
     tagFilterList: document.querySelector("#tag-filter-list"),
     tagFilterCount: document.querySelector("#tag-filter-count"),
@@ -111,6 +113,7 @@
     query: "",
     typeId: storedFilters.typeId,
     tagIds: storedFilters.tagIds,
+    todayOnly: storedFilters.todayOnly,
     sort: "created-desc",
     viewMode: getStoredViewMode(),
     page: 1,
@@ -142,7 +145,7 @@
   function getStoredFilters() {
     try {
       const storedFilters = window.localStorage.getItem(FILTER_STORAGE_KEY);
-      if (!storedFilters) return { typeId: "all", tagIds: new Set() };
+      if (!storedFilters) return { typeId: "all", tagIds: new Set(), todayOnly: false };
       const parsed = JSON.parse(storedFilters);
       const typeId = typeof parsed?.typeId === "string" && parsed.typeId ? parsed.typeId : "all";
       const tagIds = new Set(
@@ -150,21 +153,21 @@
           ? parsed.tagIds.filter((tagId) => typeof tagId === "string" && tagId)
           : [],
       );
-      return { typeId, tagIds };
+      return { typeId, tagIds, todayOnly: parsed?.todayOnly === true };
     } catch {
-      return { typeId: "all", tagIds: new Set() };
+      return { typeId: "all", tagIds: new Set(), todayOnly: false };
     }
   }
 
   function persistFilters() {
     try {
-      if (ui.typeId === "all" && ui.tagIds.size === 0) {
+      if (ui.typeId === "all" && ui.tagIds.size === 0 && !ui.todayOnly) {
         window.localStorage.removeItem(FILTER_STORAGE_KEY);
         return;
       }
       window.localStorage.setItem(
         FILTER_STORAGE_KEY,
-        JSON.stringify({ typeId: ui.typeId, tagIds: [...ui.tagIds] }),
+        JSON.stringify({ typeId: ui.typeId, tagIds: [...ui.tagIds], todayOnly: ui.todayOnly }),
       );
     } catch {
       // Filtering still works when browser privacy settings block localStorage.
@@ -432,10 +435,15 @@
   }
 
   function setTypeFilter(typeId) {
-    ui.typeId = typeId;
+    ui.typeId = ui.typeId === typeId ? "all" : typeId;
     persistFilters();
     resetToFirstPage();
     renderLibrary();
+  }
+
+  function showAllNotes() {
+    ui.todayOnly = false;
+    setTypeFilter("all");
   }
 
   function toggleTagFilter(tagId) {
@@ -446,10 +454,18 @@
     renderLibrary();
   }
 
+  function toggleTodayFilter() {
+    ui.todayOnly = !ui.todayOnly;
+    persistFilters();
+    resetToFirstPage();
+    renderLibrary();
+  }
+
   function clearFilters({ preserveSort = true } = {}) {
     ui.query = "";
     ui.typeId = "all";
     ui.tagIds.clear();
+    ui.todayOnly = false;
     persistFilters();
     if (!preserveSort) ui.sort = "created-desc";
     elements.search.value = "";
@@ -474,9 +490,14 @@
   function getVisibleNotes() {
     const normalizedQuery = normalizedSearchQuery();
     const selectedTagIds = [...ui.tagIds];
+    const today = new Date();
+    const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime();
+    const tomorrowStart = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1).getTime();
     const notes = library.notes.filter((note) => {
       if (ui.typeId !== "all" && note.typeId !== ui.typeId) return false;
       if (selectedTagIds.some((tagId) => !note.tagIds.includes(tagId))) return false;
+      const createdAt = Date.parse(note.createdAt);
+      if (ui.todayOnly && (Number.isNaN(createdAt) || createdAt < todayStart || createdAt >= tomorrowStart)) return false;
       if (!normalizedQuery) return true;
       return [note.title, note.content].some((value) => value.toLocaleLowerCase().includes(normalizedQuery));
     });
@@ -527,9 +548,21 @@
       note.tagIds.forEach((tagId) => noteCountsByTag.set(tagId, (noteCountsByTag.get(tagId) || 0) + 1));
     });
 
+    const today = new Date();
+    const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime();
+    const tomorrowStart = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1).getTime();
+    const todayCount = library.notes.filter((note) => {
+      const createdAt = Date.parse(note.createdAt);
+      return !Number.isNaN(createdAt) && createdAt >= todayStart && createdAt < tomorrowStart;
+    }).length;
+
+    const isAllNotesFilterActive = ui.typeId === "all" && !ui.todayOnly;
     elements.allNotesCount.textContent = library.notes.length;
-    elements.allNotesFilter.classList.toggle("is-active", ui.typeId === "all");
-    elements.allNotesFilter.setAttribute("aria-pressed", String(ui.typeId === "all"));
+    elements.allNotesFilter.classList.toggle("is-active", isAllNotesFilterActive);
+    elements.allNotesFilter.setAttribute("aria-pressed", String(isAllNotesFilterActive));
+    elements.todayFilter.classList.toggle("is-active", ui.todayOnly);
+    elements.todayFilter.setAttribute("aria-pressed", String(ui.todayOnly));
+    elements.todayFilterCount.textContent = todayCount;
     elements.typeFilterList.replaceChildren();
     const typeFragment = document.createDocumentFragment();
     library.types.forEach((type) => {
@@ -567,7 +600,7 @@
     elements.tagFilterList.append(tagFragment);
     elements.tagFilterEmpty.classList.toggle("is-hidden", library.tags.length > 0);
     elements.tagFilterCount.textContent = ui.tagIds.size ? `${ui.tagIds.size} selected` : "";
-    elements.clearFilters.disabled = !ui.query && ui.typeId === "all" && ui.tagIds.size === 0;
+    elements.clearFilters.disabled = !ui.query && ui.typeId === "all" && ui.tagIds.size === 0 && !ui.todayOnly;
   }
 
   function makeFilterPill(label, onClear, kind = "") {
@@ -607,6 +640,16 @@
         }, "type"),
       );
     }
+    if (ui.todayOnly) {
+      fragment.append(
+        makeFilterPill("Today", () => {
+          ui.todayOnly = false;
+          persistFilters();
+          resetToFirstPage();
+          renderLibrary();
+        }),
+      );
+    }
     [...ui.tagIds].map(tagFor).filter(Boolean).forEach((tag) => {
       fragment.append(
         makeFilterPill(tagLabel(tag), () => {
@@ -620,7 +663,7 @@
     elements.activeFilters.replaceChildren(fragment);
     elements.activeFilters.classList.toggle(
       "is-empty",
-      !ui.query && ui.typeId === "all" && ui.tagIds.size === 0,
+      !ui.query && ui.typeId === "all" && ui.tagIds.size === 0 && !ui.todayOnly,
     );
   }
 
@@ -1771,6 +1814,7 @@
       resetToFirstPage();
       ui.typeId = "all";
       ui.tagIds.clear();
+      ui.todayOnly = false;
       persistFilters();
       ui.query = "";
       elements.search.value = "";
@@ -1784,7 +1828,8 @@
   }
 
   function bindEvents() {
-    elements.allNotesFilter.addEventListener("click", () => setTypeFilter("all"));
+    elements.allNotesFilter.addEventListener("click", showAllNotes);
+    elements.todayFilter.addEventListener("click", toggleTodayFilter);
     elements.clearFilters.addEventListener("click", () => clearFilters());
     elements.organize.addEventListener("click", () => openOrganize());
     elements.export.addEventListener("click", exportLibrary);
