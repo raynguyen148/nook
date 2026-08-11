@@ -8,6 +8,17 @@
       content="Nook is a private, offline-first workspace stored in this browser."
     />
     <meta name="theme-color" content="#5d63d1" />
+    <script>
+      (() => {
+        try {
+          if (window.localStorage.getItem("nook:theme") === "dark") {
+            document.documentElement.dataset.theme = "dark";
+          }
+        } catch {
+          // Keep the light theme when browser privacy settings block localStorage.
+        }
+      })();
+    </script>
     <title>Nook</title>
     <link rel="icon" href="favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="styles.css" />
@@ -70,6 +81,27 @@
             <p class="subtitle">A private, offline space for ideas, work, and learning.</p>
           </div>
           <div class="topbar-actions">
+            <button
+              id="theme-toggle"
+              class="button button-secondary theme-toggle"
+              type="button"
+              aria-pressed="false"
+              aria-label="Switch to dark theme"
+              title="Switch to dark theme"
+            >
+              <span class="theme-toggle__icon theme-toggle__icon--moon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M20.4 15.1A8.7 8.7 0 0 1 8.9 3.6 8.7 8.7 0 1 0 20.4 15.1Z" />
+                </svg>
+              </span>
+              <span class="theme-toggle__icon theme-toggle__icon--sun" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round">
+                  <circle cx="12" cy="12" r="3.4" />
+                  <path d="M12 2.8v2M12 19.2v2M21.2 12h-2M4.8 12h-2M18.5 5.5l-1.4 1.4M6.9 17.1l-1.4 1.4M18.5 18.5l-1.4-1.4M6.9 6.9 5.5 5.5" />
+                </svg>
+              </span>
+              <span id="theme-toggle-label" class="button-label">Dark</span>
+            </button>
             <button
               id="organize-btn"
               class="button button-secondary"

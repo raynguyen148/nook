@@ -3,6 +3,7 @@
 
   const storage = globalThis.PersonalNotesStorage;
   const PAGE_SIZE = 30;
+  const THEME_STORAGE_KEY = "nook:theme";
   const VIEW_MODE_STORAGE_KEY = "nook:notes-view-mode";
   const FILTER_STORAGE_KEY = "nook:active-filters";
   const collator = new Intl.Collator(undefined, { numeric: true, sensitivity: "base" });
@@ -30,6 +31,8 @@
     tagFilterCount: document.querySelector("#tag-filter-count"),
     tagFilterEmpty: document.querySelector("#tag-filter-empty"),
     clearFilters: document.querySelector("#clear-filters-btn"),
+    themeToggle: document.querySelector("#theme-toggle"),
+    themeToggleLabel: document.querySelector("#theme-toggle-label"),
     organize: document.querySelector("#organize-btn"),
     export: document.querySelector("#export-btn"),
     import: document.querySelector("#import-btn"),
@@ -112,6 +115,7 @@
   const storedFilters = getStoredFilters();
   const library = { notes: [], types: [], tags: [] };
   const ui = {
+    theme: getStoredTheme(),
     query: "",
     typeId: storedFilters.typeId,
     tagIds: storedFilters.tagIds,
@@ -134,6 +138,34 @@
     managementTab: "types",
     toastTimer: 0,
   };
+
+  function getStoredTheme() {
+    try {
+      return window.localStorage.getItem(THEME_STORAGE_KEY) === "dark" ? "dark" : "light";
+    } catch {
+      return "light";
+    }
+  }
+
+  function syncThemeUI() {
+    const isDark = ui.theme === "dark";
+    document.documentElement.dataset.theme = isDark ? "dark" : "light";
+    elements.themeToggle.setAttribute("aria-pressed", String(isDark));
+    elements.themeToggle.setAttribute("aria-label", `Switch to ${isDark ? "light" : "dark"} theme`);
+    elements.themeToggle.title = `Switch to ${isDark ? "light" : "dark"} theme`;
+    elements.themeToggleLabel.textContent = isDark ? "Light" : "Dark";
+  }
+
+  function setTheme(theme) {
+    if (!["light", "dark"].includes(theme) || theme === ui.theme) return;
+    ui.theme = theme;
+    syncThemeUI();
+    try {
+      window.localStorage.setItem(THEME_STORAGE_KEY, theme);
+    } catch {
+      // The theme still works for this session when browser privacy settings block localStorage.
+    }
+  }
 
   function getStoredViewMode() {
     try {
@@ -1917,6 +1949,7 @@
     elements.allNotesFilter.addEventListener("click", showAllNotes);
     elements.todayFilter.addEventListener("click", toggleTodayFilter);
     elements.clearFilters.addEventListener("click", () => clearFilters());
+    elements.themeToggle.addEventListener("click", () => setTheme(ui.theme === "dark" ? "light" : "dark"));
     elements.organize.addEventListener("click", () => openOrganize());
     elements.export.addEventListener("click", exportLibrary);
     elements.import.addEventListener("click", () => elements.importInput.click());
@@ -2098,6 +2131,7 @@
       elements.newTypeColor.replaceChildren(createColorOptions(elements.newTypeColor.value));
       enhanceColorSelect(elements.newTypeColor);
       bindEvents();
+      syncThemeUI();
       syncSearchShortcutHint();
       syncNoteSaveShortcutHint();
       elements.appShell.inert = false;
