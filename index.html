@@ -246,11 +246,12 @@
 
         <div class="dialog-footer">
           <button id="delete-note-btn" class="button button-danger is-hidden" type="button">Delete note</button>
-          <div class="note-save-shortcut">
+          <div class="dialog-footer__help">
+            <div class="note-save-shortcut">
             <button
               class="note-save-shortcut__trigger"
               type="button"
-              aria-label="Show note saving keyboard shortcuts"
+              aria-label="Show note editing and saving keyboard shortcuts"
               aria-describedby="note-save-shortcut-help"
             >
               <svg viewBox="0 0 24 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -258,9 +259,27 @@
                 <path d="M5 6h.01M9 6h.01M13 6h.01M17 6h.01M5 10h.01M9 10h.01M13 10h.01M17 10h.01M7.5 13h9"></path>
               </svg>
             </button>
-            <span id="note-save-shortcut-help" class="sr-only">Quick save keeps this note open. Save note closes it.</span>
+            <span id="note-save-shortcut-help" class="sr-only">Bold, italic, and link shortcuts format selected note content. Quick save keeps this note open. Save note closes it.</span>
             <div class="note-save-shortcut__tooltip" role="tooltip">
-              <p>Saving shortcuts</p>
+              <p>Editing &amp; saving shortcuts</p>
+              <div class="note-save-shortcut__row">
+                <span>Bold</span>
+                <span class="note-save-shortcut__keys">
+                  <kbd class="note-formatting-shortcut-modifier">⌘</kbd><span>+</span><kbd>B</kbd>
+                </span>
+              </div>
+              <div class="note-save-shortcut__row">
+                <span>Italic</span>
+                <span class="note-save-shortcut__keys">
+                  <kbd class="note-formatting-shortcut-modifier">⌘</kbd><span>+</span><kbd>I</kbd>
+                </span>
+              </div>
+              <div class="note-save-shortcut__row">
+                <span>Insert link</span>
+                <span class="note-save-shortcut__keys">
+                  <kbd class="note-formatting-shortcut-modifier">⌘</kbd><span>+</span><kbd>K</kbd>
+                </span>
+              </div>
               <div class="note-save-shortcut__row">
                 <span>Quick save</span>
                 <span class="note-save-shortcut__keys">
@@ -274,9 +293,46 @@
                 </span>
               </div>
             </div>
+            </div>
+            <div class="note-markdown-help">
+              <button
+                class="note-markdown-help__trigger"
+                type="button"
+                aria-label="Show Markdown formatting guide"
+                aria-describedby="note-markdown-help-description"
+              >
+                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="m7 2.5-2 15M14 2.5l-2 15M2.5 7h15M1.5 12h15"></path>
+                </svg>
+              </button>
+              <span id="note-markdown-help-description" class="sr-only">Markdown formatting guide for headings, emphasis, code, and lists.</span>
+              <div class="note-markdown-help__tooltip" role="tooltip">
+                <p>Markdown guide</p>
+                <div class="note-markdown-help__row"><span>Heading</span><code># &nbsp;## &nbsp;###</code></div>
+                <div class="note-markdown-help__row"><span>Bold</span><code>**text**</code></div>
+                <div class="note-markdown-help__row"><span>Italic</span><code>*text*</code></div>
+                <div class="note-markdown-help__row"><span>Strikethrough</span><code>~~text~~</code></div>
+                <div class="note-markdown-help__row"><span>Inline code</span><code>`code`</code></div>
+                <div class="note-markdown-help__row"><span>Code block</span><code>```js ... ```</code></div>
+                <div class="note-markdown-help__row"><span>Bullet list</span><code>- item</code></div>
+                <div class="note-markdown-help__row"><span>Numbered list</span><code>1. item</code></div>
+              </div>
+            </div>
           </div>
           <div class="dialog-footer__actions">
             <button id="cancel-note-btn" class="button button-secondary" type="button">Cancel</button>
+            <button
+              id="view-note-from-editor-btn"
+              class="icon-button note-view-button is-hidden"
+              type="button"
+              aria-label="View note"
+              title="View note"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M2.4 12s3.4-5.2 9.6-5.2 9.6 5.2 9.6 5.2-3.4 5.2-9.6 5.2S2.4 12 2.4 12Z"></path>
+                <circle cx="12" cy="12" r="2.35"></circle>
+              </svg>
+            </button>
             <button
               id="quick-save-note-btn"
               class="icon-button quick-save-note-button"
@@ -406,6 +462,7 @@
 
     <!-- The storage module performs a one-time legacy migration when needed. -->
     <script src="storage.js"></script>
+    <script src="markdown.js"></script>
     <script src="app.js"></script>
   </body>
 </html>

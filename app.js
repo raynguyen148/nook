@@ -54,12 +54,14 @@
     noteDialog: document.querySelector("#note-dialog"),
     noteForm: document.querySelector("#note-form"),
     noteDialogTitle: document.querySelector("#note-dialog-title"),
+    viewNoteFromEditor: document.querySelector("#view-note-from-editor-btn"),
     closeNoteDialog: document.querySelector("#close-note-dialog-btn"),
     cancelNote: document.querySelector("#cancel-note-btn"),
     quickSaveNote: document.querySelector("#quick-save-note-btn"),
     deleteNote: document.querySelector("#delete-note-btn"),
     noteQuickSaveShortcutModifier: document.querySelector("#note-quick-save-shortcut-modifier"),
     noteSaveShortcutModifier: document.querySelector("#note-save-shortcut-modifier"),
+    noteFormattingShortcutModifiers: [...document.querySelectorAll(".note-formatting-shortcut-modifier")],
     noteSaveShortcutHelp: document.querySelector("#note-save-shortcut-help"),
     noteId: document.querySelector("#note-id"),
     noteTitle: document.querySelector("#note-title"),
@@ -191,7 +193,10 @@
     const modifierName = usesCommandKey ? "Command" : "Control";
     elements.noteQuickSaveShortcutModifier.textContent = modifier;
     elements.noteSaveShortcutModifier.textContent = modifier;
-    elements.noteSaveShortcutHelp.textContent = `Quick save keeps this note open: ${modifierName}, Shift, and S. Save note and close: ${modifierName} and Enter.`;
+    elements.noteFormattingShortcutModifiers.forEach((element) => {
+      element.textContent = modifier;
+    });
+    elements.noteSaveShortcutHelp.textContent = `Bold, italic, and link shortcuts format selected note content. Quick save keeps this note open: ${modifierName}, Shift, and S. Save note and close: ${modifierName} and Enter.`;
   }
 
   function syncViewModeUI() {
@@ -687,7 +692,7 @@
     } else {
       elements.quickViewTags.append(createElement("span", { className: "quick-view-no-tags", text: "No tags" }));
     }
-    elements.quickViewContent.textContent = note.content || "No content yet.";
+    globalThis.NookMarkdown.renderInto(elements.quickViewContent, note.content);
     elements.quickViewDates.replaceChildren(
       createElement("span", { text: `Created ${formatFullDate(note.createdAt)}` }),
       createElement("span", { text: `Last updated ${formatFullDate(note.updatedAt)}` }),
@@ -1226,6 +1231,74 @@
     return ui.noteEditorSnapshot !== null && getNoteEditorDraft() !== ui.noteEditorSnapshot;
   }
 
+  function replaceNoteContentSelection(replacement, selectionStart, selectionEnd, nextSelectionStart, nextSelectionEnd) {
+    const textarea = elements.noteContent;
+    textarea.focus();
+    textarea.setRangeText(replacement, selectionStart, selectionEnd, "preserve");
+    textarea.setSelectionRange(nextSelectionStart, nextSelectionEnd);
+    textarea.dispatchEvent(new Event("input", { bubbles: true }));
+  }
+
+  function toggleNoteContentWrapper(marker) {
+    const textarea = elements.noteContent;
+    const value = textarea.value;
+    const selectionStart = textarea.selectionStart;
+    const selectionEnd = textarea.selectionEnd;
+    const selectedText = value.slice(selectionStart, selectionEnd);
+    const hasWrapper =
+      selectionStart >= marker.length &&
+      value.slice(selectionStart - marker.length, selectionStart) === marker &&
+      value.slice(selectionEnd, selectionEnd + marker.length) === marker;
+
+    if (hasWrapper) {
+      replaceNoteContentSelection(
+        selectedText,
+        selectionStart - marker.length,
+        selectionEnd + marker.length,
+        selectionStart - marker.length,
+        selectionEnd - marker.length,
+      );
+      return;
+    }
+
+    replaceNoteContentSelection(
+      `${marker}${selectedText}${marker}`,
+      selectionStart,
+      selectionEnd,
+      selectionStart + marker.length,
+      selectionEnd + marker.length,
+    );
+  }
+
+  function insertNoteLink() {
+    const textarea = elements.noteContent;
+    const value = textarea.value;
+    const selectionStart = textarea.selectionStart;
+    const selectionEnd = textarea.selectionEnd;
+    const selectedText = value.slice(selectionStart, selectionEnd) || "link text";
+    const urlPlaceholder = "https://";
+    const urlStart = selectionStart + selectedText.length + 3;
+    replaceNoteContentSelection(
+      `[${selectedText}](${urlPlaceholder})`,
+      selectionStart,
+      selectionEnd,
+      urlStart,
+      urlStart + urlPlaceholder.length,
+    );
+  }
+
+  function applyNoteFormattingShortcut(key) {
+    if (key === "b") {
+      toggleNoteContentWrapper("**");
+      return;
+    }
+    if (key === "i") {
+      toggleNoteContentWrapper("*");
+      return;
+    }
+    if (key === "k") insertNoteLink();
+  }
+
   function isCurrentNoteEditorSession(session) {
     return ui.noteEditorSession === session && elements.noteDialog.open;
   }
@@ -1240,6 +1313,7 @@
       ...noteTypeControls,
       elements.noteContent,
       elements.deleteNote,
+      elements.viewNoteFromEditor,
       elements.cancelNote,
       elements.closeNoteDialog,
       elements.quickSaveNote,
@@ -1267,6 +1341,7 @@
     elements.noteContent.value = note?.content || "";
     elements.noteDialogTitle.textContent = note ? "Edit note" : "New note";
     elements.deleteNote.classList.toggle("is-hidden", !note);
+    elements.viewNoteFromEditor.classList.toggle("is-hidden", !note);
     renderNoteTypeOptions(note?.typeId || storage.FALLBACK_TYPE_ID);
     renderSelectedNoteTags();
     renderTagSuggestions();
@@ -1288,10 +1363,11 @@
     ui.noteEditorSnapshot = null;
   }
 
-  async function requestNoteEditorClose() {
+  async function requestNoteEditorClose({ afterClose = null } = {}) {
     if (ui.noteSaveInFlight) return;
     if (!hasUnsavedNoteChanges()) {
       closeNoteEditor();
+      afterClose?.();
       return;
     }
     const confirmed = await requestConfirmation({
@@ -1300,7 +1376,16 @@
       confirmLabel: "Discard changes",
       cancelLabel: "Keep editing",
     });
-    if (confirmed && elements.noteDialog.open) closeNoteEditor();
+    if (confirmed && elements.noteDialog.open) {
+      closeNoteEditor();
+      afterClose?.();
+    }
+  }
+
+  async function viewNoteFromEditor() {
+    const note = library.notes.find(({ id }) => id === elements.noteId.value);
+    if (!note || ui.noteSaveInFlight) return;
+    await requestNoteEditorClose({ afterClose: () => openQuickView(note) });
   }
 
   function selectNoteTag(tagId) {
@@ -1378,6 +1463,7 @@
         ui.editingNoteId = savedNote.id;
         elements.noteDialogTitle.textContent = "Edit note";
         elements.deleteNote.classList.remove("is-hidden");
+        elements.viewNoteFromEditor.classList.remove("is-hidden");
         renderNoteMetadata(savedNote);
         ui.noteEditorSnapshot = getNoteEditorDraft();
         if (closeAfterSave) closeNoteEditor();
@@ -1857,6 +1943,7 @@
     elements.comfortableView.addEventListener("click", () => setViewMode("comfortable"));
     elements.compactView.addEventListener("click", () => setViewMode("compact"));
     elements.noteForm.addEventListener("submit", saveNote);
+    elements.viewNoteFromEditor.addEventListener("click", viewNoteFromEditor);
     elements.closeNoteDialog.addEventListener("click", requestNoteEditorClose);
     elements.cancelNote.addEventListener("click", requestNoteEditorClose);
     elements.quickSaveNote.addEventListener("click", () => saveNote({ preventDefault() {} }, { closeAfterSave: false }));
@@ -1925,6 +2012,20 @@
     document.addEventListener("keydown", (event) => {
       const usesCommandKey = usesMacKeyboardShortcuts();
       const hasSaveModifier = usesCommandKey ? event.metaKey && !event.ctrlKey : event.ctrlKey && !event.metaKey;
+      const formattingKey = event.key.toLowerCase();
+      const matchesNoteFormattingShortcut =
+        event.target === elements.noteContent &&
+        ["b", "i", "k"].includes(formattingKey) &&
+        !event.altKey &&
+        !event.shiftKey &&
+        hasSaveModifier;
+
+      if (matchesNoteFormattingShortcut && elements.noteDialog.open) {
+        event.preventDefault();
+        if (!event.repeat && !event.isComposing) applyNoteFormattingShortcut(formattingKey);
+        return;
+      }
+
       const matchesQuickSaveNoteShortcut =
         event.key.toLowerCase() === "s" &&
         !event.altKey &&
