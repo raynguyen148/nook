@@ -3,6 +3,7 @@
 
   const storage = globalThis.PersonalNotesStorage;
   const PAGE_SIZE = 30;
+  const NOTE_AUTO_SAVE_DELAY = 5000;
   const THEME_STORAGE_KEY = "nook:theme";
   const VIEW_MODE_STORAGE_KEY = "nook:notes-view-mode";
   const FILTER_STORAGE_KEY = "nook:active-filters";
@@ -69,7 +70,10 @@
     noteId: document.querySelector("#note-id"),
     noteTitle: document.querySelector("#note-title"),
     noteType: document.querySelector("#note-type"),
+    noteContentField: document.querySelector("#note-content-field"),
     noteContent: document.querySelector("#note-content"),
+    noteContentPreview: document.querySelector("#note-content-preview"),
+    noteSplitViewToggle: document.querySelector("#note-split-view-toggle"),
     noteMeta: document.querySelector("#note-meta"),
     selectedNoteTags: document.querySelector("#selected-note-tags"),
     tagInput: document.querySelector("#tag-input"),
@@ -128,6 +132,8 @@
     noteEditorSession: 0,
     pendingTagCreation: null,
     noteSaveInFlight: false,
+    noteAutoSaveTimer: 0,
+    noteSplitView: false,
     noteEditorSnapshot: null,
     viewingNoteId: "",
     viewInvoker: null,
@@ -1184,6 +1190,7 @@
         ui.selectedNoteTagIds.delete(tag.id);
         renderSelectedNoteTags();
         renderTagSuggestions();
+        scheduleNoteAutoSave();
       });
       chip.append(remove);
       elements.selectedNoteTags.append(chip);
@@ -1245,6 +1252,26 @@
     );
   }
 
+  function renderNoteEditorPreview() {
+    if (!ui.noteSplitView) return;
+    globalThis.NookMarkdown.renderInto(elements.noteContentPreview, elements.noteContent.value);
+  }
+
+  function setNoteSplitView(enabled) {
+    ui.noteSplitView = Boolean(enabled);
+    elements.noteContentField.classList.toggle("is-split", ui.noteSplitView);
+    elements.noteContentPreview.hidden = !ui.noteSplitView;
+    elements.noteSplitViewToggle.setAttribute("aria-pressed", String(ui.noteSplitView));
+    elements.noteSplitViewToggle.setAttribute(
+      "aria-label",
+      ui.noteSplitView ? "Hide split edit and preview" : "Show split edit and preview",
+    );
+    elements.noteSplitViewToggle.title = ui.noteSplitView
+      ? "Hide split edit and preview"
+      : "Show split edit and preview";
+    renderNoteEditorPreview();
+  }
+
   function noteSubmitButton() {
     return elements.noteForm.querySelector('[type="submit"]');
   }
@@ -1261,6 +1288,24 @@
 
   function hasUnsavedNoteChanges() {
     return ui.noteEditorSnapshot !== null && getNoteEditorDraft() !== ui.noteEditorSnapshot;
+  }
+
+  function clearNoteAutoSave() {
+    if (!ui.noteAutoSaveTimer) return;
+    window.clearTimeout(ui.noteAutoSaveTimer);
+    ui.noteAutoSaveTimer = 0;
+  }
+
+  function scheduleNoteAutoSave() {
+    clearNoteAutoSave();
+    if (!elements.noteDialog.open || ui.noteSaveInFlight || !hasUnsavedNoteChanges()) return;
+
+    const session = ui.noteEditorSession;
+    ui.noteAutoSaveTimer = window.setTimeout(() => {
+      ui.noteAutoSaveTimer = 0;
+      if (!isCurrentNoteEditorSession(session) || !hasUnsavedNoteChanges()) return;
+      saveNote({ preventDefault() {} }, { closeAfterSave: false, isAutoSave: true });
+    }, NOTE_AUTO_SAVE_DELAY);
   }
 
   function replaceNoteContentSelection(replacement, selectionStart, selectionEnd, nextSelectionStart, nextSelectionEnd) {
@@ -1344,6 +1389,7 @@
       elements.noteType,
       ...noteTypeControls,
       elements.noteContent,
+      elements.noteSplitViewToggle,
       elements.deleteNote,
       elements.viewNoteFromEditor,
       elements.cancelNote,
@@ -1358,10 +1404,12 @@
     elements.addTag.disabled = disabled || isCreatingTag;
     const submitButton = noteSubmitButton();
     submitButton.disabled = disabled || isCreatingTag;
-    submitButton.textContent = disabled ? "Saving…" : "Save note";
+    submitButton.textContent = disabled ? "Saving…" : "Save & close";
   }
 
   function openNoteEditor(note = null) {
+    clearNoteAutoSave();
+    setNoteSplitView(false);
     ui.noteEditorSession += 1;
     ui.pendingTagCreation = null;
     ui.noteSaveInFlight = false;
@@ -1386,6 +1434,7 @@
   }
 
   function closeNoteEditor() {
+    clearNoteAutoSave();
     ui.noteEditorSession += 1;
     ui.pendingTagCreation = null;
     ui.noteSaveInFlight = false;
@@ -1427,6 +1476,7 @@
     elements.tagInput.value = "";
     renderSelectedNoteTags();
     renderTagSuggestions();
+    scheduleNoteAutoSave();
     elements.tagInput.focus();
   }
 
@@ -1455,6 +1505,7 @@
         elements.tagInput.value = "";
         renderSelectedNoteTags();
         renderTagSuggestions();
+        scheduleNoteAutoSave();
         showToast(`Tag “${tagLabel(tag)}” created.`);
       } catch (error) {
         if (isCurrentNoteEditorSession(session)) showError(error);
@@ -1467,8 +1518,9 @@
     return operation;
   }
 
-  async function saveNote(event, { closeAfterSave = true } = {}) {
+  async function saveNote(event, { closeAfterSave = true, isAutoSave = false } = {}) {
     event.preventDefault();
+    clearNoteAutoSave();
     if (ui.noteSaveInFlight) return;
     const session = ui.noteEditorSession;
     const pendingTagCreation = ui.pendingTagCreation;
@@ -1500,7 +1552,8 @@
         ui.noteEditorSnapshot = getNoteEditorDraft();
         if (closeAfterSave) closeNoteEditor();
       }
-      showToast(closeAfterSave ? (isEditing ? "Note updated." : "Note saved.") : "Changes saved. Keep editing.");
+      if (isAutoSave) showToast("Note autosaved.");
+      else showToast(closeAfterSave ? (isEditing ? "Note updated." : "Note saved.") : "Changes saved. Keep editing.");
     } catch (error) {
       if (isCurrentNoteEditorSession(session)) {
         showError(error, "We could not save this note.");
@@ -1976,6 +2029,15 @@
     elements.comfortableView.addEventListener("click", () => setViewMode("comfortable"));
     elements.compactView.addEventListener("click", () => setViewMode("compact"));
     elements.noteForm.addEventListener("submit", saveNote);
+    elements.noteTitle.addEventListener("input", scheduleNoteAutoSave);
+    elements.noteContent.addEventListener("input", () => {
+      renderNoteEditorPreview();
+      scheduleNoteAutoSave();
+    });
+    elements.noteType.addEventListener("change", scheduleNoteAutoSave);
+    elements.noteSplitViewToggle.addEventListener("click", () => {
+      if (!ui.noteSaveInFlight) setNoteSplitView(!ui.noteSplitView);
+    });
     elements.viewNoteFromEditor.addEventListener("click", viewNoteFromEditor);
     elements.closeNoteDialog.addEventListener("click", requestNoteEditorClose);
     elements.cancelNote.addEventListener("click", requestNoteEditorClose);
@@ -1985,6 +2047,8 @@
       deleteNoteWithConfirmation(note);
     });
     elements.noteDialog.addEventListener("close", () => {
+      clearNoteAutoSave();
+      setNoteSplitView(false);
       ui.noteEditorSession += 1;
       ui.pendingTagCreation = null;
       ui.noteSaveInFlight = false;
@@ -2023,6 +2087,7 @@
         ui.selectedNoteTagIds.delete(tagIds[tagIds.length - 1]);
         renderSelectedNoteTags();
         renderTagSuggestions();
+        scheduleNoteAutoSave();
       }
     });
     elements.addTag.addEventListener("click", addTagFromEditor);

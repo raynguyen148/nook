@@ -7,7 +7,7 @@
       name="description"
       content="Nook is a private, offline-first workspace stored in this browser."
     />
-    <meta name="theme-color" content="#5d63d1" />
+    <meta name="theme-color" content="#926b00" />
     <script>
       (() => {
         try {
@@ -268,16 +268,34 @@
             </div>
           </div>
 
-          <label class="field" for="note-content">
-            <span>Content</span>
-            <textarea id="note-content" rows="14" maxlength="50000" placeholder="Write anything you want to keep…"></textarea>
-          </label>
+          <div id="note-content-field" class="field note-content-field">
+            <div class="field-label-row">
+              <label for="note-content">Content</label>
+              <button
+                id="note-split-view-toggle"
+                class="icon-button note-split-view-toggle"
+                type="button"
+                aria-pressed="false"
+                aria-label="Show split edit and preview"
+                title="Show split edit and preview"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <rect x="3.25" y="3.25" width="17.5" height="17.5" rx="2.25" />
+                  <path d="M12 3.75v16.5" />
+                </svg>
+              </button>
+            </div>
+            <div class="note-content-editor">
+              <textarea id="note-content" rows="14" maxlength="50000" placeholder="Write anything you want to keep…"></textarea>
+              <div id="note-content-preview" class="quick-view-content note-content-preview" aria-label="Rendered note preview" hidden></div>
+            </div>
+          </div>
 
           <div id="note-meta" class="note-meta is-hidden"></div>
         </div>
 
         <div class="dialog-footer">
-          <button id="delete-note-btn" class="button button-danger is-hidden" type="button">Delete note</button>
+          <button id="delete-note-btn" class="button button-danger is-hidden" type="button">Delete</button>
           <div class="dialog-footer__help">
             <div class="note-save-shortcut">
             <button
@@ -377,7 +395,7 @@
                 <path d="M8 3.9v5h7v-5M8 20.2v-6.4h8v6.4" />
               </svg>
             </button>
-            <button class="button button-primary" type="submit">Save note</button>
+            <button class="button button-primary" type="submit">Save &amp; close</button>
           </div>
         </div>
       </form>
@@ -405,9 +423,20 @@
       </div>
 
       <div class="dialog-footer quick-view-footer">
-        <button id="copy-note-content-btn" class="button button-secondary" type="button">Copy content</button>
+        <button
+          id="copy-note-content-btn"
+          class="icon-button quick-view-copy-button"
+          type="button"
+          aria-label="Copy note content"
+          title="Copy content"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="8.25" y="8.25" width="11.5" height="11.5" rx="2"></rect>
+            <path d="M15.75 8.25V6.5a2.25 2.25 0 0 0-2.25-2.25H6.5A2.25 2.25 0 0 0 4.25 6.5v7A2.25 2.25 0 0 0 6.5 15.75h1.75"></path>
+          </svg>
+        </button>
         <div class="dialog-footer__actions">
-          <button id="edit-from-quick-view-btn" class="button button-primary" type="button">Edit note</button>
+          <button id="edit-from-quick-view-btn" class="button button-primary" type="button">Edit</button>
           <button id="close-quick-view-footer-btn" class="button button-secondary" type="button">Close</button>
         </div>
       </div>
