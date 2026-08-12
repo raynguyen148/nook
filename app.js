@@ -134,6 +134,7 @@
     noteSaveInFlight: false,
     noteAutoSaveTimer: 0,
     noteSplitView: false,
+    noteScrollSyncing: false,
     noteEditorSnapshot: null,
     viewingNoteId: "",
     viewInvoker: null,
@@ -1252,9 +1253,34 @@
     );
   }
 
+  function getNoteEditorScrollProgress(element) {
+    const maxScrollTop = element.scrollHeight - element.clientHeight;
+    if (maxScrollTop <= 0) return 0;
+    return Math.min(1, Math.max(0, element.scrollTop / maxScrollTop));
+  }
+
+  function setNoteEditorScrollProgress(element, progress) {
+    const maxScrollTop = element.scrollHeight - element.clientHeight;
+    if (maxScrollTop <= 0) {
+      element.scrollTop = 0;
+      return;
+    }
+    element.scrollTop = progress * maxScrollTop;
+  }
+
+  function syncNoteEditorScroll(source, target) {
+    if (!ui.noteSplitView || ui.noteScrollSyncing) return;
+    ui.noteScrollSyncing = true;
+    setNoteEditorScrollProgress(target, getNoteEditorScrollProgress(source));
+    window.requestAnimationFrame(() => {
+      ui.noteScrollSyncing = false;
+    });
+  }
+
   function renderNoteEditorPreview() {
     if (!ui.noteSplitView) return;
     globalThis.NookMarkdown.renderInto(elements.noteContentPreview, elements.noteContent.value);
+    syncNoteEditorScroll(elements.noteContent, elements.noteContentPreview);
   }
 
   function setNoteSplitView(enabled) {
@@ -2033,6 +2059,12 @@
     elements.noteContent.addEventListener("input", () => {
       renderNoteEditorPreview();
       scheduleNoteAutoSave();
+    });
+    elements.noteContent.addEventListener("scroll", () => {
+      syncNoteEditorScroll(elements.noteContent, elements.noteContentPreview);
+    });
+    elements.noteContentPreview.addEventListener("scroll", () => {
+      syncNoteEditorScroll(elements.noteContentPreview, elements.noteContent);
     });
     elements.noteType.addEventListener("change", scheduleNoteAutoSave);
     elements.noteSplitViewToggle.addEventListener("click", () => {
