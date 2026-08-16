@@ -76,9 +76,14 @@ textarea:focus-visible {
 .sidebar {
   position: sticky;
   top: 0;
+  align-self: start;
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  height: 100vh;
+  height: 100dvh;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
   padding: 1.55rem 1rem 1.15rem;
   border-right: 1px solid #e6e9f0;
   background: rgb(255 255 255 / 91%);
@@ -334,7 +339,11 @@ textarea:focus-visible {
 
 .tag-filter-list {
   display: grid;
-  max-height: min(33vh, 20rem);
+  min-height: 14rem;
+  height: 42vh;
+  height: 42dvh;
+  max-height: min(48vh, 36rem);
+  max-height: min(48dvh, 36rem);
   gap: 0.08rem;
   overflow: auto;
   padding-right: 0.15rem;
@@ -941,17 +950,22 @@ select::-ms-expand {
   line-height: 1.15;
 }
 
-.type-badge--indigo,
-.type-badge--sky,
-.type-badge--violet,
-.type-badge--emerald,
-.type-badge--amber,
-.type-badge--rose,
-.type-badge--slate {
-  border-color: #cdd2f4;
-  color: #575fbd;
-  background: #f0f1ff;
-}
+.type-badge--indigo { border-color: #cdd2f4; color: #4f56b7; background: #f0f1ff; }
+.type-badge--blue { border-color: #bdd1f7; color: #315ead; background: #edf3ff; }
+.type-badge--sky { border-color: #b8dfed; color: #1e7393; background: #e8f7fb; }
+.type-badge--cyan { border-color: #b4e3e9; color: #11738a; background: #e6f8fa; }
+.type-badge--teal { border-color: #b7dfd6; color: #126a5a; background: #e7f5f1; }
+.type-badge--emerald { border-color: #b9e2d2; color: #167456; background: #e8f7f0; }
+.type-badge--green { border-color: #bfdfbb; color: #397b35; background: #edf7eb; }
+.type-badge--lime { border-color: #d5e5ae; color: #667f1e; background: #f4f9e8; }
+.type-badge--amber { border-color: #ead18a; color: #8b6200; background: #fff6d8; }
+.type-badge--orange { border-color: #f0c797; color: #a55a17; background: #fff1e4; }
+.type-badge--red { border-color: #ebbdbe; color: #a33e42; background: #fff0f0; }
+.type-badge--rose { border-color: #edc0ce; color: #a84360; background: #fff0f4; }
+.type-badge--pink { border-color: #edc0dc; color: #a53f81; background: #fff0f8; }
+.type-badge--violet { border-color: #dacaf5; color: #7049aa; background: #f3edfd; }
+.type-badge--purple { border-color: #d3c0ed; color: #624097; background: #f0eafd; }
+.type-badge--slate { border-color: #d4dbe5; color: #5e6c80; background: #f2f5f8; }
 
 .note-card__date {
   overflow: hidden;
@@ -1210,7 +1224,7 @@ select::-ms-expand {
 }
 
 .note-dialog {
-  width: min(calc(100% - 2rem), 1200px);
+  width: min(calc(100% - 2rem), 1440px);
   max-height: min(62rem, calc(100dvh - 2rem));
 }
 
@@ -1466,7 +1480,7 @@ select::-ms-expand {
 }
 
 .quick-view-dialog {
-  width: min(calc(100% - 2rem), 880px);
+  width: min(calc(100% - 2rem), 1120px);
   /*
    * Let a long note use a little more of the viewport, while retaining enough
    * backdrop around the dialog to keep Quick view feeling lightweight.
@@ -1980,7 +1994,7 @@ select::-ms-expand {
 }
 
 .organize-dialog {
-  width: min(calc(100% - 2rem), 760px);
+  width: min(calc(100% - 2rem), 960px);
 }
 
 .organize-tabs {
@@ -2442,7 +2456,10 @@ select::-ms-expand {
   .sidebar {
     position: static;
     display: grid;
+    height: auto;
     min-height: 0;
+    overflow: visible;
+    overscroll-behavior: auto;
     grid-template-columns: minmax(0, 1fr) auto;
     column-gap: 1.25rem;
     padding: 1.1rem 1.25rem 1rem;
@@ -2494,6 +2511,8 @@ select::-ms-expand {
 
   .tag-filter-list {
     display: flex;
+    min-height: 0;
+    height: auto;
     max-height: none;
     overflow-x: auto;
     padding: 0.1rem 0.1rem 0.3rem;
@@ -2986,17 +3005,22 @@ html[data-theme="dark"] .note-card:focus-within {
   box-shadow: 0 6px 16px rgb(0 0 0 / 24%);
 }
 
-html[data-theme="dark"] .type-badge--indigo,
-html[data-theme="dark"] .type-badge--sky,
-html[data-theme="dark"] .type-badge--violet,
-html[data-theme="dark"] .type-badge--emerald,
-html[data-theme="dark"] .type-badge--amber,
-html[data-theme="dark"] .type-badge--rose,
-html[data-theme="dark"] .type-badge--slate {
-  border-color: #505790;
-  color: #bec4ff;
-  background: #303661;
-}
+html[data-theme="dark"] .type-badge--indigo { border-color: #505790; color: #bec4ff; background: #303661; }
+html[data-theme="dark"] .type-badge--blue { border-color: #3e639f; color: #b5ceff; background: #1e365d; }
+html[data-theme="dark"] .type-badge--sky { border-color: #3b8298; color: #a5e0ef; background: #193d49; }
+html[data-theme="dark"] .type-badge--cyan { border-color: #318798; color: #9ee4ed; background: #183d46; }
+html[data-theme="dark"] .type-badge--teal { border-color: #347f71; color: #9cdecf; background: #193c35; }
+html[data-theme="dark"] .type-badge--emerald { border-color: #3d8a70; color: #a3e4c9; background: #193f33; }
+html[data-theme="dark"] .type-badge--green { border-color: #588c51; color: #b8e7b1; background: #213f20; }
+html[data-theme="dark"] .type-badge--lime { border-color: #809a48; color: #d8eaa2; background: #37421e; }
+html[data-theme="dark"] .type-badge--amber { border-color: #9b761d; color: #f0ca62; background: #4a3811; }
+html[data-theme="dark"] .type-badge--orange { border-color: #a56834; color: #f2bf91; background: #4b2e17; }
+html[data-theme="dark"] .type-badge--red { border-color: #a65a5d; color: #f3b8ba; background: #4b2529; }
+html[data-theme="dark"] .type-badge--rose { border-color: #a85b73; color: #f1b7c8; background: #4a2634; }
+html[data-theme="dark"] .type-badge--pink { border-color: #a65888; color: #f4b6d8; background: #4c253e; }
+html[data-theme="dark"] .type-badge--violet { border-color: #8062ad; color: #d4c1f6; background: #392b59; }
+html[data-theme="dark"] .type-badge--purple { border-color: #7254a5; color: #cfbaf2; background: #352750; }
+html[data-theme="dark"] .type-badge--slate { border-color: #536177; color: #c2cbda; background: #2a3445; }
 
 html[data-theme="dark"] .note-card__date,
 html[data-theme="dark"] .more-tags,
@@ -3473,18 +3497,6 @@ textarea:focus-visible {
   border-color: var(--primary-accent-border);
 }
 
-.type-badge--indigo,
-.type-badge--sky,
-.type-badge--violet,
-.type-badge--emerald,
-.type-badge--amber,
-.type-badge--rose,
-.type-badge--slate {
-  border-color: var(--primary-accent-border);
-  color: var(--primary-accent-text);
-  background: var(--primary-accent-soft);
-}
-
 .note-card__title:hover,
 .note-card__action:hover {
   color: var(--primary-accent-text);
@@ -3657,18 +3669,6 @@ html[data-theme="dark"] .active-filter-pill__clear:hover {
 html[data-theme="dark"] .note-card:hover,
 html[data-theme="dark"] .note-card:focus-within {
   border-color: var(--primary-accent-border);
-}
-
-html[data-theme="dark"] .type-badge--indigo,
-html[data-theme="dark"] .type-badge--sky,
-html[data-theme="dark"] .type-badge--violet,
-html[data-theme="dark"] .type-badge--emerald,
-html[data-theme="dark"] .type-badge--amber,
-html[data-theme="dark"] .type-badge--rose,
-html[data-theme="dark"] .type-badge--slate {
-  border-color: var(--primary-accent-border);
-  color: var(--primary-accent-text);
-  background: var(--primary-accent-soft);
 }
 
 html[data-theme="dark"] .note-card__title:hover,

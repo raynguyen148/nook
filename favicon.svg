@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
   <defs>
     <linearGradient id="personal-notes-gradient" x1="12" y1="8" x2="54" y2="58" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#5660d9" />
-      <stop offset="1" stop-color="#7b6bd8" />
+      <stop stop-color="#856100" />
+      <stop offset="1" stop-color="#b18714" />
     </linearGradient>
   </defs>
   <rect x="3" y="3" width="58" height="58" rx="19" fill="url(#personal-notes-gradient)" />
