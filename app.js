@@ -566,7 +566,7 @@
   function makeTypeBadge(type, { isFilter = false } = {}) {
     const selected = ui.typeId === type.id;
     const badge = createElement(isFilter ? "button" : "span", {
-      className: `type-badge type-badge--${safeTypeColor(type)}${isFilter ? " type-badge--filter" : ""}${selected && isFilter ? " is-selected" : ""}`,
+      className: `type-badge type-badge--${safeTypeColor(type)}${isFilter ? " type-badge--filter" : ""}`,
       type: isFilter ? "button" : undefined,
       text: type.name,
       attributes: isFilter

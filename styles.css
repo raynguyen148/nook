@@ -957,10 +957,6 @@ select::-ms-expand {
   border-color: currentColor;
 }
 
-.type-badge--filter.is-selected {
-  box-shadow: 0 0 0 2px var(--primary-accent-focus);
-}
-
 .type-badge--indigo { border-color: #cdd2f4; color: #4f56b7; background: #f0f1ff; }
 .type-badge--blue { border-color: #bdd1f7; color: #315ead; background: #edf3ff; }
 .type-badge--sky { border-color: #b8dfed; color: #1e7393; background: #e8f7fb; }
@@ -3398,6 +3394,8 @@ html[data-theme="dark"] .toast[data-tone="error"] {
   --primary-accent-focus: rgb(146 107 0 / 32%);
   --primary-accent-shadow: rgb(127 91 0 / 22%);
   --primary-button-text: #fff;
+  --interaction-duration: 160ms;
+  --interaction-easing: cubic-bezier(0.2, 0, 0, 1);
 }
 
 html[data-theme="dark"] {
@@ -3429,6 +3427,19 @@ input:focus-visible,
 select:focus-visible,
 textarea:focus-visible {
   outline-color: var(--primary-accent-focus);
+}
+
+/* Covers controls that do not need a bespoke motion treatment. More specific
+ * component transitions above remain in effect for buttons, cards, and tooltips
+ * that already animate their own state. */
+:where(button, .tag-filter-option, .note-card, .quick-view-content a) {
+  transition:
+    color var(--interaction-duration) var(--interaction-easing),
+    background-color var(--interaction-duration) var(--interaction-easing),
+    border-color var(--interaction-duration) var(--interaction-easing),
+    box-shadow var(--interaction-duration) var(--interaction-easing),
+    transform var(--interaction-duration) var(--interaction-easing),
+    opacity var(--interaction-duration) var(--interaction-easing);
 }
 
 .brand-mark {
