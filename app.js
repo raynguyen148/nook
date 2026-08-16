@@ -563,11 +563,22 @@
     });
   }
 
-  function makeTypeBadge(type) {
-    return createElement("span", {
-      className: `type-badge type-badge--${safeTypeColor(type)}`,
+  function makeTypeBadge(type, { isFilter = false } = {}) {
+    const selected = ui.typeId === type.id;
+    const badge = createElement(isFilter ? "button" : "span", {
+      className: `type-badge type-badge--${safeTypeColor(type)}${isFilter ? " type-badge--filter" : ""}${selected && isFilter ? " is-selected" : ""}`,
+      type: isFilter ? "button" : undefined,
       text: type.name,
+      attributes: isFilter
+        ? {
+            "aria-label": `Filter by note type ${type.name}`,
+            "aria-pressed": String(selected),
+            title: `Filter by ${type.name}`,
+          }
+        : undefined,
     });
+    if (isFilter) badge.addEventListener("click", () => setTypeFilter(type.id));
+    return badge;
   }
 
   function makeTagButton(tag, selected = false) {
@@ -611,7 +622,7 @@
     const typeFragment = document.createDocumentFragment();
     library.types.forEach((type) => {
       const button = createElement("button", {
-        className: `sidebar-filter sidebar-filter--type${ui.typeId === type.id ? " is-active" : ""}`,
+        className: `sidebar-filter sidebar-filter--type sidebar-filter--${safeTypeColor(type)}${ui.typeId === type.id ? " is-active" : ""}`,
         type: "button",
         attributes: { "aria-pressed": String(ui.typeId === type.id) },
       });
@@ -647,8 +658,9 @@
     elements.clearFilters.disabled = !ui.query && ui.typeId === "all" && ui.tagIds.size === 0 && !ui.todayOnly;
   }
 
-  function makeFilterPill(label, onClear, kind = "") {
-    const chip = createElement("span", { className: `active-filter-pill${kind ? ` active-filter-pill--${kind}` : ""}` });
+  function makeFilterPill(label, onClear, kinds = []) {
+    const normalizedKinds = (Array.isArray(kinds) ? kinds : [kinds]).filter(Boolean);
+    const chip = createElement("span", { className: ["active-filter-pill", ...normalizedKinds.map((kind) => `active-filter-pill--${kind}`)].join(" ") });
     chip.append(createElement("span", { text: label }));
     const clear = createElement("button", {
       className: "active-filter-pill__clear",
@@ -681,7 +693,7 @@
           persistFilters();
           resetToFirstPage();
           renderLibrary();
-        }, "type"),
+        }, ["type", `type-${safeTypeColor(type)}`]),
       );
     }
     if (ui.todayOnly) {
@@ -854,12 +866,29 @@
     closeQuickView({ restoreFocus: false, afterClose: () => openNoteEditor(note) });
   }
 
+  function createNoteCardActionIcon(shapes) {
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("viewBox", "0 0 24 24");
+    svg.setAttribute("fill", "none");
+    svg.setAttribute("stroke", "currentColor");
+    svg.setAttribute("stroke-width", "1.7");
+    svg.setAttribute("stroke-linecap", "round");
+    svg.setAttribute("stroke-linejoin", "round");
+    svg.setAttribute("aria-hidden", "true");
+    shapes.forEach(([name, attributes]) => {
+      const shape = document.createElementNS("http://www.w3.org/2000/svg", name);
+      Object.entries(attributes).forEach(([attribute, value]) => shape.setAttribute(attribute, value));
+      svg.append(shape);
+    });
+    return svg;
+  }
+
   function createNoteCard(note) {
     const type = typeFor(note.typeId);
     const card = createElement("article", { className: "note-card" });
     const content = createElement("div", { className: "note-card__content" });
     const meta = createElement("div", { className: "note-card__meta" });
-    meta.append(makeTypeBadge(type));
+    meta.append(makeTypeBadge(type, { isFilter: true }));
     const created = createElement("time", {
       className: "note-card__date",
       text: `Created ${formatShortDate(note.createdAt)}`,
@@ -897,18 +926,43 @@
     const view = createElement("button", {
       className: "note-card__action",
       type: "button",
-      text: "View",
-      attributes: { "aria-label": `Quick view ${note.title}` },
+      attributes: { "aria-label": `Quick view ${note.title}`, title: "View" },
     });
+    view.append(
+      createNoteCardActionIcon([
+        ["path", { d: "M2.4 12s3.4-5.2 9.6-5.2 9.6 5.2 9.6 5.2-3.4 5.2-9.6 5.2S2.4 12 2.4 12Z" }],
+        ["circle", { cx: "12", cy: "12", r: "2.35" }],
+      ]),
+    );
     view.addEventListener("click", () => openQuickView(note, view));
     const edit = createElement("button", {
       className: "note-card__action",
       type: "button",
-      text: "Edit",
-      attributes: { "aria-label": `Edit ${note.title}`, title: "Edit note" },
+      attributes: { "aria-label": `Edit ${note.title}`, title: "Edit" },
     });
+    edit.append(
+      createNoteCardActionIcon([
+        ["path", { d: "m14.6 5.4 4 4" }],
+        ["path", { d: "M4.5 19.5 6 14l9.6-9.6a1.65 1.65 0 0 1 2.35 0l1.65 1.65a1.65 1.65 0 0 1 0 2.35L10 18l-5.5 1.5Z" }],
+      ]),
+    );
     edit.addEventListener("click", () => openNoteEditor(note));
-    actions.append(view, edit);
+    const remove = createElement("button", {
+      className: "note-card__action note-card__action--danger",
+      type: "button",
+      attributes: { "aria-label": `Delete ${note.title}`, title: "Delete" },
+    });
+    remove.append(
+      createNoteCardActionIcon([
+        ["path", { d: "M4.5 7.5h15" }],
+        ["path", { d: "M9.5 4.5h5" }],
+        ["path", { d: "m6.5 7.5.8 12h9.4l.8-12" }],
+        ["path", { d: "M10 11v5" }],
+        ["path", { d: "M14 11v5" }],
+      ]),
+    );
+    remove.addEventListener("click", () => deleteNoteWithConfirmation(note));
+    actions.append(view, edit, remove);
     footer.append(tags, actions);
     card.append(content, footer);
     return card;
