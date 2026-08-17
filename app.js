@@ -132,6 +132,7 @@
     noteEditorSession: 0,
     pendingTagCreation: null,
     noteSaveInFlight: false,
+    noteAutoSaveInFlight: false,
     noteAutoSaveTimer: 0,
     noteSplitView: false,
     noteScrollSyncing: false,
@@ -1357,12 +1358,22 @@
   }
 
   function getNoteEditorDraft() {
-    return JSON.stringify({
+    return createNoteEditorDraft({
       id: elements.noteId.value,
       title: elements.noteTitle.value,
       typeId: elements.noteType.value,
-      tagIds: [...ui.selectedNoteTagIds].sort(),
+      tagIds: [...ui.selectedNoteTagIds],
       content: elements.noteContent.value,
+    });
+  }
+
+  function createNoteEditorDraft({ id = "", title, typeId, tagIds, content }) {
+    return JSON.stringify({
+      id,
+      title,
+      typeId,
+      tagIds: [...tagIds].sort(),
+      content,
     });
   }
 
@@ -1463,6 +1474,7 @@
   function syncNoteEditorControls() {
     const isCreatingTag = ui.pendingTagCreation?.session === ui.noteEditorSession;
     const disabled = ui.noteSaveInFlight;
+    const keepTextInputsEnabled = ui.noteAutoSaveInFlight;
     const noteTypeControls = noteTypePicker ? [noteTypePicker.trigger, ...noteTypePicker.options] : [];
     [
       elements.noteTitle,
@@ -1478,7 +1490,8 @@
       ...elements.selectedNoteTags.querySelectorAll("button"),
       ...elements.tagSuggestions.querySelectorAll("button"),
     ].forEach((control) => {
-      control.disabled = disabled;
+      const isTextInput = control === elements.noteTitle || control === elements.noteContent;
+      control.disabled = disabled && !(keepTextInputsEnabled && isTextInput);
     });
     elements.tagInput.disabled = disabled || isCreatingTag;
     elements.addTag.disabled = disabled || isCreatingTag;
@@ -1493,6 +1506,7 @@
     ui.noteEditorSession += 1;
     ui.pendingTagCreation = null;
     ui.noteSaveInFlight = false;
+    ui.noteAutoSaveInFlight = false;
     ui.editingNoteId = note?.id || "";
     ui.selectedNoteTagIds = new Set(note?.tagIds || []);
     elements.noteForm.reset();
@@ -1518,6 +1532,7 @@
     ui.noteEditorSession += 1;
     ui.pendingTagCreation = null;
     ui.noteSaveInFlight = false;
+    ui.noteAutoSaveInFlight = false;
     if (elements.noteDialog.open) elements.noteDialog.close();
     ui.editingNoteId = "";
     ui.selectedNoteTagIds.clear();
@@ -1610,6 +1625,7 @@
     }
 
     ui.noteSaveInFlight = true;
+    ui.noteAutoSaveInFlight = isAutoSave;
     syncNoteEditorControls();
     const input = {
       id: elements.noteId.value || undefined,
@@ -1618,10 +1634,12 @@
       tagIds: [...ui.selectedNoteTagIds],
       content: elements.noteContent.value,
     };
+    let didSave = false;
     try {
       const isEditing = Boolean(input.id);
       const savedNote = await storage.saveNote(input);
       await refreshLibrary();
+      didSave = true;
       if (isCurrentNoteEditorSession(session)) {
         elements.noteId.value = savedNote.id;
         ui.editingNoteId = savedNote.id;
@@ -1629,7 +1647,7 @@
         elements.deleteNote.classList.remove("is-hidden");
         elements.viewNoteFromEditor.classList.remove("is-hidden");
         renderNoteMetadata(savedNote);
-        ui.noteEditorSnapshot = getNoteEditorDraft();
+        ui.noteEditorSnapshot = createNoteEditorDraft({ ...input, id: savedNote.id });
         if (closeAfterSave) closeNoteEditor();
       }
       if (isAutoSave) showToast("Note autosaved.");
@@ -1641,7 +1659,9 @@
     } finally {
       if (isCurrentNoteEditorSession(session)) {
         ui.noteSaveInFlight = false;
+        ui.noteAutoSaveInFlight = false;
         syncNoteEditorControls();
+        if (isAutoSave && didSave && hasUnsavedNoteChanges()) scheduleNoteAutoSave();
       }
     }
   }
@@ -2138,6 +2158,7 @@
       ui.noteEditorSession += 1;
       ui.pendingTagCreation = null;
       ui.noteSaveInFlight = false;
+      ui.noteAutoSaveInFlight = false;
       ui.editingNoteId = "";
       ui.selectedNoteTagIds.clear();
       ui.noteEditorSnapshot = null;
