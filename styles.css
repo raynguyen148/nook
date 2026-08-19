@@ -1099,9 +1099,13 @@ select::-ms-expand {
   border-left: 1px solid #e6e9ef;
 }
 
-.note-card__action:hover {
+.note-card__action:hover:not(:disabled) {
   color: #4854bb;
   background: #f0f1ff;
+}
+
+.note-card__action:disabled {
+  color: #b3bbca;
 }
 
 .icon-button {
@@ -3097,9 +3101,13 @@ html[data-theme="dark"] .note-card__action + .note-card__action {
   border-color: #354158;
 }
 
-html[data-theme="dark"] .note-card__action:hover {
+html[data-theme="dark"] .note-card__action:hover:not(:disabled) {
   color: #c0c5ff;
   background: #303666;
+}
+
+html[data-theme="dark"] .note-card__action:disabled {
+  color: #68758b;
 }
 
 html[data-theme="dark"] .icon-button {

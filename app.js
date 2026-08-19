@@ -861,6 +861,23 @@
     }
   }
 
+  async function copyNoteCardContent(note, button) {
+    if (!note.content.trim()) return;
+    button.disabled = true;
+    button.setAttribute("aria-busy", "true");
+    try {
+      await writeClipboardText(note.content);
+      showToast("Content copied.");
+    } catch (error) {
+      showError(error, "We could not copy this note.");
+    } finally {
+      if (button.isConnected) {
+        button.disabled = false;
+        button.removeAttribute("aria-busy");
+      }
+    }
+  }
+
   function editFromQuickView() {
     const note = noteForQuickView();
     if (!note) return;
@@ -936,6 +953,19 @@
       ]),
     );
     view.addEventListener("click", () => openQuickView(note, view));
+    const copy = createElement("button", {
+      className: "note-card__action",
+      type: "button",
+      disabled: !note.content.trim(),
+      attributes: { "aria-label": `Copy ${note.title}`, title: "Copy content" },
+    });
+    copy.append(
+      createNoteCardActionIcon([
+        ["rect", { x: "8.25", y: "8.25", width: "11.5", height: "11.5", rx: "2" }],
+        ["path", { d: "M15.75 8.25V6.5a2.25 2.25 0 0 0-2.25-2.25H6.5A2.25 2.25 0 0 0 4.25 6.5v7A2.25 2.25 0 0 0 6.5 15.75h1.75" }],
+      ]),
+    );
+    copy.addEventListener("click", () => copyNoteCardContent(note, copy));
     const edit = createElement("button", {
       className: "note-card__action",
       type: "button",
@@ -963,7 +993,7 @@
       ]),
     );
     remove.addEventListener("click", () => deleteNoteWithConfirmation(note));
-    actions.append(view, edit, remove);
+    actions.append(view, copy, edit, remove);
     footer.append(tags, actions);
     card.append(content, footer);
     return card;
