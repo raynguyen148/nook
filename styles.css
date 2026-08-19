@@ -1717,6 +1717,248 @@ select::-ms-expand {
   font-style: italic;
 }
 
+.quick-view-content .markdown-table-wrapper,
+.note-content-preview .markdown-table-wrapper {
+  overflow-x: auto;
+  margin: 0.9rem 0;
+  border: 1px solid #e1e5ec;
+  border-radius: 0.5rem;
+}
+
+.quick-view-content .markdown-table,
+.note-content-preview .markdown-table {
+  width: 100%;
+  min-width: 30rem;
+  border-collapse: collapse;
+  font-size: 0.84rem;
+  line-height: 1.5;
+}
+
+.quick-view-content .markdown-table th,
+.quick-view-content .markdown-table td,
+.note-content-preview .markdown-table th,
+.note-content-preview .markdown-table td {
+  border-right: 1px solid #e1e5ec;
+  border-bottom: 1px solid #e1e5ec;
+  padding: 0.54rem 0.64rem;
+  vertical-align: top;
+  overflow-wrap: anywhere;
+}
+
+.quick-view-content .markdown-table th:last-child,
+.quick-view-content .markdown-table td:last-child,
+.note-content-preview .markdown-table th:last-child,
+.note-content-preview .markdown-table td:last-child {
+  border-right: 0;
+}
+
+.quick-view-content .markdown-table tr:last-child td,
+.note-content-preview .markdown-table tr:last-child td {
+  border-bottom: 0;
+}
+
+.quick-view-content .markdown-table th,
+.note-content-preview .markdown-table th {
+  color: #303c50;
+  background: #f3f5f8;
+  font-weight: 730;
+}
+
+.quick-view-content .markdown-table tbody tr:nth-child(even),
+.note-content-preview .markdown-table tbody tr:nth-child(even) {
+  background: #fafbfc;
+}
+
+.quick-view-content .markdown-table [data-align="center"],
+.note-content-preview .markdown-table [data-align="center"] {
+  text-align: center;
+}
+
+.quick-view-content .markdown-table [data-align="right"],
+.note-content-preview .markdown-table [data-align="right"] {
+  text-align: right;
+}
+
+.quick-view-content .markdown-task-item,
+.note-content-preview .markdown-task-item {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 0.42rem;
+  margin-left: -1.45rem;
+}
+
+.quick-view-content .markdown-task-item > input,
+.note-content-preview .markdown-task-item > input {
+  flex: none;
+  width: 0.9rem;
+  height: 0.9rem;
+  margin-top: 0.34rem;
+  accent-color: var(--primary-accent);
+}
+
+.quick-view-content .markdown-task-content,
+.note-content-preview .markdown-task-content {
+  min-width: 0;
+  flex: 1;
+}
+
+.quick-view-content .markdown-task-item > ul,
+.quick-view-content .markdown-task-item > ol,
+.note-content-preview .markdown-task-item > ul,
+.note-content-preview .markdown-task-item > ol {
+  flex-basis: 100%;
+  margin-left: 1.3rem;
+}
+
+.quick-view-content .markdown-alert,
+.note-content-preview .markdown-alert {
+  margin: 0.9rem 0;
+  border: 1px solid #d7dcef;
+  border-left: 3px solid #6974d7;
+  border-radius: 0.52rem;
+  padding: 0.72rem 0.8rem;
+  color: #536078;
+  background: #f6f7ff;
+}
+
+.quick-view-content .markdown-alert__title,
+.note-content-preview .markdown-alert__title {
+  margin: 0 0 0.35rem;
+  color: #4b56b6;
+  font-size: 0.72rem;
+  font-weight: 760;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.quick-view-content .markdown-alert--tip,
+.note-content-preview .markdown-alert--tip {
+  border-color: #cfe5d7;
+  border-left-color: #3c9b62;
+  color: #466b52;
+  background: #f2fbf5;
+}
+
+.quick-view-content .markdown-alert--tip .markdown-alert__title,
+.note-content-preview .markdown-alert--tip .markdown-alert__title {
+  color: #2d7f4d;
+}
+
+.quick-view-content .markdown-alert--warning,
+.quick-view-content .markdown-alert--caution,
+.note-content-preview .markdown-alert--warning,
+.note-content-preview .markdown-alert--caution {
+  border-color: #ead8b3;
+  border-left-color: #b57a20;
+  color: #765c35;
+  background: #fff9ec;
+}
+
+.quick-view-content .markdown-alert--warning .markdown-alert__title,
+.quick-view-content .markdown-alert--caution .markdown-alert__title,
+.note-content-preview .markdown-alert--warning .markdown-alert__title,
+.note-content-preview .markdown-alert--caution .markdown-alert__title {
+  color: #94631a;
+}
+
+.quick-view-content .markdown-alert--important,
+.note-content-preview .markdown-alert--important {
+  border-color: #e6cfe0;
+  border-left-color: #9c4d8d;
+  color: #744b6c;
+  background: #fff5fc;
+}
+
+.quick-view-content .markdown-alert--important .markdown-alert__title,
+.note-content-preview .markdown-alert--important .markdown-alert__title {
+  color: #873c79;
+}
+
+.quick-view-content .markdown-alert > :last-child,
+.note-content-preview .markdown-alert > :last-child {
+  margin-bottom: 0;
+}
+
+.quick-view-content .markdown-details,
+.note-content-preview .markdown-details {
+  margin: 0.9rem 0;
+  border: 1px solid #e1e5ec;
+  border-radius: 0.52rem;
+  padding: 0.64rem 0.75rem;
+  background: #fbfcfe;
+}
+
+.quick-view-content .markdown-details summary,
+.note-content-preview .markdown-details summary {
+  color: #4d5a70;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.quick-view-content .markdown-details[open] summary,
+.note-content-preview .markdown-details[open] summary {
+  margin-bottom: 0.65rem;
+}
+
+.quick-view-content .markdown-math,
+.note-content-preview .markdown-math {
+  border-radius: 0.28rem;
+  padding: 0.08rem 0.3rem;
+  color: #4e4a9b;
+  background: #f0efff;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.92em;
+  font-style: italic;
+}
+
+.quick-view-content .markdown-math--block,
+.note-content-preview .markdown-math--block {
+  display: block;
+  overflow-x: auto;
+  margin: 0.9rem 0;
+  border: 1px solid #e1e5ec;
+  border-radius: 0.5rem;
+  padding: 0.72rem 0.8rem;
+  white-space: pre-wrap;
+}
+
+.quick-view-content .markdown-footnotes,
+.note-content-preview .markdown-footnotes {
+  margin-top: 1.15rem;
+  border-top: 1px solid #e1e5ec;
+  padding-top: 0.8rem;
+  font-size: 0.82rem;
+}
+
+.quick-view-content .markdown-footnotes h4,
+.note-content-preview .markdown-footnotes h4 {
+  margin: 0 0 0.45rem;
+  color: #6d7789;
+  font-size: 0.68rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.quick-view-content .markdown-footnotes ol,
+.note-content-preview .markdown-footnotes ol {
+  margin: 0;
+  padding-left: 1.35rem;
+}
+
+.quick-view-content .markdown-footnote-ref,
+.note-content-preview .markdown-footnote-ref {
+  margin-left: 0.08rem;
+  font-size: 0.75em;
+}
+
+.quick-view-content .markdown-footnote-backref,
+.note-content-preview .markdown-footnote-backref {
+  margin-left: 0.25rem;
+  text-decoration: none;
+}
+
 .quick-view-dates {
   display: flex;
   flex-wrap: wrap;
@@ -3276,6 +3518,108 @@ html[data-theme="dark"] .quick-view-content a:hover {
 html[data-theme="dark"] .quick-view-content .markdown-image-alt,
 html[data-theme="dark"] .quick-view-content .markdown-empty {
   color: #8e9bb0;
+}
+
+html[data-theme="dark"] .quick-view-content .markdown-table-wrapper,
+html[data-theme="dark"] .note-content-preview .markdown-table-wrapper,
+html[data-theme="dark"] .quick-view-content .markdown-details,
+html[data-theme="dark"] .note-content-preview .markdown-details,
+html[data-theme="dark"] .quick-view-content .markdown-math--block,
+html[data-theme="dark"] .note-content-preview .markdown-math--block {
+  border-color: #354158;
+  background: #202a3b;
+}
+
+html[data-theme="dark"] .quick-view-content .markdown-table th,
+html[data-theme="dark"] .note-content-preview .markdown-table th {
+  color: #dce3ef;
+  background: #293449;
+}
+
+html[data-theme="dark"] .quick-view-content .markdown-table th,
+html[data-theme="dark"] .quick-view-content .markdown-table td,
+html[data-theme="dark"] .note-content-preview .markdown-table th,
+html[data-theme="dark"] .note-content-preview .markdown-table td {
+  border-color: #354158;
+}
+
+html[data-theme="dark"] .quick-view-content .markdown-table tbody tr:nth-child(even),
+html[data-theme="dark"] .note-content-preview .markdown-table tbody tr:nth-child(even) {
+  background: #1d2637;
+}
+
+html[data-theme="dark"] .quick-view-content .markdown-alert,
+html[data-theme="dark"] .note-content-preview .markdown-alert {
+  border-color: #464e7c;
+  border-left-color: #8992ed;
+  color: #b9c3d5;
+  background: #282d4e;
+}
+
+html[data-theme="dark"] .quick-view-content .markdown-alert__title,
+html[data-theme="dark"] .note-content-preview .markdown-alert__title {
+  color: #c0c5ff;
+}
+
+html[data-theme="dark"] .quick-view-content .markdown-alert--tip,
+html[data-theme="dark"] .note-content-preview .markdown-alert--tip {
+  border-color: #3b614c;
+  border-left-color: #6ac68b;
+  color: #b5d8bf;
+  background: #20372a;
+}
+
+html[data-theme="dark"] .quick-view-content .markdown-alert--tip .markdown-alert__title,
+html[data-theme="dark"] .note-content-preview .markdown-alert--tip .markdown-alert__title {
+  color: #8ee1a9;
+}
+
+html[data-theme="dark"] .quick-view-content .markdown-alert--warning,
+html[data-theme="dark"] .quick-view-content .markdown-alert--caution,
+html[data-theme="dark"] .note-content-preview .markdown-alert--warning,
+html[data-theme="dark"] .note-content-preview .markdown-alert--caution {
+  border-color: #6a5533;
+  border-left-color: #e0a640;
+  color: #e2c795;
+  background: #3a301e;
+}
+
+html[data-theme="dark"] .quick-view-content .markdown-alert--warning .markdown-alert__title,
+html[data-theme="dark"] .quick-view-content .markdown-alert--caution .markdown-alert__title,
+html[data-theme="dark"] .note-content-preview .markdown-alert--warning .markdown-alert__title,
+html[data-theme="dark"] .note-content-preview .markdown-alert--caution .markdown-alert__title {
+  color: #f0c46c;
+}
+
+html[data-theme="dark"] .quick-view-content .markdown-alert--important,
+html[data-theme="dark"] .note-content-preview .markdown-alert--important {
+  border-color: #694b65;
+  border-left-color: #cc79b6;
+  color: #dfb6d5;
+  background: #3b2637;
+}
+
+html[data-theme="dark"] .quick-view-content .markdown-alert--important .markdown-alert__title,
+html[data-theme="dark"] .note-content-preview .markdown-alert--important .markdown-alert__title {
+  color: #e99ad0;
+}
+
+html[data-theme="dark"] .quick-view-content .markdown-details summary,
+html[data-theme="dark"] .note-content-preview .markdown-details summary,
+html[data-theme="dark"] .quick-view-content .markdown-footnotes h4,
+html[data-theme="dark"] .note-content-preview .markdown-footnotes h4 {
+  color: #b4c0d3;
+}
+
+html[data-theme="dark"] .quick-view-content .markdown-math,
+html[data-theme="dark"] .note-content-preview .markdown-math {
+  color: #c6c4ff;
+  background: #30325a;
+}
+
+html[data-theme="dark"] .quick-view-content .markdown-footnotes,
+html[data-theme="dark"] .note-content-preview .markdown-footnotes {
+  border-color: #354158;
 }
 
 html[data-theme="dark"] .note-view-button {

@@ -92,9 +92,15 @@ Do not silently reset the database, delete user data, or change backup format.
 - Edit mode shows the raw Markdown in `#note-content`.
 - Quick View renders it through `NookMarkdown.renderInto()`.
 - Copy content copies the raw Markdown source, not rendered HTML.
-- The current renderer supports headings, bold, italic, strikethrough, inline
-  code, fenced code blocks, unordered/ordered lists, blockquotes, links, and
+- The current renderer supports CommonMark/GFM-style headings, setext headings,
+  bold, italic, strikethrough, inline code, fenced and indented code blocks,
+  unordered/ordered/nested lists, task lists, blockquotes, GitHub-style alerts,
+  links/reference links/autolinks, tables with alignment, footnotes, details,
+  mathematical-expression text blocks, entities, hard line breaks, and
   horizontal rules. Keep unsupported syntax inert and safe.
+- Images are represented by accessible alt text to keep the app offline and
+  avoid loading untrusted remote assets. Raw HTML remains inert text except for
+  the explicitly allowlisted `<details>`/`<summary>` rendering.
 - Do not enable raw HTML or unsafe URL schemes in rendered notes without an
   explicit security review.
 
