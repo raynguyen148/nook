@@ -272,10 +272,9 @@
     }
   }
 
-  // Every mutation uses all library stores plus the meta store. That shared
-  // scope serializes mutations across tabs, while the callback sees and writes
-  // one coherent snapshot instead of a stale read followed by a later write.
-  async function mutateLibrary(callback) {
+  // Every mutation keeps the shared transaction scope for coherent concurrent
+  // writes, while callers can limit reads to the stores their operation needs.
+  async function mutateLibrary(callback, { readStores = [STORE.notes, STORE.types, STORE.tags, STORE.meta] } = {}) {
     const database = await openDatabase();
     return new Promise((resolve, reject) => {
       let transaction;
@@ -296,8 +295,8 @@
         meta: transaction.objectStore(STORE.meta),
       };
       const records = {};
-      const storeNames = [STORE.notes, STORE.types, STORE.tags, STORE.meta];
-      let pendingReads = storeNames.length;
+      const readStoreNames = [...new Set(readStores)];
+      let pendingReads = readStoreNames.length;
       let callbackResult;
       let callbackError;
       let mutationQueued = false;
@@ -311,33 +310,39 @@
         }
       }
 
-      storeNames.forEach((name) => {
-        const request = stores[name].getAll();
-        request.onerror = () => {
-          callbackError = request.error || new Error("Could not read the local library.");
-        };
-        request.onsuccess = () => {
-          records[name] = request.result;
-          pendingReads -= 1;
-          if (pendingReads) return;
+      function queueMutation() {
+        try {
+          callbackResult = callback(
+            {
+              notes: records[STORE.notes] || [],
+              types: records[STORE.types] || [],
+              tags: records[STORE.tags] || [],
+              meta: records[STORE.meta] || [],
+            },
+            stores,
+          );
+          stores.meta.put({ key: MUTATION_META_KEY, value: nowIso() });
+          mutationQueued = true;
+        } catch (error) {
+          abortWith(error);
+        }
+      }
 
-          try {
-            callbackResult = callback(
-              {
-                notes: records[STORE.notes],
-                types: records[STORE.types],
-                tags: records[STORE.tags],
-                meta: records[STORE.meta],
-              },
-              stores,
-            );
-            stores.meta.put({ key: MUTATION_META_KEY, value: nowIso() });
-            mutationQueued = true;
-          } catch (error) {
-            abortWith(error);
-          }
-        };
-      });
+      if (!pendingReads) {
+        queueMutation();
+      } else {
+        readStoreNames.forEach((name) => {
+          const request = stores[name].getAll();
+          request.onerror = () => {
+            callbackError = request.error || new Error("Could not read the local library.");
+          };
+          request.onsuccess = () => {
+            records[name] = request.result;
+            pendingReads -= 1;
+            if (!pendingReads) queueMutation();
+          };
+        });
+      }
 
       transaction.oncomplete = () => {
         if (mutationQueued) resolve(callbackResult);
@@ -570,7 +575,7 @@
         key: BOOTSTRAP_META_KEY,
         value: { source, completedAt: nowIso() },
       });
-    });
+    }, { readStores: [] });
   }
 
   function shouldKeepTagCandidate(candidate, existing) {
@@ -723,14 +728,14 @@
       };
       stores.notes.put(note);
       return note;
-    });
+    }, { readStores: [STORE.notes, STORE.types, STORE.tags] });
   }
 
   async function deleteNote(id) {
     const noteId = requireId(id, "Note");
     await mutateLibrary((snapshot, stores) => {
       stores.notes.delete(noteId);
-    });
+    }, { readStores: [STORE.notes] });
   }
 
   async function addType(input) {
@@ -749,7 +754,7 @@
       };
       stores.types.put(type);
       return type;
-    });
+    }, { readStores: [STORE.types] });
   }
 
   async function updateType(id, input) {
@@ -768,7 +773,7 @@
       };
       stores.types.put(type);
       return type;
-    });
+    }, { readStores: [STORE.types] });
   }
 
   async function deleteType(id) {
@@ -787,7 +792,7 @@
       );
       stores.types.delete(typeId);
       return affectedNotes.length;
-    });
+    }, { readStores: [STORE.notes, STORE.types] });
   }
 
   async function addTag(input) {
@@ -804,7 +809,7 @@
       };
       stores.tags.put(tag);
       return tag;
-    });
+    }, { readStores: [STORE.tags] });
   }
 
   async function updateTag(id, input) {
@@ -822,7 +827,7 @@
       };
       stores.tags.put(tag);
       return tag;
-    });
+    }, { readStores: [STORE.tags] });
   }
 
   async function deleteTag(id) {
@@ -842,7 +847,7 @@
       );
       stores.tags.delete(tagId);
       return affectedNotes.length;
-    });
+    }, { readStores: [STORE.notes, STORE.tags] });
   }
 
   async function buildExport() {

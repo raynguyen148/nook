@@ -44,19 +44,20 @@
           Offline · stored in this browser
         </div>
 
+        <section class="library-stat" aria-labelledby="library-stat-label">
+          <span id="library-stat-label" class="library-stat__label">All notes</span>
+          <strong id="all-notes-count" class="library-stat__value">0</strong>
+        </section>
+
         <div class="filter-heading">
           <span>Filters</span>
           <button id="clear-filters-btn" class="text-button" type="button">Clear</button>
         </div>
 
         <nav class="filter-navigation" aria-label="Filter notes">
-          <button id="all-notes-filter" class="sidebar-filter is-active" type="button" aria-pressed="true">
-            <span>All notes</span>
-            <span id="all-notes-count" class="filter-count">0</span>
-          </button>
-          <button id="today-filter" class="sidebar-filter" type="button" aria-pressed="false">
-            <span>Today</span>
-            <span id="today-filter-count" class="filter-count">0</span>
+          <button id="created-today-filter" class="sidebar-filter" type="button" aria-pressed="false">
+            <span>Created Today</span>
+            <span id="created-today-filter-count" class="filter-count">0</span>
           </button>
           <div id="type-filter-list" class="type-filter-list"></div>
         </nav>
@@ -116,11 +117,11 @@
               </span>
               <span class="button-label">Organize notes</span>
             </button>
-            <button id="export-btn" class="button button-secondary" type="button" title="Export a JSON backup">
+            <button id="export-btn" class="button button-secondary" type="button" aria-label="Export JSON backup" title="Export a JSON backup">
               <span class="button-icon" aria-hidden="true">↓</span>
               <span class="button-label">Export</span>
             </button>
-            <button id="import-btn" class="button button-secondary" type="button" title="Import a JSON backup">
+            <button id="import-btn" class="button button-secondary" type="button" aria-label="Import JSON backup" title="Import a JSON backup">
               <span class="button-icon" aria-hidden="true">↑</span>
               <span class="button-label">Import</span>
             </button>
@@ -148,7 +149,7 @@
                 id="search-input"
                 type="search"
                 autocomplete="off"
-                placeholder="Search title, content, type, or tag…"
+                placeholder="Search title or content…"
                 aria-describedby="search-shortcut-help"
               />
               <span id="search-shortcut" class="search-shortcut" aria-hidden="true">
@@ -226,7 +227,7 @@
             <span id="sort-description"></span>
           </div>
 
-          <div id="notes-list" class="notes-list" tabindex="-1" aria-live="polite" aria-busy="true"></div>
+          <div id="notes-list" class="notes-list" tabindex="-1" aria-busy="true"></div>
           <nav id="pagination" class="pagination is-hidden" aria-label="Notes pagination"></nav>
         </section>
       </section>

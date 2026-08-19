@@ -4,9 +4,13 @@
   const storage = globalThis.PersonalNotesStorage;
   const PAGE_SIZE = 30;
   const NOTE_AUTO_SAVE_DELAY = 5000;
+  const SEARCH_RENDER_DELAY = 150;
   const THEME_STORAGE_KEY = "nook:theme";
   const VIEW_MODE_STORAGE_KEY = "nook:notes-view-mode";
   const FILTER_STORAGE_KEY = "nook:active-filters";
+  const SORT_STORAGE_KEY = "nook:notes-sort";
+  const LIBRARY_CHANNEL_NAME = "nook:library";
+  const SORT_VALUES = ["created-desc", "created-asc", "title-asc", "title-desc"];
   const collator = new Intl.Collator(undefined, { numeric: true, sensitivity: "base" });
   const shortDateFormatter = new Intl.DateTimeFormat(undefined, {
     month: "short",
@@ -20,13 +24,13 @@
   const colorPickerInstances = new WeakMap();
   const openColorPickers = new Set();
   let noteTypePicker = null;
+  let libraryChannel = null;
 
   const elements = {
     appShell: document.querySelector(".app-shell"),
-    allNotesFilter: document.querySelector("#all-notes-filter"),
     allNotesCount: document.querySelector("#all-notes-count"),
-    todayFilter: document.querySelector("#today-filter"),
-    todayFilterCount: document.querySelector("#today-filter-count"),
+    createdTodayFilter: document.querySelector("#created-today-filter"),
+    createdTodayFilterCount: document.querySelector("#created-today-filter-count"),
     typeFilterList: document.querySelector("#type-filter-list"),
     tagFilterList: document.querySelector("#tag-filter-list"),
     tagFilterCount: document.querySelector("#tag-filter-count"),
@@ -117,14 +121,14 @@
   };
 
   const storedFilters = getStoredFilters();
-  const library = { notes: [], types: [], tags: [] };
+  const library = { notes: [], types: [], tags: [], searchIndex: new Map() };
   const ui = {
     theme: getStoredTheme(),
     query: "",
     typeId: storedFilters.typeId,
     tagIds: storedFilters.tagIds,
     todayOnly: storedFilters.todayOnly,
-    sort: "created-desc",
+    sort: getStoredSort(),
     viewMode: getStoredViewMode(),
     page: 1,
     editingNoteId: "",
@@ -143,8 +147,10 @@
     restoreViewFocus: true,
     afterQuickViewClose: null,
     pendingConfirmation: null,
+    externalRefreshPending: false,
     managementTab: "types",
     toastTimer: 0,
+    searchRenderTimer: 0,
   };
 
   function getStoredTheme() {
@@ -181,6 +187,27 @@
       return ["focus", "comfortable", "compact"].includes(storedMode) ? storedMode : "comfortable";
     } catch {
       return "comfortable";
+    }
+  }
+
+  function getStoredSort() {
+    try {
+      const storedSort = window.localStorage.getItem(SORT_STORAGE_KEY);
+      return SORT_VALUES.includes(storedSort) ? storedSort : "created-desc";
+    } catch {
+      return "created-desc";
+    }
+  }
+
+  function persistSort() {
+    try {
+      if (ui.sort === "created-desc") {
+        window.localStorage.removeItem(SORT_STORAGE_KEY);
+        return;
+      }
+      window.localStorage.setItem(SORT_STORAGE_KEY, ui.sort);
+    } catch {
+      // Sorting still works for this session when browser privacy settings block localStorage.
     }
   }
 
@@ -416,6 +443,32 @@
     return [elements.confirmationDialog, elements.noteDialog, elements.quickViewDialog, elements.organizeDialog].find((dialog) => dialog.open) || null;
   }
 
+  function notifyLibraryMutation() {
+    libraryChannel?.postMessage({ type: "library-mutated" });
+  }
+
+  function refreshFromAnotherTab() {
+    if (elements.noteDialog.open && hasUnsavedNoteChanges()) {
+      ui.externalRefreshPending = true;
+      showToast("The library changed in another tab. Save or close this note to refresh.", "error");
+      return;
+    }
+    refreshLibrary({ external: true }).catch((error) => showError(error, "We could not refresh the local library."));
+  }
+
+  function setupLibrarySync() {
+    if (typeof BroadcastChannel !== "function") return;
+    libraryChannel = new BroadcastChannel(LIBRARY_CHANNEL_NAME);
+    libraryChannel.addEventListener("message", (event) => {
+      if (event.data?.type === "library-mutated") refreshFromAnotherTab();
+    });
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden) refreshFromAnotherTab();
+    });
+    window.addEventListener("focus", refreshFromAnotherTab);
+    window.addEventListener("pagehide", () => libraryChannel?.close(), { once: true });
+  }
+
   function syncToastHost() {
     // A modal <dialog> and its backdrop live in the browser's top layer, above
     // regular page content. Keep the status message inside the active dialog so
@@ -479,16 +532,25 @@
     ui.page = 1;
   }
 
+  function clearSearchRenderTimer() {
+    if (!ui.searchRenderTimer) return;
+    window.clearTimeout(ui.searchRenderTimer);
+    ui.searchRenderTimer = 0;
+  }
+
+  function scheduleSearchRender() {
+    clearSearchRenderTimer();
+    ui.searchRenderTimer = window.setTimeout(() => {
+      ui.searchRenderTimer = 0;
+      renderSearchResults();
+    }, SEARCH_RENDER_DELAY);
+  }
+
   function setTypeFilter(typeId) {
     ui.typeId = ui.typeId === typeId ? "all" : typeId;
     persistFilters();
     resetToFirstPage();
     renderLibrary();
-  }
-
-  function showAllNotes() {
-    ui.todayOnly = false;
-    setTypeFilter("all");
   }
 
   function toggleTagFilter(tagId) {
@@ -507,12 +569,16 @@
   }
 
   function clearFilters({ preserveSort = true } = {}) {
+    clearSearchRenderTimer();
     ui.query = "";
     ui.typeId = "all";
     ui.tagIds.clear();
     ui.todayOnly = false;
     persistFilters();
-    if (!preserveSort) ui.sort = "created-desc";
+    if (!preserveSort) {
+      ui.sort = "created-desc";
+      persistSort();
+    }
     elements.search.value = "";
     elements.sort.value = ui.sort;
     resetToFirstPage();
@@ -532,6 +598,14 @@
     if (ui.typeId !== previousTypeId || ui.tagIds.size !== previousTagIds.length) persistFilters();
   }
 
+  function hasActiveFilters() {
+    return Boolean(ui.query) || ui.typeId !== "all" || ui.tagIds.size > 0 || ui.todayOnly;
+  }
+
+  function syncClearFiltersState() {
+    elements.clearFilters.disabled = !hasActiveFilters();
+  }
+
   function getVisibleNotes() {
     const normalizedQuery = normalizedSearchQuery();
     const selectedTagIds = [...ui.tagIds];
@@ -544,7 +618,9 @@
       const createdAt = Date.parse(note.createdAt);
       if (ui.todayOnly && (Number.isNaN(createdAt) || createdAt < todayStart || createdAt >= tomorrowStart)) return false;
       if (!normalizedQuery) return true;
-      return [note.title, note.content].some((value) => value.toLocaleLowerCase().includes(normalizedQuery));
+      const searchableText =
+        library.searchIndex.get(note.id) || `${note.title}\n${note.content}`.toLocaleLowerCase();
+      return searchableText.includes(normalizedQuery);
     });
 
     return notes.sort((left, right) => {
@@ -612,13 +688,10 @@
       return !Number.isNaN(createdAt) && createdAt >= todayStart && createdAt < tomorrowStart;
     }).length;
 
-    const isAllNotesFilterActive = ui.typeId === "all" && !ui.todayOnly;
     elements.allNotesCount.textContent = library.notes.length;
-    elements.allNotesFilter.classList.toggle("is-active", isAllNotesFilterActive);
-    elements.allNotesFilter.setAttribute("aria-pressed", String(isAllNotesFilterActive));
-    elements.todayFilter.classList.toggle("is-active", ui.todayOnly);
-    elements.todayFilter.setAttribute("aria-pressed", String(ui.todayOnly));
-    elements.todayFilterCount.textContent = todayCount;
+    elements.createdTodayFilter.classList.toggle("is-active", ui.todayOnly);
+    elements.createdTodayFilter.setAttribute("aria-pressed", String(ui.todayOnly));
+    elements.createdTodayFilterCount.textContent = todayCount;
     elements.typeFilterList.replaceChildren();
     const typeFragment = document.createDocumentFragment();
     library.types.forEach((type) => {
@@ -656,7 +729,7 @@
     elements.tagFilterList.append(tagFragment);
     elements.tagFilterEmpty.classList.toggle("is-hidden", library.tags.length > 0);
     elements.tagFilterCount.textContent = ui.tagIds.size ? `${ui.tagIds.size} selected` : "";
-    elements.clearFilters.disabled = !ui.query && ui.typeId === "all" && ui.tagIds.size === 0 && !ui.todayOnly;
+    syncClearFiltersState();
   }
 
   function makeFilterPill(label, onClear, kinds = []) {
@@ -682,7 +755,7 @@
           ui.query = "";
           elements.search.value = "";
           resetToFirstPage();
-          renderLibrary();
+          renderSearchResults();
         }),
       );
     }
@@ -699,7 +772,7 @@
     }
     if (ui.todayOnly) {
       fragment.append(
-        makeFilterPill("Today", () => {
+        makeFilterPill("Created Today", () => {
           ui.todayOnly = false;
           persistFilters();
           resetToFirstPage();
@@ -1010,7 +1083,7 @@
     empty.append(
       createElement("p", {
         text: hasAnyNotes
-          ? "Try a different search, type, or tag."
+          ? "Try a different search or filter."
           : "Capture an idea, meeting, learning, or anything you want to keep.",
       }),
     );
@@ -1090,6 +1163,7 @@
 
   function renderNotes() {
     syncViewModeUI();
+    elements.sort.value = ui.sort;
     const matchingNotes = getVisibleNotes();
     const totalPages = Math.max(1, Math.ceil(matchingNotes.length / PAGE_SIZE));
     ui.page = Math.min(ui.page, totalPages);
@@ -1419,7 +1493,15 @@
 
   function scheduleNoteAutoSave() {
     clearNoteAutoSave();
-    if (!elements.noteDialog.open || ui.noteSaveInFlight || !hasUnsavedNoteChanges()) return;
+    if (
+      !elements.noteDialog.open ||
+      ui.noteSaveInFlight ||
+      !hasUnsavedNoteChanges() ||
+      !elements.noteId.value ||
+      !elements.noteTitle.value.trim()
+    ) {
+      return;
+    }
 
     const session = ui.noteEditorSession;
     ui.noteAutoSaveTimer = window.setTimeout(() => {
@@ -1624,7 +1706,7 @@
     const operation = (async () => {
       try {
         const tag = await storage.addTag({ name: rawName });
-        await refreshLibrary();
+        await refreshLibrary({ broadcast: true });
         if (!isCurrentNoteEditorSession(session)) return;
         ui.selectedNoteTagIds.add(tag.id);
         elements.tagInput.value = "";
@@ -1647,6 +1729,7 @@
     event.preventDefault();
     clearNoteAutoSave();
     if (ui.noteSaveInFlight) return;
+    if (isAutoSave && (!elements.noteId.value || !elements.noteTitle.value.trim())) return;
     const session = ui.noteEditorSession;
     const pendingTagCreation = ui.pendingTagCreation;
     if (pendingTagCreation?.session === session) {
@@ -1668,7 +1751,7 @@
     try {
       const isEditing = Boolean(input.id);
       const savedNote = await storage.saveNote(input);
-      await refreshLibrary();
+      await refreshLibrary({ broadcast: true });
       didSave = true;
       if (isCurrentNoteEditorSession(session)) {
         elements.noteId.value = savedNote.id;
@@ -1707,7 +1790,7 @@
     if (!confirmed) return;
     try {
       await storage.deleteNote(note.id);
-      await refreshLibrary();
+      await refreshLibrary({ broadcast: true });
       if (ui.editingNoteId === note.id) closeNoteEditor();
       showToast("Note deleted.");
     } catch (error) {
@@ -1908,7 +1991,7 @@
         event.preventDefault();
         try {
           await storage.updateType(type.id, { name: nameInput.value, color: color.value });
-          await refreshLibrary();
+          await refreshLibrary({ broadcast: true });
           showToast("Note type updated.");
         } catch (error) {
           showError(error);
@@ -1929,7 +2012,7 @@
         if (!confirmed) return;
         try {
           await storage.deleteType(type.id);
-          await refreshLibrary();
+          await refreshLibrary({ broadcast: true });
           showToast(affected ? `Type deleted; ${pluralize(affected, "note")} moved to ${fallbackType.name}.` : "Note type deleted.");
         } catch (error) {
           showError(error);
@@ -1971,7 +2054,7 @@
         event.preventDefault();
         try {
           await storage.updateTag(tag.id, { name: nameInput.value });
-          await refreshLibrary();
+          await refreshLibrary({ broadcast: true });
           showToast("Tag updated.");
         } catch (error) {
           showError(error);
@@ -1991,7 +2074,7 @@
         if (!confirmed) return;
         try {
           await storage.deleteTag(tag.id);
-          await refreshLibrary();
+          await refreshLibrary({ broadcast: true });
           showToast(affected ? `Tag removed from ${pluralize(affected, "note")}.` : "Tag deleted.");
         } catch (error) {
           showError(error);
@@ -2009,6 +2092,7 @@
   }
 
   function renderLibrary() {
+    clearSearchRenderTimer();
     ensureUiReferencesAreValid();
     renderSidebar();
     renderActiveFilters();
@@ -2027,12 +2111,27 @@
     }
   }
 
-  async function refreshLibrary() {
+  function renderSearchResults() {
+    renderActiveFilters();
+    renderNotes();
+    syncClearFiltersState();
+  }
+
+  async function refreshLibrary({ broadcast = false, external = false } = {}) {
+    if (external && elements.noteDialog.open && hasUnsavedNoteChanges()) {
+      ui.externalRefreshPending = true;
+      showToast("The library changed in another tab. Save or close this note to refresh.", "error");
+      return;
+    }
     const snapshot = await storage.getSnapshot();
     library.notes = snapshot.notes;
     library.types = snapshot.types;
     library.tags = snapshot.tags;
+    library.searchIndex = new Map(
+      snapshot.notes.map((note) => [note.id, `${note.title}\n${note.content}`.toLocaleLowerCase()]),
+    );
     renderLibrary();
+    if (broadcast) notifyLibraryMutation();
   }
 
   function openOrganize(tab = "types") {
@@ -2055,7 +2154,7 @@
       });
       elements.newTypeForm.reset();
       setColorPickerValue(elements.newTypeColor, "indigo");
-      await refreshLibrary();
+      await refreshLibrary({ broadcast: true });
       showToast(`Note type “${type.name}” added.`);
     } catch (error) {
       showError(error);
@@ -2067,7 +2166,7 @@
     try {
       const tag = await storage.addTag({ name: elements.newTagName.value });
       elements.newTagForm.reset();
-      await refreshLibrary();
+      await refreshLibrary({ broadcast: true });
       showToast(`Tag “${tagLabel(tag)}” added.`);
     } catch (error) {
       showError(error);
@@ -2119,7 +2218,7 @@
       persistFilters();
       ui.query = "";
       elements.search.value = "";
-      await refreshLibrary();
+      await refreshLibrary({ broadcast: true });
       showToast(preview.format === "legacy" ? "Legacy library imported and upgraded." : "Backup imported successfully.");
     } catch (error) {
       showError(error, "The selected file could not be imported.");
@@ -2129,8 +2228,7 @@
   }
 
   function bindEvents() {
-    elements.allNotesFilter.addEventListener("click", showAllNotes);
-    elements.todayFilter.addEventListener("click", toggleTodayFilter);
+    elements.createdTodayFilter.addEventListener("click", toggleTodayFilter);
     elements.clearFilters.addEventListener("click", () => clearFilters());
     elements.themeToggle.addEventListener("click", () => setTheme(ui.theme === "dark" ? "light" : "dark"));
     elements.organize.addEventListener("click", () => openOrganize());
@@ -2141,17 +2239,19 @@
     elements.search.addEventListener("input", () => {
       ui.query = elements.search.value;
       resetToFirstPage();
-      renderLibrary();
+      scheduleSearchRender();
     });
     elements.clearSearch.addEventListener("click", () => {
+      clearSearchRenderTimer();
       ui.query = "";
       elements.search.value = "";
       resetToFirstPage();
-      renderLibrary();
+      renderSearchResults();
       elements.search.focus();
     });
     elements.sort.addEventListener("change", () => {
       ui.sort = elements.sort.value;
+      persistSort();
       resetToFirstPage();
       renderNotes();
     });
@@ -2192,6 +2292,10 @@
       ui.editingNoteId = "";
       ui.selectedNoteTagIds.clear();
       ui.noteEditorSnapshot = null;
+      if (ui.externalRefreshPending) {
+        ui.externalRefreshPending = false;
+        refreshLibrary().catch((error) => showError(error, "We could not refresh the local library."));
+      }
     });
     elements.noteDialog.addEventListener("cancel", (event) => {
       event.preventDefault();
@@ -2293,7 +2397,7 @@
         !event.shiftKey &&
         (usesCommandKey ? event.metaKey && !event.ctrlKey : event.ctrlKey && !event.metaKey);
 
-      if (matchesSearchShortcut) {
+      if (matchesSearchShortcut && !activeModalDialog()) {
         event.preventDefault();
         elements.search.focus({ preventScroll: true });
         return;
@@ -2304,9 +2408,7 @@
       if (
         event.key === "/" &&
         !editingText &&
-        !elements.noteDialog.open &&
-        !elements.quickViewDialog.open &&
-        !elements.organizeDialog.open
+        !activeModalDialog()
       ) {
         event.preventDefault();
         elements.search.focus();
@@ -2333,6 +2435,7 @@
       elements.newTypeColor.replaceChildren(createColorOptions(elements.newTypeColor.value));
       enhanceColorSelect(elements.newTypeColor);
       bindEvents();
+      setupLibrarySync();
       syncThemeUI();
       syncSearchShortcutHint();
       syncNoteSaveShortcutHint();

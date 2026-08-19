@@ -411,6 +411,7 @@
     const first = getListMarker(lines[startIndex]);
     const items = [];
     let index = startIndex;
+    let itemHasBlankBefore = false;
     while (index < lines.length) {
       const marker = getListMarker(lines[index]);
       if (!marker || marker.indent !== first.indent || marker.ordered !== first.ordered) break;
@@ -441,7 +442,12 @@
         }
         index += 1;
       }
-      items.push({ checked: task ? task[1].toLocaleLowerCase() === "x" : null, children: parseBlocks(itemLines, context) });
+      items.push({
+        checked: task ? task[1].toLocaleLowerCase() === "x" : null,
+        spacedBefore: itemHasBlankBefore,
+        children: parseBlocks(itemLines, context),
+      });
+      itemHasBlankBefore = sawBlank;
     }
     return {
       block: { type: "list", items, ordered: first.ordered, start: first.start },
@@ -791,6 +797,7 @@
     if (block.ordered && block.start !== 1) list.start = block.start;
     block.items.forEach((item) => {
       const listItem = createElement("li");
+      if (item.spacedBefore) listItem.classList.add("markdown-list-item--spaced");
       const children = item.children;
       if (item.checked !== null) {
         listItem.classList.add("markdown-task-item");
