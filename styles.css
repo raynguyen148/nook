@@ -148,28 +148,6 @@ textarea:focus-visible {
   line-height: 1.3;
 }
 
-.library-stat {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin: 0 0.5rem 1.25rem;
-  padding: 0.48rem 0.65rem 0.52rem 0.78rem;
-}
-
-.library-stat__label {
-  color: #4e5b70;
-  font-size: 0.83rem;
-  font-weight: 650;
-}
-
-.library-stat__value {
-  color: #657084;
-  font-size: 0.78rem;
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
-  line-height: 1.2;
-}
-
 .status-dot {
   width: 0.44rem;
   height: 0.44rem;
@@ -989,6 +967,7 @@ select::-ms-expand {
 
 .note-card {
   display: grid;
+  position: relative;
   height: 100%;
   gap: 0.78rem;
   border: 1px solid #e4e7ed;
@@ -1005,13 +984,6 @@ select::-ms-expand {
 .note-card--pinned {
   border-color: var(--pinned-card-border);
   border-top-width: 2px;
-}
-
-.note-card--pinned .note-card__pin-marker {
-  width: 1.28rem;
-  height: 1.28rem;
-  border-radius: 50%;
-  background: var(--pinned-marker-background);
 }
 
 .notes-list--compact .note-card {
@@ -1049,6 +1021,7 @@ select::-ms-expand {
   align-items: center;
   gap: 0.55rem;
   margin-bottom: 0.56rem;
+  padding-right: 2.35rem;
 }
 
 .type-badge {
@@ -1159,21 +1132,6 @@ select::-ms-expand {
   font-size: 0.7rem;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.note-card__pin-marker {
-  display: inline-flex;
-  flex: none;
-  width: 1rem;
-  height: 1rem;
-  align-items: center;
-  justify-content: center;
-  color: var(--primary-accent-text, #926b00);
-}
-
-.note-card__pin-marker svg {
-  width: 0.82rem;
-  height: 0.82rem;
 }
 
 .note-card__title {
@@ -1302,9 +1260,48 @@ select::-ms-expand {
   color: #b3bbca;
 }
 
-.note-card__action--pin[aria-pressed="true"] {
-  color: var(--primary-accent-text, #926b00);
-  background: var(--primary-accent-soft, #fff6d8);
+.note-card__pin-toggle {
+  position: absolute;
+  top: 0.58rem;
+  right: 0.58rem;
+  display: grid;
+  width: 1.85rem;
+  height: 1.85rem;
+  place-items: center;
+  border: 1px solid transparent;
+  border-radius: 0.5rem;
+  padding: 0;
+  color: #9aa3b1;
+  background: transparent;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-0.15rem);
+}
+
+.note-card__pin-toggle svg {
+  width: 1rem;
+  height: 1rem;
+  pointer-events: none;
+}
+
+.note-card:hover .note-card__pin-toggle,
+.note-card:focus-within .note-card__pin-toggle,
+.note-card__pin-toggle:focus-visible,
+.note-card--pinned .note-card__pin-toggle {
+  opacity: 1;
+  pointer-events: auto;
+  transform: none;
+}
+
+.note-card__pin-toggle:hover:not(:disabled),
+.note-card__pin-toggle:focus-visible {
+  border-color: var(--primary-accent-border);
+  color: var(--primary-accent-text);
+  background: var(--primary-accent-soft);
+}
+
+.note-card--pinned .note-card__pin-toggle {
+  color: var(--primary-accent-text);
 }
 
 .note-card__action--restore:hover:not(:disabled),
@@ -2245,6 +2242,20 @@ select::-ms-expand {
   gap: 0.15rem;
 }
 
+.quick-view-footer__left-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.quick-view-export-group {
+  display: flex;
+  overflow: hidden;
+  border: 1px solid #e0e3e9;
+  border-radius: 0.56rem;
+  background: #f7f8fa;
+}
+
 .note-view-button {
   width: 2.4rem;
   min-width: 2.4rem;
@@ -3000,11 +3011,6 @@ select::-ms-expand {
     margin: 0;
   }
 
-  .library-stat {
-    grid-column: 1 / -1;
-    margin: 1.1rem 0 1rem;
-  }
-
   .filter-heading {
     grid-column: 1 / -1;
     margin-top: 1.1rem;
@@ -3240,6 +3246,14 @@ select::-ms-expand {
   }
 }
 
+@media (hover: none), (max-width: 620px) {
+  .note-card__pin-toggle {
+    opacity: 1;
+    pointer-events: auto;
+    transform: none;
+  }
+}
+
 @media (forced-colors: active) {
   .sort-field select,
   .field select,
@@ -3299,19 +3313,6 @@ html[data-theme="dark"] .storage-status {
   border-color: #2c374c;
   color: #9ba8bd;
   background: #1b2333;
-}
-
-html[data-theme="dark"] .library-stat {
-  border-left-color: #c4a34b;
-  background: linear-gradient(90deg, rgb(196 163 75 / 10%), transparent 78%);
-}
-
-html[data-theme="dark"] .library-stat__label {
-  color: #c0cada;
-}
-
-html[data-theme="dark"] .library-stat__value {
-  color: #9ba8bd;
 }
 
 html[data-theme="dark"] .text-button {
@@ -3715,6 +3716,10 @@ html[data-theme="dark"] .note-card__action:hover:not(:disabled) {
 
 html[data-theme="dark"] .note-card__action:disabled {
   color: #68758b;
+}
+
+html[data-theme="dark"] .note-card__pin-toggle {
+  color: #8290a6;
 }
 
 html[data-theme="dark"] .icon-button {
@@ -4305,11 +4310,6 @@ html[data-theme="dark"] .note-card--pinned:focus-within {
   border-color: var(--pinned-card-border);
 }
 
-html[data-theme="dark"] .note-card--pinned .note-card__pin-marker {
-  color: #e7bd52;
-  background: var(--pinned-marker-background);
-}
-
 .note-card__title:hover,
 .note-card__action:hover {
   color: var(--primary-accent-text);
@@ -4396,13 +4396,28 @@ html[data-theme="dark"] .note-card--pinned .note-card__pin-marker {
   color: #7b8493;
 }
 
-.quick-view-copy-button:hover:not(:disabled) {
+.quick-view-export-button {
+  width: 2.4rem;
+  min-width: 2.4rem;
+  height: 2.4rem;
+  border: 0;
+  border-radius: 0;
+  color: #7b8493;
+}
+
+.quick-view-export-button + .quick-view-export-button {
+  border-left: 1px solid #e0e3e9;
+}
+
+.quick-view-copy-button:hover:not(:disabled),
+.quick-view-export-button:hover:not(:disabled) {
   border-color: #cdd2db;
   color: #5e6879;
   background: #eef0f4;
 }
 
-.quick-view-copy-button svg {
+.quick-view-copy-button svg,
+.quick-view-export-button svg {
   width: 1.02rem;
   height: 1.02rem;
 }
@@ -4854,7 +4869,17 @@ html[data-theme="dark"] .quick-view-copy-button {
   background: #202a3b;
 }
 
-html[data-theme="dark"] .quick-view-copy-button:hover:not(:disabled) {
+html[data-theme="dark"] .quick-view-export-group {
+  border-color: #46546b;
+  background: #202a3b;
+}
+
+html[data-theme="dark"] .quick-view-export-button + .quick-view-export-button {
+  border-left-color: #46546b;
+}
+
+html[data-theme="dark"] .quick-view-copy-button:hover:not(:disabled),
+html[data-theme="dark"] .quick-view-export-button:hover:not(:disabled) {
   border-color: #62718a;
   color: #e3e9f4;
   background: #29364a;

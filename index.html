@@ -44,11 +44,6 @@
           Offline · stored in this browser
         </div>
 
-        <section class="library-stat" aria-labelledby="library-stat-label">
-          <span id="library-stat-label" class="library-stat__label">All notes</span>
-          <strong id="all-notes-count" class="library-stat__value">0</strong>
-        </section>
-
         <section class="space-navigation" aria-labelledby="space-navigation-heading">
           <div class="filter-section-title">
             <h2 id="space-navigation-heading">Spaces</h2>
@@ -485,21 +480,47 @@
       </div>
 
       <div class="dialog-footer quick-view-footer">
-        <button
-          id="copy-note-content-btn"
-          class="icon-button quick-view-copy-button"
-          type="button"
-          aria-label="Copy note content"
-          title="Copy content"
-        >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <rect x="8.25" y="8.25" width="11.5" height="11.5" rx="2"></rect>
-            <path d="M15.75 8.25V6.5a2.25 2.25 0 0 0-2.25-2.25H6.5A2.25 2.25 0 0 0 4.25 6.5v7A2.25 2.25 0 0 0 6.5 15.75h1.75"></path>
-          </svg>
-        </button>
+        <div class="quick-view-footer__left-actions">
+          <button
+            id="copy-note-content-btn"
+            class="icon-button quick-view-copy-button"
+            type="button"
+            aria-label="Copy note content"
+            title="Copy content"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="8.25" y="8.25" width="11.5" height="11.5" rx="2"></rect>
+              <path d="M15.75 8.25V6.5a2.25 2.25 0 0 0-2.25-2.25H6.5A2.25 2.25 0 0 0 4.25 6.5v7A2.25 2.25 0 0 0 6.5 15.75h1.75"></path>
+            </svg>
+          </button>
+          <div class="quick-view-export-group" role="group" aria-label="Export note">
+            <button
+              id="export-note-markdown-btn"
+              class="icon-button quick-view-export-button"
+              type="button"
+              aria-label="Export note as Markdown"
+              title="Export .md"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M6.5 3.75h7.2l4.3 4.3v12.2H6.5a2 2 0 0 1-2-2v-12.5a2 2 0 0 1 2-2Z"></path>
+                <path d="M13.5 3.95v4.4h4.3M8 13.2l1.6-1.7 1.6 1.7 1.6-1.7 1.6 1.7M9.6 11.6v3.1M14.4 11.6v3.1"></path>
+              </svg>
+            </button>
+            <button
+              id="export-note-text-btn"
+              class="icon-button quick-view-export-button"
+              type="button"
+              aria-label="Export note as plain text"
+              title="Export .txt"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M6.5 3.75h7.2l4.3 4.3v12.2H6.5a2 2 0 0 1-2-2v-12.5a2 2 0 0 1 2-2Z"></path>
+                <path d="M13.5 3.95v4.4h4.3M8 12h7.5M8 15h7.5"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
         <div class="dialog-footer__actions">
-          <button id="export-note-markdown-btn" class="button button-secondary" type="button">Export .md</button>
-          <button id="export-note-text-btn" class="button button-secondary" type="button">Export .txt</button>
           <button id="edit-from-quick-view-btn" class="button button-primary" type="button">Edit</button>
           <button id="close-quick-view-footer-btn" class="button button-secondary" type="button">Close</button>
         </div>

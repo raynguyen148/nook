@@ -35,8 +35,6 @@
 
   const elements = {
     appShell: document.querySelector(".app-shell"),
-    libraryStatLabel: document.querySelector("#library-stat-label"),
-    allNotesCount: document.querySelector("#all-notes-count"),
     createdTodayFilter: document.querySelector("#created-today-filter"),
     createdTodayFilterCount: document.querySelector("#created-today-filter-count"),
     updatedTodayFilter: document.querySelector("#updated-today-filter"),
@@ -805,9 +803,7 @@
     }).length;
     const trashCount = library.notes.filter(isDeletedNote).length;
 
-    elements.libraryStatLabel.textContent = ui.trashOnly ? "Trash" : "All notes";
     elements.notesHeading.textContent = ui.trashOnly ? "Trash" : "All notes";
-    elements.allNotesCount.textContent = collectionNotes.length;
     elements.allNotesSpaceCount.textContent = library.notes.filter((note) => !isDeletedNote(note)).length;
     elements.trashSpaceCount.textContent = trashCount;
     elements.allNotesSpace.classList.toggle("is-active", !ui.trashOnly);
@@ -1200,14 +1196,6 @@
     const content = createElement("div", { className: "note-card__content" });
     const meta = createElement("div", { className: "note-card__meta" });
     meta.append(makeTypeBadge(type, { isFilter: !ui.trashOnly }));
-    if (note.isPinned) {
-      const pinMarker = createElement("span", {
-        className: "note-card__pin-marker",
-        attributes: { "aria-label": "Pinned note", title: "Pinned note" },
-      });
-      pinMarker.append(createPinIcon());
-      meta.append(pinMarker);
-    }
     const created = createElement("time", {
       className: "note-card__date",
       text: `Created ${formatShortDate(note.createdAt)}`,
@@ -1289,17 +1277,6 @@
       ]),
     );
     edit.addEventListener("click", () => openNoteEditor(note));
-    const pin = createElement("button", {
-      className: "note-card__action note-card__action--pin",
-      type: "button",
-      attributes: {
-        "aria-label": `${note.isPinned ? "Unpin" : "Pin"} ${note.title}`,
-        title: note.isPinned ? "Unpin" : "Pin",
-        "aria-pressed": String(note.isPinned),
-      },
-    });
-    pin.append(createPinIcon());
-    pin.addEventListener("click", () => toggleNotePinned(note));
     const remove = createElement("button", {
       className: `note-card__action ${isDeleted ? "note-card__action--restore" : "note-card__action--danger"}`,
       type: "button",
@@ -1321,7 +1298,7 @@
     );
     remove.addEventListener("click", () => (isDeleted ? restoreNoteWithFeedback(note) : deleteNoteWithConfirmation(note)));
     actions.append(view, copy);
-    if (!isDeleted) actions.append(edit, pin);
+    if (!isDeleted) actions.append(edit);
     actions.append(remove);
     if (isDeleted) {
       const permanentRemove = createElement("button", {
@@ -1345,6 +1322,20 @@
       actions.append(permanentRemove);
     }
     footer.append(tags, actions);
+    if (!isDeleted) {
+      const pin = createElement("button", {
+        className: "note-card__pin-toggle",
+        type: "button",
+        attributes: {
+          "aria-label": `${note.isPinned ? "Unpin" : "Pin"} ${note.title}`,
+          title: note.isPinned ? "Unpin" : "Pin",
+          "aria-pressed": String(note.isPinned),
+        },
+      });
+      pin.append(createPinIcon());
+      pin.addEventListener("click", () => toggleNotePinned(note));
+      card.append(pin);
+    }
     card.append(content, footer);
     return card;
   }
