@@ -10,7 +10,14 @@
   const FILTER_STORAGE_KEY = "nook:active-filters";
   const SORT_STORAGE_KEY = "nook:notes-sort";
   const LIBRARY_CHANNEL_NAME = "nook:library";
-  const SORT_VALUES = ["created-desc", "created-asc", "title-asc", "title-desc"];
+  const SORT_VALUES = [
+    "created-desc",
+    "created-asc",
+    "updated-desc",
+    "updated-asc",
+    "title-asc",
+    "title-desc",
+  ];
   const collator = new Intl.Collator(undefined, { numeric: true, sensitivity: "base" });
   const shortDateFormatter = new Intl.DateTimeFormat(undefined, {
     month: "short",
@@ -28,14 +35,25 @@
 
   const elements = {
     appShell: document.querySelector(".app-shell"),
+    libraryStatLabel: document.querySelector("#library-stat-label"),
     allNotesCount: document.querySelector("#all-notes-count"),
     createdTodayFilter: document.querySelector("#created-today-filter"),
     createdTodayFilterCount: document.querySelector("#created-today-filter-count"),
+    updatedTodayFilter: document.querySelector("#updated-today-filter"),
+    updatedTodayFilterCount: document.querySelector("#updated-today-filter-count"),
+    allNotesSpace: document.querySelector("#all-notes-space"),
+    allNotesSpaceCount: document.querySelector("#all-notes-space-count"),
+    trashSpace: document.querySelector("#trash-space"),
+    trashSpaceCount: document.querySelector("#trash-space-count"),
+    emptyTrash: document.querySelector("#empty-trash-btn"),
+    regularFilterControls: document.querySelector("#regular-filter-controls"),
     typeFilterList: document.querySelector("#type-filter-list"),
     tagFilterList: document.querySelector("#tag-filter-list"),
     tagFilterCount: document.querySelector("#tag-filter-count"),
     tagFilterEmpty: document.querySelector("#tag-filter-empty"),
     clearFilters: document.querySelector("#clear-filters-btn"),
+    toastMessage: document.querySelector("#toast-message"),
+    toastAction: document.querySelector("#toast-action"),
     themeToggle: document.querySelector("#theme-toggle"),
     themeToggleLabel: document.querySelector("#theme-toggle-label"),
     organize: document.querySelector("#organize-btn"),
@@ -55,6 +73,7 @@
     compactView: document.querySelector("#compact-view-btn"),
     activeFilters: document.querySelector("#active-filters"),
     notesCount: document.querySelector("#notes-count"),
+    notesHeading: document.querySelector("#notes-heading"),
     notesRange: document.querySelector("#notes-range"),
     sortDescription: document.querySelector("#sort-description"),
     notesList: document.querySelector("#notes-list"),
@@ -92,6 +111,8 @@
     quickViewTags: document.querySelector("#quick-view-tags"),
     quickViewContent: document.querySelector("#quick-view-content"),
     quickViewDates: document.querySelector("#quick-view-dates"),
+    exportNoteMarkdown: document.querySelector("#export-note-markdown-btn"),
+    exportNoteText: document.querySelector("#export-note-text-btn"),
     closeQuickView: document.querySelector("#close-quick-view-btn"),
     closeQuickViewFooter: document.querySelector("#close-quick-view-footer-btn"),
     copyNoteContent: document.querySelector("#copy-note-content-btn"),
@@ -125,9 +146,11 @@
   const ui = {
     theme: getStoredTheme(),
     query: "",
-    typeId: storedFilters.typeId,
-    tagIds: storedFilters.tagIds,
-    todayOnly: storedFilters.todayOnly,
+    typeId: storedFilters.trashOnly ? "all" : storedFilters.typeId,
+    tagIds: storedFilters.trashOnly ? new Set() : storedFilters.tagIds,
+    todayOnly: storedFilters.trashOnly ? false : storedFilters.todayOnly,
+    updatedTodayOnly: storedFilters.trashOnly ? false : storedFilters.updatedTodayOnly,
+    trashOnly: storedFilters.trashOnly,
     sort: getStoredSort(),
     viewMode: getStoredViewMode(),
     page: 1,
@@ -150,6 +173,7 @@
     externalRefreshPending: false,
     managementTab: "types",
     toastTimer: 0,
+    toastAction: null,
     searchRenderTimer: 0,
   };
 
@@ -214,7 +238,15 @@
   function getStoredFilters() {
     try {
       const storedFilters = window.localStorage.getItem(FILTER_STORAGE_KEY);
-      if (!storedFilters) return { typeId: "all", tagIds: new Set(), todayOnly: false };
+      if (!storedFilters) {
+        return {
+          typeId: "all",
+          tagIds: new Set(),
+          todayOnly: false,
+          updatedTodayOnly: false,
+          trashOnly: false,
+        };
+      }
       const parsed = JSON.parse(storedFilters);
       const typeId = typeof parsed?.typeId === "string" && parsed.typeId ? parsed.typeId : "all";
       const tagIds = new Set(
@@ -222,21 +254,45 @@
           ? parsed.tagIds.filter((tagId) => typeof tagId === "string" && tagId)
           : [],
       );
-      return { typeId, tagIds, todayOnly: parsed?.todayOnly === true };
+      return {
+        typeId,
+        tagIds,
+        todayOnly: parsed?.todayOnly === true,
+        updatedTodayOnly: parsed?.updatedTodayOnly === true,
+        trashOnly: parsed?.trashOnly === true,
+      };
     } catch {
-      return { typeId: "all", tagIds: new Set(), todayOnly: false };
+      return {
+        typeId: "all",
+        tagIds: new Set(),
+        todayOnly: false,
+        updatedTodayOnly: false,
+        trashOnly: false,
+      };
     }
   }
 
   function persistFilters() {
     try {
-      if (ui.typeId === "all" && ui.tagIds.size === 0 && !ui.todayOnly) {
+      if (
+        ui.typeId === "all" &&
+        ui.tagIds.size === 0 &&
+        !ui.todayOnly &&
+        !ui.updatedTodayOnly &&
+        !ui.trashOnly
+      ) {
         window.localStorage.removeItem(FILTER_STORAGE_KEY);
         return;
       }
       window.localStorage.setItem(
         FILTER_STORAGE_KEY,
-        JSON.stringify({ typeId: ui.typeId, tagIds: [...ui.tagIds], todayOnly: ui.todayOnly }),
+        JSON.stringify({
+          typeId: ui.typeId,
+          tagIds: [...ui.tagIds],
+          todayOnly: ui.todayOnly,
+          updatedTodayOnly: ui.updatedTodayOnly,
+          trashOnly: ui.trashOnly,
+        }),
       );
     } catch {
       // Filtering still works when browser privacy settings block localStorage.
@@ -477,15 +533,25 @@
     if (elements.toast.parentElement !== host) host.append(elements.toast);
   }
 
-  function showToast(message, tone = "success") {
+  function showToast(message, tone = "success", action = null) {
     window.clearTimeout(ui.toastTimer);
     syncToastHost();
-    elements.toast.textContent = message;
+    ui.toastAction = action;
+    elements.toastMessage.textContent = message;
     elements.toast.dataset.tone = tone;
+    elements.toastAction.textContent = action?.label || "";
+    elements.toastAction.classList.toggle("is-hidden", !action);
     elements.toast.classList.add("is-visible");
     ui.toastTimer = window.setTimeout(() => {
-      elements.toast.classList.remove("is-visible");
+      dismissToast();
     }, 3600);
+  }
+
+  function dismissToast() {
+    window.clearTimeout(ui.toastTimer);
+    ui.toastAction = null;
+    elements.toastAction.classList.add("is-hidden");
+    elements.toast.classList.remove("is-visible");
   }
 
   function requestConfirmation({ title, description, confirmLabel, cancelLabel, tone = "danger" }) {
@@ -568,12 +634,49 @@
     renderLibrary();
   }
 
-  function clearFilters({ preserveSort = true } = {}) {
+  function toggleUpdatedTodayFilter() {
+    ui.updatedTodayOnly = !ui.updatedTodayOnly;
+    persistFilters();
+    resetToFirstPage();
+    renderLibrary();
+  }
+
+  function isDeletedNote(note) {
+    return Boolean(note?.deletedAt);
+  }
+
+  function notesInActiveCollection() {
+    return library.notes.filter((note) => ui.trashOnly === isDeletedNote(note));
+  }
+
+  function resetRegularFilters() {
     clearSearchRenderTimer();
     ui.query = "";
     ui.typeId = "all";
     ui.tagIds.clear();
     ui.todayOnly = false;
+    ui.updatedTodayOnly = false;
+    elements.search.value = "";
+  }
+
+  function showAllNotesSpace() {
+    resetRegularFilters();
+    ui.trashOnly = false;
+    persistFilters();
+    resetToFirstPage();
+    renderLibrary();
+  }
+
+  function showTrashSpace() {
+    resetRegularFilters();
+    ui.trashOnly = true;
+    persistFilters();
+    resetToFirstPage();
+    renderLibrary();
+  }
+
+  function clearFilters({ preserveSort = true } = {}) {
+    resetRegularFilters();
     persistFilters();
     if (!preserveSort) {
       ui.sort = "created-desc";
@@ -599,7 +702,7 @@
   }
 
   function hasActiveFilters() {
-    return Boolean(ui.query) || ui.typeId !== "all" || ui.tagIds.size > 0 || ui.todayOnly;
+    return Boolean(ui.query) || ui.typeId !== "all" || ui.tagIds.size > 0 || ui.todayOnly || ui.updatedTodayOnly;
   }
 
   function syncClearFiltersState() {
@@ -613,10 +716,13 @@
     const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime();
     const tomorrowStart = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1).getTime();
     const notes = library.notes.filter((note) => {
+      if (ui.trashOnly !== isDeletedNote(note)) return false;
       if (ui.typeId !== "all" && note.typeId !== ui.typeId) return false;
       if (selectedTagIds.some((tagId) => !note.tagIds.includes(tagId))) return false;
       const createdAt = Date.parse(note.createdAt);
       if (ui.todayOnly && (Number.isNaN(createdAt) || createdAt < todayStart || createdAt >= tomorrowStart)) return false;
+      const updatedAt = Date.parse(note.updatedAt);
+      if (ui.updatedTodayOnly && (Number.isNaN(updatedAt) || updatedAt < todayStart || updatedAt >= tomorrowStart)) return false;
       if (!normalizedQuery) return true;
       const searchableText =
         library.searchIndex.get(note.id) || `${note.title}\n${note.content}`.toLocaleLowerCase();
@@ -624,18 +730,23 @@
     });
 
     return notes.sort((left, right) => {
+      if (left.isPinned !== right.isPinned) return left.isPinned ? -1 : 1;
       if (ui.sort === "title-asc" || ui.sort === "title-desc") {
         const direction = ui.sort === "title-asc" ? 1 : -1;
         const titleComparison = collator.compare(left.title, right.title);
         if (titleComparison) return titleComparison * direction;
+      } else if (ui.sort === "updated-asc" || ui.sort === "updated-desc") {
+        const direction = ui.sort === "updated-asc" ? 1 : -1;
+        const updatedComparison = Date.parse(left.updatedAt) - Date.parse(right.updatedAt);
+        if (!Number.isNaN(updatedComparison) && updatedComparison) return updatedComparison * direction;
       } else {
         const direction = ui.sort === "created-asc" ? 1 : -1;
         const dateComparison = Date.parse(left.createdAt) - Date.parse(right.createdAt);
-        if (dateComparison) return dateComparison * direction;
+        if (!Number.isNaN(dateComparison) && dateComparison) return dateComparison * direction;
       }
 
       const timestampComparison = Date.parse(right.createdAt) - Date.parse(left.createdAt);
-      if (timestampComparison) return timestampComparison;
+      if (!Number.isNaN(timestampComparison) && timestampComparison) return timestampComparison;
       return collator.compare(left.id, right.id);
     });
   }
@@ -675,7 +786,8 @@
   function renderSidebar() {
     const noteCountsByType = new Map();
     const noteCountsByTag = new Map();
-    library.notes.forEach((note) => {
+    const collectionNotes = notesInActiveCollection();
+    collectionNotes.forEach((note) => {
       noteCountsByType.set(note.typeId, (noteCountsByType.get(note.typeId) || 0) + 1);
       note.tagIds.forEach((tagId) => noteCountsByTag.set(tagId, (noteCountsByTag.get(tagId) || 0) + 1));
     });
@@ -683,15 +795,33 @@
     const today = new Date();
     const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime();
     const tomorrowStart = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1).getTime();
-    const todayCount = library.notes.filter((note) => {
+    const todayCount = collectionNotes.filter((note) => {
       const createdAt = Date.parse(note.createdAt);
       return !Number.isNaN(createdAt) && createdAt >= todayStart && createdAt < tomorrowStart;
     }).length;
+    const updatedTodayCount = collectionNotes.filter((note) => {
+      const updatedAt = Date.parse(note.updatedAt);
+      return !Number.isNaN(updatedAt) && updatedAt >= todayStart && updatedAt < tomorrowStart;
+    }).length;
+    const trashCount = library.notes.filter(isDeletedNote).length;
 
-    elements.allNotesCount.textContent = library.notes.length;
+    elements.libraryStatLabel.textContent = ui.trashOnly ? "Trash" : "All notes";
+    elements.notesHeading.textContent = ui.trashOnly ? "Trash" : "All notes";
+    elements.allNotesCount.textContent = collectionNotes.length;
+    elements.allNotesSpaceCount.textContent = library.notes.filter((note) => !isDeletedNote(note)).length;
+    elements.trashSpaceCount.textContent = trashCount;
+    elements.allNotesSpace.classList.toggle("is-active", !ui.trashOnly);
+    elements.allNotesSpace.setAttribute("aria-pressed", String(!ui.trashOnly));
+    elements.trashSpace.classList.toggle("is-active", ui.trashOnly);
+    elements.trashSpace.setAttribute("aria-pressed", String(ui.trashOnly));
     elements.createdTodayFilter.classList.toggle("is-active", ui.todayOnly);
     elements.createdTodayFilter.setAttribute("aria-pressed", String(ui.todayOnly));
     elements.createdTodayFilterCount.textContent = todayCount;
+    elements.updatedTodayFilter.classList.toggle("is-active", ui.updatedTodayOnly);
+    elements.updatedTodayFilter.setAttribute("aria-pressed", String(ui.updatedTodayOnly));
+    elements.updatedTodayFilterCount.textContent = updatedTodayCount;
+    elements.emptyTrash.classList.toggle("is-hidden", !ui.trashOnly || trashCount === 0);
+    elements.regularFilterControls.classList.toggle("is-hidden", ui.trashOnly);
     elements.typeFilterList.replaceChildren();
     const typeFragment = document.createDocumentFragment();
     library.types.forEach((type) => {
@@ -780,6 +910,16 @@
         }),
       );
     }
+    if (ui.updatedTodayOnly) {
+      fragment.append(
+        makeFilterPill("Updated Today", () => {
+          ui.updatedTodayOnly = false;
+          persistFilters();
+          resetToFirstPage();
+          renderLibrary();
+        }),
+      );
+    }
     [...ui.tagIds].map(tagFor).filter(Boolean).forEach((tag) => {
       fragment.append(
         makeFilterPill(tagLabel(tag), () => {
@@ -793,7 +933,11 @@
     elements.activeFilters.replaceChildren(fragment);
     elements.activeFilters.classList.toggle(
       "is-empty",
-      !ui.query && ui.typeId === "all" && ui.tagIds.size === 0 && !ui.todayOnly,
+      !ui.query &&
+        ui.typeId === "all" &&
+        ui.tagIds.size === 0 &&
+        !ui.todayOnly &&
+        !ui.updatedTodayOnly,
     );
   }
 
@@ -823,6 +967,8 @@
       createElement("span", { text: `Last updated ${formatFullDate(note.updatedAt)}` }),
     );
     elements.copyNoteContent.disabled = !note.content.trim() || ui.copyInFlight;
+    elements.editFromQuickView.disabled = isDeletedNote(note);
+    elements.editFromQuickView.title = isDeletedNote(note) ? "Restore before editing" : "Edit";
     if (elements.quickViewDialog.open) scheduleQuickViewHeightSync();
   }
 
@@ -957,6 +1103,77 @@
     closeQuickView({ restoreFocus: false, afterClose: () => openNoteEditor(note) });
   }
 
+  function createPinIcon() {
+    return createNoteCardActionIcon([
+      ["path", { d: "M8.2 4.25h7.6l-1.15 5.1 3.1 3.1v1.1H6.25v-1.1l3.1-3.1-1.15-5.1Z" }],
+      ["path", { d: "M12 13.55v6.2" }],
+    ]);
+  }
+
+  function createRestoreIcon() {
+    return createNoteCardActionIcon([
+      ["path", { d: "M5.25 8.5a7.5 7.5 0 1 1-.1 7.15" }],
+      ["path", { d: "M5.25 4.75v3.75H9" }],
+    ]);
+  }
+
+  async function toggleNotePinned(note) {
+    try {
+      await storage.setNotePinned(note.id, !note.isPinned);
+      await refreshLibrary({ broadcast: true });
+      showToast(note.isPinned ? "Note unpinned." : "Note pinned.");
+    } catch (error) {
+      showError(error, "We could not update this note's pin state.");
+    }
+  }
+
+  async function restoreNoteWithFeedback(note) {
+    try {
+      await storage.restoreNote(note.id);
+      await refreshLibrary({ broadcast: true });
+      showToast("Note restored.");
+    } catch (error) {
+      showError(error, "We could not restore this note.");
+    }
+  }
+
+  async function permanentlyDeleteNoteWithConfirmation(note) {
+    if (!note || ui.noteSaveInFlight) return;
+    const confirmed = await requestConfirmation({
+      title: "Delete note permanently?",
+      description: `“${note.title}” will be deleted permanently from this browser. This cannot be undone.`,
+      confirmLabel: "Delete permanently",
+      cancelLabel: "Keep note",
+    });
+    if (!confirmed) return;
+    try {
+      await storage.permanentlyDeleteNote(note.id);
+      await refreshLibrary({ broadcast: true });
+      showToast("Note permanently deleted.");
+    } catch (error) {
+      showError(error, "We could not permanently delete this note.");
+    }
+  }
+
+  async function emptyTrashWithConfirmation() {
+    const trashedCount = library.notes.filter(isDeletedNote).length;
+    if (!trashedCount) return;
+    const confirmed = await requestConfirmation({
+      title: "Empty Trash?",
+      description: `This will permanently delete ${pluralize(trashedCount, "note")} from this browser. This cannot be undone.`,
+      confirmLabel: "Empty Trash",
+      cancelLabel: "Keep Trash",
+    });
+    if (!confirmed) return;
+    try {
+      const deletedCount = await storage.emptyTrash();
+      await refreshLibrary({ broadcast: true });
+      showToast(`Trash emptied. ${pluralize(deletedCount, "note")} permanently deleted.`);
+    } catch (error) {
+      showError(error, "We could not empty Trash.");
+    }
+  }
+
   function createNoteCardActionIcon(shapes) {
     const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     svg.setAttribute("viewBox", "0 0 24 24");
@@ -976,10 +1193,21 @@
 
   function createNoteCard(note) {
     const type = typeFor(note.typeId);
-    const card = createElement("article", { className: "note-card" });
+    const isDeleted = isDeletedNote(note);
+    const card = createElement("article", {
+      className: `note-card${note.isPinned ? " note-card--pinned" : ""}`,
+    });
     const content = createElement("div", { className: "note-card__content" });
     const meta = createElement("div", { className: "note-card__meta" });
-    meta.append(makeTypeBadge(type, { isFilter: true }));
+    meta.append(makeTypeBadge(type, { isFilter: !ui.trashOnly }));
+    if (note.isPinned) {
+      const pinMarker = createElement("span", {
+        className: "note-card__pin-marker",
+        attributes: { "aria-label": "Pinned note", title: "Pinned note" },
+      });
+      pinMarker.append(createPinIcon());
+      meta.append(pinMarker);
+    }
     const created = createElement("time", {
       className: "note-card__date",
       text: `Created ${formatShortDate(note.createdAt)}`,
@@ -1001,7 +1229,13 @@
     const footer = createElement("div", { className: "note-card__footer" });
     const tags = createElement("div", { className: "note-card__tags" });
     const resolvedTags = note.tagIds.map(tagFor).filter(Boolean);
-    resolvedTags.slice(0, 3).forEach((tag) => tags.append(makeTagButton(tag, ui.tagIds.has(tag.id))));
+    resolvedTags.slice(0, 3).forEach((tag) => {
+      tags.append(
+        ui.trashOnly
+          ? createElement("span", { className: "tag-chip", text: tagLabel(tag) })
+          : makeTagButton(tag, ui.tagIds.has(tag.id)),
+      );
+    });
     if (resolvedTags.length > 3) {
       tags.append(
         createElement("span", {
@@ -1042,7 +1276,11 @@
     const edit = createElement("button", {
       className: "note-card__action",
       type: "button",
-      attributes: { "aria-label": `Edit ${note.title}`, title: "Edit" },
+      disabled: isDeleted,
+      attributes: {
+        "aria-label": isDeleted ? `Restore ${note.title} before editing` : `Edit ${note.title}`,
+        title: isDeleted ? "Restore before editing" : "Edit",
+      },
     });
     edit.append(
       createNoteCardActionIcon([
@@ -1051,22 +1289,61 @@
       ]),
     );
     edit.addEventListener("click", () => openNoteEditor(note));
-    const remove = createElement("button", {
-      className: "note-card__action note-card__action--danger",
+    const pin = createElement("button", {
+      className: "note-card__action note-card__action--pin",
       type: "button",
-      attributes: { "aria-label": `Delete ${note.title}`, title: "Delete" },
+      attributes: {
+        "aria-label": `${note.isPinned ? "Unpin" : "Pin"} ${note.title}`,
+        title: note.isPinned ? "Unpin" : "Pin",
+        "aria-pressed": String(note.isPinned),
+      },
+    });
+    pin.append(createPinIcon());
+    pin.addEventListener("click", () => toggleNotePinned(note));
+    const remove = createElement("button", {
+      className: `note-card__action ${isDeleted ? "note-card__action--restore" : "note-card__action--danger"}`,
+      type: "button",
+      attributes: {
+        "aria-label": isDeleted ? `Restore ${note.title}` : `Move ${note.title} to Trash`,
+        title: isDeleted ? "Restore" : "Move to Trash",
+      },
     });
     remove.append(
-      createNoteCardActionIcon([
-        ["path", { d: "M4.5 7.5h15" }],
-        ["path", { d: "M9.5 4.5h5" }],
-        ["path", { d: "m6.5 7.5.8 12h9.4l.8-12" }],
-        ["path", { d: "M10 11v5" }],
-        ["path", { d: "M14 11v5" }],
-      ]),
+      isDeleted
+        ? createRestoreIcon()
+        : createNoteCardActionIcon([
+            ["path", { d: "M4.5 7.5h15" }],
+            ["path", { d: "M9.5 4.5h5" }],
+            ["path", { d: "m6.5 7.5.8 12h9.4l.8-12" }],
+            ["path", { d: "M10 11v5" }],
+            ["path", { d: "M14 11v5" }],
+          ]),
     );
-    remove.addEventListener("click", () => deleteNoteWithConfirmation(note));
-    actions.append(view, copy, edit, remove);
+    remove.addEventListener("click", () => (isDeleted ? restoreNoteWithFeedback(note) : deleteNoteWithConfirmation(note)));
+    actions.append(view, copy);
+    if (!isDeleted) actions.append(edit, pin);
+    actions.append(remove);
+    if (isDeleted) {
+      const permanentRemove = createElement("button", {
+        className: "note-card__action note-card__action--danger note-card__action--permanent",
+        type: "button",
+        attributes: {
+          "aria-label": `Delete ${note.title} permanently`,
+          title: "Delete permanently",
+        },
+      });
+      permanentRemove.append(
+        createNoteCardActionIcon([
+          ["path", { d: "M4.5 7.5h15" }],
+          ["path", { d: "M9.5 4.5h5" }],
+          ["path", { d: "m6.5 7.5.8 12h9.4l.8-12" }],
+          ["path", { d: "M10 11v5" }],
+          ["path", { d: "M14 11v5" }],
+        ]),
+      );
+      permanentRemove.addEventListener("click", () => permanentlyDeleteNoteWithConfirmation(note));
+      actions.append(permanentRemove);
+    }
     footer.append(tags, actions);
     card.append(content, footer);
     return card;
@@ -1077,23 +1354,30 @@
     empty.append(createElement("span", { className: "empty-state__icon", text: hasAnyNotes ? "⌕" : "✦", attributes: { "aria-hidden": "true" } }));
     empty.append(
       createElement("h3", {
-        text: hasAnyNotes ? "No notes match these filters" : "Your note library is ready",
+        text: hasAnyNotes
+          ? "No notes match these filters"
+          : ui.trashOnly
+            ? "Trash is empty"
+            : "Your note library is ready",
       }),
     );
     empty.append(
       createElement("p", {
         text: hasAnyNotes
           ? "Try a different search or filter."
-          : "Capture an idea, meeting, learning, or anything you want to keep.",
+          : ui.trashOnly
+            ? "Notes you move to Trash will appear here."
+            : "Capture an idea, meeting, learning, or anything you want to keep.",
       }),
     );
     const action = createElement("button", {
       className: "button button-primary",
       type: "button",
-      text: hasAnyNotes ? "Clear filters" : "Create your first note",
+      text: hasAnyNotes ? "Clear filters" : ui.trashOnly ? "Back to notes" : "Create your first note",
     });
     action.addEventListener("click", () => {
       if (hasAnyNotes) clearFilters();
+      else if (ui.trashOnly) showAllNotesSpace();
       else openNoteEditor();
     });
     empty.append(action);
@@ -1178,6 +1462,8 @@
     const sortLabels = {
       "created-desc": "Newest created",
       "created-asc": "Oldest created",
+      "updated-desc": "Newest updated",
+      "updated-asc": "Oldest updated",
       "title-asc": "Title A–Z",
       "title-desc": "Title Z–A",
     };
@@ -1189,7 +1475,7 @@
     elements.notesList.setAttribute("aria-busy", "false");
 
     if (!pageNotes.length) {
-      renderEmptyState(library.notes.length > 0);
+      renderEmptyState(notesInActiveCollection().length > 0);
       renderPagination(0);
       return;
     }
@@ -1782,9 +2068,9 @@
   async function deleteNoteWithConfirmation(note) {
     if (!note || ui.noteSaveInFlight) return;
     const confirmed = await requestConfirmation({
-      title: "Delete note?",
-      description: `“${note.title}” will be permanently deleted. You can restore it only from an exported backup.`,
-      confirmLabel: "Delete note",
+      title: "Move note to Trash?",
+      description: `“${note.title}” will be moved to Trash. You can restore it later or use Undo now.`,
+      confirmLabel: "Move to Trash",
       cancelLabel: "Keep note",
     });
     if (!confirmed) return;
@@ -1792,7 +2078,18 @@
       await storage.deleteNote(note.id);
       await refreshLibrary({ broadcast: true });
       if (ui.editingNoteId === note.id) closeNoteEditor();
-      showToast("Note deleted.");
+      showToast("Note moved to Trash.", "success", {
+        label: "Undo",
+        onClick: async () => {
+          try {
+            await storage.restoreNote(note.id);
+            await refreshLibrary({ broadcast: true });
+            showToast("Note restored.");
+          } catch (error) {
+            showError(error, "We could not undo moving this note to Trash.");
+          }
+        },
+      });
     } catch (error) {
       showError(error, "We could not delete this note.");
     }
@@ -2186,6 +2483,59 @@
     window.setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
 
+  function safeNoteFileName(title) {
+    return (
+      String(title || "note")
+        .replace(/[<>:"/\\|?*\u0000-\u001f]/g, "-")
+        .replace(/\s+/g, " ")
+        .trim()
+        .slice(0, 96) || "note"
+    );
+  }
+
+  function plainTextFromMarkdown(source) {
+    const container = document.createElement("div");
+    container.className = "quick-view-content";
+    container.style.position = "fixed";
+    container.style.left = "-10000px";
+    container.style.top = "0";
+    document.body.append(container);
+    globalThis.NookMarkdown.renderInto(container, source);
+    const text = (container.innerText || container.textContent || "")
+      .replace(/[ \t]+\n/g, "\n")
+      .replace(/\n{3,}/g, "\n\n")
+      .trim();
+    container.remove();
+    return text;
+  }
+
+  function downloadNoteFile(note, format) {
+    const isMarkdown = format === "md";
+    const content = isMarkdown ? note.content : plainTextFromMarkdown(note.content);
+    const blob = new Blob([`${content}${content ? "\n" : ""}`], {
+      type: isMarkdown ? "text/markdown;charset=utf-8" : "text/plain;charset=utf-8",
+    });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `${safeNoteFileName(note.title)}.${format}`;
+    document.body.append(link);
+    link.click();
+    link.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+
+  function exportCurrentNote(format) {
+    const note = noteForQuickView();
+    if (!note) return;
+    try {
+      downloadNoteFile(note, format);
+      showToast(`Exported “${note.title}” as .${format}.`);
+    } catch (error) {
+      showError(error, "We could not export this note.");
+    }
+  }
+
   async function exportLibrary() {
     try {
       const backup = await storage.buildExport();
@@ -2215,6 +2565,8 @@
       ui.typeId = "all";
       ui.tagIds.clear();
       ui.todayOnly = false;
+      ui.updatedTodayOnly = false;
+      ui.trashOnly = false;
       persistFilters();
       ui.query = "";
       elements.search.value = "";
@@ -2229,7 +2581,21 @@
 
   function bindEvents() {
     elements.createdTodayFilter.addEventListener("click", toggleTodayFilter);
+    elements.updatedTodayFilter.addEventListener("click", toggleUpdatedTodayFilter);
+    elements.allNotesSpace.addEventListener("click", showAllNotesSpace);
+    elements.trashSpace.addEventListener("click", showTrashSpace);
+    elements.emptyTrash.addEventListener("click", emptyTrashWithConfirmation);
     elements.clearFilters.addEventListener("click", () => clearFilters());
+    elements.toastAction.addEventListener("click", async () => {
+      const action = ui.toastAction;
+      dismissToast();
+      if (!action?.onClick) return;
+      try {
+        await action.onClick();
+      } catch (error) {
+        showError(error);
+      }
+    });
     elements.themeToggle.addEventListener("click", () => setTheme(ui.theme === "dark" ? "light" : "dark"));
     elements.organize.addEventListener("click", () => openOrganize());
     elements.export.addEventListener("click", exportLibrary);
@@ -2304,6 +2670,8 @@
     elements.closeQuickView.addEventListener("click", () => closeQuickView());
     elements.closeQuickViewFooter.addEventListener("click", () => closeQuickView());
     elements.copyNoteContent.addEventListener("click", copyQuickViewContent);
+    elements.exportNoteMarkdown.addEventListener("click", () => exportCurrentNote("md"));
+    elements.exportNoteText.addEventListener("click", () => exportCurrentNote("txt"));
     elements.editFromQuickView.addEventListener("click", editFromQuickView);
     elements.quickViewDialog.addEventListener("close", finishQuickViewClose);
     elements.closeConfirmation.addEventListener("click", () => closeConfirmation());

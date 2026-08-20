@@ -2,7 +2,7 @@
   "use strict";
 
   const DB_NAME = "personal-notes";
-  const DB_VERSION = 1;
+  const DB_VERSION = 2;
   const LEGACY_STORAGE_KEY = "ray-interview-practice-library-v1";
   const BOOTSTRAP_META_KEY = "bootstrap-v1";
   const TAG_PREFIX_MIGRATION_META_KEY = "tag-prefix-removal-v1";
@@ -77,6 +77,22 @@
     });
   }
 
+  function migrateNotesToV2(database, transaction) {
+    if (!database.objectStoreNames.contains(STORE.notes)) return;
+    const request = transaction.objectStore(STORE.notes).openCursor();
+    request.onsuccess = () => {
+      const cursor = request.result;
+      if (!cursor) return;
+      const note = cursor.value;
+      cursor.update({
+        ...note,
+        isPinned: note.isPinned === true,
+        deletedAt: normalizeDeletedAt(note.deletedAt),
+      });
+      cursor.continue();
+    };
+  }
+
   function createStores(database) {
     if (!database.objectStoreNames.contains(STORE.notes)) {
       const notes = database.createObjectStore(STORE.notes, { keyPath: "id" });
@@ -118,7 +134,10 @@
         return;
       }
 
-      request.onupgradeneeded = () => createStores(request.result);
+      request.onupgradeneeded = (event) => {
+        createStores(request.result);
+        if (event.oldVersion < 2) migrateNotesToV2(request.result, request.transaction);
+      };
       request.onerror = () => {
         if (databasePromise === pendingOpen) databasePromise = undefined;
         reject(request.error || new Error("Could not open IndexedDB."));
@@ -210,6 +229,19 @@
     return new Date(value).toISOString();
   }
 
+  function normalizeDeletedAt(value) {
+    if (typeof value !== "string" || Number.isNaN(Date.parse(value))) return null;
+    return new Date(value).toISOString();
+  }
+
+  function normalizeNoteRecord(note) {
+    return {
+      ...note,
+      isPinned: note.isPinned === true,
+      deletedAt: normalizeDeletedAt(note.deletedAt),
+    };
+  }
+
   function uniqueIds(values, label) {
     const ids = new Set();
     values.forEach((value) => {
@@ -258,7 +290,7 @@
       requestResult(tagsRequest),
     ]);
     await transactionDone(transaction);
-    return sortSnapshot({ notes, types, tags });
+    return sortSnapshot({ notes: notes.map(normalizeNoteRecord), types, tags });
   }
 
   function assertSnapshotShape(snapshot) {
@@ -441,6 +473,8 @@
         tagIds: [...new Set(tagIds)],
         createdAt: timestamp,
         updatedAt: timestamp,
+        isPinned: false,
+        deletedAt: null,
       });
     });
 
@@ -538,6 +572,8 @@
         tagIds: uniqueTagIds,
         createdAt,
         updatedAt: normalizeDate(item.updatedAt, createdAt),
+        isPinned: item.isPinned === true,
+        deletedAt: normalizeDeletedAt(item.deletedAt),
       };
     });
 
@@ -550,7 +586,11 @@
       return { snapshot: legacyToSnapshot(value), format: "legacy" };
     }
 
-    if (!value || value.format !== "personal-notes-backup" || value.schemaVersion !== 1) {
+    if (
+      !value ||
+      value.format !== "personal-notes-backup" ||
+      ![1, 2].includes(value.schemaVersion)
+    ) {
       throw new Error("Choose a Personal Notes backup or a supported legacy library JSON file.");
     }
 
@@ -725,6 +765,8 @@
         tagIds,
         createdAt: existing?.createdAt || timestamp,
         updatedAt: timestamp,
+        isPinned: existing?.isPinned === true,
+        deletedAt: existing?.deletedAt || null,
       };
       stores.notes.put(note);
       return note;
@@ -734,7 +776,54 @@
   async function deleteNote(id) {
     const noteId = requireId(id, "Note");
     await mutateLibrary((snapshot, stores) => {
+      const existing = snapshot.notes.find(({ id: itemId }) => itemId === noteId);
+      if (!existing) throw new Error("This note no longer exists.");
+      if (existing.deletedAt) return;
+      const timestamp = nowIso();
+      stores.notes.put({ ...existing, deletedAt: timestamp, updatedAt: timestamp });
+    }, { readStores: [STORE.notes] });
+  }
+
+  async function restoreNote(id) {
+    const noteId = requireId(id, "Note");
+    return mutateLibrary((snapshot, stores) => {
+      const existing = snapshot.notes.find(({ id: itemId }) => itemId === noteId);
+      if (!existing) throw new Error("This note no longer exists.");
+      if (!existing.deletedAt) return existing;
+      const note = { ...existing, deletedAt: null, updatedAt: nowIso() };
+      stores.notes.put(note);
+      return note;
+    }, { readStores: [STORE.notes] });
+  }
+
+  async function permanentlyDeleteNote(id) {
+    const noteId = requireId(id, "Note");
+    await mutateLibrary((snapshot, stores) => {
+      const existing = snapshot.notes.find(({ id: itemId }) => itemId === noteId);
+      if (!existing) throw new Error("This note no longer exists.");
+      if (!existing.deletedAt) throw new Error("Only notes in Trash can be permanently deleted.");
       stores.notes.delete(noteId);
+    }, { readStores: [STORE.notes] });
+  }
+
+  async function emptyTrash() {
+    return mutateLibrary((snapshot, stores) => {
+      const trashedNotes = snapshot.notes.filter((note) => note.deletedAt);
+      trashedNotes.forEach(({ id }) => stores.notes.delete(id));
+      return trashedNotes.length;
+    }, { readStores: [STORE.notes] });
+  }
+
+  async function setNotePinned(id, isPinned) {
+    const noteId = requireId(id, "Note");
+    if (typeof isPinned !== "boolean") throw new Error("Note pin state is invalid.");
+    return mutateLibrary((snapshot, stores) => {
+      const existing = snapshot.notes.find(({ id: itemId }) => itemId === noteId);
+      if (!existing) throw new Error("This note no longer exists.");
+      if (existing.isPinned === isPinned) return existing;
+      const note = { ...existing, isPinned, updatedAt: nowIso() };
+      stores.notes.put(note);
+      return note;
     }, { readStores: [STORE.notes] });
   }
 
@@ -854,7 +943,7 @@
     const snapshot = await getSnapshot();
     return {
       format: "personal-notes-backup",
-      schemaVersion: 1,
+      schemaVersion: 2,
       exportedAt: nowIso(),
       data: {
         noteTypes: snapshot.types,
@@ -893,6 +982,10 @@
     getSnapshot,
     saveNote,
     deleteNote,
+    restoreNote,
+    permanentlyDeleteNote,
+    emptyTrash,
+    setNotePinned,
     addType,
     updateType,
     deleteType,

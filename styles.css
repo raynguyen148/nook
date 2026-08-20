@@ -218,6 +218,54 @@ textarea:focus-visible {
   margin-top: 0.62rem;
 }
 
+.space-navigation {
+  margin: 0.1rem 0 1.5rem;
+}
+
+.space-navigation__list {
+  display: grid;
+  gap: 0.16rem;
+  margin-top: 0.62rem;
+}
+
+.space-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 2.42rem;
+  border: 0;
+  border-radius: 0.58rem;
+  padding: 0.48rem 0.55rem;
+  color: #4e5b70;
+  background: transparent;
+  text-align: left;
+  font-size: 0.83rem;
+  transition:
+    color 160ms ease,
+    background 160ms ease;
+}
+
+.space-link:hover {
+  color: #2f3b4e;
+  background: #f2f4f8;
+}
+
+.space-link.is-active {
+  color: #424cba;
+  background: #eceeff;
+  font-weight: 730;
+}
+
+.space-link--trash.is-active {
+  color: #a94352;
+  background: #fff1f3;
+}
+
+.space-link.is-active .filter-count {
+  color: currentColor;
+}
+
 .type-filter-list {
   display: grid;
   gap: 0.16rem;
@@ -258,6 +306,12 @@ textarea:focus-visible {
   align-items: center;
   min-width: 0;
   gap: 0.55rem;
+}
+
+.sidebar-filter__icon {
+  flex: none;
+  width: 1rem;
+  height: 1rem;
 }
 
 .type-dot {
@@ -571,6 +625,11 @@ h2 {
   min-height: 2.25rem;
   padding: 0.4rem 0.62rem;
   font-size: 0.75rem;
+}
+
+.button-icon-svg {
+  width: 0.95rem;
+  height: 0.95rem;
 }
 
 .button-icon {
@@ -943,6 +1002,18 @@ select::-ms-expand {
   transform-origin: top left;
 }
 
+.note-card--pinned {
+  border-color: var(--pinned-card-border);
+  border-top-width: 2px;
+}
+
+.note-card--pinned .note-card__pin-marker {
+  width: 1.28rem;
+  height: 1.28rem;
+  border-radius: 50%;
+  background: var(--pinned-marker-background);
+}
+
 .notes-list--compact .note-card {
   gap: 0.62rem;
   padding: 0.76rem 0.78rem 0.7rem;
@@ -1090,6 +1161,21 @@ select::-ms-expand {
   white-space: nowrap;
 }
 
+.note-card__pin-marker {
+  display: inline-flex;
+  flex: none;
+  width: 1rem;
+  height: 1rem;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary-accent-text, #926b00);
+}
+
+.note-card__pin-marker svg {
+  width: 0.82rem;
+  height: 0.82rem;
+}
+
 .note-card__title {
   max-width: 100%;
   border: 0;
@@ -1214,6 +1300,17 @@ select::-ms-expand {
 
 .note-card__action:disabled {
   color: #b3bbca;
+}
+
+.note-card__action--pin[aria-pressed="true"] {
+  color: var(--primary-accent-text, #926b00);
+  background: var(--primary-accent-soft, #fff6d8);
+}
+
+.note-card__action--restore:hover:not(:disabled),
+.note-card__action--restore:focus-visible {
+  color: #277456;
+  background: #f2fbf6;
 }
 
 .icon-button {
@@ -2780,6 +2877,9 @@ select::-ms-expand {
   color: #277456;
   background: #f2fbf6;
   box-shadow: 0 12px 30px rgb(23 35 56 / 14%);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
   font-size: 0.8rem;
   font-weight: 620;
   line-height: 1.4;
@@ -2799,7 +2899,25 @@ select::-ms-expand {
 
 .toast.is-visible {
   opacity: 1;
+  pointer-events: auto;
   transform: translateY(0);
+}
+
+.toast__action {
+  flex: none;
+  border: 0;
+  padding: 0.1rem 0.2rem;
+  color: inherit;
+  background: transparent;
+  font: inherit;
+  font-weight: 760;
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.toast__action:hover,
+.toast__action:focus-visible {
+  color: var(--primary-accent-text, #926b00);
 }
 
 .startup-error {
@@ -3216,6 +3334,25 @@ html[data-theme="dark"] .sidebar-filter:hover {
 html[data-theme="dark"] .sidebar-filter.is-active {
   color: #c0c5ff;
   background: #2d345f;
+}
+
+html[data-theme="dark"] .space-link {
+  color: #b3bfd2;
+}
+
+html[data-theme="dark"] .space-link:hover {
+  color: #e0e6f2;
+  background: #222c40;
+}
+
+html[data-theme="dark"] .space-link.is-active {
+  color: #c0c5ff;
+  background: #2d345f;
+}
+
+html[data-theme="dark"] .space-link--trash.is-active {
+  color: #f3aab5;
+  background: #321f29;
 }
 
 html[data-theme="dark"] .filter-count {
@@ -4005,6 +4142,9 @@ html[data-theme="dark"] .toast[data-tone="error"] {
   --primary-accent-border: #ead18a;
   --primary-accent-focus: rgb(146 107 0 / 32%);
   --primary-accent-shadow: rgb(127 91 0 / 22%);
+  --pinned-card-border: #e4d39a;
+  --pinned-card-shadow: rgb(127 91 0 / 11%);
+  --pinned-marker-background: #fff6d8;
   --primary-button-text: #fff;
   --interaction-duration: 160ms;
   --interaction-easing: cubic-bezier(0.2, 0, 0, 1);
@@ -4019,6 +4159,9 @@ html[data-theme="dark"] {
   --primary-accent-border: #80621d;
   --primary-accent-focus: rgb(224 185 76 / 30%);
   --primary-accent-shadow: rgb(0 0 0 / 28%);
+  --pinned-card-border: #705a2a;
+  --pinned-card-shadow: rgb(0 0 0 / 25%);
+  --pinned-marker-background: #3b3018;
   --primary-button-text: #2b2105;
 }
 
@@ -4151,6 +4294,22 @@ textarea:focus-visible {
   border-color: var(--primary-accent-border);
 }
 
+.note-card--pinned:hover,
+.note-card--pinned:focus-within {
+}
+
+/* Pinned cards use a warmer, lower-contrast border in dark mode. */
+html[data-theme="dark"] .note-card--pinned,
+html[data-theme="dark"] .note-card--pinned:hover,
+html[data-theme="dark"] .note-card--pinned:focus-within {
+  border-color: var(--pinned-card-border);
+}
+
+html[data-theme="dark"] .note-card--pinned .note-card__pin-marker {
+  color: #e7bd52;
+  background: var(--pinned-marker-background);
+}
+
 .note-card__title:hover,
 .note-card__action:hover {
   color: var(--primary-accent-text);
@@ -4246,6 +4405,10 @@ textarea:focus-visible {
 .quick-view-copy-button svg {
   width: 1.02rem;
   height: 1.02rem;
+}
+
+.quick-view-footer .dialog-footer__actions {
+  flex-wrap: wrap;
 }
 
 .organize-tab.is-active {
