@@ -23,10 +23,41 @@ interview practice, and personal ideas in one searchable local library.
 - Switch between light and dark themes and Focus, Comfortable, and Compact layouts.
 - Keep the library usable across multiple open tabs when the browser supports `BroadcastChannel`.
 
+## Screenshots
+
+These screenshots use a representative local library with 25 sample notes, multiple note types and tags, Markdown content, and pinned notes. Nook keeps this data in the current browser's IndexedDB; no note content is sent to a server.
+
+### Main library
+
+![Nook main library with sample notes, note types, tags, and pinned notes](docs/screenshots/nook-library.jpg)
+
+### Markdown editor
+
+![Nook edit dialog showing raw Markdown content](docs/screenshots/nook-markdown-editor.jpg)
+
+### Split editor and preview
+
+![Nook split view showing raw Markdown beside the rendered preview](docs/screenshots/nook-split-view.jpg)
+
+### Pinned notes
+
+![Nook library with pinned notes kept at the top of the results](docs/screenshots/nook-pinned-notes.jpg)
+
+### Combined filters
+
+![Nook filtering by Project, backend, and javascript to show four matching notes](docs/screenshots/nook-filters.jpg)
+
 ## Quick start
 
-Nook has no build step and no package installation. Serve the repository with
-any static web server, then open it in a modern browser:
+Nook has no build step and no package installation. The simplest option is to
+open `index.html` directly in a modern browser:
+
+```text
+index.html → Open with your browser
+```
+
+For the most consistent browser behavior, you can optionally serve the
+repository with any static web server:
 
 ```bash
 cd nook
@@ -37,7 +68,9 @@ Open <http://localhost:8000>.
 
 Serving through `localhost` is recommended because browser behavior for
 `file://` pages varies, especially around IndexedDB, downloads, and clipboard
-access. JavaScript is required.
+access. Data stored under `file://` and `localhost` belongs to separate browser
+origins, so export a JSON backup before switching between them. JavaScript is
+required in both cases.
 
 ## Using Nook
 
