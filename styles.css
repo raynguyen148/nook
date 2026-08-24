@@ -5016,3 +5016,312 @@ html[data-theme="dark"] .theme-toggle__icon--moon {
 html[data-theme="dark"] .theme-toggle__icon--sun {
   display: inline-flex;
 }
+
+/* Workspace polish: establish one quiet visual hierarchy across the library,
+ * editor, and reading surfaces without changing any note data or interaction
+ * contracts. */
+::selection {
+  color: #362900;
+  background: #f7df8a;
+}
+
+html[data-theme="dark"] ::selection {
+  color: #fff7d9;
+  background: #765500;
+}
+
+.sidebar {
+  border-right-color: rgb(214 219 229 / 82%);
+  background: linear-gradient(180deg, rgb(255 255 255 / 96%), rgb(250 251 253 / 90%));
+}
+
+.brand {
+  padding-block: 0.18rem;
+}
+
+.storage-status {
+  margin-top: 1.05rem;
+  border: 1px solid transparent;
+  border-radius: 0.55rem;
+  background: rgb(248 249 251 / 70%);
+}
+
+.space-navigation {
+  margin-bottom: 1.25rem;
+  padding-bottom: 1.2rem;
+  border-bottom: 1px solid #eceef3;
+}
+
+.space-link,
+.sidebar-filter {
+  border: 1px solid transparent;
+}
+
+.space-link:hover,
+.sidebar-filter:hover {
+  border-color: rgb(219 223 232 / 76%);
+}
+
+.workspace {
+  max-width: 1600px;
+}
+
+.topbar {
+  align-items: center;
+}
+
+.topbar-actions {
+  align-items: center;
+  gap: 0.58rem;
+}
+
+.topbar-actions__utilities,
+.topbar-actions__backup {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.38rem;
+  padding-right: 0.58rem;
+  border-right: 1px solid #e1e5eb;
+}
+
+.topbar-actions__backup .button {
+  min-width: 2.5rem;
+}
+
+.topbar-actions .theme-toggle {
+  min-width: 2.5rem;
+}
+
+.notes-panel {
+  border-color: rgb(218 223 232 / 88%);
+  border-radius: 1.1rem;
+  background: linear-gradient(145deg, rgb(255 255 255 / 96%), rgb(252 252 253 / 86%));
+  box-shadow: 0 16px 40px rgb(32 40 73 / 6%);
+}
+
+.notes-panel__heading {
+  margin-bottom: 1.05rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #edf0f4;
+}
+
+.notes-count {
+  padding: 0.33rem 0.58rem;
+  color: #667286;
+  background: #f7f8fa;
+}
+
+.toolbar {
+  align-items: center;
+  padding: 0.52rem;
+  border: 1px solid #edf0f4;
+  border-radius: 0.82rem;
+  background: rgb(250 251 253 / 74%);
+}
+
+.search-field input,
+.sort-field select,
+.view-mode-control__choices {
+  background-color: rgb(255 255 255 / 92%);
+}
+
+.view-mode-control__choices {
+  border-radius: 0.52rem;
+}
+
+.results-meta {
+  margin-top: 1rem;
+}
+
+.note-card {
+  border-radius: 0.86rem;
+  padding: 1rem 1.02rem 0.9rem;
+  box-shadow: 0 1px 2px rgb(27 37 60 / 3%);
+  transition:
+    border var(--interaction-duration) var(--interaction-easing),
+    box-shadow var(--interaction-duration) var(--interaction-easing),
+    transform var(--interaction-duration) var(--interaction-easing);
+}
+
+.note-card:hover,
+.note-card:focus-within {
+  box-shadow: 0 10px 24px rgb(39 48 83 / 8%);
+  transform: translateY(-2px);
+}
+
+.note-card__title {
+  font-size: 0.98rem;
+}
+
+.note-card__preview {
+  color: #68758a;
+}
+
+.note-card__actions {
+  border-radius: 0.58rem;
+}
+
+.note-card__action {
+  min-height: 1.9rem;
+}
+
+.app-dialog {
+  border-color: rgb(214 220 230 / 96%);
+  border-radius: 1.1rem;
+  box-shadow: 0 28px 80px rgb(23 30 56 / 26%);
+}
+
+.dialog-header {
+  padding-top: 1.45rem;
+  background: linear-gradient(180deg, #fff, #fdfdfe);
+}
+
+.dialog-footer {
+  background: #fcfcfd;
+}
+
+.quick-view-content-card,
+.note-content-preview {
+  border-radius: 0.76rem;
+}
+
+.organize-tabs {
+  gap: 0.45rem;
+  background: #fcfcfd;
+}
+
+.management-row {
+  border-radius: 0.76rem;
+}
+
+@media (hover: hover) and (min-width: 621px) {
+  .note-card__actions {
+    opacity: 0.5;
+    transition: opacity var(--interaction-duration) var(--interaction-easing);
+  }
+
+  .note-card:hover .note-card__actions,
+  .note-card:focus-within .note-card__actions {
+    opacity: 1;
+  }
+}
+
+html[data-theme="dark"] .sidebar {
+  border-right-color: #303a4e;
+  background: linear-gradient(180deg, rgb(25 33 49 / 96%), rgb(20 27 41 / 94%));
+}
+
+html[data-theme="dark"] .storage-status {
+  background: rgb(255 255 255 / 3%);
+}
+
+html[data-theme="dark"] .space-navigation,
+html[data-theme="dark"] .notes-panel__heading {
+  border-color: #303a4d;
+}
+
+html[data-theme="dark"] .space-link:hover,
+html[data-theme="dark"] .sidebar-filter:hover {
+  border-color: #354157;
+}
+
+html[data-theme="dark"] .topbar-actions__utilities,
+html[data-theme="dark"] .topbar-actions__backup {
+  border-color: #344055;
+}
+
+html[data-theme="dark"] .notes-panel {
+  border-color: #303a4d;
+  background: linear-gradient(145deg, rgb(30 39 57 / 96%), rgb(26 34 50 / 90%));
+  box-shadow: 0 16px 40px rgb(0 0 0 / 18%);
+}
+
+html[data-theme="dark"] .notes-count,
+html[data-theme="dark"] .toolbar,
+html[data-theme="dark"] .dialog-footer,
+html[data-theme="dark"] .organize-tabs {
+  border-color: #344055;
+  background: #1b2537;
+}
+
+html[data-theme="dark"] .toolbar {
+  background: rgb(20 28 42 / 72%);
+}
+
+html[data-theme="dark"] .search-field input,
+html[data-theme="dark"] .sort-field select,
+html[data-theme="dark"] .view-mode-control__choices {
+  background-color: #202a3b;
+}
+
+html[data-theme="dark"] .note-card {
+  box-shadow: 0 1px 2px rgb(0 0 0 / 16%);
+}
+
+html[data-theme="dark"] .note-card:hover,
+html[data-theme="dark"] .note-card:focus-within {
+  box-shadow: 0 12px 28px rgb(0 0 0 / 28%);
+}
+
+html[data-theme="dark"] .dialog-header {
+  background: linear-gradient(180deg, #202a3b, #1e2839);
+}
+
+@media (max-width: 1080px) {
+  .topbar-actions__utilities,
+  .topbar-actions__backup {
+    gap: 0.22rem;
+    padding-right: 0.48rem;
+  }
+}
+
+@media (max-width: 620px) {
+  .storage-status {
+    padding-inline: 0.45rem;
+  }
+
+  .space-navigation {
+    margin-bottom: 1rem;
+    padding-bottom: 0.95rem;
+  }
+
+  .topbar-actions {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 0.5rem;
+  }
+
+  .topbar-actions__utilities,
+  .topbar-actions__backup {
+    display: contents;
+  }
+
+  .topbar-actions__utilities .button,
+  .topbar-actions__backup .button,
+  .topbar-actions > .button {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .topbar-actions > .button:last-child {
+    grid-column: 1 / -1;
+  }
+
+  .notes-panel {
+    border-radius: 0.95rem;
+  }
+
+  .toolbar {
+    gap: 0.58rem;
+    padding: 0.44rem;
+  }
+
+  .notes-panel__heading {
+    padding-bottom: 0.85rem;
+  }
+
+  .note-card:hover,
+  .note-card:focus-within {
+    transform: none;
+  }
+}
