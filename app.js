@@ -8,8 +8,13 @@
   const THEME_STORAGE_KEY = "nook:theme";
   const VIEW_MODE_STORAGE_KEY = "nook:notes-view-mode";
   const FILTER_STORAGE_KEY = "nook:active-filters";
+  const DRAFT_RECOVERY_STORAGE_KEY = "nook:note-editor-draft";
+  const BACKUP_HEALTH_STORAGE_KEY = "nook:backup-health";
   const SORT_STORAGE_KEY = "nook:notes-sort";
   const LIBRARY_CHANNEL_NAME = "nook:library";
+  const DRAFT_RECOVERY_VERSION = 1;
+  const BACKUP_REMINDER_EDIT_COUNT = 12;
+  const BACKUP_REMINDER_AGE_MS = 14 * 24 * 60 * 60 * 1000;
   const SORT_VALUES = [
     "created-desc",
     "created-asc",
@@ -45,6 +50,8 @@
     trashSpaceCount: document.querySelector("#trash-space-count"),
     emptyTrash: document.querySelector("#empty-trash-btn"),
     regularFilterControls: document.querySelector("#regular-filter-controls"),
+    mobileFilterToggle: document.querySelector("#mobile-filter-toggle"),
+    mobileFilterCount: document.querySelector("#mobile-filter-count"),
     typeFilterList: document.querySelector("#type-filter-list"),
     tagFilterList: document.querySelector("#tag-filter-list"),
     tagFilterCount: document.querySelector("#tag-filter-count"),
@@ -54,6 +61,9 @@
     toastAction: document.querySelector("#toast-action"),
     themeToggle: document.querySelector("#theme-toggle"),
     themeToggleLabel: document.querySelector("#theme-toggle-label"),
+    topbarMoreMenu: document.querySelector(".topbar-more-menu"),
+    topbarMoreToggle: document.querySelector("#topbar-more-toggle"),
+    topbarMorePanel: document.querySelector("#topbar-more-panel"),
     organize: document.querySelector("#organize-btn"),
     export: document.querySelector("#export-btn"),
     import: document.querySelector("#import-btn"),
@@ -137,6 +147,9 @@
     toast: document.querySelector("#toast"),
     startupError: document.querySelector("#startup-error"),
     startupErrorMessage: document.querySelector("#startup-error-message"),
+    backupHealth: document.querySelector("#backup-health"),
+    backupHealthMessage: document.querySelector("#backup-health-message"),
+    backupHealthExport: document.querySelector("#backup-health-export-btn"),
   };
 
   const storedFilters = getStoredFilters();
@@ -201,6 +214,62 @@
     } catch {
       // The theme still works for this session when browser privacy settings block localStorage.
     }
+  }
+
+  function closeTopbarMoreMenu({ restoreFocus = false } = {}) {
+    if (!elements.topbarMorePanel || !elements.topbarMoreToggle) return;
+    const wasOpen = !elements.topbarMorePanel.classList.contains("is-hidden");
+    elements.topbarMorePanel.classList.add("is-hidden");
+    elements.topbarMoreToggle.setAttribute("aria-expanded", "false");
+    if (restoreFocus && wasOpen) elements.topbarMoreToggle.focus();
+  }
+
+  function toggleTopbarMoreMenu() {
+    const willOpen = elements.topbarMorePanel.classList.contains("is-hidden");
+    if (!willOpen) {
+      closeTopbarMoreMenu();
+      return;
+    }
+    elements.topbarMorePanel.classList.remove("is-hidden");
+    elements.topbarMoreToggle.setAttribute("aria-expanded", "true");
+    window.requestAnimationFrame(() => elements.topbarMorePanel.querySelector("button")?.focus());
+  }
+
+  function handleTopbarMoreMenuKeydown(event) {
+    if (!["ArrowDown", "ArrowUp", "Home", "End"].includes(event.key)) return;
+    const menuItems = [...elements.topbarMorePanel.querySelectorAll("button:not(:disabled)")];
+    if (!menuItems.length) return;
+
+    event.preventDefault();
+    const currentIndex = Math.max(0, menuItems.indexOf(document.activeElement));
+    const nextIndex =
+      event.key === "Home"
+        ? 0
+        : event.key === "End"
+          ? menuItems.length - 1
+          : (currentIndex + (event.key === "ArrowDown" ? 1 : -1) + menuItems.length) % menuItems.length;
+    menuItems[nextIndex].focus();
+  }
+
+  function activeRegularFilterCount() {
+    return Number(ui.typeId !== "all") + ui.tagIds.size + Number(ui.todayOnly) + Number(ui.updatedTodayOnly);
+  }
+
+  function syncMobileFilterToggle() {
+    const activeCount = activeRegularFilterCount();
+    elements.mobileFilterCount.textContent = String(activeCount);
+    elements.mobileFilterCount.classList.toggle("is-empty", activeCount === 0);
+    elements.mobileFilterToggle.classList.toggle("has-active-filters", activeCount > 0);
+    elements.mobileFilterToggle.setAttribute(
+      "aria-label",
+      activeCount ? `Filters, ${pluralize(activeCount, "active filter")}` : "Filters",
+    );
+  }
+
+  function toggleMobileFilters() {
+    const willExpand = elements.regularFilterControls.classList.contains("is-mobile-collapsed");
+    elements.regularFilterControls.classList.toggle("is-mobile-collapsed", !willExpand);
+    elements.mobileFilterToggle.setAttribute("aria-expanded", String(willExpand));
   }
 
   function getStoredViewMode() {
@@ -295,6 +364,155 @@
     } catch {
       // Filtering still works when browser privacy settings block localStorage.
     }
+  }
+
+  function nowIso() {
+    return new Date().toISOString();
+  }
+
+  function isValidTimestamp(value) {
+    return typeof value === "string" && !Number.isNaN(new Date(value).getTime());
+  }
+
+  function clearStoredNoteDraft() {
+    try {
+      window.localStorage.removeItem(DRAFT_RECOVERY_STORAGE_KEY);
+    } catch {
+      // Saving and closing notes still works when localStorage is unavailable.
+    }
+  }
+
+  function getStoredNoteDraft() {
+    try {
+      const raw = window.localStorage.getItem(DRAFT_RECOVERY_STORAGE_KEY);
+      if (!raw) return null;
+      const value = JSON.parse(raw);
+      const draft = value?.draft;
+      if (
+        value?.version !== DRAFT_RECOVERY_VERSION ||
+        !isValidTimestamp(value.savedAt) ||
+        !draft ||
+        typeof draft.id !== "string" ||
+        typeof draft.title !== "string" ||
+        typeof draft.typeId !== "string" ||
+        !Array.isArray(draft.tagIds) ||
+        draft.tagIds.some((tagId) => typeof tagId !== "string") ||
+        typeof draft.content !== "string"
+      ) {
+        clearStoredNoteDraft();
+        return null;
+      }
+      return {
+        savedAt: value.savedAt,
+        draft: {
+          id: draft.id,
+          title: draft.title,
+          typeId: draft.typeId,
+          tagIds: [...new Set(draft.tagIds)].sort(),
+          content: draft.content,
+        },
+      };
+    } catch {
+      return null;
+    }
+  }
+
+  function syncStoredNoteDraft() {
+    if (!elements.noteDialog.open || !hasUnsavedNoteChanges()) {
+      clearStoredNoteDraft();
+      return;
+    }
+    try {
+      window.localStorage.setItem(
+        DRAFT_RECOVERY_STORAGE_KEY,
+        JSON.stringify({
+          version: DRAFT_RECOVERY_VERSION,
+          savedAt: nowIso(),
+          draft: getNoteEditorDraftData(),
+        }),
+      );
+    } catch {
+      // The existing editor and IndexedDB autosave remain available.
+    }
+  }
+
+  function createDefaultBackupHealth() {
+    return {
+      trackingStartedAt: nowIso(),
+      lastExportedAt: "",
+      editsSinceExport: 0,
+    };
+  }
+
+  function getStoredBackupHealth() {
+    const fallback = createDefaultBackupHealth();
+    try {
+      const raw = window.localStorage.getItem(BACKUP_HEALTH_STORAGE_KEY);
+      if (!raw) return fallback;
+      const value = JSON.parse(raw);
+      if (!isValidTimestamp(value?.trackingStartedAt)) return fallback;
+      return {
+        trackingStartedAt: value.trackingStartedAt,
+        lastExportedAt: isValidTimestamp(value.lastExportedAt) ? value.lastExportedAt : "",
+        editsSinceExport: Number.isInteger(value.editsSinceExport) && value.editsSinceExport >= 0 ? value.editsSinceExport : 0,
+      };
+    } catch {
+      return fallback;
+    }
+  }
+
+  function storeBackupHealth(value) {
+    try {
+      window.localStorage.setItem(BACKUP_HEALTH_STORAGE_KEY, JSON.stringify(value));
+    } catch {
+      // A missing reminder must not block local note work.
+    }
+  }
+
+  function backupHealthReferenceDate(health) {
+    return new Date(health.lastExportedAt || health.trackingStartedAt);
+  }
+
+  function backupHealthMessage(health) {
+    const referenceDate = backupHealthReferenceDate(health);
+    const daysSinceReference = Math.max(1, Math.floor((Date.now() - referenceDate.getTime()) / 86400000));
+    const hasRecordedExport = Boolean(health.lastExportedAt);
+    const dueToEdits = health.editsSinceExport >= BACKUP_REMINDER_EDIT_COUNT;
+    const dueToAge = daysSinceReference >= 14;
+    if (dueToEdits && dueToAge) {
+      return `${health.editsSinceExport} note changes · ${hasRecordedExport ? `last export ${daysSinceReference}d ago` : `no export recorded for ${daysSinceReference}d`}`;
+    }
+    if (dueToEdits) {
+      return `${health.editsSinceExport} note changes since ${hasRecordedExport ? "your last export" : "tracking began"}`;
+    }
+    return hasRecordedExport ? `Last export was ${daysSinceReference}d ago` : `No export recorded for ${daysSinceReference}d`;
+  }
+
+  function syncBackupHealth() {
+    const health = getStoredBackupHealth();
+    const referenceDate = backupHealthReferenceDate(health);
+    const dueToAge = Date.now() - referenceDate.getTime() >= BACKUP_REMINDER_AGE_MS;
+    const dueToEdits = health.editsSinceExport >= BACKUP_REMINDER_EDIT_COUNT;
+    const isDue = dueToAge || dueToEdits;
+    elements.backupHealth.classList.toggle("is-hidden", !isDue);
+    if (isDue) elements.backupHealthMessage.textContent = backupHealthMessage(health);
+  }
+
+  function recordNoteBackupChange() {
+    const health = getStoredBackupHealth();
+    const next = { ...health, editsSinceExport: health.editsSinceExport + 1 };
+    storeBackupHealth(next);
+    syncBackupHealth();
+  }
+
+  function recordBackupExport() {
+    const timestamp = nowIso();
+    storeBackupHealth({
+      trackingStartedAt: timestamp,
+      lastExportedAt: timestamp,
+      editsSinceExport: 0,
+    });
+    syncBackupHealth();
   }
 
   function usesMacKeyboardShortcuts() {
@@ -552,7 +770,7 @@
     elements.toast.classList.remove("is-visible");
   }
 
-  function requestConfirmation({ title, description, confirmLabel, cancelLabel, tone = "danger" }) {
+  function requestConfirmation({ title, description, confirmLabel, cancelLabel, tone = "danger", initialFocus = "cancel" }) {
     if (elements.confirmationDialog.open || ui.pendingConfirmation) return Promise.resolve(false);
 
     const invoker = document.activeElement instanceof HTMLElement ? document.activeElement : null;
@@ -568,7 +786,7 @@
       ui.pendingConfirmation = { resolve, invoker };
       elements.confirmationDialog.showModal();
       syncToastHost();
-      window.requestAnimationFrame(() => elements.cancelConfirmation.focus());
+      window.requestAnimationFrame(() => (initialFocus === "confirm" ? elements.confirmAction : elements.cancelConfirmation).focus());
     });
   }
 
@@ -817,6 +1035,7 @@
     elements.updatedTodayFilter.setAttribute("aria-pressed", String(ui.updatedTodayOnly));
     elements.updatedTodayFilterCount.textContent = updatedTodayCount;
     elements.emptyTrash.classList.toggle("is-hidden", !ui.trashOnly || trashCount === 0);
+    elements.mobileFilterToggle.classList.toggle("is-hidden", ui.trashOnly);
     elements.regularFilterControls.classList.toggle("is-hidden", ui.trashOnly);
     elements.typeFilterList.replaceChildren();
     const typeFragment = document.createDocumentFragment();
@@ -855,6 +1074,7 @@
     elements.tagFilterList.append(tagFragment);
     elements.tagFilterEmpty.classList.toggle("is-hidden", library.tags.length > 0);
     elements.tagFilterCount.textContent = ui.tagIds.size ? `${ui.tagIds.size} selected` : "";
+    syncMobileFilterToggle();
     syncClearFiltersState();
   }
 
@@ -1721,6 +1941,7 @@
 
   function setNoteSplitView(enabled) {
     ui.noteSplitView = Boolean(enabled);
+    elements.noteDialog.classList.toggle("is-split", ui.noteSplitView);
     elements.noteContentField.classList.toggle("is-split", ui.noteSplitView);
     elements.noteContentPreview.hidden = !ui.noteSplitView;
     elements.noteSplitViewToggle.setAttribute("aria-pressed", String(ui.noteSplitView));
@@ -1738,14 +1959,18 @@
     return elements.noteForm.querySelector('[type="submit"]');
   }
 
-  function getNoteEditorDraft() {
-    return createNoteEditorDraft({
+  function getNoteEditorDraftData() {
+    return {
       id: elements.noteId.value,
       title: elements.noteTitle.value,
       typeId: elements.noteType.value,
       tagIds: [...ui.selectedNoteTagIds],
       content: elements.noteContent.value,
-    });
+    };
+  }
+
+  function getNoteEditorDraft() {
+    return createNoteEditorDraft(getNoteEditorDraftData());
   }
 
   function createNoteEditorDraft({ id = "", title, typeId, tagIds, content }) {
@@ -1769,6 +1994,7 @@
   }
 
   function scheduleNoteAutoSave() {
+    syncStoredNoteDraft();
     clearNoteAutoSave();
     if (
       !elements.noteDialog.open ||
@@ -1916,8 +2142,46 @@
     window.requestAnimationFrame(() => elements.noteTitle.focus());
   }
 
-  function closeNoteEditor() {
+  function restoreStoredNoteDraft(recovery) {
+    const note = recovery.draft.id ? library.notes.find(({ id }) => id === recovery.draft.id) : null;
+    openNoteEditor(note || null);
+    const typeId = library.types.some(({ id }) => id === recovery.draft.typeId)
+      ? recovery.draft.typeId
+      : storage.FALLBACK_TYPE_ID;
+    elements.noteTitle.value = recovery.draft.title;
+    elements.noteContent.value = recovery.draft.content;
+    ui.selectedNoteTagIds = new Set(recovery.draft.tagIds.filter((tagId) => tagFor(tagId)));
+    renderNoteTypeOptions(typeId);
+    renderSelectedNoteTags();
+    renderTagSuggestions();
+    renderNoteEditorPreview();
+    syncStoredNoteDraft();
+    scheduleNoteAutoSave();
+    showToast("Unfinished draft restored. Save when you are ready.");
+  }
+
+  async function offerStoredNoteDraftRecovery() {
+    const recovery = getStoredNoteDraft();
+    if (!recovery) return;
+    const recovered = await requestConfirmation({
+      title: "Recover unfinished note?",
+      description: "Nook found a local draft that was not saved yet. Recover it or discard it permanently.",
+      confirmLabel: "Recover draft",
+      cancelLabel: "Discard draft",
+      tone: "primary",
+      initialFocus: "confirm",
+    });
+    if (!recovered) {
+      clearStoredNoteDraft();
+      showToast("Unfinished draft discarded.");
+      return;
+    }
+    restoreStoredNoteDraft(recovery);
+  }
+
+  function closeNoteEditor({ discardStoredDraft = false } = {}) {
     clearNoteAutoSave();
+    if (discardStoredDraft) clearStoredNoteDraft();
     ui.noteEditorSession += 1;
     ui.pendingTagCreation = null;
     ui.noteSaveInFlight = false;
@@ -1942,7 +2206,7 @@
       cancelLabel: "Keep editing",
     });
     if (confirmed && elements.noteDialog.open) {
-      closeNoteEditor();
+      closeNoteEditor({ discardStoredDraft: true });
       afterClose?.();
     }
   }
@@ -2017,6 +2281,7 @@
     ui.noteSaveInFlight = true;
     ui.noteAutoSaveInFlight = isAutoSave;
     syncNoteEditorControls();
+    const hadUnsavedChanges = hasUnsavedNoteChanges();
     const input = {
       id: elements.noteId.value || undefined,
       title: elements.noteTitle.value,
@@ -2030,6 +2295,7 @@
       const savedNote = await storage.saveNote(input);
       await refreshLibrary({ broadcast: true });
       didSave = true;
+      if (hadUnsavedChanges) recordNoteBackupChange();
       if (isCurrentNoteEditorSession(session)) {
         elements.noteId.value = savedNote.id;
         ui.editingNoteId = savedNote.id;
@@ -2038,6 +2304,7 @@
         elements.viewNoteFromEditor.classList.remove("is-hidden");
         renderNoteMetadata(savedNote);
         ui.noteEditorSnapshot = createNoteEditorDraft({ ...input, id: savedNote.id });
+        syncStoredNoteDraft();
         if (closeAfterSave) closeNoteEditor();
       }
       if (isAutoSave) showToast("Note autosaved.");
@@ -2068,7 +2335,7 @@
     try {
       await storage.deleteNote(note.id);
       await refreshLibrary({ broadcast: true });
-      if (ui.editingNoteId === note.id) closeNoteEditor();
+      if (ui.editingNoteId === note.id) closeNoteEditor({ discardStoredDraft: true });
       showToast("Note moved to Trash.", "success", {
         label: "Undo",
         onClick: async () => {
@@ -2423,6 +2690,7 @@
   }
 
   function openOrganize(tab = "types") {
+    closeTopbarMoreMenu();
     setManagementTab(tab);
     renderManagement();
     if (!elements.organizeDialog.open) elements.organizeDialog.showModal();
@@ -2531,6 +2799,7 @@
     try {
       const backup = await storage.buildExport();
       downloadExport(backup);
+      recordBackupExport();
       showToast(`Backup exported with ${pluralize(backup.data.notes.length, "note")}.`);
     } catch (error) {
       showError(error, "We could not export this backup.");
@@ -2571,6 +2840,7 @@
   }
 
   function bindEvents() {
+    elements.mobileFilterToggle.addEventListener("click", toggleMobileFilters);
     elements.createdTodayFilter.addEventListener("click", toggleTodayFilter);
     elements.updatedTodayFilter.addEventListener("click", toggleUpdatedTodayFilter);
     elements.allNotesSpace.addEventListener("click", showAllNotesSpace);
@@ -2588,9 +2858,18 @@
       }
     });
     elements.themeToggle.addEventListener("click", () => setTheme(ui.theme === "dark" ? "light" : "dark"));
+    elements.topbarMoreToggle.addEventListener("click", toggleTopbarMoreMenu);
+    elements.topbarMorePanel.addEventListener("keydown", handleTopbarMoreMenuKeydown);
     elements.organize.addEventListener("click", () => openOrganize());
-    elements.export.addEventListener("click", exportLibrary);
-    elements.import.addEventListener("click", () => elements.importInput.click());
+    elements.export.addEventListener("click", () => {
+      closeTopbarMoreMenu();
+      exportLibrary();
+    });
+    elements.import.addEventListener("click", () => {
+      closeTopbarMoreMenu();
+      elements.importInput.click();
+    });
+    elements.backupHealthExport.addEventListener("click", exportLibrary);
     elements.importInput.addEventListener("change", importLibrary);
     elements.newNote.addEventListener("click", () => openNoteEditor());
     elements.search.addEventListener("input", () => {
@@ -2670,6 +2949,7 @@
     elements.confirmAction.addEventListener("click", () => closeConfirmation(true));
     elements.confirmationDialog.addEventListener("close", finishConfirmationClose);
     window.addEventListener("resize", scheduleQuickViewHeightSync);
+    window.addEventListener("pagehide", syncStoredNoteDraft);
     elements.tagInput.addEventListener("input", normalizeTagEditorInput);
     elements.tagInput.addEventListener("keydown", (event) => {
       if (event.key === "Enter") {
@@ -2702,12 +2982,18 @@
     elements.newTypeForm.addEventListener("submit", addNewType);
     elements.newTagForm.addEventListener("submit", addNewTag);
     document.addEventListener("pointerdown", (event) => {
+      if (!elements.topbarMoreMenu.contains(event.target)) closeTopbarMoreMenu();
       openColorPickers.forEach((picker) => {
         if (!picker.select.parentElement.contains(event.target)) closeColorPicker(picker);
       });
       if (noteTypePicker && !noteTypePicker.root.contains(event.target)) closeNoteTypePicker();
     });
     document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && !elements.topbarMorePanel.classList.contains("is-hidden") && !activeModalDialog()) {
+        event.preventDefault();
+        closeTopbarMoreMenu({ restoreFocus: true });
+        return;
+      }
       const usesCommandKey = usesMacKeyboardShortcuts();
       const hasSaveModifier = usesCommandKey ? event.metaKey && !event.ctrlKey : event.ctrlKey && !event.metaKey;
       const formattingKey = event.key.toLowerCase();
@@ -2763,7 +3049,27 @@
       }
 
       const target = event.target;
-      const editingText = target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement || target instanceof HTMLSelectElement;
+      const editingText =
+        target instanceof HTMLInputElement ||
+        target instanceof HTMLTextAreaElement ||
+        target instanceof HTMLSelectElement ||
+        (target instanceof HTMLElement && target.isContentEditable);
+      const matchesQuickCaptureShortcut =
+        event.key.toLowerCase() === "c" &&
+        !event.metaKey &&
+        !event.ctrlKey &&
+        !event.altKey &&
+        !event.shiftKey &&
+        !event.repeat &&
+        !event.isComposing;
+
+      if (matchesQuickCaptureShortcut && !editingText && !activeModalDialog()) {
+        event.preventDefault();
+        closeTopbarMoreMenu();
+        openNoteEditor();
+        return;
+      }
+
       if (
         event.key === "/" &&
         !editingText &&
@@ -2798,10 +3104,13 @@
       syncThemeUI();
       syncSearchShortcutHint();
       syncNoteSaveShortcutHint();
+      storeBackupHealth(getStoredBackupHealth());
+      syncBackupHealth();
       elements.appShell.inert = false;
       elements.appShell.removeAttribute("inert");
       elements.appShell.setAttribute("aria-busy", "false");
       if (result.notice) showToast(result.notice, "error");
+      await offerStoredNoteDraftRecovery();
     } catch (error) {
       showStartupError(error);
     }
