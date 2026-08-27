@@ -13,8 +13,7 @@
   const SORT_STORAGE_KEY = "nook:notes-sort";
   const LIBRARY_CHANNEL_NAME = "nook:library";
   const DRAFT_RECOVERY_VERSION = 1;
-  const BACKUP_REMINDER_EDIT_COUNT = 12;
-  const BACKUP_REMINDER_AGE_MS = 14 * 24 * 60 * 60 * 1000;
+  const BACKUP_REMINDER_AGE_MS = 10 * 24 * 60 * 60 * 1000;
   const SORT_VALUES = [
     "created-desc",
     "created-asc",
@@ -148,8 +147,8 @@
     startupError: document.querySelector("#startup-error"),
     startupErrorMessage: document.querySelector("#startup-error-message"),
     backupHealth: document.querySelector("#backup-health"),
+    backupHealthDot: document.querySelector("#backup-health-dot"),
     backupHealthMessage: document.querySelector("#backup-health-message"),
-    backupHealthExport: document.querySelector("#backup-health-export-btn"),
   };
 
   const storedFilters = getStoredFilters();
@@ -440,7 +439,6 @@
     return {
       trackingStartedAt: nowIso(),
       lastExportedAt: "",
-      editsSinceExport: 0,
     };
   }
 
@@ -454,7 +452,6 @@
       return {
         trackingStartedAt: value.trackingStartedAt,
         lastExportedAt: isValidTimestamp(value.lastExportedAt) ? value.lastExportedAt : "",
-        editsSinceExport: Number.isInteger(value.editsSinceExport) && value.editsSinceExport >= 0 ? value.editsSinceExport : 0,
       };
     } catch {
       return fallback;
@@ -473,36 +470,37 @@
     return new Date(health.lastExportedAt || health.trackingStartedAt);
   }
 
-  function backupHealthMessage(health) {
+  function backupAgeInDays(health) {
     const referenceDate = backupHealthReferenceDate(health);
-    const daysSinceReference = Math.max(1, Math.floor((Date.now() - referenceDate.getTime()) / 86400000));
+    return Math.max(0, Math.floor((Date.now() - referenceDate.getTime()) / 86400000));
+  }
+
+  function formatBackupStatus(message) {
+    return `Stored locally · ${message}`;
+  }
+
+  function backupHealthMessage(health, daysSinceReference) {
     const hasRecordedExport = Boolean(health.lastExportedAt);
-    const dueToEdits = health.editsSinceExport >= BACKUP_REMINDER_EDIT_COUNT;
-    const dueToAge = daysSinceReference >= 14;
-    if (dueToEdits && dueToAge) {
-      return `${health.editsSinceExport} note changes · ${hasRecordedExport ? `last export ${daysSinceReference}d ago` : `no export recorded for ${daysSinceReference}d`}`;
+    if (!hasRecordedExport) return formatBackupStatus("no backup yet");
+    if (daysSinceReference === 0) return formatBackupStatus("backed up today");
+    if (daysSinceReference >= BACKUP_REMINDER_AGE_MS / 86400000) {
+      return formatBackupStatus(`no backup for ${daysSinceReference} ${daysSinceReference === 1 ? "day" : "days"}`);
     }
-    if (dueToEdits) {
-      return `${health.editsSinceExport} note changes since ${hasRecordedExport ? "your last export" : "tracking began"}`;
-    }
-    return hasRecordedExport ? `Last export was ${daysSinceReference}d ago` : `No export recorded for ${daysSinceReference}d`;
+    return formatBackupStatus(`backed up ${daysSinceReference} ${daysSinceReference === 1 ? "day" : "days"} ago`);
   }
 
   function syncBackupHealth() {
     const health = getStoredBackupHealth();
-    const referenceDate = backupHealthReferenceDate(health);
-    const dueToAge = Date.now() - referenceDate.getTime() >= BACKUP_REMINDER_AGE_MS;
-    const dueToEdits = health.editsSinceExport >= BACKUP_REMINDER_EDIT_COUNT;
-    const isDue = dueToAge || dueToEdits;
-    elements.backupHealth.classList.toggle("is-hidden", !isDue);
-    if (isDue) elements.backupHealthMessage.textContent = backupHealthMessage(health);
-  }
-
-  function recordNoteBackupChange() {
-    const health = getStoredBackupHealth();
-    const next = { ...health, editsSinceExport: health.editsSinceExport + 1 };
-    storeBackupHealth(next);
-    syncBackupHealth();
+    const daysSinceReference = backupAgeInDays(health);
+    const dueToAge = daysSinceReference >= BACKUP_REMINDER_AGE_MS / 86400000;
+    const hasRecordedExport = Boolean(health.lastExportedAt);
+    const statusClass = !hasRecordedExport
+      ? "status-dot--backup-never"
+      : dueToAge
+        ? "status-dot--backup-warning"
+        : "status-dot--backup-good";
+    elements.backupHealthDot.className = `status-dot ${statusClass}`;
+    elements.backupHealthMessage.textContent = backupHealthMessage(health, daysSinceReference);
   }
 
   function recordBackupExport() {
@@ -510,7 +508,6 @@
     storeBackupHealth({
       trackingStartedAt: timestamp,
       lastExportedAt: timestamp,
-      editsSinceExport: 0,
     });
     syncBackupHealth();
   }
@@ -2281,7 +2278,6 @@
     ui.noteSaveInFlight = true;
     ui.noteAutoSaveInFlight = isAutoSave;
     syncNoteEditorControls();
-    const hadUnsavedChanges = hasUnsavedNoteChanges();
     const input = {
       id: elements.noteId.value || undefined,
       title: elements.noteTitle.value,
@@ -2295,7 +2291,6 @@
       const savedNote = await storage.saveNote(input);
       await refreshLibrary({ broadcast: true });
       didSave = true;
-      if (hadUnsavedChanges) recordNoteBackupChange();
       if (isCurrentNoteEditorSession(session)) {
         elements.noteId.value = savedNote.id;
         ui.editingNoteId = savedNote.id;
@@ -2869,7 +2864,6 @@
       closeTopbarMoreMenu();
       elements.importInput.click();
     });
-    elements.backupHealthExport.addEventListener("click", exportLibrary);
     elements.importInput.addEventListener("change", importLibrary);
     elements.newNote.addEventListener("click", () => openNoteEditor());
     elements.search.addEventListener("input", () => {

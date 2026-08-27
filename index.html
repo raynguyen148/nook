@@ -39,17 +39,9 @@
           </span>
         </div>
 
-        <div class="storage-status" title="Your data is stored in IndexedDB in this browser.">
-          <span class="status-dot" aria-hidden="true"></span>
-          Offline · stored in this browser
-        </div>
-
-        <div id="backup-health" class="backup-health is-hidden" aria-live="polite">
-          <span class="backup-health__copy">
-            <span class="backup-health__label">Backup recommended</span>
-            <span id="backup-health-message" class="backup-health__message"></span>
-          </span>
-          <button id="backup-health-export-btn" class="text-button" type="button">Export</button>
+        <div id="backup-health" class="storage-status backup-health" aria-live="polite" title="Your notes are stored locally in this browser. This is the backup status.">
+          <span id="backup-health-dot" class="status-dot status-dot--backup-never" aria-hidden="true"></span>
+          <span id="backup-health-message">Stored locally · no backup yet</span>
         </div>
 
         <section class="space-navigation" aria-labelledby="space-navigation-heading">
@@ -201,11 +193,11 @@
                 </button>
                 <button id="export-btn" class="topbar-more-menu__item" type="button" role="menuitem" aria-label="Export backup" title="Export backup">
                   <span class="button-icon" aria-hidden="true">↓</span>
-                  <span>Export backup</span>
+                  <span>Backup</span>
                 </button>
                 <button id="import-btn" class="topbar-more-menu__item" type="button" role="menuitem" aria-label="Import backup" title="Import backup">
                   <span class="button-icon" aria-hidden="true">↑</span>
-                  <span>Import backup</span>
+                  <span>Import</span>
                 </button>
               </div>
             </div>

@@ -149,40 +149,7 @@ textarea:focus-visible {
 }
 
 .backup-health {
-  display: flex;
-  align-items: center;
-  gap: 0.55rem;
-  margin: -0.35rem 0 1rem;
-  border: 1px solid #eee2bc;
-  border-radius: 0.58rem;
-  padding: 0.52rem 0.58rem 0.52rem 0.66rem;
-  color: #796238;
-  background: #fffaf0;
-  font-size: 0.7rem;
-  line-height: 1.35;
-}
-
-.backup-health__copy {
-  display: grid;
-  min-width: 0;
-  gap: 0.08rem;
-}
-
-.backup-health__label {
-  color: #6b5426;
-  font-size: 0.68rem;
-  font-weight: 740;
-}
-
-.backup-health__message {
-  color: #8c7955;
-}
-
-.backup-health .text-button {
-  flex: none;
-  padding-inline: 0.22rem;
-  color: #8f6500;
-  font-size: 0.7rem;
+  margin-top: -0.35rem;
 }
 
 .status-dot {
@@ -192,6 +159,21 @@ textarea:focus-visible {
   border-radius: 50%;
   background: #39a57a;
   box-shadow: 0 0 0 3px rgb(57 165 122 / 13%);
+}
+
+.status-dot--backup-good {
+  background: #39a57a;
+  box-shadow: 0 0 0 3px rgb(57 165 122 / 13%);
+}
+
+.status-dot--backup-warning {
+  background: #d18a2d;
+  box-shadow: 0 0 0 3px rgb(209 138 45 / 15%);
+}
+
+.status-dot--backup-never {
+  background: #cf5c5c;
+  box-shadow: 0 0 0 3px rgb(207 92 92 / 15%);
 }
 
 .filter-heading,
@@ -3671,20 +3653,6 @@ html[data-theme="dark"] .storage-status {
   border-color: #2c374c;
   color: #9ba8bd;
   background: #1b2333;
-}
-
-html[data-theme="dark"] .backup-health {
-  border-color: #5c4b26;
-  color: #d8c69d;
-  background: #2b261a;
-}
-
-html[data-theme="dark"] .backup-health__label {
-  color: #e2cb93;
-}
-
-html[data-theme="dark"] .backup-health__message {
-  color: #b6a783;
 }
 
 html[data-theme="dark"] .text-button {
