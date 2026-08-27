@@ -27,13 +27,7 @@ body {
   min-width: 320px;
   min-height: 100vh;
   margin: 0;
-  background:
-    radial-gradient(
-      circle at 77% -8%,
-      rgb(224 231 255 / 65%),
-      transparent 28rem
-    ),
-    linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #f8fafc 100%);
+  background: #f8fafc;
 }
 
 button,
@@ -3651,9 +3645,7 @@ html[data-theme="dark"] {
 
 html[data-theme="dark"] body {
   color: #f8fafc;
-  background:
-    radial-gradient(circle at 77% -8%, rgb(49 46 129 / 25%), transparent 28rem),
-    linear-gradient(135deg, #0b0f19 0%, #0f172a 50%, #0b0f19 100%);
+  background: #0b0f19;
 }
 
 html[data-theme="dark"] .sidebar {
@@ -4535,23 +4527,11 @@ html[data-theme="dark"] {
 }
 
 body {
-  background:
-    radial-gradient(
-      circle at 77% -8%,
-      rgb(253 245 219 / 80%),
-      transparent 28rem
-    ),
-    linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #f8fafc 100%);
+  background: #f8fafc;
 }
 
 html[data-theme="dark"] body {
-  background:
-    radial-gradient(
-      circle at 77% -8%,
-      rgb(196 136 5 / 16%),
-      transparent 28rem
-    ),
-    linear-gradient(135deg, #0b0f19 0%, #0f172a 50%, #0b0f19 100%);
+  background: #0b0f19;
 }
 
 button:focus-visible,
