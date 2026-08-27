@@ -77,25 +77,28 @@ textarea:focus-visible {
 
 .app-shell {
   display: grid;
-  grid-template-columns: 256px minmax(0, 1fr);
+  grid-template-columns: 276px minmax(0, 1fr);
   min-height: 100vh;
+  min-height: 100dvh;
 }
 
 .sidebar {
   position: sticky;
-  top: 0;
+  top: 1.25rem;
   align-self: start;
   display: flex;
   flex-direction: column;
-  height: 100vh;
-  height: 100dvh;
+  height: calc(100vh - 2.5rem);
+  height: calc(100dvh - 2.5rem);
   min-height: 0;
+  margin: 1.25rem 0 1.25rem 1.25rem;
   overflow-y: auto;
   overscroll-behavior: contain;
-  padding: 1.55rem 1rem 1.15rem;
-  border-right: 1px solid #e6e9f0;
-  background: rgb(255 255 255 / 91%);
-  backdrop-filter: blur(15px);
+  padding: 1.35rem 1rem 1.15rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 1.1rem;
+  background: #ffffff;
+  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05), 0 2px 6px -1px rgba(15, 23, 42, 0.03);
 }
 
 .brand {
@@ -498,7 +501,7 @@ textarea:focus-visible {
   width: min(100%, 1540px);
   min-width: 0;
   margin: 0 auto;
-  padding: clamp(1.75rem, 4vw, 3.35rem) clamp(1.15rem, 4.4vw, 4.4rem) 3rem;
+  padding: 1.25rem clamp(1.25rem, 3.5vw, 3.5rem) 3rem;
 }
 
 .topbar {
@@ -3133,11 +3136,18 @@ select::-ms-expand {
 
 @media (max-width: 1080px) {
   .app-shell {
-    grid-template-columns: 238px minmax(0, 1fr);
+    grid-template-columns: 250px minmax(0, 1fr);
+  }
+
+  .sidebar {
+    margin: 1rem 0 1rem 1rem;
+    height: calc(100vh - 2rem);
+    height: calc(100dvh - 2rem);
+    top: 1rem;
   }
 
   .workspace {
-    padding-inline: clamp(1.25rem, 4vw, 2.8rem);
+    padding-inline: clamp(1rem, 3vw, 2.2rem);
   }
 
   .topbar {
@@ -3189,13 +3199,15 @@ select::-ms-expand {
     display: grid;
     height: auto;
     min-height: 0;
+    margin: 1rem 1rem 0;
     overflow: visible;
     overscroll-behavior: auto;
     grid-template-columns: minmax(0, 1fr) auto;
     column-gap: 1.25rem;
     padding: 1.1rem 1.25rem 1rem;
-    border-right: 0;
-    border-bottom: 1px solid #e6e9f0;
+    border: 1px solid #e2e8f0;
+    border-radius: 1.1rem;
+    box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05), 0 2px 6px -1px rgba(15, 23, 42, 0.03);
   }
 
   .sidebar > * {
@@ -3332,7 +3344,7 @@ select::-ms-expand {
   }
 
   .workspace {
-    padding-top: 2.15rem;
+    padding: 1.25rem 1rem 2.5rem;
   }
 }
 
@@ -3349,7 +3361,9 @@ select::-ms-expand {
 
   .sidebar {
     grid-template-columns: 1fr;
-    padding-inline: 1rem;
+    margin: 0.75rem 0.75rem 0;
+    padding: 1rem;
+    border-radius: 0.95rem;
   }
 
   .storage-status {
@@ -3358,7 +3372,7 @@ select::-ms-expand {
   }
 
   .workspace {
-    padding: 1.75rem 0.85rem 2.3rem;
+    padding: 1rem 0.75rem 2rem;
   }
 
   .topbar {
@@ -5423,8 +5437,8 @@ html[data-theme="dark"] ::selection {
 }
 
 .sidebar {
-  border-right-color: #e2e8f0;
-  background: linear-gradient(180deg, rgb(255 255 255 / 98%), rgb(248 250 252 / 94%));
+  border-color: #e2e8f0;
+  background: #ffffff;
 }
 
 .brand {
@@ -5587,8 +5601,8 @@ html[data-theme="dark"] ::selection {
 }
 
 html[data-theme="dark"] .sidebar {
-  border-right-color: #303a4e;
-  background: linear-gradient(180deg, rgb(25 33 49 / 96%), rgb(20 27 41 / 94%));
+  border-color: #1e293b;
+  background: #0f172a;
 }
 
 html[data-theme="dark"] .storage-status {
