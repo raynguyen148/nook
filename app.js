@@ -58,6 +58,10 @@
     clearFilters: document.querySelector("#clear-filters-btn"),
     toastMessage: document.querySelector("#toast-message"),
     toastAction: document.querySelector("#toast-action"),
+    topbar: document.querySelector(".topbar"),
+    topbarActions: document.querySelector(".topbar-actions"),
+    notesPanel: document.querySelector(".notes-panel"),
+    toolbar: document.querySelector(".toolbar"),
     themeToggle: document.querySelector("#theme-toggle"),
     themeToggleLabel: document.querySelector("#theme-toggle-label"),
     topbarMoreMenu: document.querySelector(".topbar-more-menu"),
@@ -185,6 +189,10 @@
     toastTimer: 0,
     toastAction: null,
     searchRenderTimer: 0,
+    topbarActionsPinned: false,
+    topbarActionsPinStart: 0,
+    topbarActionsPinEnd: 0,
+    topbarActionsPinFrame: 0,
   };
 
   function getStoredTheme() {
@@ -213,6 +221,67 @@
     } catch {
       // The theme still works for this session when browser privacy settings block localStorage.
     }
+  }
+
+  function measureTopbarActionsPinBounds() {
+    if (ui.topbarActionsPinned) return;
+    const bounds = elements.topbarActions.getBoundingClientRect();
+    ui.topbarActionsPinStart = window.scrollY + bounds.top;
+    ui.topbarActionsPinEnd = window.scrollY + bounds.bottom;
+  }
+
+  function setTopbarActionsPinned(pinned) {
+    if (pinned === ui.topbarActionsPinned) return;
+
+    if (pinned) {
+      const actionBounds = elements.topbarActions.getBoundingClientRect();
+      const toolbarBounds = elements.toolbar.getBoundingClientRect();
+      elements.appShell.style.setProperty("--pinned-actions-height", `${actionBounds.height}px`);
+      elements.notesPanel.style.setProperty("--pinned-toolbar-height", `${toolbarBounds.height}px`);
+    } else {
+      elements.appShell.style.removeProperty("--pinned-actions-height");
+      elements.appShell.style.removeProperty("--pinned-actions-width");
+      elements.appShell.style.removeProperty("--pinned-toolbar-left");
+      elements.appShell.style.removeProperty("--pinned-controls-right");
+      elements.notesPanel.style.removeProperty("--pinned-toolbar-height");
+    }
+
+    ui.topbarActionsPinned = pinned;
+    elements.topbar.classList.toggle("is-actions-pinned", pinned);
+    elements.topbarActions.classList.toggle("is-pinned", pinned);
+    elements.notesPanel.classList.toggle("is-toolbar-pinned", pinned);
+    elements.toolbar.classList.toggle("is-pinned", pinned);
+    if (pinned) syncPinnedTopbarControlMetrics();
+  }
+
+  function syncPinnedTopbarControlMetrics() {
+    if (!ui.topbarActionsPinned) return;
+    const actionBounds = elements.topbarActions.getBoundingClientRect();
+    const topbarBounds = elements.topbar.getBoundingClientRect();
+    elements.appShell.style.setProperty("--pinned-actions-height", `${actionBounds.height}px`);
+    elements.appShell.style.setProperty("--pinned-actions-width", `${actionBounds.width}px`);
+    elements.appShell.style.setProperty("--pinned-toolbar-left", `${topbarBounds.left}px`);
+    elements.appShell.style.setProperty("--pinned-controls-right", `${document.documentElement.clientWidth - topbarBounds.right}px`);
+  }
+
+  function updateTopbarActionsPinning() {
+    const scrollTop = window.scrollY;
+
+    if (!ui.topbarActionsPinned) {
+      measureTopbarActionsPinBounds();
+      if (scrollTop > ui.topbarActionsPinEnd) setTopbarActionsPinned(true);
+      return;
+    }
+
+    if (scrollTop <= ui.topbarActionsPinStart) setTopbarActionsPinned(false);
+  }
+
+  function scheduleTopbarActionsPinning() {
+    if (ui.topbarActionsPinFrame) return;
+    ui.topbarActionsPinFrame = window.requestAnimationFrame(() => {
+      ui.topbarActionsPinFrame = 0;
+      updateTopbarActionsPinning();
+    });
   }
 
   function closeTopbarMoreMenu({ restoreFocus = false } = {}) {
@@ -2942,7 +3011,12 @@
     elements.cancelConfirmation.addEventListener("click", () => closeConfirmation());
     elements.confirmAction.addEventListener("click", () => closeConfirmation(true));
     elements.confirmationDialog.addEventListener("close", finishConfirmationClose);
-    window.addEventListener("resize", scheduleQuickViewHeightSync);
+    window.addEventListener("resize", () => {
+      scheduleQuickViewHeightSync();
+      scheduleTopbarActionsPinning();
+      window.requestAnimationFrame(syncPinnedTopbarControlMetrics);
+    });
+    window.addEventListener("scroll", scheduleTopbarActionsPinning, { passive: true });
     window.addEventListener("pagehide", syncStoredNoteDraft);
     elements.tagInput.addEventListener("input", normalizeTagEditorInput);
     elements.tagInput.addEventListener("keydown", (event) => {
@@ -3103,6 +3177,7 @@
       elements.appShell.inert = false;
       elements.appShell.removeAttribute("inert");
       elements.appShell.setAttribute("aria-busy", "false");
+      scheduleTopbarActionsPinning();
       if (result.notice) showToast(result.notice, "error");
       await offerStoredNoteDraftRecovery();
     } catch (error) {
