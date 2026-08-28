@@ -19,33 +19,59 @@ interview practice, and personal ideas in one searchable local library.
 - Move notes to Trash, restore them, undo a move, or permanently empty Trash.
 - Copy raw Markdown or export an individual note as `.md` or `.txt`.
 - Export and import a complete JSON backup of the local library.
+- See whether the library has a recent backup and get a reminder when the backup is missing or old.
 - Manage note types and tags from the Organize notes dialog.
 - Switch between light and dark themes and Focus, Comfortable, and Compact layouts.
 - Keep the library usable across multiple open tabs when the browser supports `BroadcastChannel`.
+- Use `C` for quick capture from the library, plus platform-aware editor shortcuts for formatting and saving.
 
 ## Screenshots
 
-These screenshots use a representative local library with 25 sample notes, multiple note types and tags, Markdown content, and pinned notes. Nook keeps this data in the current browser's IndexedDB; no note content is sent to a server.
+These screenshots use a representative local library with 9 demo notes, multiple note types and tags, Markdown content, and a pinned note. Nook keeps this data in the current browser's IndexedDB; no note content is sent to a server.
 
 ### Main library
 
-![Nook main library with sample notes, note types, tags, and pinned notes](docs/screenshots/nook-library.jpg)
+![Nook main library with note types, tags, and a pinned note](docs/screenshots/nook-library.jpg)
+
+### Combined filters
+
+![Nook filtered by the Project type and javascript tag](docs/screenshots/nook-filters.jpg)
+
+### Dark theme
+
+![Nook main library in dark theme](docs/screenshots/nook-dark.jpg)
 
 ### Markdown editor
 
-![Nook edit dialog showing raw Markdown content](docs/screenshots/nook-markdown-editor.jpg)
+![Nook edit dialog showing raw Markdown, tags, quick save, and save-and-close actions](docs/screenshots/nook-editor.jpg)
 
 ### Split editor and preview
 
 ![Nook split view showing raw Markdown beside the rendered preview](docs/screenshots/nook-split-view.jpg)
 
-### Pinned notes
+### Quick View
 
-![Nook library with pinned notes kept at the top of the results](docs/screenshots/nook-pinned-notes.jpg)
+![Nook Quick View rendering a Markdown note with tags and export actions](docs/screenshots/nook-quick-view.jpg)
 
-### Combined filters
+### Organize notes
 
-![Nook filtering by Project, backend, and javascript to show four matching notes](docs/screenshots/nook-filters.jpg)
+![Nook Organize notes dialog for managing note types](docs/screenshots/nook-organize.jpg)
+
+### Trash
+
+![Nook Trash with restore, permanent delete, and Empty Trash actions](docs/screenshots/nook-trash.jpg)
+
+### Mobile library
+
+![Nook responsive mobile library with collapsed filters](docs/screenshots/nook-mobile.jpg)
+
+### Mobile filters
+
+![Nook responsive mobile filters expanded](docs/screenshots/nook-mobile-filters.jpg)
+
+### Mobile editor
+
+![Nook full-screen mobile note editor](docs/screenshots/nook-mobile-editor.jpg)
 
 ## Quick start
 
@@ -100,6 +126,7 @@ for reading.
 - Remove individual filters from the active-filter pills or select **Clear**.
 - Choose a sort order from the toolbar. Pinned notes remain above unpinned notes.
 - Use the Focus, Comfortable, and Compact buttons to change the card layout.
+- On a narrow screen, open **Filters** to reveal the note spaces, date filters, types, and tags without leaving the library.
 
 The **Organize notes** dialog lets you add, rename, recolor, and delete note
 types and tags. Every note belongs to one type. The built-in **General** type
@@ -135,6 +162,8 @@ The modifier is `Command` on macOS and `Control` on Windows/Linux.
 | `⌘/Ctrl + Enter` | Save and close the editor |
 
 The editor footer includes an accessible shortcut and Markdown guide.
+
+From the library, press `C` when focus is not inside a form field and no dialog is open to start a new note. This avoids browser-reserved new-window shortcuts such as `⌘/Ctrl + N`.
 
 ## Markdown support
 
