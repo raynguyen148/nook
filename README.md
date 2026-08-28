@@ -27,15 +27,19 @@ interview practice, and personal ideas in one searchable local library.
 
 ## Screenshots
 
-These screenshots use a representative local library with 9 demo notes, multiple note types and tags, Markdown content, and a pinned note. Nook keeps this data in the current browser's IndexedDB; no note content is sent to a server.
+These screenshots use a representative local library with 12 demo notes, seven note types, three sample tags, two pinned notes, and a recent backup indicator. Nook keeps this data in the current browser's IndexedDB; no note content is sent to a server.
 
 ### Main library
 
-![Nook main library with note types, tags, and a pinned note](docs/screenshots/nook-library.jpg)
+![Nook desktop library in compact four-column layout with two pinned notes and a short tag list](docs/screenshots/nook-library.jpg)
+
+### Comfortable two-column layout
+
+![Nook desktop library in comfortable two-column layout](docs/screenshots/nook-comfortable.jpg)
 
 ### Combined filters
 
-![Nook filtered by the Project type and javascript tag](docs/screenshots/nook-filters.jpg)
+![Nook desktop library filtered by the Project type and dev tag](docs/screenshots/nook-filters.jpg)
 
 ### Dark theme
 
