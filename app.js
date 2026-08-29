@@ -6,6 +6,7 @@
   const NOTE_AUTO_SAVE_DELAY = 5000;
   const SEARCH_RENDER_DELAY = 150;
   const THEME_STORAGE_KEY = "nook:theme";
+  const SIDEBAR_COLLAPSED_STORAGE_KEY = "nook:sidebar-collapsed";
   const VIEW_MODE_STORAGE_KEY = "nook:notes-view-mode";
   const FILTER_STORAGE_KEY = "nook:active-filters";
   const DRAFT_RECOVERY_STORAGE_KEY = "nook:note-editor-draft";
@@ -158,12 +159,15 @@
     backupHealth: document.querySelector("#backup-health"),
     backupHealthDot: document.querySelector("#backup-health-dot"),
     backupHealthMessage: document.querySelector("#backup-health-message"),
+    sidebar: document.querySelector(".sidebar"),
+    sidebarToggle: document.querySelector("#sidebar-toggle-btn"),
   };
 
   const storedFilters = getStoredFilters();
   const library = { notes: [], types: [], tags: [], searchIndex: new Map() };
   const ui = {
     theme: getStoredTheme(),
+    sidebarCollapsed: getStoredSidebarCollapsed(),
     query: "",
     typeId: storedFilters.trashOnly ? "all" : storedFilters.typeId,
     tagIds: storedFilters.trashOnly ? new Set() : storedFilters.tagIds,
@@ -228,6 +232,38 @@
       window.localStorage.setItem(THEME_STORAGE_KEY, theme);
     } catch {
       // The theme still works for this session when browser privacy settings block localStorage.
+    }
+  }
+
+  function getStoredSidebarCollapsed() {
+    try {
+      return window.localStorage.getItem(SIDEBAR_COLLAPSED_STORAGE_KEY) === "true";
+    } catch {
+      return false;
+    }
+  }
+
+  function syncSidebarUI() {
+    const isCollapsed = ui.sidebarCollapsed;
+    document.documentElement.dataset.sidebarCollapsed = String(isCollapsed);
+    elements.appShell.classList.toggle("is-sidebar-collapsed", isCollapsed);
+    if (elements.sidebarToggle) {
+      const shortcutModifier = usesMacKeyboardShortcuts() ? "⌘\\" : "Ctrl+\\";
+      const actionLabel = isCollapsed ? "Expand sidebar" : "Collapse sidebar";
+      elements.sidebarToggle.setAttribute("aria-expanded", String(!isCollapsed));
+      elements.sidebarToggle.setAttribute("aria-label", actionLabel);
+      elements.sidebarToggle.title = `${actionLabel} (${shortcutModifier})`;
+    }
+  }
+
+  function toggleSidebar(collapsed = !ui.sidebarCollapsed) {
+    if (ui.sidebarCollapsed === collapsed) return;
+    ui.sidebarCollapsed = collapsed;
+    syncSidebarUI();
+    try {
+      window.localStorage.setItem(SIDEBAR_COLLAPSED_STORAGE_KEY, String(collapsed));
+    } catch {
+      // The sidebar state still works for this session when browser privacy settings block localStorage.
     }
   }
 
@@ -1095,9 +1131,12 @@
     }).length;
     const trashCount = library.notes.filter(isDeletedNote).length;
 
+    const allNotesCount = library.notes.filter((note) => !isDeletedNote(note)).length;
     elements.notesHeading.textContent = ui.trashOnly ? "Trash" : "All notes";
-    elements.allNotesSpaceCount.textContent = library.notes.filter((note) => !isDeletedNote(note)).length;
+    elements.allNotesSpaceCount.textContent = allNotesCount;
+    elements.allNotesSpace.title = `All notes (${allNotesCount})`;
     elements.trashSpaceCount.textContent = trashCount;
+    elements.trashSpace.title = `Trash (${trashCount})`;
     elements.allNotesSpace.classList.toggle("is-active", !ui.trashOnly);
     elements.allNotesSpace.setAttribute("aria-pressed", String(!ui.trashOnly));
     elements.trashSpace.classList.toggle("is-active", ui.trashOnly);
@@ -1105,24 +1144,31 @@
     elements.createdTodayFilter.classList.toggle("is-active", ui.todayOnly);
     elements.createdTodayFilter.setAttribute("aria-pressed", String(ui.todayOnly));
     elements.createdTodayFilterCount.textContent = todayCount;
+    elements.createdTodayFilter.title = `Created Today (${todayCount})`;
     elements.updatedTodayFilter.classList.toggle("is-active", ui.updatedTodayOnly);
     elements.updatedTodayFilter.setAttribute("aria-pressed", String(ui.updatedTodayOnly));
     elements.updatedTodayFilterCount.textContent = updatedTodayCount;
+    elements.updatedTodayFilter.title = `Updated Today (${updatedTodayCount})`;
     elements.emptyTrash.classList.toggle("is-hidden", !ui.trashOnly || trashCount === 0);
     elements.mobileFilterToggle.classList.toggle("is-hidden", ui.trashOnly);
     elements.regularFilterControls.classList.toggle("is-hidden", ui.trashOnly);
     elements.typeFilterList.replaceChildren();
     const typeFragment = document.createDocumentFragment();
     library.types.forEach((type) => {
+      const typeCount = noteCountsByType.get(type.id) || 0;
       const button = createElement("button", {
         className: `sidebar-filter sidebar-filter--type sidebar-filter--${safeTypeColor(type)}${ui.typeId === type.id ? " is-active" : ""}`,
         type: "button",
-        attributes: { "aria-pressed": String(ui.typeId === type.id) },
+        attributes: {
+          "aria-pressed": String(ui.typeId === type.id),
+          "aria-label": `Filter by type ${type.name} (${typeCount})`,
+        },
       });
+      button.title = `${type.name} (${typeCount})`;
       const label = createElement("span", { className: "sidebar-filter__label" });
       label.append(createElement("span", { className: `type-dot type-dot--${safeTypeColor(type)}` }));
       label.append(document.createTextNode(type.name));
-      button.append(label, createElement("span", { className: "filter-count", text: noteCountsByType.get(type.id) || 0 }));
+      button.append(label, createElement("span", { className: "filter-count", text: typeCount }));
       button.addEventListener("click", () => setTypeFilter(type.id));
       typeFragment.append(button);
     });
@@ -1131,18 +1177,22 @@
     elements.tagFilterList.replaceChildren();
     const tagFragment = document.createDocumentFragment();
     library.tags.forEach((tag) => {
-      const label = createElement("label", { className: "tag-filter-option" });
+      const tagCount = noteCountsByTag.get(tag.id) || 0;
+      const label = createElement("label", {
+        className: "tag-filter-option",
+        attributes: { title: `${tagLabel(tag)} (${tagCount})` },
+      });
       const input = createElement("input", {
         type: "checkbox",
         value: tag.id,
-        attributes: { "aria-label": `Filter by tag ${tagLabel(tag)}` },
+        attributes: { "aria-label": `Filter by tag ${tagLabel(tag)} (${tagCount})` },
       });
       input.checked = ui.tagIds.has(tag.id);
       input.addEventListener("change", () => toggleTagFilter(tag.id));
       label.append(input);
       label.append(createElement("span", { className: "tag-filter-option__box", attributes: { "aria-hidden": "true" } }));
       label.append(createElement("span", { className: "tag-filter-option__name", text: tagLabel(tag) }));
-      label.append(createElement("span", { className: "filter-count", text: noteCountsByTag.get(tag.id) || 0 }));
+      label.append(createElement("span", { className: "filter-count", text: tagCount }));
       tagFragment.append(label);
     });
     elements.tagFilterList.append(tagFragment);
@@ -3040,6 +3090,7 @@
 
   function bindEvents() {
     elements.mobileFilterToggle.addEventListener("click", toggleMobileFilters);
+    elements.sidebarToggle?.addEventListener("click", () => toggleSidebar());
     elements.createdTodayFilter.addEventListener("click", toggleTodayFilter);
     elements.updatedTodayFilter.addEventListener("click", toggleUpdatedTodayFilter);
     elements.allNotesSpace.addEventListener("click", showAllNotesSpace);
@@ -3273,6 +3324,19 @@
         return;
       }
 
+      const matchesSidebarShortcut =
+        event.key === "\\" &&
+        !event.altKey &&
+        !event.shiftKey &&
+        hasSaveModifier &&
+        !activeModalDialog();
+
+      if (matchesSidebarShortcut) {
+        event.preventDefault();
+        toggleSidebar();
+        return;
+      }
+
       const matchesQuickViewEditShortcut =
         elements.quickViewDialog.open &&
         activeModalDialog() === elements.quickViewDialog &&
@@ -3364,6 +3428,7 @@
       bindEvents();
       setupLibrarySync();
       syncThemeUI();
+      syncSidebarUI();
       syncSearchShortcutHint();
       syncNoteSaveShortcutHint();
       storeBackupHealth(getStoredBackupHealth());

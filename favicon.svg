@@ -1,13 +1,30 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
   <defs>
-    <linearGradient id="personal-notes-gradient" x1="14" y1="10" x2="50" y2="54" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#856100" />
-      <stop offset="1" stop-color="#b18714" />
+    <linearGradient id="nook-brand-gradient" x1="12" y1="6" x2="52" y2="58" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#a37102" />
+      <stop offset="0.55" stop-color="#936402" />
+      <stop offset="1" stop-color="#734e00" />
     </linearGradient>
+    <linearGradient id="nook-right-stem-gradient" x1="38" y1="15" x2="46" y2="49" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#f0f5fa" />
+      <stop offset="0.65" stop-color="#e1ebf4" />
+      <stop offset="1" stop-color="#d3dfec" />
+    </linearGradient>
+    <linearGradient id="nook-top-crease-gradient" x1="18" y1="15" x2="26" y2="28.5" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#cfdce8" />
+      <stop offset="0.75" stop-color="#e8f0f7" stop-opacity="0.8" />
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0" />
+    </linearGradient>
+    <filter id="nook-ribbon-shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="-1.2" dy="1.2" stdDeviation="1.5" flood-color="#000000" flood-opacity="0.18" />
+    </filter>
   </defs>
-  <rect x="2" y="2" width="60" height="60" rx="18" fill="url(#personal-notes-gradient)" />
-  <g transform="translate(5.45 3.2) scale(0.9)" fill="none" stroke="#fff" stroke-width="4.6" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M17 12h21l9 9v31H17a5 5 0 0 1-5-5V17a5 5 0 0 1 5-5Z" />
-    <path d="M38 12v10h9M21 32h20M21 42h14" />
-  </g>
+  <!-- Symmetrical Squircle Background -->
+  <rect x="2" y="2" width="60" height="60" rx="16" fill="url(#nook-brand-gradient)" />
+  <!-- Right Vertical Stem (Back Facet) -->
+  <path d="M 38,15 L 46,15 L 46,49 L 38,49 Z" fill="url(#nook-right-stem-gradient)" />
+  <!-- Left Stem & Diagonal Ribbon (Front Pure White #FFFFFF) -->
+  <path d="M 18,15 L 26,15 L 46,49 L 38,49 L 26,28.5 L 26,49 L 18,49 Z" fill="#ffffff" filter="url(#nook-ribbon-shadow)" />
+  <!-- Top-Left Fold Crease Overlay -->
+  <path d="M 18,15 L 26,15 L 26,28.5 Z" fill="url(#nook-top-crease-gradient)" />
 </svg>
