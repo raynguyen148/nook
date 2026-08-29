@@ -358,17 +358,16 @@
           <div id="notes-list" class="notes-list" tabindex="-1" aria-busy="true"></div>
           <nav id="pagination" class="pagination is-hidden" aria-label="Notes pagination"></nav>
         </section>
-      </section>
-    </main>
 
-    <dialog id="note-dialog" class="app-dialog note-dialog" tabindex="-1" aria-labelledby="note-dialog-title">
+        <section id="note-detail-workspace" class="note-detail-workspace is-hidden" aria-label="Note detail">
+          <section id="note-dialog" class="note-detail-surface note-dialog is-hidden" tabindex="-1" aria-labelledby="note-dialog-title">
       <form id="note-form" novalidate>
         <div class="dialog-header">
           <div>
             <p class="eyebrow">Personal note</p>
             <h2 id="note-dialog-title">New note</h2>
           </div>
-          <button id="close-note-dialog-btn" class="icon-button" type="button" aria-label="Close note editor">×</button>
+          <button id="close-note-dialog-btn" class="icon-button detail-close-button" type="button" aria-label="Close note" title="Close note">×</button>
         </div>
 
         <div class="dialog-body">
@@ -561,7 +560,7 @@
             </div>
           </div>
           <div class="dialog-footer__actions">
-            <button id="cancel-note-btn" class="button button-secondary" type="button">Cancel</button>
+            <button id="cancel-note-btn" class="button button-secondary" type="button">Close</button>
             <button
               id="quick-save-note-btn"
               class="icon-button quick-save-note-button"
@@ -578,15 +577,15 @@
           </div>
         </div>
       </form>
-    </dialog>
+          </section>
 
-    <dialog id="quick-view-dialog" class="app-dialog quick-view-dialog" aria-labelledby="quick-view-title">
+          <section id="quick-view-dialog" class="note-detail-surface quick-view-dialog is-hidden" aria-labelledby="quick-view-title">
       <div class="dialog-header quick-view-header">
         <div class="quick-view-heading">
-          <p class="eyebrow">Quick view</p>
+          <p class="eyebrow">Note detail</p>
           <h2 id="quick-view-title"></h2>
         </div>
-        <button id="close-quick-view-btn" class="icon-button" type="button" aria-label="Close quick view">×</button>
+        <button id="close-quick-view-btn" class="icon-button detail-close-button" type="button" aria-label="Close note" title="Close note">×</button>
       </div>
 
       <div class="quick-view-body">
@@ -647,7 +646,10 @@
           <button id="close-quick-view-footer-btn" class="button button-secondary" type="button">Close</button>
         </div>
       </div>
-    </dialog>
+          </section>
+        </section>
+      </section>
+    </main>
 
     <dialog id="confirmation-dialog" class="app-dialog confirmation-dialog" aria-labelledby="confirmation-dialog-title" aria-describedby="confirmation-dialog-description">
       <div class="dialog-header confirmation-dialog__header">

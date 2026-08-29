@@ -49,7 +49,7 @@ button:focus-visible,
 input:focus-visible,
 select:focus-visible,
 textarea:focus-visible {
-  outline: 3px solid rgb(111 120 255 / 32%);
+  outline: 2px solid var(--primary-accent);
   outline-offset: 2px;
 }
 
@@ -853,6 +853,86 @@ h2 {
   justify-content: space-between;
   gap: 1rem;
   margin-bottom: 1.25rem;
+}
+
+/* Note details live in the workspace so reading and editing retain library context. */
+.workspace.is-note-detail-open > .topbar,
+.workspace.is-note-detail-open > .notes-panel {
+  display: none;
+}
+
+.note-detail-workspace {
+  width: min(100%, 1280px);
+  margin: 0 auto;
+  animation: note-detail-enter 220ms cubic-bezier(0.2, 0, 0, 1) both;
+}
+
+.note-detail-surface {
+  display: grid;
+  min-width: 0;
+  min-height: min(62rem, calc(100dvh - 2.5rem));
+  border: 1px solid #dfe3ec;
+  border-radius: 1.1rem;
+  color: #263143;
+  background: #fff;
+  box-shadow: 0 14px 42px rgb(23 30 56 / 12%);
+}
+
+.note-detail-surface .dialog-header {
+  align-items: center;
+}
+
+.note-detail-surface.note-dialog {
+  width: auto;
+  max-height: none;
+}
+
+.note-detail-surface.note-dialog form {
+  display: grid;
+  min-height: min(62rem, calc(100dvh - 2.5rem));
+  max-height: none;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+}
+
+.note-detail-surface .dialog-body,
+.note-detail-surface .quick-view-body {
+  min-height: 0;
+}
+
+.note-detail-surface.quick-view-dialog {
+  width: auto;
+  max-height: none;
+  min-height: min(46rem, calc(100dvh - 2.5rem));
+  grid-template-rows: auto minmax(0, 1fr) auto;
+}
+
+.note-detail-surface .quick-view-body {
+  max-height: none;
+}
+
+.note-card.is-detail-source {
+  border-color: var(--primary-accent-border, #d7aa45);
+  box-shadow: 0 0 0 3px var(--primary-accent-soft, #fff5d9), 0 12px 28px rgb(23 30 56 / 12%);
+}
+
+.note-detail-transition-card {
+  position: fixed;
+  z-index: 20;
+  margin: 0;
+  pointer-events: none;
+  transform-origin: top left;
+}
+
+@keyframes note-detail-enter {
+  from {
+    opacity: 0;
+    transform: translateY(1rem) scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .notes-count {
@@ -5576,7 +5656,8 @@ html[data-theme="dark"] .startup-error p {
   display: grid;
   min-height: 0;
   min-width: 0;
-  height: clamp(14rem, 42dvh, 32rem);
+  height: clamp(11rem, 24dvh, 18rem);
+  max-height: min(54dvh, 34rem);
 }
 
 .note-editor-pane {
@@ -5696,7 +5777,8 @@ html[data-theme="dark"] .note-editor-mode__tooltip {
 
 @media (max-width: 620px) {
   .note-content-editor {
-    height: clamp(12rem, 42dvh, 24rem);
+    height: clamp(10rem, 32dvh, 16rem);
+    max-height: min(56dvh, 27rem);
   }
 
   .note-content-field.is-split .note-content-editor {
@@ -5981,7 +6063,37 @@ html[data-theme="dark"] .dialog-header {
   background: linear-gradient(180deg, #202a3b, #1e2839);
 }
 
+html[data-theme="dark"] .note-detail-surface {
+  border-color: #334155;
+  color: #e5edf7;
+  background: #182235;
+  box-shadow: 0 18px 46px rgb(0 0 0 / 24%);
+}
+
+html[data-theme="dark"] .note-card.is-detail-source {
+  border-color: #8f690a;
+  box-shadow: 0 0 0 3px rgb(114 82 5 / 32%), 0 12px 28px rgb(0 0 0 / 28%);
+}
+
 @media (max-width: 620px) {
+  .note-detail-workspace {
+    width: 100%;
+    margin: 0;
+  }
+
+  .note-detail-surface,
+  .note-detail-surface.note-dialog,
+  .note-detail-surface.quick-view-dialog {
+    min-height: 100dvh;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .note-detail-surface.note-dialog form {
+    min-height: 100dvh;
+  }
+
   .storage-status {
     padding-inline: 0.45rem;
   }
@@ -6129,6 +6241,20 @@ html[data-theme="dark"] .dialog-header {
   animation: topbar-actions-pin-in 220ms cubic-bezier(0.2, 0.72, 0.2, 1);
 }
 
+.topbar-actions.is-pinned,
+.toolbar.is-pinned {
+  transition:
+    opacity var(--interaction-duration) var(--interaction-easing),
+    transform var(--interaction-duration) var(--interaction-easing);
+}
+
+.topbar-actions.is-pinned.is-unpinning,
+.toolbar.is-pinned.is-unpinning {
+  animation: none;
+  opacity: 0;
+  transform: translateY(-0.45rem);
+}
+
 @keyframes topbar-actions-pin-in {
   from {
     opacity: 0;
@@ -6148,7 +6274,7 @@ html[data-theme="dark"] .topbar-actions.is-pinned {
 }
 
 .notes-panel.is-toolbar-pinned .notes-panel__heading {
-  margin-bottom: calc(1.05rem + var(--pinned-toolbar-height));
+  margin-bottom: calc(1.25rem + var(--pinned-toolbar-height));
 }
 
 .toolbar.is-pinned {
@@ -6467,5 +6593,209 @@ html[data-theme="dark"] .management-row__name {
 
   .management-row--type.management-row--editing .usage-count {
     grid-column: 1;
+  }
+}
+
+/* An opened note expands from the library instead of replacing it with a new page. */
+.note-detail-workspace {
+  width: 100%;
+  margin: 0 0 1rem;
+}
+
+.workspace.is-note-detail-open {
+  display: flex;
+  flex-direction: column;
+}
+
+.workspace.is-note-detail-open > .topbar {
+  display: flex;
+  order: 0;
+}
+
+.workspace.is-note-detail-open > .note-detail-workspace {
+  display: block;
+  order: 1;
+}
+
+.workspace.is-note-detail-open > .notes-panel {
+  display: block;
+  order: 2;
+}
+
+.note-detail-workspace > .note-detail-surface,
+.note-detail-workspace > .note-dialog.is-split {
+  width: 100%;
+  max-width: none;
+}
+
+.workspace.is-note-detail-open .note-card.is-detail-source {
+  display: none;
+}
+
+.note-detail-surface {
+  min-height: 0;
+  border: 1px solid #e2e8f0;
+  border-radius: 1rem;
+  color: inherit;
+  background: #ffffff;
+  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05), 0 2px 6px -1px rgba(15, 23, 42, 0.03);
+  overflow: hidden;
+}
+
+.note-detail-surface .dialog-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid #e8ebf0;
+  background: #ffffff;
+}
+
+.note-detail-surface .dialog-header > div {
+  min-width: 0;
+}
+
+.note-detail-surface .dialog-header h2 {
+  font-size: clamp(1.1rem, 2vw, 1.35rem);
+  letter-spacing: -0.015em;
+}
+
+.note-detail-surface.note-dialog form {
+  min-height: 0;
+}
+
+.note-detail-surface.quick-view-dialog {
+  min-height: 0;
+  grid-template-rows: auto auto auto;
+}
+
+.note-detail-surface .dialog-body,
+.note-detail-surface .quick-view-body {
+  overflow: visible;
+  padding: 1.15rem 1.25rem;
+}
+
+.note-detail-surface .dialog-body {
+  gap: 1.15rem;
+}
+
+.note-detail-surface .dialog-footer {
+  position: static;
+  margin: 0;
+  border-top: 1px solid #e8ebf0;
+  padding: 0.85rem 1.25rem max(0.85rem, env(safe-area-inset-bottom));
+  background: #ffffff;
+  box-shadow: none;
+}
+
+.note-detail-surface .quick-view-body {
+  display: grid;
+  grid-template-columns: 1fr;
+  align-items: start;
+  gap: 1rem;
+}
+
+.note-detail-surface .quick-view-context {
+  grid-column: 1;
+  grid-row: auto;
+  align-items: center;
+  flex-direction: row;
+  gap: 0.6rem;
+}
+
+.note-detail-surface .quick-view-meta,
+.note-detail-surface .quick-view-tags {
+  align-items: center;
+}
+
+.note-detail-surface .quick-view-content-card {
+  grid-column: 1;
+  grid-row: auto;
+  max-width: none;
+  border: 1px solid #e8ebf0;
+  border-radius: 0.7rem;
+  padding: 0.9rem;
+  background: #fbfcfe;
+}
+
+.note-detail-surface .quick-view-content-label {
+  margin-bottom: 0.9rem;
+}
+
+.note-detail-surface .quick-view-content {
+  min-height: 0;
+  color: #334155;
+  font-size: 0.92rem;
+  line-height: 1.7;
+}
+
+.note-detail-surface .quick-view-dates {
+  grid-column: 1;
+  grid-row: auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.38rem;
+}
+
+html[data-theme="dark"] .note-detail-surface,
+html[data-theme="dark"] .note-detail-surface .dialog-header {
+  color: #e5edf7;
+  background: #1b2537;
+  box-shadow: 0 4px 20px -2px rgb(0 0 0 / 16%);
+}
+
+html[data-theme="dark"] .note-detail-surface .quick-view-content {
+  color: #d5dfec;
+}
+
+html[data-theme="dark"] .note-detail-surface .dialog-footer {
+  border-color: #344055;
+  background: #1b2537;
+}
+
+@media (max-width: 620px) {
+  .note-detail-workspace {
+    margin-bottom: 0.75rem;
+  }
+
+  .note-detail-surface,
+  .note-detail-surface.note-dialog,
+  .note-detail-surface.quick-view-dialog,
+  .note-detail-surface.note-dialog form {
+    min-height: 0;
+    border-radius: 0.88rem;
+    box-shadow: 0 3px 14px -2px rgb(15 23 42 / 7%);
+  }
+
+  .note-detail-surface .dialog-header {
+    gap: 0.75rem;
+    padding: 0.85rem 0.9rem;
+  }
+
+  .note-detail-surface .dialog-header h2 {
+    font-size: 1.08rem;
+  }
+
+  .note-detail-surface .dialog-body,
+  .note-detail-surface .quick-view-body {
+    padding: 0.9rem;
+  }
+
+  .note-detail-surface .dialog-footer {
+    padding-inline: 0.9rem;
+  }
+}
+
+/* Every keyboard-focusable surface uses the notebook primary rather than a
+ * browser-specific focus color. Component-specific focus treatments may add
+ * a soft ring or background, but this keeps the visible edge consistent. */
+:root :focus-visible {
+  outline: 2px solid var(--primary-accent);
+  outline-offset: 2px;
+}
+
+@media (forced-colors: active) {
+  :root :focus-visible {
+    outline-color: Highlight;
   }
 }
