@@ -637,13 +637,26 @@
       </div>
 
       <div class="organize-tabs" role="tablist" aria-label="Manage note organization">
-        <button id="types-tab" class="organize-tab is-active" type="button" role="tab" aria-selected="true" aria-controls="types-panel" tabindex="0">Note types</button>
-        <button id="tags-tab" class="organize-tab" type="button" role="tab" aria-selected="false" aria-controls="tags-panel" tabindex="-1">Tags</button>
+        <button id="types-tab" class="organize-tab is-active" type="button" role="tab" aria-selected="true" aria-controls="types-panel" tabindex="0">
+          <span>Note types</span><span id="types-tab-count" class="organize-tab__count" aria-hidden="true">0</span>
+        </button>
+        <button id="tags-tab" class="organize-tab" type="button" role="tab" aria-selected="false" aria-controls="tags-panel" tabindex="-1">
+          <span>Tags</span><span id="tags-tab-count" class="organize-tab__count" aria-hidden="true">0</span>
+        </button>
       </div>
 
       <section id="types-panel" class="organize-panel" role="tabpanel" aria-labelledby="types-tab">
-        <p class="dialog-description">A note belongs to one type. Deleting a type moves its notes to the fallback type.</p>
-        <form id="new-type-form" class="create-row">
+        <div class="organize-panel__intro">
+          <p class="dialog-description">Each note has one type. Deleting a type moves its notes to General.</p>
+          <div class="management-toolbar">
+            <label class="management-search" for="types-management-search">
+              <span class="sr-only">Search note types</span>
+              <input id="types-management-search" type="search" placeholder="Search note types" autocomplete="off" />
+            </label>
+            <button id="add-type-toggle" class="button button-primary button-compact" type="button" aria-expanded="false" aria-controls="new-type-form">Add type</button>
+          </div>
+        </div>
+        <form id="new-type-form" class="create-row management-create-row is-hidden">
           <label class="sr-only" for="new-type-name">New note type name</label>
           <input id="new-type-name" type="text" maxlength="48" required placeholder="e.g. Meeting" />
           <label class="sr-only" for="new-type-color">Type color</label>
@@ -662,8 +675,17 @@
       </section>
 
       <section id="tags-panel" class="organize-panel is-hidden" role="tabpanel" aria-labelledby="tags-tab">
-        <p class="dialog-description">Tags are optional and can be used across many notes.</p>
-        <form id="new-tag-form" class="create-row create-row--tag">
+        <div class="organize-panel__intro">
+          <p class="dialog-description">Tags are optional labels you can reuse across many notes.</p>
+          <div class="management-toolbar">
+            <label class="management-search" for="tags-management-search">
+              <span class="sr-only">Search tags</span>
+              <input id="tags-management-search" type="search" placeholder="Search tags" autocomplete="off" />
+            </label>
+            <button id="add-tag-toggle" class="button button-primary button-compact" type="button" aria-expanded="false" aria-controls="new-tag-form">Add tag</button>
+          </div>
+        </div>
+        <form id="new-tag-form" class="create-row create-row--tag management-create-row is-hidden">
           <label class="sr-only" for="new-tag-name">New tag name</label>
           <input id="new-tag-name" type="text" maxlength="48" required placeholder="e.g. todo" />
           <button class="button button-primary button-compact" type="submit">Add tag</button>

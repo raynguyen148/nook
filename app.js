@@ -137,8 +137,14 @@
     closeOrganizeDialog: document.querySelector("#close-organize-dialog-btn"),
     typesTab: document.querySelector("#types-tab"),
     tagsTab: document.querySelector("#tags-tab"),
+    typesTabCount: document.querySelector("#types-tab-count"),
+    tagsTabCount: document.querySelector("#tags-tab-count"),
     typesPanel: document.querySelector("#types-panel"),
     tagsPanel: document.querySelector("#tags-panel"),
+    typesManagementSearch: document.querySelector("#types-management-search"),
+    tagsManagementSearch: document.querySelector("#tags-management-search"),
+    addTypeToggle: document.querySelector("#add-type-toggle"),
+    addTagToggle: document.querySelector("#add-tag-toggle"),
     newTypeForm: document.querySelector("#new-type-form"),
     newTypeName: document.querySelector("#new-type-name"),
     newTypeColor: document.querySelector("#new-type-color"),
@@ -185,6 +191,9 @@
     pendingConfirmation: null,
     externalRefreshPending: false,
     managementTab: "types",
+    managementQueries: { types: "", tags: "" },
+    managementCreateKind: "",
+    managementEditing: null,
     toastTimer: 0,
     toastAction: null,
     searchRenderTimer: 0,
@@ -2420,6 +2429,67 @@
     elements.tagsPanel.classList.toggle("is-hidden", typesActive);
   }
 
+  function syncManagementControls() {
+    const typeCount = library.types.length;
+    const tagCount = library.tags.length;
+    const showingTypes = ui.managementCreateKind === "types";
+    const showingTags = ui.managementCreateKind === "tags";
+
+    elements.typesTabCount.textContent = String(typeCount);
+    elements.tagsTabCount.textContent = String(tagCount);
+    elements.typesTab.setAttribute("aria-label", `Note types, ${pluralize(typeCount, "type")}`);
+    elements.tagsTab.setAttribute("aria-label", `Tags, ${pluralize(tagCount, "tag")}`);
+    elements.newTypeForm.classList.toggle("is-hidden", !showingTypes);
+    elements.newTagForm.classList.toggle("is-hidden", !showingTags);
+    elements.addTypeToggle.setAttribute("aria-expanded", String(showingTypes));
+    elements.addTagToggle.setAttribute("aria-expanded", String(showingTags));
+    elements.addTypeToggle.textContent = showingTypes ? "Cancel" : "Add type";
+    elements.addTagToggle.textContent = showingTags ? "Cancel" : "Add tag";
+    elements.addTypeToggle.classList.toggle("button-primary", !showingTypes);
+    elements.addTypeToggle.classList.toggle("button-secondary", showingTypes);
+    elements.addTagToggle.classList.toggle("button-primary", !showingTags);
+    elements.addTagToggle.classList.toggle("button-secondary", showingTags);
+  }
+
+  function setManagementCreateMode(kind = "") {
+    const wasEditing = Boolean(ui.managementEditing);
+    ui.managementCreateKind = kind;
+    if (kind) ui.managementEditing = null;
+    syncManagementControls();
+    if (kind && wasEditing) renderManagement();
+    if (!kind) return;
+    window.requestAnimationFrame(() => {
+      (kind === "types" ? elements.newTypeName : elements.newTagName).focus({ preventScroll: true });
+    });
+  }
+
+  function managementQuery(kind) {
+    return ui.managementQueries[kind].trim().toLocaleLowerCase();
+  }
+
+  function managementMatchesQuery(kind, value) {
+    const query = managementQuery(kind);
+    return !query || value.toLocaleLowerCase().includes(query);
+  }
+
+  function startManagementEdit(kind, id) {
+    ui.managementQueries[kind] = "";
+    const search = kind === "types" ? elements.typesManagementSearch : elements.tagsManagementSearch;
+    search.value = "";
+    ui.managementEditing = { kind, id };
+    setManagementCreateMode("");
+    renderManagement();
+    window.requestAnimationFrame(() => {
+      const list = kind === "types" ? elements.typesList : elements.tagsList;
+      list.querySelector(`[data-management-edit-id="${id}"] input`)?.focus({ preventScroll: true });
+    });
+  }
+
+  function cancelManagementEdit() {
+    ui.managementEditing = null;
+    renderManagement();
+  }
+
   function handleManagementTabKeydown(event) {
     const tabs = [elements.typesTab, elements.tagsTab];
     const currentIndex = tabs.indexOf(event.currentTarget);
@@ -2567,67 +2637,103 @@
     const usageCounts = new Map();
     library.notes.forEach((note) => usageCounts.set(note.typeId, (usageCounts.get(note.typeId) || 0) + 1));
     elements.typesList.replaceChildren();
+    const visibleTypes = library.types.filter((type) => managementMatchesQuery("types", type.name));
+    if (!visibleTypes.length) {
+      const query = ui.managementQueries.types.trim();
+      elements.typesList.append(
+        createElement("p", { className: "management-empty", text: query ? `No note types match “${query}”.` : "No note types yet." }),
+      );
+      return;
+    }
+
     const fragment = document.createDocumentFragment();
-    library.types.forEach((type) => {
-      const form = createElement("form", { className: "management-row management-row--type", dataset: { typeId: type.id } });
+    visibleTypes.forEach((type) => {
+      const usage = usageCounts.get(type.id) || 0;
+      const isEditing = ui.managementEditing?.kind === "types" && ui.managementEditing.id === type.id;
+      const row = isEditing
+        ? createElement("form", { className: "management-row management-row--type management-row--editing", dataset: { managementEditId: type.id } })
+        : createElement("div", { className: "management-row management-row--summary management-row--type" });
       const main = createElement("div", { className: "management-row__main" });
       main.append(createElement("span", { className: `type-dot type-dot--${safeTypeColor(type)}`, attributes: { "aria-hidden": "true" } }));
-      const nameInput = createElement("input", {
-        type: "text",
-        value: type.name,
-        attributes: { "aria-label": `Name for ${type.name}`, maxlength: "48", required: "" },
-      });
-      main.append(nameInput);
-      const controls = createElement("div", { className: "management-row__controls" });
-      const color = createElement("select", {
-        className: "color-select",
-        attributes: { "aria-label": `Color for ${type.name}` },
-      });
-      color.append(createColorOptions(safeTypeColor(type)));
-      const colorPicker = enhanceColorSelect(color);
-      const usage = createElement("span", { className: "usage-count", text: pluralize(usageCounts.get(type.id) || 0, "note") });
-      const save = createElement("button", { className: "button button-secondary button-compact", type: "submit", text: "Save" });
-      const remove = createElement("button", {
-        className: "button button-danger button-compact",
-        type: "button",
-        text: "Delete",
-        disabled: type.id === storage.FALLBACK_TYPE_ID,
-        title: type.id === storage.FALLBACK_TYPE_ID ? "General cannot be deleted." : "Delete note type",
-      });
-      controls.append(colorPicker.root, usage, save, remove);
-      form.append(main, controls);
-      form.addEventListener("submit", async (event) => {
-        event.preventDefault();
-        try {
-          await storage.updateType(type.id, { name: nameInput.value, color: color.value });
-          await refreshLibrary({ broadcast: true });
-          showToast("Note type updated.");
-        } catch (error) {
-          showError(error);
-        }
-      });
-      remove.addEventListener("click", async () => {
-        const affected = usageCounts.get(type.id) || 0;
-        const fallbackType = typeFor(storage.FALLBACK_TYPE_ID);
-        const description = affected
-          ? `“${type.name}” will be deleted. ${pluralize(affected, "note")} will move to ${fallbackType.name}.`
-          : `“${type.name}” will be deleted.`;
-        const confirmed = await requestConfirmation({
-          title: "Delete note type?",
-          description,
-          confirmLabel: "Delete type",
-          cancelLabel: "Keep type",
+
+      if (isEditing) {
+        const nameInput = createElement("input", {
+          type: "text",
+          value: type.name,
+          attributes: { "aria-label": `Name for ${type.name}`, maxlength: "48", required: "" },
         });
-        if (!confirmed) return;
-        try {
-          await storage.deleteType(type.id);
-          await refreshLibrary({ broadcast: true });
-          showToast(affected ? `Type deleted; ${pluralize(affected, "note")} moved to ${fallbackType.name}.` : "Note type deleted.");
-        } catch (error) {
-          showError(error);
+        const color = createElement("select", {
+          className: "color-select",
+          attributes: { "aria-label": `Color for ${type.name}` },
+        });
+        color.append(createColorOptions(safeTypeColor(type)));
+        const colorPicker = enhanceColorSelect(color);
+        const controls = createElement("div", { className: "management-row__controls management-row__controls--editing" });
+        const cancel = createElement("button", { className: "button button-secondary button-compact", type: "button", text: "Cancel" });
+        const save = createElement("button", { className: "button button-primary button-compact", type: "submit", text: "Save" });
+        main.append(nameInput);
+        controls.append(colorPicker.root, createElement("span", { className: "usage-count", text: pluralize(usage, "note") }), cancel, save);
+        row.append(main, controls);
+        cancel.addEventListener("click", cancelManagementEdit);
+        row.addEventListener("submit", async (event) => {
+          event.preventDefault();
+          try {
+            await storage.updateType(type.id, { name: nameInput.value, color: color.value });
+            ui.managementEditing = null;
+            await refreshLibrary({ broadcast: true });
+            showToast("Note type updated.");
+          } catch (error) {
+            showError(error);
+          }
+        });
+      } else {
+        const metadata = createElement("div", { className: "management-row__metadata" });
+        const actions = createElement("div", { className: "management-row__actions" });
+        const edit = createElement("button", {
+          className: "button button-secondary button-compact",
+          type: "button",
+          text: "Edit",
+          attributes: { "aria-label": `Edit ${type.name}` },
+        });
+        main.append(createElement("span", { className: "management-row__name", text: type.name }));
+        if (type.id === storage.FALLBACK_TYPE_ID) metadata.append(createElement("span", { className: "management-row__default", text: "Default" }));
+        metadata.append(createElement("span", { className: "usage-count", text: pluralize(usage, "note") }));
+        actions.append(edit);
+        edit.addEventListener("click", () => startManagementEdit("types", type.id));
+
+        if (type.id !== storage.FALLBACK_TYPE_ID) {
+          const remove = createElement("button", {
+            className: "button button-danger button-compact",
+            type: "button",
+            text: "Delete",
+            attributes: { "aria-label": `Delete ${type.name}` },
+          });
+          actions.append(remove);
+          remove.addEventListener("click", async () => {
+            const affected = usageCounts.get(type.id) || 0;
+            const fallbackType = typeFor(storage.FALLBACK_TYPE_ID);
+            const description = affected
+              ? `“${type.name}” will be deleted. ${pluralize(affected, "note")} will move to ${fallbackType.name}.`
+              : `“${type.name}” will be deleted.`;
+            const confirmed = await requestConfirmation({
+              title: "Delete note type?",
+              description,
+              confirmLabel: "Delete type",
+              cancelLabel: "Keep type",
+            });
+            if (!confirmed) return;
+            try {
+              await storage.deleteType(type.id);
+              await refreshLibrary({ broadcast: true });
+              showToast(affected ? `Type deleted; ${pluralize(affected, "note")} moved to ${fallbackType.name}.` : "Note type deleted.");
+            } catch (error) {
+              showError(error);
+            }
+          });
         }
-      });
-      fragment.append(form);
+        row.append(main, metadata, actions);
+      }
+      fragment.append(row);
     });
     elements.typesList.append(fragment);
   }
@@ -2638,58 +2744,94 @@
       note.tagIds.forEach((tagId) => usageCounts.set(tagId, (usageCounts.get(tagId) || 0) + 1)),
     );
     elements.tagsList.replaceChildren();
-    if (!library.tags.length) {
-      elements.tagsList.append(createElement("p", { className: "management-empty", text: "No tags yet. Add one above or create it while editing a note." }));
+    const visibleTags = library.tags.filter((tag) => managementMatchesQuery("tags", tagLabel(tag)));
+    if (!visibleTags.length) {
+      const query = ui.managementQueries.tags.trim();
+      elements.tagsList.append(
+        createElement("p", {
+          className: "management-empty",
+          text: query ? `No tags match “${query}”.` : "No tags yet. Add one here or while editing a note.",
+        }),
+      );
       return;
     }
     const fragment = document.createDocumentFragment();
-    library.tags.forEach((tag) => {
-      const form = createElement("form", { className: "management-row", dataset: { tagId: tag.id } });
+    visibleTags.forEach((tag) => {
+      const usage = usageCounts.get(tag.id) || 0;
+      const label = tagLabel(tag);
+      const isEditing = ui.managementEditing?.kind === "tags" && ui.managementEditing.id === tag.id;
+      const row = isEditing
+        ? createElement("form", { className: "management-row management-row--editing", dataset: { managementEditId: tag.id } })
+        : createElement("div", { className: "management-row management-row--summary" });
       const main = createElement("div", { className: "management-row__main" });
       main.append(createElement("span", { className: "tag-marker", attributes: { "aria-hidden": "true" } }));
-      const nameInput = createElement("input", {
-        type: "text",
-        value: tagLabel(tag),
-        attributes: { "aria-label": `Name for ${tagLabel(tag)}`, maxlength: "48", required: "" },
-      });
-      main.append(nameInput);
-      const controls = createElement("div", { className: "management-row__controls" });
-      const usage = createElement("span", { className: "usage-count", text: pluralize(usageCounts.get(tag.id) || 0, "note") });
-      const save = createElement("button", { className: "button button-secondary button-compact", type: "submit", text: "Save" });
-      const remove = createElement("button", { className: "button button-danger button-compact", type: "button", text: "Delete" });
-      controls.append(usage, save, remove);
-      form.append(main, controls);
-      form.addEventListener("submit", async (event) => {
-        event.preventDefault();
-        try {
-          await storage.updateTag(tag.id, { name: nameInput.value });
-          await refreshLibrary({ broadcast: true });
-          showToast("Tag updated.");
-        } catch (error) {
-          showError(error);
-        }
-      });
-      remove.addEventListener("click", async () => {
-        const affected = usageCounts.get(tag.id) || 0;
-        const description = affected
-          ? `“${tagLabel(tag)}” will be deleted and removed from ${pluralize(affected, "note")}.`
-          : `“${tagLabel(tag)}” will be deleted.`;
-        const confirmed = await requestConfirmation({
-          title: "Delete tag?",
-          description,
-          confirmLabel: "Delete tag",
-          cancelLabel: "Keep tag",
+
+      if (isEditing) {
+        const nameInput = createElement("input", {
+          type: "text",
+          value: label,
+          attributes: { "aria-label": `Name for ${label}`, maxlength: "48", required: "" },
         });
-        if (!confirmed) return;
-        try {
-          await storage.deleteTag(tag.id);
-          await refreshLibrary({ broadcast: true });
-          showToast(affected ? `Tag removed from ${pluralize(affected, "note")}.` : "Tag deleted.");
-        } catch (error) {
-          showError(error);
-        }
-      });
-      fragment.append(form);
+        const controls = createElement("div", { className: "management-row__controls management-row__controls--editing" });
+        const cancel = createElement("button", { className: "button button-secondary button-compact", type: "button", text: "Cancel" });
+        const save = createElement("button", { className: "button button-primary button-compact", type: "submit", text: "Save" });
+        main.append(nameInput);
+        controls.append(createElement("span", { className: "usage-count", text: pluralize(usage, "note") }), cancel, save);
+        row.append(main, controls);
+        cancel.addEventListener("click", cancelManagementEdit);
+        row.addEventListener("submit", async (event) => {
+          event.preventDefault();
+          try {
+            await storage.updateTag(tag.id, { name: nameInput.value });
+            ui.managementEditing = null;
+            await refreshLibrary({ broadcast: true });
+            showToast("Tag updated.");
+          } catch (error) {
+            showError(error);
+          }
+        });
+      } else {
+        const metadata = createElement("div", { className: "management-row__metadata" });
+        const actions = createElement("div", { className: "management-row__actions" });
+        const edit = createElement("button", {
+          className: "button button-secondary button-compact",
+          type: "button",
+          text: "Edit",
+          attributes: { "aria-label": `Edit ${label}` },
+        });
+        const remove = createElement("button", {
+          className: "button button-danger button-compact",
+          type: "button",
+          text: "Delete",
+          attributes: { "aria-label": `Delete ${label}` },
+        });
+        main.append(createElement("span", { className: "management-row__name", text: label }));
+        metadata.append(createElement("span", { className: "usage-count", text: pluralize(usage, "note") }));
+        actions.append(edit, remove);
+        edit.addEventListener("click", () => startManagementEdit("tags", tag.id));
+        remove.addEventListener("click", async () => {
+          const affected = usageCounts.get(tag.id) || 0;
+          const description = affected
+            ? `“${label}” will be deleted and removed from ${pluralize(affected, "note")}.`
+            : `“${label}” will be deleted.`;
+          const confirmed = await requestConfirmation({
+            title: "Delete tag?",
+            description,
+            confirmLabel: "Delete tag",
+            cancelLabel: "Keep tag",
+          });
+          if (!confirmed) return;
+          try {
+            await storage.deleteTag(tag.id);
+            await refreshLibrary({ broadcast: true });
+            showToast(affected ? `Tag removed from ${pluralize(affected, "note")}.` : "Tag deleted.");
+          } catch (error) {
+            showError(error);
+          }
+        });
+        row.append(main, metadata, actions);
+      }
+      fragment.append(row);
     });
     elements.tagsList.append(fragment);
   }
@@ -2697,6 +2839,7 @@
   function renderManagement() {
     renderTypeManagement();
     renderTagManagement();
+    syncManagementControls();
     setManagementTab(ui.managementTab);
   }
 
@@ -2764,6 +2907,7 @@
       });
       elements.newTypeForm.reset();
       setColorPickerValue(elements.newTypeColor, "indigo");
+      setManagementCreateMode("");
       await refreshLibrary({ broadcast: true });
       showToast(`Note type “${type.name}” added.`);
     } catch (error) {
@@ -2776,6 +2920,7 @@
     try {
       const tag = await storage.addTag({ name: elements.newTagName.value });
       elements.newTagForm.reset();
+      setManagementCreateMode("");
       await refreshLibrary({ broadcast: true });
       showToast(`Tag “${tagLabel(tag)}” added.`);
     } catch (error) {
@@ -3043,6 +3188,22 @@
     elements.tagsTab.addEventListener("click", () => setManagementTab("tags"));
     elements.typesTab.addEventListener("keydown", handleManagementTabKeydown);
     elements.tagsTab.addEventListener("keydown", handleManagementTabKeydown);
+    elements.addTypeToggle.addEventListener("click", () => {
+      setManagementCreateMode(ui.managementCreateKind === "types" ? "" : "types");
+    });
+    elements.addTagToggle.addEventListener("click", () => {
+      setManagementCreateMode(ui.managementCreateKind === "tags" ? "" : "tags");
+    });
+    elements.typesManagementSearch.addEventListener("input", () => {
+      ui.managementQueries.types = elements.typesManagementSearch.value;
+      if (ui.managementEditing?.kind === "types") ui.managementEditing = null;
+      renderTypeManagement();
+    });
+    elements.tagsManagementSearch.addEventListener("input", () => {
+      ui.managementQueries.tags = elements.tagsManagementSearch.value;
+      if (ui.managementEditing?.kind === "tags") ui.managementEditing = null;
+      renderTagManagement();
+    });
     elements.newTypeForm.addEventListener("submit", addNewType);
     elements.newTagForm.addEventListener("submit", addNewTag);
     document.addEventListener("pointerdown", (event) => {
