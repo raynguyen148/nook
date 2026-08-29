@@ -2419,26 +2419,6 @@ select::-ms-expand {
   background: #f7f8fa;
 }
 
-.note-view-button {
-  width: 2.4rem;
-  min-width: 2.4rem;
-  height: 2.4rem;
-  border: 1px solid #e0e3e9;
-  color: #7b8493;
-  background: #f7f8fa;
-}
-
-.note-view-button:hover:not(:disabled) {
-  border-color: #cdd2db;
-  color: #5e6879;
-  background: #eef0f4;
-}
-
-.note-view-button svg {
-  width: 1.02rem;
-  height: 1.02rem;
-}
-
 .quick-save-note-button {
   width: 2.4rem;
   min-width: 2.4rem;
@@ -3615,6 +3595,19 @@ select::-ms-expand {
     -webkit-appearance: auto;
     background-image: none;
   }
+
+  .note-card__action:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: -2px;
+    box-shadow: none;
+  }
+
+  .view-mode-button:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: -2px;
+    box-shadow: none;
+  }
+
 }
 
 /* Theme switcher and dark palette */
@@ -4380,18 +4373,6 @@ html[data-theme="dark"] .note-content-preview .markdown-footnotes {
   border-color: #354158;
 }
 
-html[data-theme="dark"] .note-view-button {
-  border-color: #3d4a60;
-  color: #a5b1c4;
-  background: #222c3d;
-}
-
-html[data-theme="dark"] .note-view-button:hover:not(:disabled) {
-  border-color: #59667c;
-  color: #e3e9f3;
-  background: #2d394e;
-}
-
 html[data-theme="dark"] .quick-save-note-button {
   border-color: #505790;
   color: #c0c5ff;
@@ -4541,6 +4522,17 @@ textarea:focus-visible {
   outline-color: var(--primary-accent-focus);
 }
 
+.app-dialog:focus {
+  outline: 2px solid var(--primary-accent);
+  outline-offset: 0;
+}
+
+@media (forced-colors: active) {
+  .app-dialog:focus {
+    outline-color: Highlight;
+  }
+}
+
 /* Covers controls that do not need a bespoke motion treatment. More specific
  * component transitions above remain in effect for buttons, cards, and tooltips
  * that already animate their own state. */
@@ -4624,6 +4616,15 @@ textarea:focus-visible {
   background: var(--primary-accent-soft);
 }
 
+.view-mode-button:focus-visible {
+  position: relative;
+  z-index: 1;
+  outline: 0;
+  color: var(--primary-accent-text);
+  background: var(--primary-accent-soft);
+  box-shadow: inset 0 0 0 2px var(--primary-accent-border);
+}
+
 .active-filter-pill {
   border-color: var(--primary-accent-border);
   color: var(--primary-accent-text);
@@ -4661,6 +4662,15 @@ html[data-theme="dark"] .note-card--pinned:focus-within {
 
 .note-card__action:hover {
   background: var(--primary-accent-soft);
+}
+
+.note-card__action:focus-visible {
+  position: relative;
+  z-index: 1;
+  outline: 0;
+  color: var(--primary-accent-text);
+  background: var(--primary-accent-soft);
+  box-shadow: inset 0 0 0 2px var(--primary-accent-border);
 }
 
 .note-card__action--danger:hover,
@@ -5257,7 +5267,17 @@ html[data-theme="dark"] .startup-error p {
   font: inherit;
 }
 
-.note-split-view-toggle {
+.note-editor-modes {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+.note-editor-mode {
+  position: relative;
+}
+
+.note-editor-mode__button {
   width: 1.85rem;
   height: 1.85rem;
   border: 1px solid transparent;
@@ -5266,16 +5286,44 @@ html[data-theme="dark"] .startup-error p {
   background: transparent;
 }
 
-.note-split-view-toggle svg {
+.note-editor-mode__button svg {
   width: 1.02rem;
   height: 1.02rem;
 }
 
-.note-split-view-toggle:hover:not(:disabled),
-.note-split-view-toggle[aria-pressed="true"] {
+.note-editor-mode__button:hover:not(:disabled),
+.note-editor-mode__button[aria-pressed="true"] {
   border-color: var(--primary-accent-border);
   color: var(--primary-accent-text);
   background: var(--primary-accent-soft);
+}
+
+.note-editor-mode__tooltip {
+  position: absolute;
+  z-index: 3;
+  top: calc(100% + 0.4rem);
+  right: 0;
+  width: max-content;
+  max-width: min(15rem, 75vw);
+  padding: 0.35rem 0.5rem;
+  border: 1px solid #d7dce6;
+  border-radius: 0.42rem;
+  color: #f7f9fc;
+  background: #293548;
+  box-shadow: 0 8px 18px rgb(27 38 58 / 18%);
+  font-size: 0.72rem;
+  font-weight: 650;
+  line-height: 1.25;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-0.2rem);
+  transition: opacity var(--interaction-duration) var(--interaction-easing), transform var(--interaction-duration) var(--interaction-easing);
+}
+
+.note-editor-mode:hover .note-editor-mode__tooltip,
+.note-editor-mode:focus-within .note-editor-mode__tooltip {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .note-content-editor {
@@ -5328,6 +5376,25 @@ html[data-theme="dark"] .startup-error p {
   display: block;
 }
 
+.note-content-field.is-view .note-editor-pane--source {
+  display: none;
+}
+
+.note-content-field.is-view .note-editor-pane--preview {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+}
+
+.note-content-field.is-view .note-editor-pane__label {
+  display: block;
+}
+
+.note-content-field.is-view #note-content-preview {
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+}
+
 .note-content-field.is-split #note-content,
 .note-content-field.is-split #note-content-preview {
   min-width: 0;
@@ -5355,12 +5422,12 @@ html[data-theme="dark"] .startup-error p {
   margin-bottom: 0;
 }
 
-html[data-theme="dark"] .note-split-view-toggle {
+html[data-theme="dark"] .note-editor-mode__button {
   color: #9ba8bd;
 }
 
-html[data-theme="dark"] .note-split-view-toggle:hover:not(:disabled),
-html[data-theme="dark"] .note-split-view-toggle[aria-pressed="true"] {
+html[data-theme="dark"] .note-editor-mode__button:hover:not(:disabled),
+html[data-theme="dark"] .note-editor-mode__button[aria-pressed="true"] {
   border-color: var(--primary-accent-border);
   color: var(--primary-accent-text);
   background: var(--primary-accent-soft);
@@ -5374,6 +5441,11 @@ html[data-theme="dark"] .note-content-preview {
 
 html[data-theme="dark"] .note-editor-pane__label {
   color: #8996aa;
+}
+
+html[data-theme="dark"] .note-editor-mode__tooltip {
+  border-color: #46516a;
+  background: #111a2a;
 }
 
 @media (max-width: 620px) {

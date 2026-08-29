@@ -318,7 +318,7 @@
       </section>
     </main>
 
-    <dialog id="note-dialog" class="app-dialog note-dialog" aria-labelledby="note-dialog-title">
+    <dialog id="note-dialog" class="app-dialog note-dialog" tabindex="-1" aria-labelledby="note-dialog-title">
       <form id="note-form" novalidate>
         <div class="dialog-header">
           <div>
@@ -357,19 +357,59 @@
           <div id="note-content-field" class="field note-content-field">
             <div class="field-label-row">
               <label for="note-content">Content</label>
-              <button
-                id="note-split-view-toggle"
-                class="icon-button note-split-view-toggle"
-                type="button"
-                aria-pressed="false"
-                aria-label="Show split edit and preview"
-                title="Show split edit and preview"
-              >
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <rect x="3.25" y="3.25" width="17.5" height="17.5" rx="2.25" />
-                  <path d="M12 3.75v16.5" />
-                </svg>
-              </button>
+              <div class="note-editor-modes" role="group" aria-label="Content display mode">
+                <div class="note-editor-mode">
+                  <button
+                    class="icon-button note-editor-mode__button"
+                    type="button"
+                    data-note-editor-mode="edit"
+                    aria-pressed="true"
+                    aria-label="Edit Markdown"
+                    aria-describedby="note-editor-mode-edit-tooltip"
+                    aria-keyshortcuts="1"
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="m5.1 18.9 1-4.1L16.5 4.4a2.05 2.05 0 0 1 2.9 2.9L9 17.8l-3.9 1.1Z" />
+                      <path d="m14.8 6.1 3.1 3.1" />
+                    </svg>
+                  </button>
+                  <span id="note-editor-mode-edit-tooltip" class="note-editor-mode__tooltip" role="tooltip">Edit Markdown · 1</span>
+                </div>
+                <div class="note-editor-mode">
+                  <button
+                    class="icon-button note-editor-mode__button"
+                    type="button"
+                    data-note-editor-mode="split"
+                    aria-pressed="false"
+                    aria-label="Split edit and preview"
+                    aria-describedby="note-editor-mode-split-tooltip"
+                    aria-keyshortcuts="2"
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <rect x="3.25" y="3.25" width="17.5" height="17.5" rx="2.25" />
+                      <path d="M12 3.75v16.5" />
+                    </svg>
+                  </button>
+                  <span id="note-editor-mode-split-tooltip" class="note-editor-mode__tooltip" role="tooltip">Split editor and preview · 2</span>
+                </div>
+                <div class="note-editor-mode">
+                  <button
+                    class="icon-button note-editor-mode__button"
+                    type="button"
+                    data-note-editor-mode="view"
+                    aria-pressed="false"
+                    aria-label="View rendered note"
+                    aria-describedby="note-editor-mode-view-tooltip"
+                    aria-keyshortcuts="3"
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M2.4 12s3.4-5.2 9.6-5.2 9.6 5.2 9.6 5.2-3.4 5.2-9.6 5.2S2.4 12 2.4 12Z" />
+                      <circle cx="12" cy="12" r="2.35" />
+                    </svg>
+                  </button>
+                  <span id="note-editor-mode-view-tooltip" class="note-editor-mode__tooltip" role="tooltip">View rendered note · 3</span>
+                </div>
+              </div>
             </div>
             <div class="note-content-editor">
               <div class="note-editor-pane note-editor-pane--source">
@@ -378,7 +418,7 @@
               </div>
               <div class="note-editor-pane note-editor-pane--preview">
                 <span class="note-editor-pane__label">Preview</span>
-                <div id="note-content-preview" class="quick-view-content note-content-preview" aria-label="Rendered note preview" hidden></div>
+                <div id="note-content-preview" class="quick-view-content note-content-preview" tabindex="0" aria-label="Rendered note preview" hidden></div>
               </div>
             </div>
           </div>
@@ -393,7 +433,7 @@
             <button
               class="note-save-shortcut__trigger"
               type="button"
-              aria-label="Show note editing and saving keyboard shortcuts"
+              aria-label="Show note editing, viewing, and saving keyboard shortcuts"
               aria-describedby="note-save-shortcut-help"
             >
               <svg viewBox="0 0 24 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -401,9 +441,21 @@
                 <path d="M5 6h.01M9 6h.01M13 6h.01M17 6h.01M5 10h.01M9 10h.01M13 10h.01M17 10h.01M7.5 13h9"></path>
               </svg>
             </button>
-            <span id="note-save-shortcut-help" class="sr-only">Bold, italic, and link shortcuts format selected note content. Quick save keeps this note open. Save note closes it.</span>
+            <span id="note-save-shortcut-help" class="sr-only">Press 1 for the Markdown editor, 2 for split preview, and 3 for reading view. Bold, italic, and link shortcuts format selected note content. Quick save keeps this note open. Save note closes it.</span>
             <div class="note-save-shortcut__tooltip" role="tooltip">
-              <p>Editing &amp; saving shortcuts</p>
+              <p>Note shortcuts</p>
+              <div class="note-save-shortcut__row">
+                <span>Markdown editor</span>
+                <span class="note-save-shortcut__keys"><kbd>1</kbd></span>
+              </div>
+              <div class="note-save-shortcut__row">
+                <span>Split preview</span>
+                <span class="note-save-shortcut__keys"><kbd>2</kbd></span>
+              </div>
+              <div class="note-save-shortcut__row">
+                <span>Reading view</span>
+                <span class="note-save-shortcut__keys"><kbd>3</kbd></span>
+              </div>
               <div class="note-save-shortcut__row">
                 <span>Bold</span>
                 <span class="note-save-shortcut__keys">
@@ -467,18 +519,6 @@
           </div>
           <div class="dialog-footer__actions">
             <button id="cancel-note-btn" class="button button-secondary" type="button">Cancel</button>
-            <button
-              id="view-note-from-editor-btn"
-              class="icon-button note-view-button is-hidden"
-              type="button"
-              aria-label="View note"
-              title="View note"
-            >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M2.4 12s3.4-5.2 9.6-5.2 9.6 5.2 9.6 5.2-3.4 5.2-9.6 5.2S2.4 12 2.4 12Z"></path>
-                <circle cx="12" cy="12" r="2.35"></circle>
-              </svg>
-            </button>
             <button
               id="quick-save-note-btn"
               class="icon-button quick-save-note-button"
@@ -560,7 +600,7 @@
           </div>
         </div>
         <div class="dialog-footer__actions">
-          <button id="edit-from-quick-view-btn" class="button button-primary" type="button">Edit</button>
+          <button id="edit-from-quick-view-btn" class="button button-primary" type="button" aria-keyshortcuts="E" title="Edit (E)">Edit</button>
           <button id="close-quick-view-footer-btn" class="button button-secondary" type="button">Close</button>
         </div>
       </div>

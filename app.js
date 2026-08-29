@@ -92,7 +92,6 @@
     noteDialog: document.querySelector("#note-dialog"),
     noteForm: document.querySelector("#note-form"),
     noteDialogTitle: document.querySelector("#note-dialog-title"),
-    viewNoteFromEditor: document.querySelector("#view-note-from-editor-btn"),
     closeNoteDialog: document.querySelector("#close-note-dialog-btn"),
     cancelNote: document.querySelector("#cancel-note-btn"),
     quickSaveNote: document.querySelector("#quick-save-note-btn"),
@@ -107,7 +106,7 @@
     noteContentField: document.querySelector("#note-content-field"),
     noteContent: document.querySelector("#note-content"),
     noteContentPreview: document.querySelector("#note-content-preview"),
-    noteSplitViewToggle: document.querySelector("#note-split-view-toggle"),
+    noteEditorModeButtons: [...document.querySelectorAll("[data-note-editor-mode]")],
     noteMeta: document.querySelector("#note-meta"),
     selectedNoteTags: document.querySelector("#selected-note-tags"),
     tagInput: document.querySelector("#tag-input"),
@@ -175,7 +174,7 @@
     noteSaveInFlight: false,
     noteAutoSaveInFlight: false,
     noteAutoSaveTimer: 0,
-    noteSplitView: false,
+    noteEditorMode: "edit",
     noteScrollSyncing: false,
     noteEditorSnapshot: null,
     viewingNoteId: "",
@@ -601,7 +600,7 @@
     elements.noteFormattingShortcutModifiers.forEach((element) => {
       element.textContent = modifier;
     });
-    elements.noteSaveShortcutHelp.textContent = `Bold, italic, and link shortcuts format selected note content. Quick save keeps this note open: ${modifierName}, Shift, and S. Save note and close: ${modifierName} and Enter.`;
+    elements.noteSaveShortcutHelp.textContent = `Press 1 for the Markdown editor, 2 for split preview, and 3 for reading view. Bold, italic, and link shortcuts format selected note content. Quick save keeps this note open: ${modifierName}, Shift, and S. Save note and close: ${modifierName} and Enter.`;
   }
 
   function syncViewModeUI() {
@@ -1991,7 +1990,7 @@
   }
 
   function syncNoteEditorScroll(source, target) {
-    if (!ui.noteSplitView || ui.noteScrollSyncing) return;
+    if (ui.noteEditorMode !== "split" || ui.noteScrollSyncing) return;
     ui.noteScrollSyncing = true;
     setNoteEditorScrollProgress(target, getNoteEditorScrollProgress(source));
     window.requestAnimationFrame(() => {
@@ -2000,24 +1999,24 @@
   }
 
   function renderNoteEditorPreview() {
-    if (!ui.noteSplitView) return;
+    if (ui.noteEditorMode === "edit") return;
     globalThis.NookMarkdown.renderInto(elements.noteContentPreview, elements.noteContent.value);
-    syncNoteEditorScroll(elements.noteContent, elements.noteContentPreview);
+    if (ui.noteEditorMode === "split") {
+      syncNoteEditorScroll(elements.noteContent, elements.noteContentPreview);
+    }
   }
 
-  function setNoteSplitView(enabled) {
-    ui.noteSplitView = Boolean(enabled);
-    elements.noteDialog.classList.toggle("is-split", ui.noteSplitView);
-    elements.noteContentField.classList.toggle("is-split", ui.noteSplitView);
-    elements.noteContentPreview.hidden = !ui.noteSplitView;
-    elements.noteSplitViewToggle.setAttribute("aria-pressed", String(ui.noteSplitView));
-    elements.noteSplitViewToggle.setAttribute(
-      "aria-label",
-      ui.noteSplitView ? "Hide split edit and preview" : "Show split edit and preview",
-    );
-    elements.noteSplitViewToggle.title = ui.noteSplitView
-      ? "Hide split edit and preview"
-      : "Show split edit and preview";
+  function setNoteEditorMode(mode) {
+    if (!["edit", "split", "view"].includes(mode)) return;
+    ui.noteEditorMode = mode;
+    elements.noteDialog.classList.toggle("is-split", mode === "split");
+    elements.noteDialog.classList.toggle("is-view", mode === "view");
+    elements.noteContentField.classList.toggle("is-split", mode === "split");
+    elements.noteContentField.classList.toggle("is-view", mode === "view");
+    elements.noteContentPreview.hidden = mode === "edit";
+    elements.noteEditorModeButtons.forEach((button) => {
+      button.setAttribute("aria-pressed", String(button.dataset.noteEditorMode === mode));
+    });
     renderNoteEditorPreview();
   }
 
@@ -2162,9 +2161,8 @@
       elements.noteType,
       ...noteTypeControls,
       elements.noteContent,
-      elements.noteSplitViewToggle,
+      ...elements.noteEditorModeButtons,
       elements.deleteNote,
-      elements.viewNoteFromEditor,
       elements.cancelNote,
       elements.closeNoteDialog,
       elements.quickSaveNote,
@@ -2183,7 +2181,7 @@
 
   function openNoteEditor(note = null) {
     clearNoteAutoSave();
-    setNoteSplitView(false);
+    setNoteEditorMode("edit");
     ui.noteEditorSession += 1;
     ui.pendingTagCreation = null;
     ui.noteSaveInFlight = false;
@@ -2196,7 +2194,6 @@
     elements.noteContent.value = note?.content || "";
     elements.noteDialogTitle.textContent = note ? "Edit note" : "New note";
     elements.deleteNote.classList.toggle("is-hidden", !note);
-    elements.viewNoteFromEditor.classList.toggle("is-hidden", !note);
     renderNoteTypeOptions(note?.typeId || storage.FALLBACK_TYPE_ID);
     renderSelectedNoteTags();
     renderTagSuggestions();
@@ -2275,12 +2272,6 @@
       closeNoteEditor({ discardStoredDraft: true });
       afterClose?.();
     }
-  }
-
-  async function viewNoteFromEditor() {
-    const note = library.notes.find(({ id }) => id === elements.noteId.value);
-    if (!note || ui.noteSaveInFlight) return;
-    await requestNoteEditorClose({ afterClose: () => openQuickView(note) });
   }
 
   function selectNoteTag(tagId) {
@@ -2365,7 +2356,6 @@
         ui.editingNoteId = savedNote.id;
         elements.noteDialogTitle.textContent = "Edit note";
         elements.deleteNote.classList.remove("is-hidden");
-        elements.viewNoteFromEditor.classList.remove("is-hidden");
         renderNoteMetadata(savedNote);
         ui.noteEditorSnapshot = createNoteEditorDraft({ ...input, id: savedNote.id });
         syncStoredNoteDraft();
@@ -2970,10 +2960,16 @@
       syncNoteEditorScroll(elements.noteContentPreview, elements.noteContent);
     });
     elements.noteType.addEventListener("change", scheduleNoteAutoSave);
-    elements.noteSplitViewToggle.addEventListener("click", () => {
-      if (!ui.noteSaveInFlight) setNoteSplitView(!ui.noteSplitView);
+    elements.noteEditorModeButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        if (!ui.noteSaveInFlight) setNoteEditorMode(button.dataset.noteEditorMode);
+      });
     });
-    elements.viewNoteFromEditor.addEventListener("click", viewNoteFromEditor);
+    elements.noteDialog.addEventListener("pointerdown", (event) => {
+      if (!(event.target instanceof Element)) return;
+      if (event.target.closest("input, textarea, select, button, a, label, [contenteditable='true']")) return;
+      elements.noteDialog.focus({ preventScroll: true });
+    });
     elements.closeNoteDialog.addEventListener("click", requestNoteEditorClose);
     elements.cancelNote.addEventListener("click", requestNoteEditorClose);
     elements.quickSaveNote.addEventListener("click", () => saveNote({ preventDefault() {} }, { closeAfterSave: false }));
@@ -2983,7 +2979,7 @@
     });
     elements.noteDialog.addEventListener("close", () => {
       clearNoteAutoSave();
-      setNoteSplitView(false);
+      setNoteEditorMode("edit");
       ui.noteEditorSession += 1;
       ui.pendingTagCreation = null;
       ui.noteSaveInFlight = false;
@@ -3116,12 +3112,49 @@
         return;
       }
 
+      const matchesQuickViewEditShortcut =
+        elements.quickViewDialog.open &&
+        activeModalDialog() === elements.quickViewDialog &&
+        formattingKey === "e" &&
+        !event.metaKey &&
+        !event.ctrlKey &&
+        !event.altKey &&
+        !event.shiftKey &&
+        !event.repeat &&
+        !event.isComposing &&
+        !event.defaultPrevented;
+
+      if (matchesQuickViewEditShortcut && !elements.editFromQuickView.disabled) {
+        event.preventDefault();
+        editFromQuickView();
+        return;
+      }
+
       const target = event.target;
       const editingText =
         target instanceof HTMLInputElement ||
         target instanceof HTMLTextAreaElement ||
         target instanceof HTMLSelectElement ||
         (target instanceof HTMLElement && target.isContentEditable);
+      const matchesNoteEditorModeShortcut =
+        elements.noteDialog.open &&
+        activeModalDialog() === elements.noteDialog &&
+        ["1", "2", "3"].includes(formattingKey) &&
+        !event.metaKey &&
+        !event.ctrlKey &&
+        !event.altKey &&
+        !event.shiftKey &&
+        !event.repeat &&
+        !event.isComposing &&
+        !event.defaultPrevented &&
+        !editingText;
+
+      if (matchesNoteEditorModeShortcut && !ui.noteSaveInFlight) {
+        event.preventDefault();
+        setNoteEditorMode({ 1: "edit", 2: "split", 3: "view" }[formattingKey]);
+        return;
+      }
+
       const matchesQuickCaptureShortcut =
         event.key.toLowerCase() === "c" &&
         !event.metaKey &&
