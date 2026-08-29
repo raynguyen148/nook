@@ -1424,6 +1424,25 @@ select::-ms-expand {
   background: #f8fafc;
 }
 
+/* The detail type picker reuses these card-chip tokens without requiring
+ * inline styles when the selected type changes. */
+.type-badge--indigo { --detail-type-chip-border: #c7d2fe; --detail-type-chip-color: #4338ca; --detail-type-chip-background: #eef2ff; }
+.type-badge--blue { --detail-type-chip-border: #bfdbfe; --detail-type-chip-color: #1d4ed8; --detail-type-chip-background: #eff6ff; }
+.type-badge--sky { --detail-type-chip-border: #bae6fd; --detail-type-chip-color: #0369a1; --detail-type-chip-background: #f0f9ff; }
+.type-badge--cyan { --detail-type-chip-border: #a5f3fc; --detail-type-chip-color: #0e7490; --detail-type-chip-background: #ecfeff; }
+.type-badge--teal { --detail-type-chip-border: #99f6e4; --detail-type-chip-color: #0f766e; --detail-type-chip-background: #f0fdfa; }
+.type-badge--emerald { --detail-type-chip-border: #a7f3d0; --detail-type-chip-color: #047857; --detail-type-chip-background: #ecfdf5; }
+.type-badge--green { --detail-type-chip-border: #bbf7d0; --detail-type-chip-color: #15803d; --detail-type-chip-background: #f0fdf4; }
+.type-badge--lime { --detail-type-chip-border: #d9f99d; --detail-type-chip-color: #4d7c0f; --detail-type-chip-background: #f7fee7; }
+.type-badge--amber { --detail-type-chip-border: #fde68a; --detail-type-chip-color: #b45309; --detail-type-chip-background: #fffbeb; }
+.type-badge--orange { --detail-type-chip-border: #fed7aa; --detail-type-chip-color: #c2410c; --detail-type-chip-background: #fff7ed; }
+.type-badge--red { --detail-type-chip-border: #fecaca; --detail-type-chip-color: #b91c1c; --detail-type-chip-background: #fef2f2; }
+.type-badge--rose { --detail-type-chip-border: #fecdd3; --detail-type-chip-color: #be123c; --detail-type-chip-background: #fff1f2; }
+.type-badge--pink { --detail-type-chip-border: #fbcfe8; --detail-type-chip-color: #be185d; --detail-type-chip-background: #fdf2f8; }
+.type-badge--violet { --detail-type-chip-border: #ddd6fe; --detail-type-chip-color: #6d28d9; --detail-type-chip-background: #f5f3ff; }
+.type-badge--purple { --detail-type-chip-border: #e9d5ff; --detail-type-chip-color: #7e22ce; --detail-type-chip-background: #faf5ff; }
+.type-badge--slate { --detail-type-chip-border: #cbd5e1; --detail-type-chip-color: #334155; --detail-type-chip-background: #f8fafc; }
+
 .note-card__date {
   overflow: hidden;
   color: #64748b;
@@ -2551,17 +2570,12 @@ select::-ms-expand {
 
 .quick-view-export-group {
   display: flex;
-  overflow: hidden;
-  border: 1px solid #e0e3e9;
-  border-radius: 0.56rem;
-  background: #f7f8fa;
+  gap: 0.5rem;
 }
 
 .quick-save-note-button {
-  width: 2.4rem;
-  min-width: 2.4rem;
-  height: 2.4rem;
-  padding: 0;
+  min-width: 7.25rem;
+  padding-inline: 0.85rem;
   border: 1px solid var(--primary-accent-border);
   color: var(--primary-accent-text);
   background: var(--primary-accent-soft);
@@ -2571,11 +2585,6 @@ select::-ms-expand {
   border-color: var(--primary-accent-text);
   color: var(--primary-accent-hover);
   background: var(--primary-accent-soft-hover);
-}
-
-.quick-save-note-button svg {
-  width: 1.02rem;
-  height: 1.02rem;
 }
 
 .note-save-shortcut {
@@ -3102,7 +3111,9 @@ select::-ms-expand {
   left: 0;
   width: 100%;
   max-height: 16rem;
-  overflow: auto;
+  box-sizing: border-box;
+  overflow-x: hidden;
+  overflow-y: auto;
   border: 1px solid #cbd2de;
   border-radius: 0.58rem;
   padding: 0.23rem;
@@ -3114,6 +3125,8 @@ select::-ms-expand {
   display: flex;
   align-items: center;
   width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
   gap: 0.5rem;
   border: 0;
   border-radius: 0.36rem;
@@ -3455,14 +3468,14 @@ select::-ms-expand {
   html[data-theme="dark"][data-sidebar-collapsed="true"] .app-shell .sidebar-toggle-btn {
     background: #131d31;
     border-color: #27354d;
-    color: #cbd5e1;
+    color: #94a3b8;
   }
 
   html[data-theme="dark"] .app-shell.is-sidebar-collapsed .sidebar-toggle-btn:hover,
   html[data-theme="dark"][data-sidebar-collapsed="true"] .app-shell .sidebar-toggle-btn:hover {
     background: #1e293b;
     border-color: #3b4d6b;
-    color: #f8fafc;
+    color: #cbd5e1;
   }
 
   /* ── Content area expansion when sidebar is collapsed ── */
@@ -3962,13 +3975,15 @@ html[data-theme="dark"] .sidebar {
 }
 
 html[data-theme="dark"] .sidebar-toggle-btn {
+  border-color: #27354d;
   color: #94a3b8;
+  background: #131d31;
 }
 
 html[data-theme="dark"] .sidebar-toggle-btn:hover {
-  color: #f8fafc;
+  color: #cbd5e1;
   background: #1e293b;
-  border-color: #334155;
+  border-color: #3b4d6b;
 }
 
 html[data-theme="dark"] .brand small,
@@ -4327,6 +4342,23 @@ html[data-theme="dark"] .type-badge--slate {
   color: #e2e8f0;
   background: rgb(148 163 184 / 15%);
 }
+
+html[data-theme="dark"] .type-badge--indigo { --detail-type-chip-border: rgb(99 102 241 / 40%); --detail-type-chip-color: #c7d2fe; --detail-type-chip-background: rgb(99 102 241 / 15%); }
+html[data-theme="dark"] .type-badge--blue { --detail-type-chip-border: rgb(59 130 246 / 40%); --detail-type-chip-color: #bfdbfe; --detail-type-chip-background: rgb(59 130 246 / 15%); }
+html[data-theme="dark"] .type-badge--sky { --detail-type-chip-border: rgb(14 165 233 / 40%); --detail-type-chip-color: #bae6fd; --detail-type-chip-background: rgb(14 165 233 / 15%); }
+html[data-theme="dark"] .type-badge--cyan { --detail-type-chip-border: rgb(6 182 212 / 40%); --detail-type-chip-color: #a5f3fc; --detail-type-chip-background: rgb(6 182 212 / 15%); }
+html[data-theme="dark"] .type-badge--teal { --detail-type-chip-border: rgb(20 184 166 / 40%); --detail-type-chip-color: #99f6e4; --detail-type-chip-background: rgb(20 184 166 / 15%); }
+html[data-theme="dark"] .type-badge--emerald { --detail-type-chip-border: rgb(16 185 129 / 40%); --detail-type-chip-color: #a7f3d0; --detail-type-chip-background: rgb(16 185 129 / 15%); }
+html[data-theme="dark"] .type-badge--green { --detail-type-chip-border: rgb(34 197 94 / 40%); --detail-type-chip-color: #bbf7d0; --detail-type-chip-background: rgb(34 197 94 / 15%); }
+html[data-theme="dark"] .type-badge--lime { --detail-type-chip-border: rgb(132 204 22 / 40%); --detail-type-chip-color: #d9f99d; --detail-type-chip-background: rgb(132 204 22 / 15%); }
+html[data-theme="dark"] .type-badge--amber { --detail-type-chip-border: rgb(245 158 11 / 40%); --detail-type-chip-color: #fde68a; --detail-type-chip-background: rgb(245 158 11 / 15%); }
+html[data-theme="dark"] .type-badge--orange { --detail-type-chip-border: rgb(249 115 22 / 40%); --detail-type-chip-color: #fed7aa; --detail-type-chip-background: rgb(249 115 22 / 15%); }
+html[data-theme="dark"] .type-badge--red { --detail-type-chip-border: rgb(239 68 68 / 40%); --detail-type-chip-color: #fecaca; --detail-type-chip-background: rgb(239 68 68 / 15%); }
+html[data-theme="dark"] .type-badge--rose { --detail-type-chip-border: rgb(244 63 94 / 40%); --detail-type-chip-color: #fecdd3; --detail-type-chip-background: rgb(244 63 94 / 15%); }
+html[data-theme="dark"] .type-badge--pink { --detail-type-chip-border: rgb(236 72 153 / 40%); --detail-type-chip-color: #fbcfe8; --detail-type-chip-background: rgb(236 72 153 / 15%); }
+html[data-theme="dark"] .type-badge--violet { --detail-type-chip-border: rgb(139 92 246 / 40%); --detail-type-chip-color: #ddd6fe; --detail-type-chip-background: rgb(139 92 246 / 15%); }
+html[data-theme="dark"] .type-badge--purple { --detail-type-chip-border: rgb(168 85 247 / 40%); --detail-type-chip-color: #e9d5ff; --detail-type-chip-background: rgb(168 85 247 / 15%); }
+html[data-theme="dark"] .type-badge--slate { --detail-type-chip-border: rgb(148 163 184 / 40%); --detail-type-chip-color: #e2e8f0; --detail-type-chip-background: rgb(148 163 184 / 15%); }
 
 html[data-theme="dark"] .note-card__date,
 html[data-theme="dark"] .more-tags,
@@ -4813,6 +4845,8 @@ html[data-theme="dark"] .toast[data-tone="error"] {
   --pinned-card-shadow: rgb(196 136 5 / 15%);
   --pinned-marker-background: #fdf5db;
   --primary-button-text: #fff;
+  --focus-color: var(--primary-accent);
+  --focus-radius: 0.7rem;
   --interaction-duration: 160ms;
   --interaction-easing: cubic-bezier(0.2, 0, 0, 1);
 }
@@ -4830,6 +4864,7 @@ html[data-theme="dark"] {
   --pinned-card-shadow: rgb(0 0 0 / 25%);
   --pinned-marker-background: rgb(245 158 11 / 14%);
   --primary-button-text: #fff;
+  --focus-color: var(--primary-accent);
 }
 
 body {
@@ -5080,13 +5115,9 @@ html[data-theme="dark"] .note-card--pinned:focus-within {
   width: 2.4rem;
   min-width: 2.4rem;
   height: 2.4rem;
-  border: 0;
-  border-radius: 0;
+  border: 1px solid #e0e3e9;
+  border-radius: 0.56rem;
   color: #7b8493;
-}
-
-.quick-view-export-button + .quick-view-export-button {
-  border-left: 1px solid #e0e3e9;
 }
 
 .quick-view-copy-button:hover:not(:disabled),
@@ -5550,12 +5581,11 @@ html[data-theme="dark"] .quick-view-copy-button {
 }
 
 html[data-theme="dark"] .quick-view-export-group {
-  border-color: #46546b;
-  background: #202a3b;
+  background: transparent;
 }
 
-html[data-theme="dark"] .quick-view-export-button + .quick-view-export-button {
-  border-left-color: #46546b;
+html[data-theme="dark"] .quick-view-export-button {
+  border-color: #46546b;
 }
 
 html[data-theme="dark"] .quick-view-copy-button:hover:not(:disabled),
@@ -5596,7 +5626,11 @@ html[data-theme="dark"] .startup-error p {
 .note-editor-modes {
   display: inline-flex;
   align-items: center;
-  gap: 0.2rem;
+  gap: 0.18rem;
+  border: 1px solid #e0e5ec;
+  border-radius: 0.7rem;
+  padding: 0.16rem;
+  background: #f8fafc;
 }
 
 .note-editor-mode {
@@ -5604,17 +5638,28 @@ html[data-theme="dark"] .startup-error p {
 }
 
 .note-editor-mode__button {
-  width: 1.85rem;
-  height: 1.85rem;
+  display: inline-flex;
+  min-width: 0;
+  height: 2.25rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.36rem;
   border: 1px solid transparent;
-  border-radius: 0.46rem;
+  border-radius: 0.48rem;
+  padding: 0 0.56rem;
   color: #7a8495;
   background: transparent;
+  font-size: 0.76rem;
+  font-weight: 700;
 }
 
 .note-editor-mode__button svg {
   width: 1.02rem;
   height: 1.02rem;
+}
+
+.note-editor-mode__label {
+  line-height: 1;
 }
 
 .note-editor-mode__button:hover:not(:disabled),
@@ -5647,7 +5692,7 @@ html[data-theme="dark"] .startup-error p {
 }
 
 .note-editor-mode:hover .note-editor-mode__tooltip,
-.note-editor-mode:focus-within .note-editor-mode__tooltip {
+.note-editor-mode__button:focus-visible + .note-editor-mode__tooltip {
   opacity: 1;
   transform: translateY(0);
 }
@@ -5703,25 +5748,6 @@ html[data-theme="dark"] .startup-error p {
   display: block;
 }
 
-.note-content-field.is-view .note-editor-pane--source {
-  display: none;
-}
-
-.note-content-field.is-view .note-editor-pane--preview {
-  display: grid;
-  grid-template-rows: auto minmax(0, 1fr);
-}
-
-.note-content-field.is-view .note-editor-pane__label {
-  display: block;
-}
-
-.note-content-field.is-view #note-content-preview {
-  min-width: 0;
-  min-height: 0;
-  height: 100%;
-}
-
 .note-content-field.is-split #note-content,
 .note-content-field.is-split #note-content-preview {
   min-width: 0;
@@ -5751,6 +5777,11 @@ html[data-theme="dark"] .startup-error p {
 
 html[data-theme="dark"] .note-editor-mode__button {
   color: #9ba8bd;
+}
+
+html[data-theme="dark"] .note-editor-modes {
+  border-color: #46546b;
+  background: #202a3b;
 }
 
 html[data-theme="dark"] .note-editor-mode__button:hover:not(:disabled),
@@ -6596,30 +6627,25 @@ html[data-theme="dark"] .management-row__name {
   }
 }
 
-/* An opened note expands from the library instead of replacing it with a new page. */
+/* Detail is a document workspace: the stable sidebar remains the navigation anchor. */
 .note-detail-workspace {
   width: 100%;
-  margin: 0 0 1rem;
+  height: calc(100dvh - 2.5rem);
+  min-height: 0;
+  margin: 0;
 }
 
 .workspace.is-note-detail-open {
-  display: flex;
-  flex-direction: column;
-}
-
-.workspace.is-note-detail-open > .topbar {
-  display: flex;
-  order: 0;
-}
-
-.workspace.is-note-detail-open > .note-detail-workspace {
   display: block;
-  order: 1;
+  height: 100dvh;
+  min-height: 0;
+  overflow: hidden;
+  padding: 1.25rem clamp(1.25rem, 3.5vw, 3.5rem);
 }
 
+.workspace.is-note-detail-open > .topbar,
 .workspace.is-note-detail-open > .notes-panel {
-  display: block;
-  order: 2;
+  display: none;
 }
 
 .note-detail-workspace > .note-detail-surface,
@@ -6633,74 +6659,581 @@ html[data-theme="dark"] .management-row__name {
 }
 
 .note-detail-surface {
+  height: calc(100dvh - 2.5rem);
   min-height: 0;
+  max-height: 100%;
   border: 1px solid #e2e8f0;
   border-radius: 1rem;
   color: inherit;
   background: #ffffff;
   box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05), 0 2px 6px -1px rgba(15, 23, 42, 0.03);
+  isolation: isolate;
   overflow: hidden;
 }
 
 .note-detail-surface .dialog-header {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 1rem;
-  padding: 1rem 1.25rem;
+  min-height: 4.25rem;
+  padding: 0.7rem 1rem;
   border-bottom: 1px solid #e8ebf0;
+  border-radius: 1rem 1rem 0 0;
   background: #ffffff;
 }
 
-.note-detail-surface .dialog-header > div {
+.workspace.is-note-detail-open .note-detail-surface .dialog-header {
+  position: relative;
+  z-index: 1;
+  top: auto;
+  box-shadow: none;
+}
+
+.note-detail-surface .dialog-header > div,
+.detail-commandbar__state {
   min-width: 0;
 }
 
-.note-detail-surface .dialog-header h2 {
-  font-size: clamp(1.1rem, 2vw, 1.35rem);
-  letter-spacing: -0.015em;
+.detail-commandbar__state {
+  margin: 0 auto 0 0;
+  color: #7a8495;
+  font-size: 0.78rem;
+  font-weight: 650;
+}
+
+.detail-back-button {
+  flex: none;
+}
+
+.quick-view-header__utilities {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.note-editor-commandbar__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-left: auto;
+}
+
+.note-editor-commandbar__actions .note-editor-modes {
+  gap: 0.18rem;
+}
+
+/* The shared All notes command replaces the duplicate legacy Preview close
+ * control. Keep the original button in the combined DOM until its action set
+ * is reviewed, without presenting two identical exits. */
+.note-dialog #close-quick-view-btn {
+  display: none;
 }
 
 .note-detail-surface.note-dialog form {
+  height: 100%;
   min-height: 0;
+  max-height: none;
+  overflow: hidden;
 }
 
 .note-detail-surface.quick-view-dialog {
+  height: 100%;
   min-height: 0;
-  grid-template-rows: auto auto auto;
+  max-height: none;
+  grid-template-rows: auto minmax(0, 1fr);
 }
 
 .note-detail-surface .dialog-body,
 .note-detail-surface .quick-view-body {
-  overflow: visible;
-  padding: 1.15rem 1.25rem;
+  min-height: 0;
+  min-block-size: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  padding: clamp(1rem, 2vw, 1.75rem);
 }
 
 .note-detail-surface .dialog-body {
-  gap: 1.15rem;
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  gap: 1.1rem;
+  align-content: start;
+  grid-auto-rows: max-content;
+}
+
+.note-dialog .detail-preview-panel {
+  min-height: 0;
+}
+
+/* Keep the document bounds stable while switching modes. Preview owns the
+ * same bounded body track as the editor, so long notes scroll inside it and
+ * its date metadata stays outside that scroll area. */
+.note-dialog.is-preview .dialog-body {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr);
+  gap: 0;
+  overflow: hidden;
+}
+
+.note-dialog.is-preview .field--title,
+.note-dialog.is-preview .editor-grid,
+.note-dialog.is-preview .note-content-field,
+.note-dialog.is-preview #note-meta {
+  display: none;
+}
+
+.note-dialog.is-preview .detail-preview-panel {
+  display: grid;
+  min-height: 0;
+}
+
+.note-dialog.is-preview .detail-preview-panel .quick-view-body {
+  height: 100%;
+  padding: 0;
+}
+
+.note-dialog .field--title {
+  display: block;
+}
+
+.note-dialog .field--title input {
+  height: auto;
+  min-height: 0;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+  color: #172033;
+  background: transparent;
+  box-shadow: none;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1.45rem, 3vw, 2.25rem);
+  font-weight: 650;
+  letter-spacing: -0.04em;
+  line-height: 1.12;
+}
+
+.note-dialog .field--title input:focus {
+  border: 0;
+  box-shadow: none;
+}
+
+.note-dialog .editor-grid {
+  grid-template-columns: max-content minmax(0, 1fr);
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0;
+}
+
+/* Edit and Preview render metadata through different components. Give both
+ * layouts one geometry contract so the title-to-metadata transition is stable
+ * when modes change. */
+.note-dialog {
+  --detail-metadata-height: 1.48rem;
+  --detail-metadata-gap: 0.32rem;
+}
+
+.note-dialog .editor-grid,
+.note-detail-surface .quick-view-context {
+  min-height: var(--detail-metadata-height);
+  gap: var(--detail-metadata-gap);
+}
+
+.note-dialog .editor-grid .field {
+  gap: 0;
+}
+
+.note-dialog .editor-grid .field-help {
+  display: none;
+}
+
+.note-dialog .tag-picker {
+  min-height: var(--detail-metadata-height);
+  border-color: transparent;
+  padding: 0.1rem;
+  background: transparent;
+  box-shadow: none;
+}
+
+.note-dialog .tag-editor-field {
+  position: relative;
+  width: min(100%, 52rem);
+  justify-self: start;
+}
+
+.note-dialog .tag-picker {
+  display: inline-flex;
+  width: fit-content;
+  max-width: 100%;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  padding: 0.08rem 0.14rem;
+  border-color: transparent;
+  border-radius: 0.7rem;
+  background: transparent;
+}
+
+.note-dialog .selected-tags {
+  flex: 0 1 auto;
+}
+
+/* Use the compact card-chip rhythm in both editable and Preview metadata.
+ * The removable edit chip keeps only the small amount of extra room needed
+ * for its close control, so mode changes remain stable. */
+.note-dialog .selected-tag,
+.note-detail-surface .quick-view-tag {
+  box-sizing: border-box;
+  min-height: 1.48rem;
+  border-color: #cbd5e1;
+  border-radius: 999px;
+  color: #334155;
+  background: #f1f5f9;
+  font-size: 0.68rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.note-detail-surface .quick-view-tag {
+  padding: 0.17rem 0.48rem;
+}
+
+.note-dialog .selected-tag {
+  min-height: 1.48rem;
+  padding: 0.06rem 0.18rem 0.06rem 0.48rem;
+}
+
+.note-dialog .selected-tag button {
+  width: 1.12rem;
+  height: 1.12rem;
+}
+
+.note-dialog .tag-picker__input-row {
+  min-width: 0;
+  flex: 0 0 auto;
+  min-height: 1.48rem;
+  gap: 0.22rem;
+  padding: 0;
+  border-radius: 999px;
+}
+
+/* The add field is an on-demand disclosure. The general flex declaration
+ * above must not override its semantic hidden state. */
+.note-dialog .tag-picker__input-row[hidden] {
+  display: none !important;
+}
+
+.note-dialog .tag-picker__input-row input {
+  width: clamp(8rem, 15vw, 11rem);
+  height: 1.48rem;
+  min-height: 1.48rem;
+  padding-inline: 0.48rem;
+  font-size: 0.68rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.note-dialog .tag-picker:hover,
+.note-dialog .tag-picker:focus-within {
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
+}
+
+/* The picker is the focus surface. Its text input stays visually seamless so
+ * the generic field focus ring cannot overlap the picker-level ring. */
+.note-dialog .tag-picker .tag-picker__input-row input {
+  border-radius: 0;
+  background: transparent;
+}
+
+.note-dialog .tag-picker .tag-picker__input-row input:focus,
+.note-dialog .tag-picker .tag-picker__input-row input:focus-visible {
+  border-color: transparent;
+  outline: 0;
+  box-shadow: none;
+}
+
+.note-dialog .tag-suggestions {
+  position: absolute;
+  z-index: 3;
+  top: calc(100% + 0.38rem);
+  left: 0;
+  width: max-content;
+  max-width: min(100%, 28rem);
+  gap: 0.3rem;
+  padding: 0.38rem;
+  border: 1px solid #e0e5ec;
+  border-radius: 0.68rem;
+  background: #ffffff;
+  box-shadow: 0 10px 24px rgb(15 23 42 / 12%);
+}
+
+.note-dialog .tag-suggestions:empty {
+  display: none;
+}
+
+.note-dialog .tag-suggestions__label {
+  display: none;
+}
+
+.note-dialog .tag-suggestion {
+  min-height: 1.48rem;
+  padding: 0.17rem 0.48rem;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.note-dialog .note-type-picker {
+  width: auto;
+}
+
+/* The trigger is intentionally compact, but its menu needs enough room for
+ * type names. Keep it bounded by the viewport on narrow screens. */
+.note-dialog .note-type-picker__menu {
+  width: max-content;
+  min-width: 14rem;
+  max-width: calc(100vw - 2rem);
+}
+
+.note-dialog .note-type-picker__option {
+  white-space: nowrap;
+}
+
+.note-dialog .note-type-picker__trigger {
+  box-sizing: border-box;
+  width: auto;
+  min-height: 1.38rem;
+  gap: 0.32rem;
+  border-color: var(--detail-type-chip-border, #cbd5e1);
+  border-radius: 999px;
+  padding: 0.16rem 1.55rem 0.16rem 0.48rem;
+  color: var(--detail-type-chip-color, #334155);
+  background-color: var(--detail-type-chip-background, #f8fafc);
+  font-size: 0.68rem;
+  font-weight: 700;
+  line-height: 1.15;
+  box-shadow: none;
+}
+
+.note-dialog .note-type-picker__trigger:hover {
+  border-color: var(--detail-type-chip-color, #64748b);
+}
+
+.note-dialog .note-type-picker__trigger[aria-expanded="true"] {
+  border-color: var(--detail-type-chip-color, var(--primary-accent-text));
+}
+
+.note-dialog .note-type-picker__trigger .type-dot {
+  display: none;
+}
+
+.note-dialog .note-content-field {
+  min-height: 0;
+  grid-template-rows: minmax(0, 1fr);
+  gap: 0.65rem;
+}
+
+.note-dialog .field-label-row {
+  display: none;
+}
+
+.note-dialog .note-content-editor {
+  height: 100%;
+  max-height: none;
+  background: transparent;
+}
+
+.note-dialog .note-editor-pane {
+  padding: 1.15rem 1.25rem;
+}
+
+.note-dialog .note-content-field.is-split .note-editor-pane--preview {
+  border-left: 1px solid #e5e9ef;
+}
+
+.note-dialog #note-content,
+.note-dialog .note-content-preview {
+  border: 0;
+  border-radius: 0.85rem;
+  padding: 0.95rem 1rem;
+  color: #263143;
+  background: transparent;
+  box-shadow: none;
+}
+
+.note-dialog #note-content {
+  resize: none;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.92rem;
+  line-height: 1.75;
+}
+
+.note-dialog .note-content-preview {
+  font-size: 1rem;
+  line-height: 1.75;
+}
+
+html[data-theme="dark"] .note-dialog .field--title input {
+  color: #f0f4fa;
+}
+
+html[data-theme="dark"] .note-dialog .note-content-field.is-split .note-editor-pane--preview {
+  border-color: #344055;
+}
+
+html[data-theme="dark"] .note-dialog .tag-picker {
+  background: transparent;
+}
+
+html[data-theme="dark"] .note-dialog .tag-picker:hover {
+  background: transparent;
+}
+
+html[data-theme="dark"] .note-dialog .tag-picker:focus-within {
+  background: transparent;
+}
+
+html[data-theme="dark"] .note-dialog .tag-suggestions {
+  border-color: #46546b;
+  background: #1b2537;
+}
+
+html[data-theme="dark"] .note-dialog .note-type-picker__trigger:hover {
+  border-color: var(--detail-type-chip-color, #cbd5e1);
+  background-color: var(--detail-type-chip-background, #334155);
+}
+
+html[data-theme="dark"] .note-dialog .note-type-picker__trigger[aria-expanded="true"] {
+  border-color: var(--detail-type-chip-color, var(--primary-accent-text));
+  background-color: var(--detail-type-chip-background, #334155);
+}
+
+html[data-theme="dark"] .note-dialog .selected-tag,
+html[data-theme="dark"] .note-detail-surface .quick-view-tag {
+  border-color: #475467;
+  color: #e2e8f0;
+  background: #334155;
+}
+
+html[data-theme="dark"] .note-dialog #note-content,
+html[data-theme="dark"] .note-dialog .note-content-preview {
+  color: #d5dfec;
 }
 
 .note-detail-surface .dialog-footer {
-  position: static;
+  position: relative;
+  z-index: 1;
+  bottom: auto;
   margin: 0;
   border-top: 1px solid #e8ebf0;
+  border-radius: 0 0 1rem 1rem;
   padding: 0.85rem 1.25rem max(0.85rem, env(safe-area-inset-bottom));
   background: #ffffff;
-  box-shadow: none;
+  box-shadow: 0 -10px 22px -20px rgb(15 23 42 / 48%);
+}
+
+.note-detail-surface .dialog-footer > .note-delete-button {
+  margin-right: 0.55rem;
+}
+
+.note-detail-surface .dialog-footer__preview-actions,
+.note-detail-surface .dialog-footer__preview-actions .quick-view-header__utilities,
+.note-detail-surface .dialog-footer__preview-actions .quick-view-export-group {
+  display: flex;
+  align-items: center;
+}
+
+.note-detail-surface .dialog-footer__preview-actions {
+  gap: 0.45rem;
+}
+
+.note-detail-surface .dialog-footer__preview-actions .quick-view-header__utilities {
+  gap: 0.45rem;
+}
+
+.note-detail-surface .dialog-footer__preview-actions .quick-view-export-group {
+  gap: 0.45rem;
+}
+
+/* Footer utilities are one icon-control family. Copy/export previously used
+ * larger framed buttons than Delete, shortcuts, and Markdown help, making the
+ * action row look like two unrelated toolbars. */
+.note-detail-surface .dialog-footer__preview-actions .icon-button,
+.note-detail-surface .note-delete-button,
+.note-detail-surface .note-save-shortcut__trigger,
+.note-detail-surface .note-markdown-help__trigger {
+  width: 2.25rem;
+  min-width: 2.25rem;
+  height: 2.25rem;
+  border: 1px solid transparent;
+  border-radius: 0.56rem;
+  color: #738096;
+  background: transparent;
+}
+
+.note-detail-surface .dialog-footer__preview-actions .icon-button:hover:not(:disabled),
+.note-detail-surface .note-save-shortcut__trigger:hover,
+.note-detail-surface .note-markdown-help__trigger:hover {
+  border-color: transparent;
+  color: #3e4a61;
+  background: #f1f3f7;
+}
+
+.note-detail-surface .dialog-footer__preview-actions .icon-button svg,
+.note-detail-surface .note-delete-button svg,
+.note-detail-surface .note-save-shortcut__trigger svg,
+.note-detail-surface .note-markdown-help__trigger svg {
+  width: 1.16rem;
+  height: 1.16rem;
+}
+
+.note-detail-surface .note-delete-button:hover:not(:disabled) {
+  color: #dc2626;
+  background: #fef2f2;
 }
 
 .note-detail-surface .quick-view-body {
   display: grid;
   grid-template-columns: 1fr;
-  align-items: start;
-  gap: 1rem;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  min-height: 0;
+  overflow: hidden;
+  /* Let the middle grid item fill its bounded track. `start` makes it use
+   * its intrinsic content height, which lets it overlap the fixed dates. */
+  align-items: stretch;
+  gap: 1.4rem;
+}
+
+.quick-view-document-header,
+.note-detail-surface .quick-view-content-card,
+.note-detail-surface .quick-view-dates {
+  /* Match the editor's wider document canvas while keeping an upper bound for
+   * ultra-wide screens. */
+  width: min(100%, 100rem);
+  margin-inline: auto;
+}
+
+.quick-view-document-header {
+  padding-bottom: 1.65rem;
+  border-bottom: 1px solid #edf0f4;
+}
+
+.quick-view-document-header h1 {
+  margin: 0 0 1.1rem;
+  color: #172033;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1.45rem, 3vw, 2.25rem);
+  font-weight: 650;
+  letter-spacing: -0.04em;
+  line-height: 1.12;
+  overflow-wrap: anywhere;
 }
 
 .note-detail-surface .quick-view-context {
-  grid-column: 1;
-  grid-row: auto;
   align-items: center;
   flex-direction: row;
-  gap: 0.6rem;
 }
 
 .note-detail-surface .quick-view-meta,
@@ -6708,33 +7241,53 @@ html[data-theme="dark"] .management-row__name {
   align-items: center;
 }
 
-.note-detail-surface .quick-view-content-card {
-  grid-column: 1;
-  grid-row: auto;
-  max-width: none;
-  border: 1px solid #e8ebf0;
-  border-radius: 0.7rem;
-  padding: 0.9rem;
-  background: #fbfcfe;
+.note-detail-surface .quick-view-meta .type-badge,
+.note-detail-surface .quick-view-tags {
+  min-height: var(--detail-metadata-height);
 }
 
-.note-detail-surface .quick-view-content-label {
-  margin-bottom: 0.9rem;
+.note-detail-surface .quick-view-tags {
+  gap: var(--detail-metadata-gap);
+}
+
+.note-detail-surface .quick-view-content-card {
+  border: 0;
+  border-radius: 0;
+  height: 100%;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  padding: 0;
+  background: transparent;
 }
 
 .note-detail-surface .quick-view-content {
   min-height: 0;
-  color: #334155;
-  font-size: 0.92rem;
-  line-height: 1.7;
+  color: #253249;
+  font-size: 1.02rem;
+  line-height: 1.78;
 }
 
+/* The timestamp row is shared visually by Edit, Split, and Preview. Keeping
+ * one rhythm here prevents it from shifting or changing tone on mode switch. */
+.note-detail-surface .note-meta,
 .note-detail-surface .quick-view-dates {
-  grid-column: 1;
-  grid-row: auto;
   display: flex;
+  width: min(100%, 100rem);
+  min-height: 2.25rem;
   flex-wrap: wrap;
-  gap: 0.38rem;
+  align-items: flex-start;
+  align-self: end;
+  gap: 0.3rem 1.1rem;
+  margin-inline: auto;
+  border-top: 1px solid #edf0f4;
+  padding-top: 0.8rem;
+  color: #8994a6;
+  font-size: 0.72rem;
+  font-weight: 500;
+  line-height: 1.3;
 }
 
 html[data-theme="dark"] .note-detail-surface,
@@ -6748,20 +7301,61 @@ html[data-theme="dark"] .note-detail-surface .quick-view-content {
   color: #d5dfec;
 }
 
+html[data-theme="dark"] .quick-view-document-header {
+  border-color: #344055;
+}
+
+html[data-theme="dark"] .note-detail-surface .note-meta,
+html[data-theme="dark"] .note-detail-surface .quick-view-dates {
+  border-color: #344055;
+  color: #94a3b8;
+}
+
+html[data-theme="dark"] .quick-view-document-header h1 {
+  color: #f0f4fa;
+}
+
 html[data-theme="dark"] .note-detail-surface .dialog-footer {
   border-color: #344055;
   background: #1b2537;
+  box-shadow: 0 -10px 22px -20px rgb(0 0 0 / 58%);
+}
+
+html[data-theme="dark"] .note-detail-surface .note-delete-button:hover:not(:disabled) {
+  color: #fca5a5;
+  background: rgb(239 68 68 / 12%);
+}
+
+html[data-theme="dark"] .note-detail-surface .dialog-footer__preview-actions .icon-button,
+html[data-theme="dark"] .note-detail-surface .note-delete-button,
+html[data-theme="dark"] .note-detail-surface .note-save-shortcut__trigger,
+html[data-theme="dark"] .note-detail-surface .note-markdown-help__trigger {
+  color: #9ba8bd;
+  background: transparent;
+}
+
+html[data-theme="dark"] .note-detail-surface .dialog-footer__preview-actions .icon-button:hover:not(:disabled),
+html[data-theme="dark"] .note-detail-surface .note-save-shortcut__trigger:hover,
+html[data-theme="dark"] .note-detail-surface .note-markdown-help__trigger:hover {
+  color: #dce4f1;
+  background: #293449;
 }
 
 @media (max-width: 620px) {
+  .workspace.is-note-detail-open {
+    height: 100dvh;
+    padding: 0.75rem;
+  }
+
   .note-detail-workspace {
-    margin-bottom: 0.75rem;
+    height: calc(100dvh - 1.5rem);
   }
 
   .note-detail-surface,
   .note-detail-surface.note-dialog,
   .note-detail-surface.quick-view-dialog,
   .note-detail-surface.note-dialog form {
+    height: calc(100dvh - 1.5rem);
     min-height: 0;
     border-radius: 0.88rem;
     box-shadow: 0 3px 14px -2px rgb(15 23 42 / 7%);
@@ -6772,8 +7366,61 @@ html[data-theme="dark"] .note-detail-surface .dialog-footer {
     padding: 0.85rem 0.9rem;
   }
 
-  .note-detail-surface .dialog-header h2 {
-    font-size: 1.08rem;
+  .detail-back-button span {
+    display: none;
+  }
+
+  .detail-back-button {
+    min-width: 2.25rem;
+    padding-inline: 0;
+  }
+
+  .quick-view-header__utilities {
+    gap: 0.38rem;
+  }
+
+  .note-editor-commandbar {
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
+
+  .note-editor-commandbar__actions {
+    width: auto;
+    flex: none;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    overflow: visible;
+    padding: 0;
+  }
+
+  .note-editor-commandbar__actions .note-editor-modes {
+    gap: 0.18rem;
+  }
+
+  .note-editor-commandbar__actions .quick-view-header__utilities {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  .note-dialog .field--title input {
+    font-size: clamp(1.4rem, 8vw, 1.9rem);
+  }
+
+  .note-dialog .note-editor-pane {
+    padding: 0.9rem;
+  }
+
+  .note-dialog .editor-grid {
+    grid-template-columns: 1fr;
+    gap: 0.35rem;
+  }
+
+  .note-dialog .tag-editor-field {
+    width: 100%;
+  }
+
+  .quick-view-document-header h1 {
+    font-size: clamp(1.4rem, 8vw, 1.9rem);
   }
 
   .note-detail-surface .dialog-body,
@@ -6782,20 +7429,166 @@ html[data-theme="dark"] .note-detail-surface .dialog-footer {
   }
 
   .note-detail-surface .dialog-footer {
+    bottom: 0.75rem;
     padding-inline: 0.9rem;
   }
 }
 
-/* Every keyboard-focusable surface uses the notebook primary rather than a
- * browser-specific focus color. Component-specific focus treatments may add
- * a soft ring or background, but this keeps the visible edge consistent. */
-:root :focus-visible {
-  outline: 2px solid var(--primary-accent);
+/* Keep the shared keyboard ring on actual controls only. Layout containers
+ * may receive programmatic focus for navigation, but must remain visually
+ * quiet. Document reading surfaces define their own focus treatment below. */
+:where(
+  button,
+  a[href],
+  input:not([type="hidden"]),
+  select,
+  textarea,
+  summary,
+  [role="button"],
+  [role="tab"],
+  [role="option"],
+  [contenteditable="true"]
+):focus-visible {
+  outline: 2px solid var(--focus-color) !important;
+  outline-offset: 2px !important;
+}
+
+/* Native fields keep the same primary edge without adding a competing glow. */
+.search-field input:focus,
+.sort-field select:focus,
+.field input:focus,
+.field select:focus,
+.field textarea:focus,
+.create-row input:focus,
+.create-row select:focus,
+.management-row input:focus,
+.management-row select:focus,
+.management-search input:focus,
+.note-type-picker__trigger:focus-visible,
+.color-picker__trigger:focus-visible {
+  border-color: var(--focus-color);
+  box-shadow: none;
+}
+
+/* A card is an indirect focus surface. When one of its controls receives
+ * keyboard focus, the control itself supplies the focus cue; the card must
+ * keep its resting appearance rather than drawing a second container ring. */
+.note-card:focus-within:not(:hover) {
+  border-color: #e2e8f0;
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.05), 0 1px 2px -1px rgb(0 0 0 / 0.05);
+  transform: none;
+}
+
+.note-card--pinned:focus-within:not(:hover) {
+  border-color: var(--pinned-card-border);
+}
+
+html[data-theme="dark"] .note-card:focus-within:not(:hover) {
+  border-color: #334155;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 16%);
+}
+
+html[data-theme="dark"] .note-card--pinned:focus-within:not(:hover) {
+  border-color: var(--pinned-card-border);
+}
+
+/* Controls rely on the shared outline rather than a second colored fill. */
+.view-mode-button:focus-visible,
+.note-card__action:focus-visible,
+.note-card__action--danger:focus-visible,
+.note-card__pin-toggle:focus-visible,
+.note-markdown-help__trigger:focus-visible,
+.topbar-more-menu__item:focus-visible,
+.color-picker__option:focus-visible,
+.note-type-picker__option:focus-visible {
+  box-shadow: none;
+}
+
+.note-card__action:focus-visible,
+.note-card__action--danger:focus-visible,
+.note-card__pin-toggle:focus-visible,
+.note-markdown-help__trigger:focus-visible,
+.topbar-more-menu__item:focus-visible {
+  background: transparent;
+}
+
+.view-mode-button:focus-visible:not(.is-active),
+.color-picker__option:focus-visible:not([aria-selected="true"]),
+.note-type-picker__option:focus-visible:not([aria-selected="true"]) {
+  background: transparent;
+}
+
+/* The tag picker itself is the visible focus surface, not its inner input. */
+.tag-picker__input-row input:focus-visible {
+  outline: 0 !important;
+}
+
+/* Framed fields use their own primary border for focus. Suppressing the
+ * global outline here avoids a second concentric ring. */
+.search-field input:focus-visible,
+.sort-field select:focus-visible,
+.field input:focus-visible,
+.field select:focus-visible,
+.create-row input:focus-visible,
+.create-row select:focus-visible,
+.management-row input:focus-visible,
+.management-row select:focus-visible,
+.management-search input:focus-visible {
+  outline: 0 !important;
+  outline-offset: 0 !important;
+}
+
+/* These document surfaces deliberately have no visible border, so retain
+ * their own rounded keyboard focus treatment. */
+.note-detail-surface .quick-view-content:focus-visible,
+.note-dialog .field--title input:focus-visible,
+.note-dialog #note-content:focus-visible,
+.note-dialog .note-content-preview:focus-visible {
+  outline: 2px solid var(--focus-color) !important;
+  outline-offset: 2px !important;
+}
+
+/* Inputs already have their own rounded control shapes. These document
+ * surfaces are intentionally borderless, so give their shared focus outline a
+ * subtle radius instead of leaving a harsh rectangular edge. */
+.quick-view-document-header h1:focus-visible,
+.note-detail-surface .quick-view-content:focus-visible,
+.note-dialog .field--title input:focus-visible,
+.note-dialog #note-content:focus-visible,
+.note-dialog .note-content-preview:focus-visible {
+  border-radius: var(--focus-radius);
+}
+
+/* The native checkbox itself is visually hidden; put the same focus color on
+ * its visible proxy instead. */
+.tag-filter-option input:focus-visible + .tag-filter-option__box {
+  outline: 2px solid var(--focus-color);
   outline-offset: 2px;
 }
 
 @media (forced-colors: active) {
-  :root :focus-visible {
-    outline-color: Highlight;
+  :where(
+    button,
+    a[href],
+    input:not([type="hidden"]),
+    select,
+    textarea,
+    summary,
+    [role="button"],
+    [role="tab"],
+    [role="option"],
+    [contenteditable="true"]
+  ):focus-visible {
+    outline-color: Highlight !important;
   }
+}
+
+/* `#notes-list` is focused programmatically after list updates. It is only a
+ * navigation anchor, so suppress the browser's native focus outline here;
+ * actual card controls retain their keyboard focus indicators. */
+.notes-list[tabindex]:focus,
+.notes-list[tabindex]:focus-visible {
+  outline: none !important;
+  outline-offset: 0 !important;
+  box-shadow: none !important;
 }

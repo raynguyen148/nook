@@ -94,6 +94,7 @@
     noteDetailWorkspace: document.querySelector("#note-detail-workspace"),
     noteDialog: document.querySelector("#note-dialog"),
     noteForm: document.querySelector("#note-form"),
+    noteEditorCommandActions: document.querySelector("#note-editor-command-actions"),
     noteDialogTitle: document.querySelector("#note-dialog-title"),
     closeNoteDialog: document.querySelector("#close-note-dialog-btn"),
     cancelNote: document.querySelector("#cancel-note-btn"),
@@ -110,16 +111,18 @@
     noteContent: document.querySelector("#note-content"),
     noteContentPreview: document.querySelector("#note-content-preview"),
     noteContentEditor: document.querySelector(".note-content-editor"),
+    notePreviewPanel: document.querySelector("#note-preview-panel"),
+    notePreviewActions: document.querySelector("#note-preview-actions"),
     noteEditorModeButtons: [...document.querySelectorAll("[data-note-editor-mode]")],
     noteMeta: document.querySelector("#note-meta"),
     selectedNoteTags: document.querySelector("#selected-note-tags"),
     tagInput: document.querySelector("#tag-input"),
+    tagInputRow: document.querySelector("#tag-input-row"),
     addTag: document.querySelector("#add-tag-btn"),
     tagSuggestions: document.querySelector("#tag-suggestions"),
     quickViewDialog: document.querySelector("#quick-view-dialog"),
     quickViewHeader: document.querySelector(".quick-view-header"),
     quickViewBody: document.querySelector(".quick-view-body"),
-    quickViewFooter: document.querySelector(".quick-view-footer"),
     quickViewTitle: document.querySelector("#quick-view-title"),
     quickViewMeta: document.querySelector("#quick-view-meta"),
     quickViewTags: document.querySelector("#quick-view-tags"),
@@ -128,9 +131,7 @@
     exportNoteMarkdown: document.querySelector("#export-note-markdown-btn"),
     exportNoteText: document.querySelector("#export-note-text-btn"),
     closeQuickView: document.querySelector("#close-quick-view-btn"),
-    closeQuickViewFooter: document.querySelector("#close-quick-view-footer-btn"),
     copyNoteContent: document.querySelector("#copy-note-content-btn"),
-    editFromQuickView: document.querySelector("#edit-from-quick-view-btn"),
     confirmationDialog: document.querySelector("#confirmation-dialog"),
     confirmationTitle: document.querySelector("#confirmation-dialog-title"),
     confirmationDescription: document.querySelector("#confirmation-dialog-description"),
@@ -184,6 +185,7 @@
     selectedNoteTagIds: new Set(),
     noteEditorSession: 0,
     pendingTagCreation: null,
+    tagInputExpanded: false,
     noteSaveInFlight: false,
     noteAutoSaveInFlight: false,
     noteAutoSaveTimer: 0,
@@ -676,7 +678,7 @@
     elements.noteFormattingShortcutModifiers.forEach((element) => {
       element.textContent = modifier;
     });
-    elements.noteSaveShortcutHelp.textContent = `Press 1 for the Markdown editor, 2 for split preview, and 3 for reading view. Bold, italic, and link shortcuts format selected note content. Quick save keeps this note open: ${modifierName}, Shift, and S. Save note and close: ${modifierName} and Enter.`;
+    elements.noteSaveShortcutHelp.textContent = `Press 1 for the Markdown editor, 2 for split preview, and 3 for Preview. Bold, italic, and link shortcuts format selected note content. Quick save keeps this note open: ${modifierName}, Shift, and S. Save note and close: ${modifierName} and Enter.`;
   }
 
   function syncViewModeUI() {
@@ -1313,11 +1315,24 @@
   }
 
   function noteForQuickView() {
-    return library.notes.find(({ id }) => id === ui.viewingNoteId) || null;
+    const noteId = ui.editingNoteId || ui.viewingNoteId;
+    return library.notes.find(({ id }) => id === noteId) || null;
   }
 
-  function renderQuickView(note) {
-    if (!note) return;
+  function previewNoteFromEditor() {
+    const persistedNote = noteForQuickView();
+    return {
+      id: elements.noteId.value,
+      title: elements.noteTitle.value.trim() || "Untitled note",
+      typeId: elements.noteType.value,
+      tagIds: [...ui.selectedNoteTagIds],
+      content: elements.noteContent.value,
+      createdAt: persistedNote?.createdAt || "",
+      updatedAt: persistedNote?.updatedAt || "",
+    };
+  }
+
+  function renderQuickView(note = previewNoteFromEditor()) {
     const type = typeFor(note.typeId);
     const tags = note.tagIds.map(tagFor).filter(Boolean);
     elements.quickViewTitle.textContent = note.title;
@@ -1333,14 +1348,20 @@
       elements.quickViewTags.append(createElement("span", { className: "quick-view-no-tags", text: "No tags" }));
     }
     globalThis.NookMarkdown.renderInto(elements.quickViewContent, note.content);
-    elements.quickViewDates.replaceChildren(
-      createElement("span", { text: `Created ${formatFullDate(note.createdAt)}` }),
-      createElement("span", { text: `Last updated ${formatFullDate(note.updatedAt)}` }),
-    );
-    elements.copyNoteContent.disabled = !note.content.trim() || ui.copyInFlight;
-    elements.editFromQuickView.disabled = isDeletedNote(note);
-    elements.editFromQuickView.title = isDeletedNote(note) ? "Restore before editing" : "Edit";
-    if (isQuickViewOpen()) scheduleQuickViewHeightSync();
+    elements.quickViewDates.replaceChildren();
+    if (note.createdAt && note.updatedAt) {
+      elements.quickViewDates.append(
+        createElement("span", { text: `Created ${formatFullDate(note.createdAt)}` }),
+        createElement("span", { text: `Last updated ${formatFullDate(note.updatedAt)}` }),
+      );
+    } else {
+      elements.quickViewDates.append(createElement("span", { text: "Not saved yet" }));
+    }
+    syncNotePreviewActions();
+  }
+
+  function syncNotePreviewActions() {
+    elements.copyNoteContent.disabled = !elements.noteContent.value.trim() || ui.copyInFlight;
   }
 
   function isDetailWorkspaceOpen() {
@@ -1348,7 +1369,7 @@
   }
 
   function isQuickViewOpen() {
-    return isDetailWorkspaceOpen() && !elements.quickViewDialog.classList.contains("is-hidden");
+    return isNoteEditorOpen() && ui.noteEditorMode === "preview";
   }
 
   function isNoteEditorOpen() {
@@ -1405,6 +1426,16 @@
       window.scrollTo(0, 0);
     }
     surface.classList.remove("is-hidden");
+    window.requestAnimationFrame(() => {
+      const scrollSurface = ui.noteEditorMode === "preview"
+        ? surface.querySelector(".quick-view-content-card")
+        : surface.querySelector(".dialog-body");
+      if (scrollSurface) scrollSurface.scrollTop = 0;
+      if (surface === elements.noteDialog) {
+        elements.noteContent.scrollTop = 0;
+        elements.noteContentPreview.scrollTop = 0;
+      }
+    });
   }
 
   function closeNoteDetail({ restoreFocus = true, invoker = ui.viewInvoker } = {}) {
@@ -1422,7 +1453,7 @@
 
   function syncQuickViewHeight() {
     if (!isQuickViewOpen()) return;
-    elements.quickViewDialog.style.removeProperty("height");
+    elements.noteDialog.style.removeProperty("height");
   }
 
   function scheduleQuickViewHeightSync() {
@@ -1437,45 +1468,12 @@
     elements.notesList.focus({ preventScroll: true });
   }
 
-  function closeQuickView({ restoreFocus = true, afterClose = null } = {}) {
-    ui.restoreViewFocus = restoreFocus;
-    ui.afterQuickViewClose = afterClose;
-    if (isQuickViewOpen()) elements.quickViewDialog.classList.add("is-hidden");
-    finishQuickViewClose();
-  }
-
-  function finishQuickViewClose() {
-    const shouldRestoreFocus = ui.restoreViewFocus;
-    const afterClose = ui.afterQuickViewClose;
-    const invoker = ui.viewInvoker;
-    ui.viewingNoteId = "";
-    ui.copyInFlight = false;
-    elements.quickViewDialog.style.removeProperty("height");
-    ui.restoreViewFocus = true;
-    ui.afterQuickViewClose = null;
-    if (afterClose) {
-      afterClose();
-      return;
-    }
-    closeNoteDetail({ restoreFocus: shouldRestoreFocus, invoker });
-    ui.viewInvoker = null;
+  function closeQuickView() {
+    if (isQuickViewOpen()) requestNoteEditorClose();
   }
 
   function openQuickView(note, invoker = null) {
-    ui.viewingNoteId = note.id;
-    ui.viewInvoker = invoker instanceof HTMLElement ? invoker : null;
-    ui.copyInFlight = false;
-    ui.restoreViewFocus = true;
-    ui.afterQuickViewClose = null;
-    renderQuickView(note);
-    elements.noteDialog.classList.add("is-hidden");
-    openNoteDetail(elements.quickViewDialog, invoker);
-    syncToastHost();
-    window.requestAnimationFrame(() => {
-      syncQuickViewHeight();
-      elements.quickViewTitle.tabIndex = -1;
-      elements.quickViewTitle.focus();
-    });
+    openNoteEditor(note, { invoker, initialMode: "preview", focusTitle: false });
   }
 
   async function writeClipboardText(text) {
@@ -1498,8 +1496,8 @@
   }
 
   async function copyQuickViewContent() {
-    const note = noteForQuickView();
-    if (!note?.content.trim()) {
+    const note = previewNoteFromEditor();
+    if (!note.content.trim()) {
       showToast("This note has no content to copy.", "error");
       return;
     }
@@ -1512,7 +1510,7 @@
       showError(error, "We could not copy this note.");
     } finally {
       ui.copyInFlight = false;
-      if (isQuickViewOpen() && noteForQuickView()?.id === note.id) renderQuickView(note);
+      if (isQuickViewOpen()) renderQuickView();
     }
   }
 
@@ -1531,12 +1529,6 @@
         button.removeAttribute("aria-busy");
       }
     }
-  }
-
-  function editFromQuickView() {
-    const note = noteForQuickView();
-    if (!note) return;
-    closeQuickView({ restoreFocus: false, afterClose: () => openNoteEditor(note, { preserveDetail: true }) });
   }
 
   function createPinIcon() {
@@ -1646,7 +1638,7 @@
     const titleButton = createElement("button", {
       className: "note-card__title",
       type: "button",
-      attributes: { "aria-label": `Quick view note: ${note.title}` },
+      attributes: { "aria-label": `Preview note: ${note.title}` },
     });
     appendHighlightedText(titleButton, note.title);
     titleButton.addEventListener("click", () => openQuickView(note, titleButton));
@@ -1669,7 +1661,7 @@
         createElement("span", {
           className: "more-tags",
           text: `+${resolvedTags.length - 3}`,
-          attributes: { title: `${resolvedTags.length - 3} more tags in Quick view` },
+          attributes: { title: `${resolvedTags.length - 3} more tags in Preview` },
         }),
       );
     }
@@ -1679,7 +1671,7 @@
     const view = createElement("button", {
       className: "note-card__action",
       type: "button",
-      attributes: { "aria-label": `Quick view ${note.title}`, title: "View" },
+      attributes: { "aria-label": `Preview ${note.title}`, title: "Preview" },
     });
     view.append(
       createNoteCardActionIcon([
@@ -1737,7 +1729,7 @@
           ]),
     );
     remove.addEventListener("click", () => (isDeleted ? restoreNoteWithFeedback(note) : deleteNoteWithConfirmation(note)));
-    actions.append(view, copy);
+    actions.append(copy, view);
     if (!isDeleted) actions.append(edit);
     actions.append(remove);
     if (isDeleted) {
@@ -1944,6 +1936,11 @@
     if (!type) return;
 
     elements.noteType.value = type.id;
+    if (noteTypePicker.colorClass) {
+      noteTypePicker.trigger.classList.remove(noteTypePicker.colorClass);
+    }
+    noteTypePicker.colorClass = `type-badge--${safeTypeColor(type)}`;
+    noteTypePicker.trigger.classList.add(noteTypePicker.colorClass);
     noteTypePicker.dot.className = `type-dot type-dot--${safeTypeColor(type)}`;
     noteTypePicker.label.textContent = type.name;
     noteTypePicker.options.forEach((option) => {
@@ -1979,7 +1976,7 @@
 
     const picker = createElement("div", { className: "note-type-picker" });
     const trigger = createElement("button", {
-      className: "note-type-picker__trigger",
+      className: "note-type-picker__trigger type-badge",
       type: "button",
       attributes: {
         "aria-label": "Note type",
@@ -2075,6 +2072,10 @@
   }
 
   function renderTagSuggestions() {
+    if (!ui.tagInputExpanded) {
+      elements.tagSuggestions.replaceChildren();
+      return;
+    }
     const queryText = cleanTagInput(elements.tagInput.value);
     const query = queryText.toLocaleLowerCase();
     const available = library.tags
@@ -2154,56 +2155,37 @@
   }
 
   function renderNoteEditorPreview() {
-    if (ui.noteEditorMode === "edit") return;
+    if (ui.noteEditorMode !== "split") return;
     globalThis.NookMarkdown.renderInto(elements.noteContentPreview, elements.noteContent.value);
-    if (ui.noteEditorMode === "split") {
-      syncNoteEditorScroll(elements.noteContent, elements.noteContentPreview);
-    }
+    syncNoteEditorScroll(elements.noteContent, elements.noteContentPreview);
   }
 
   function setNoteEditorMode(mode) {
-    if (!["edit", "split", "view"].includes(mode)) return;
+    if (!["edit", "split", "preview"].includes(mode)) return;
     ui.noteEditorMode = mode;
+    elements.noteDialogTitle.textContent = mode === "preview"
+      ? "Preview note"
+      : elements.noteId.value ? "Edit note" : "New note";
     elements.noteDialog.classList.toggle("is-split", mode === "split");
-    elements.noteDialog.classList.toggle("is-view", mode === "view");
+    elements.noteDialog.classList.toggle("is-preview", mode === "preview");
     elements.noteContentField.classList.toggle("is-split", mode === "split");
-    elements.noteContentField.classList.toggle("is-view", mode === "view");
+    elements.noteContentField.classList.toggle("is-preview", mode === "preview");
     elements.noteContentPreview.hidden = mode === "edit";
+    elements.notePreviewPanel.classList.toggle("is-hidden", mode !== "preview");
     elements.noteEditorModeButtons.forEach((button) => {
       button.setAttribute("aria-pressed", String(button.dataset.noteEditorMode === mode));
     });
-    renderNoteEditorPreview();
+    syncNotePreviewActions();
+    if (mode === "preview") renderQuickView();
+    else renderNoteEditorPreview();
     scheduleNoteEditorHeight();
   }
 
-  function noteEditorHeightCap() {
-    const rootFontSize = Number.parseFloat(window.getComputedStyle(document.documentElement).fontSize) || 16;
-    return Math.min(window.innerHeight * 0.54, rootFontSize * 34);
-  }
-
-  function syncNoteEditorHeight({ allowShrink = false } = {}) {
+  function syncNoteEditorHeight() {
     if (!isNoteEditorOpen()) return;
-
-    const isStackedSplitView = window.matchMedia("(max-width: 620px)").matches && ui.noteEditorMode === "split";
-    if (isStackedSplitView) {
-      elements.noteContentEditor.style.removeProperty("height");
-      return;
-    }
-
-    const editor = elements.noteContentEditor;
-    const sourcePane = elements.noteContent.closest(".note-editor-pane");
-    const contentSurface = ui.noteEditorMode === "view" ? elements.noteContentPreview : elements.noteContent;
-    const currentHeight = editor.getBoundingClientRect().height;
-
-    editor.style.removeProperty("height");
-    const minimumHeight = editor.getBoundingClientRect().height;
-    const paneHeight = sourcePane?.getBoundingClientRect().height || minimumHeight;
-    const contentHeight = contentSurface.getBoundingClientRect().height;
-    const paneChromeHeight = Math.max(0, paneHeight - contentHeight);
-    const contentHeightNeeded = contentSurface.scrollHeight + paneChromeHeight;
-    const nextHeight = Math.min(noteEditorHeightCap(), Math.max(minimumHeight, contentHeightNeeded, allowShrink ? 0 : currentHeight));
-
-    if (nextHeight > minimumHeight + 1) editor.style.height = `${Math.ceil(nextHeight)}px`;
+    // The detail workspace owns the editor height. Keeping it fixed prevents
+    // content changes from moving metadata or changing the document layout.
+    elements.noteContentEditor.style.removeProperty("height");
   }
 
   function scheduleNoteEditorHeight(options) {
@@ -2369,9 +2351,13 @@
     submitButton.textContent = disabled ? "Saving…" : "Save & close";
   }
 
-  function openNoteEditor(note = null, { preserveDetail = false, invoker = null } = {}) {
+  function openNoteEditor(note = null, {
+    preserveDetail = false,
+    invoker = null,
+    initialMode = "edit",
+    focusTitle = true,
+  } = {}) {
     clearNoteAutoSave();
-    setNoteEditorMode("edit");
     ui.noteEditorSession += 1;
     ui.pendingTagCreation = null;
     ui.noteSaveInFlight = false;
@@ -2379,6 +2365,7 @@
     ui.editingNoteId = note?.id || "";
     ui.selectedNoteTagIds = new Set(note?.tagIds || []);
     elements.noteForm.reset();
+    setTagInputExpanded(false);
     elements.noteId.value = note?.id || "";
     elements.noteTitle.value = note?.title || "";
     elements.noteContent.value = note?.content || "";
@@ -2389,13 +2376,16 @@
     renderSelectedNoteTags();
     renderTagSuggestions();
     renderNoteMetadata(note);
+    setNoteEditorMode(initialMode);
     elements.quickViewDialog.classList.add("is-hidden");
     openNoteDetail(elements.noteDialog, preserveDetail ? null : invoker || elements.newNote);
     ui.noteEditorSnapshot = getNoteEditorDraft();
     syncToastHost();
     syncNoteEditorControls();
     scheduleNoteEditorHeight({ allowShrink: true });
-    window.requestAnimationFrame(() => elements.noteTitle.focus());
+    if (!preserveDetail && focusTitle && initialMode === "edit") {
+      window.requestAnimationFrame(() => elements.noteTitle.focus());
+    }
   }
 
   function restoreStoredNoteDraft(recovery) {
@@ -2444,6 +2434,7 @@
     ui.pendingTagCreation = null;
     ui.noteSaveInFlight = false;
     ui.noteAutoSaveInFlight = false;
+    setTagInputExpanded(false);
     elements.noteDialog.classList.add("is-hidden");
     elements.noteContentEditor.style.removeProperty("height");
     ui.editingNoteId = "";
@@ -2476,15 +2467,32 @@
     }
   }
 
+  function setTagInputExpanded(expanded, { focus = false } = {}) {
+    ui.tagInputExpanded = Boolean(expanded);
+    elements.tagInputRow.hidden = !ui.tagInputExpanded;
+    elements.addTag.setAttribute("aria-expanded", String(ui.tagInputExpanded));
+
+    if (!ui.tagInputExpanded) {
+      elements.tagInput.value = "";
+      elements.tagSuggestions.replaceChildren();
+      return;
+    }
+
+    if (focus) {
+      window.requestAnimationFrame(() => {
+        if (isNoteEditorOpen() && ui.tagInputExpanded) elements.tagInput.focus();
+      });
+    }
+  }
+
   function selectNoteTag(tagId) {
     if (ui.noteSaveInFlight) return;
     if (!tagFor(tagId)) return;
     ui.selectedNoteTagIds.add(tagId);
     elements.tagInput.value = "";
     renderSelectedNoteTags();
-    renderTagSuggestions();
+    setTagInputExpanded(false);
     scheduleNoteAutoSave();
-    elements.tagInput.focus();
   }
 
   function addTagFromEditor() {
@@ -2511,7 +2519,7 @@
         ui.selectedNoteTagIds.add(tag.id);
         elements.tagInput.value = "";
         renderSelectedNoteTags();
-        renderTagSuggestions();
+        setTagInputExpanded(false);
         scheduleNoteAutoSave();
         showToast(`Tag “${tagLabel(tag)}” created.`);
       } catch (error) {
@@ -3051,7 +3059,7 @@
     }
     if (isQuickViewOpen()) {
       const note = noteForQuickView();
-      if (note) renderQuickView(note);
+      if (note || !elements.noteId.value) renderQuickView();
       else closeQuickView({ restoreFocus: false });
     }
   }
@@ -3177,8 +3185,7 @@
   }
 
   function exportCurrentNote(format) {
-    const note = noteForQuickView();
-    if (!note) return;
+    const note = previewNoteFromEditor();
     try {
       downloadNoteFile(note, format);
       showToast(`Exported “${note.title}” as .${format}.`);
@@ -3287,8 +3294,13 @@
     elements.comfortableView.addEventListener("click", () => setViewMode("comfortable"));
     elements.compactView.addEventListener("click", () => setViewMode("compact"));
     elements.noteForm.addEventListener("submit", saveNote);
-    elements.noteTitle.addEventListener("input", scheduleNoteAutoSave);
+    elements.noteTitle.addEventListener("input", () => {
+      if (ui.noteEditorMode === "preview") renderQuickView();
+      scheduleNoteAutoSave();
+    });
     elements.noteContent.addEventListener("input", () => {
+      if (ui.noteEditorMode === "preview") renderQuickView();
+      syncNotePreviewActions();
       renderNoteEditorPreview();
       scheduleNoteEditorHeight();
       scheduleNoteAutoSave();
@@ -3313,11 +3325,9 @@
       deleteNoteWithConfirmation(note);
     });
     elements.closeQuickView.addEventListener("click", () => closeQuickView());
-    elements.closeQuickViewFooter.addEventListener("click", () => closeQuickView());
     elements.copyNoteContent.addEventListener("click", copyQuickViewContent);
     elements.exportNoteMarkdown.addEventListener("click", () => exportCurrentNote("md"));
     elements.exportNoteText.addEventListener("click", () => exportCurrentNote("txt"));
-    elements.editFromQuickView.addEventListener("click", editFromQuickView);
     elements.closeConfirmation.addEventListener("click", () => closeConfirmation());
     elements.cancelConfirmation.addEventListener("click", () => closeConfirmation());
     elements.confirmAction.addEventListener("click", () => closeConfirmation(true));
@@ -3336,6 +3346,13 @@
         event.preventDefault();
         addTagFromEditor();
       }
+      if (event.key === "Escape") {
+        event.preventDefault();
+        event.stopPropagation();
+        setTagInputExpanded(false);
+        elements.addTag.focus({ preventScroll: true });
+        return;
+      }
       if (
         event.key === "Backspace" &&
         !event.isComposing &&
@@ -3350,7 +3367,17 @@
         scheduleNoteAutoSave();
       }
     });
-    elements.addTag.addEventListener("click", addTagFromEditor);
+    elements.addTag.addEventListener("click", () => {
+      if (!ui.tagInputExpanded) {
+        setTagInputExpanded(true, { focus: true });
+        return;
+      }
+      if (!cleanTagInput(elements.tagInput.value)) {
+        setTagInputExpanded(false);
+        return;
+      }
+      addTagFromEditor();
+    });
     elements.closeOrganizeDialog.addEventListener("click", closeOrganize);
     [elements.confirmationDialog, elements.organizeDialog].forEach((dialog) => {
       dialog.addEventListener("close", () => window.queueMicrotask(syncToastHost));
@@ -3478,9 +3505,9 @@
         !event.isComposing &&
         !event.defaultPrevented;
 
-      if (matchesQuickViewEditShortcut && !elements.editFromQuickView.disabled) {
+      if (matchesQuickViewEditShortcut && !ui.noteSaveInFlight) {
         event.preventDefault();
-        editFromQuickView();
+        setNoteEditorMode("edit");
         return;
       }
 
@@ -3504,7 +3531,7 @@
 
       if (matchesNoteEditorModeShortcut && !ui.noteSaveInFlight) {
         event.preventDefault();
-        setNoteEditorMode({ 1: "edit", 2: "split", 3: "view" }[formattingKey]);
+        setNoteEditorMode({ 1: "edit", 2: "split", 3: "preview" }[formattingKey]);
         return;
       }
 
@@ -3543,7 +3570,22 @@
     elements.startupErrorMessage.textContent = `${message} Your existing browser data was not changed.`;
   }
 
+  function arrangeNoteEditorWorkspace() {
+    const modes = elements.noteContentField.querySelector(".note-editor-modes");
+    if (!modes) return;
+
+    // Preview and editor now share one document surface. Move the former
+    // Quick View actions/content into it without dropping any existing action.
+    elements.noteEditorCommandActions.append(modes);
+    const footer = elements.noteDialog.querySelector(".dialog-footer");
+    footer?.insertBefore(elements.notePreviewActions, elements.deleteNote);
+    elements.notePreviewPanel.append(elements.quickViewBody);
+    elements.noteDialog.querySelector(".dialog-header")?.append(elements.closeQuickView);
+    elements.quickViewDialog.remove();
+  }
+
   async function bootstrap() {
+    arrangeNoteEditorWorkspace();
     if (!storage) {
       showStartupError(new Error("The local storage module could not be loaded."));
       return;
