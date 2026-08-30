@@ -111,6 +111,7 @@
     noteContent: document.querySelector("#note-content"),
     noteContentPreview: document.querySelector("#note-content-preview"),
     noteContentEditor: document.querySelector(".note-content-editor"),
+    noteFormattingButtons: [...document.querySelectorAll("[data-note-formatting]")],
     notePreviewPanel: document.querySelector("#note-preview-panel"),
     notePreviewActions: document.querySelector("#note-preview-actions"),
     noteEditorModeButtons: [...document.querySelectorAll("[data-note-editor-mode]")],
@@ -2319,6 +2320,99 @@
     if (key === "k") insertNoteLink();
   }
 
+  function selectedNoteContentLineRange() {
+    const value = elements.noteContent.value;
+    const selectionStart = elements.noteContent.selectionStart;
+    const selectionEnd = elements.noteContent.selectionEnd;
+    const start = value.lastIndexOf("\n", Math.max(0, selectionStart - 1)) + 1;
+    const nextLineBreak = value.indexOf("\n", selectionEnd);
+    const end = nextLineBreak === -1 ? value.length : nextLineBreak;
+    return { start, end, text: value.slice(start, end) };
+  }
+
+  function toggleNoteContentLinePrefix(prefix, expression) {
+    const { start, end, text } = selectedNoteContentLineRange();
+    const lines = text.split("\n");
+    const removePrefix = lines.every((line) => expression.test(line));
+    const replacement = lines
+      .map((line) => removePrefix ? line.replace(expression, "") : `${prefix}${line}`)
+      .join("\n");
+    replaceNoteContentSelection(replacement, start, end, start, start + replacement.length);
+  }
+
+  function toggleNoteContentOrderedList() {
+    const { start, end, text } = selectedNoteContentLineRange();
+    const lines = text.split("\n");
+    const expression = /^\d+\.\s+/;
+    const removePrefix = lines.every((line) => expression.test(line));
+    const replacement = lines
+      .map((line, index) => removePrefix ? line.replace(expression, "") : `${index + 1}. ${line}`)
+      .join("\n");
+    replaceNoteContentSelection(replacement, start, end, start, start + replacement.length);
+  }
+
+  function insertNoteContentTemplate(template, selectionOffset, selectionLength = () => 0) {
+    const textarea = elements.noteContent;
+    const selectionStart = textarea.selectionStart;
+    const selectionEnd = textarea.selectionEnd;
+    const selectedText = textarea.value.slice(selectionStart, selectionEnd);
+    const replacement = template(selectedText);
+    const nextSelectionStart = selectionStart + selectionOffset(selectedText, replacement);
+    replaceNoteContentSelection(
+      replacement,
+      selectionStart,
+      selectionEnd,
+      nextSelectionStart,
+      nextSelectionStart + selectionLength(selectedText, replacement),
+    );
+  }
+
+  function nextFootnoteNumber() {
+    const references = [...elements.noteContent.value.matchAll(/\[\^(\d+)\]/g)]
+      .map((match) => Number.parseInt(match[1], 10))
+      .filter(Number.isFinite);
+    return references.length ? Math.max(...references) + 1 : 1;
+  }
+
+  function applyNoteFormatting(formatting) {
+    if (formatting === "bold") return toggleNoteContentWrapper("**");
+    if (formatting === "italic") return toggleNoteContentWrapper("*");
+    if (formatting === "strikethrough") return toggleNoteContentWrapper("~~");
+    if (formatting === "inline-code") return toggleNoteContentWrapper("`");
+    if (formatting === "heading") return toggleNoteContentLinePrefix("## ", /^#{1,6}\s+/);
+    if (formatting === "bullet-list") return toggleNoteContentLinePrefix("- ", /^[-*+]\s+/);
+    if (formatting === "task-list") return toggleNoteContentLinePrefix("- [ ] ", /^-\s\[[ xX]\]\s+/);
+    if (formatting === "ordered-list") return toggleNoteContentOrderedList();
+    if (formatting === "code-block") {
+      return insertNoteContentTemplate(
+        (selectedText) => `\`\`\`\n${selectedText}\n\`\`\``,
+        () => 4,
+        (selectedText) => selectedText.length,
+      );
+    }
+    if (formatting === "table") {
+      return insertNoteContentTemplate(
+        () => "| Column 1 | Column 2 |\n| --- | --- |\n| Cell 1 | Cell 2 |",
+        () => 2,
+        () => "Column 1".length,
+      );
+    }
+    if (formatting === "alert") {
+      return insertNoteContentTemplate(
+        (selectedText) => `> [!NOTE]\n> ${selectedText || "Add a note"}`,
+        () => 12,
+        (selectedText) => (selectedText || "Add a note").length,
+      );
+    }
+    if (formatting === "footnote") {
+      const number = nextFootnoteNumber();
+      return insertNoteContentTemplate(
+        (selectedText) => `${selectedText}[^${number}]\n\n[^${number}]: `,
+        (selectedText, replacement) => replacement.length,
+      );
+    }
+  }
+
   function isCurrentNoteEditorSession(session) {
     return ui.noteEditorSession === session && isNoteEditorOpen();
   }
@@ -2333,6 +2427,7 @@
       elements.noteType,
       ...noteTypeControls,
       elements.noteContent,
+      ...elements.noteFormattingButtons,
       ...elements.noteEditorModeButtons,
       elements.deleteNote,
       elements.cancelNote,
@@ -3307,6 +3402,12 @@
     });
     elements.noteContent.addEventListener("scroll", () => {
       syncNoteEditorScroll(elements.noteContent, elements.noteContentPreview);
+    });
+    elements.noteFormattingButtons.forEach((button) => {
+      button.addEventListener("pointerdown", (event) => event.preventDefault());
+      button.addEventListener("click", () => {
+        if (!ui.noteSaveInFlight) applyNoteFormatting(button.dataset.noteFormatting);
+      });
     });
     elements.noteContentPreview.addEventListener("scroll", () => {
       syncNoteEditorScroll(elements.noteContentPreview, elements.noteContent);

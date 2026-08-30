@@ -414,7 +414,10 @@
                     </svg>
                     <span class="note-editor-mode__label">Edit</span>
                   </button>
-                  <span id="note-editor-mode-edit-tooltip" class="note-editor-mode__tooltip" role="tooltip">Edit Markdown · 1</span>
+                  <span id="note-editor-mode-edit-tooltip" class="note-editor-mode__tooltip" role="tooltip">
+                    <span>Markdown editor</span>
+                    <kbd>1</kbd>
+                  </span>
                 </div>
                 <div class="note-editor-mode">
                   <button
@@ -432,7 +435,10 @@
                     </svg>
                     <span class="note-editor-mode__label">Split</span>
                   </button>
-                  <span id="note-editor-mode-split-tooltip" class="note-editor-mode__tooltip" role="tooltip">Split editor and preview · 2</span>
+                  <span id="note-editor-mode-split-tooltip" class="note-editor-mode__tooltip" role="tooltip">
+                    <span>Split editor and preview</span>
+                    <kbd>2</kbd>
+                  </span>
                 </div>
                 <div class="note-editor-mode">
                   <button
@@ -450,8 +456,81 @@
                     </svg>
                     <span class="note-editor-mode__label">Preview</span>
                   </button>
-                  <span id="note-editor-mode-preview-tooltip" class="note-editor-mode__tooltip" role="tooltip">Preview rendered note · 3</span>
+                  <span id="note-editor-mode-preview-tooltip" class="note-editor-mode__tooltip" role="tooltip">
+                    <span>Preview rendered note</span>
+                    <kbd>3</kbd>
+                  </span>
                 </div>
+              </div>
+            </div>
+            <div class="note-formatting-toolbar" role="toolbar" aria-label="Markdown formatting">
+              <div class="note-formatting-tool">
+                <button class="note-formatting-tool__button note-formatting-tool__button--heading" type="button" data-note-formatting="heading" aria-label="Toggle heading" title="Heading"><span aria-hidden="true">H</span></button>
+                <span class="note-formatting-tool__tooltip" role="tooltip">Heading</span>
+              </div>
+              <div class="note-formatting-tool">
+                <button class="note-formatting-tool__button note-formatting-tool__button--bold" type="button" data-note-formatting="bold" aria-label="Toggle bold" title="Bold"><span aria-hidden="true">B</span></button>
+                <span class="note-formatting-tool__tooltip" role="tooltip">Bold</span>
+              </div>
+              <div class="note-formatting-tool">
+                <button class="note-formatting-tool__button note-formatting-tool__button--italic" type="button" data-note-formatting="italic" aria-label="Toggle italic" title="Italic"><span aria-hidden="true">I</span></button>
+                <span class="note-formatting-tool__tooltip" role="tooltip">Italic</span>
+              </div>
+              <div class="note-formatting-tool">
+                <button class="note-formatting-tool__button note-formatting-tool__button--strike" type="button" data-note-formatting="strikethrough" aria-label="Toggle strikethrough" title="Strikethrough"><span aria-hidden="true">S</span></button>
+                <span class="note-formatting-tool__tooltip" role="tooltip">Strikethrough</span>
+              </div>
+              <div class="note-formatting-tool">
+                <button class="note-formatting-tool__button" type="button" data-note-formatting="inline-code" aria-label="Toggle inline code" title="Inline code"><span aria-hidden="true">&lt;/&gt;</span></button>
+                <span class="note-formatting-tool__tooltip" role="tooltip">Inline code</span>
+              </div>
+              <div class="note-formatting-tool">
+                <button class="note-formatting-tool__button" type="button" data-note-formatting="code-block" aria-label="Insert code block" title="Code block"><span aria-hidden="true">{ }</span></button>
+                <span class="note-formatting-tool__tooltip" role="tooltip">Code block</span>
+              </div>
+              <div class="note-formatting-tool">
+                <button class="note-formatting-tool__button" type="button" data-note-formatting="bullet-list" aria-label="Toggle bullet list" title="Bullet list"><span aria-hidden="true">•≡</span></button>
+                <span class="note-formatting-tool__tooltip" role="tooltip">Bullet list</span>
+              </div>
+              <div class="note-formatting-tool">
+                <button class="note-formatting-tool__button" type="button" data-note-formatting="ordered-list" aria-label="Toggle numbered list" title="Numbered list"><span aria-hidden="true">1≡</span></button>
+                <span class="note-formatting-tool__tooltip" role="tooltip">Numbered list</span>
+              </div>
+              <div class="note-formatting-tool">
+                <button class="note-formatting-tool__button" type="button" data-note-formatting="task-list" aria-label="Toggle task list" title="Task list">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <rect x="4" y="4" width="16" height="16" rx="2.2" />
+                    <path d="m7.8 12.1 2.65 2.65 5.75-6.1" />
+                  </svg>
+                </button>
+                <span class="note-formatting-tool__tooltip" role="tooltip">Task list</span>
+              </div>
+              <div class="note-formatting-tool">
+                <button class="note-formatting-tool__button" type="button" data-note-formatting="table" aria-label="Insert table" title="Table">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <rect x="3.75" y="4.25" width="16.5" height="15.5" rx="1.8" />
+                    <path d="M4.25 9.5h15.5M9.25 4.75v14.5M14.75 4.75v14.5" />
+                  </svg>
+                </button>
+                <span class="note-formatting-tool__tooltip" role="tooltip">Table</span>
+              </div>
+              <div class="note-formatting-tool">
+                <button class="note-formatting-tool__button" type="button" data-note-formatting="alert" aria-label="Insert note alert" title="Alert">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="m12 3.7 8.35 15.6H3.65L12 3.7Z" />
+                    <path d="M12 9v4.6M12 16.55h.01" />
+                  </svg>
+                </button>
+                <span class="note-formatting-tool__tooltip" role="tooltip">Alert</span>
+              </div>
+              <div class="note-formatting-tool">
+                <button class="note-formatting-tool__button" type="button" data-note-formatting="footnote" aria-label="Insert footnote" title="Footnote">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M5 3.75h9l5 5V20.25H5z" />
+                    <path d="M14 3.75v5h5M10.1 13.35l1.45-1.2v5.1" />
+                  </svg>
+                </button>
+                <span class="note-formatting-tool__tooltip" role="tooltip">Footnote</span>
               </div>
             </div>
             <div class="note-content-editor">

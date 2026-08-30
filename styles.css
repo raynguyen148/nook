@@ -499,7 +499,7 @@ textarea:focus-visible {
   padding: 0.25rem 0.25rem;
   color: #334155;
   cursor: pointer;
-  font-size: 0.78rem;
+  font-size: 1rem;
   font-weight: 500;
 }
 
@@ -3080,8 +3080,8 @@ select::-ms-expand {
     linear-gradient(45deg, transparent 50%, #728098 50%),
     linear-gradient(135deg, #728098 50%, transparent 50%);
   background-position:
-    calc(100% - 0.8rem) calc(50% - 0.1rem),
-    calc(100% - 0.54rem) calc(50% - 0.1rem);
+    calc(100% - 0.8rem) 50%,
+    calc(100% - 0.54rem) 50%;
   background-size:
     0.27rem 0.27rem,
     0.27rem 0.27rem;
@@ -5674,14 +5674,18 @@ html[data-theme="dark"] .startup-error p {
   z-index: 3;
   top: calc(100% + 0.4rem);
   right: 0;
+  display: flex;
   width: max-content;
   max-width: min(15rem, 75vw);
-  padding: 0.35rem 0.5rem;
-  border: 1px solid #d7dce6;
-  border-radius: 0.42rem;
-  color: #f7f9fc;
-  background: #293548;
-  box-shadow: 0 8px 18px rgb(27 38 58 / 18%);
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.9rem;
+  border: 1px solid #dfe3ea;
+  border-radius: 0.58rem;
+  padding: 0.46rem 0.52rem;
+  color: #556176;
+  background: #fff;
+  box-shadow: 0 0.65rem 1.6rem rgb(36 46 66 / 14%);
   font-size: 0.72rem;
   font-weight: 650;
   line-height: 1.25;
@@ -5691,10 +5695,127 @@ html[data-theme="dark"] .startup-error p {
   transition: opacity var(--interaction-duration) var(--interaction-easing), transform var(--interaction-duration) var(--interaction-easing);
 }
 
+.note-editor-mode__tooltip > span {
+  white-space: nowrap;
+}
+
+.note-editor-mode__tooltip kbd {
+  min-width: 1.3rem;
+  border: 1px solid #d9dee7;
+  border-bottom-color: #cbd2dc;
+  border-radius: 0.28rem;
+  padding: 0.12rem 0.4rem;
+  color: #596579;
+  background: #fff;
+  box-shadow: 0 1px 0 rgb(55 66 86 / 8%);
+  font: inherit;
+  font-weight: 650;
+  text-align: center;
+}
+
 .note-editor-mode:hover .note-editor-mode__tooltip,
 .note-editor-mode__button:focus-visible + .note-editor-mode__tooltip {
   opacity: 1;
   transform: translateY(0);
+}
+
+.note-formatting-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.48rem;
+  min-height: 2.65rem;
+  padding: 0.28rem 0.12rem;
+  border: 0;
+  border-bottom: 1px solid #e5e9ef;
+  background: transparent;
+}
+
+.note-formatting-tool {
+  position: relative;
+  display: inline-flex;
+}
+
+.note-formatting-tool__button {
+  display: inline-grid;
+  width: 2rem;
+  min-width: 2rem;
+  height: 2rem;
+  place-items: center;
+  border: 1px solid transparent;
+  border-radius: 0.44rem;
+  padding: 0;
+  color: #556176;
+  background: transparent;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.78rem;
+  font-weight: 750;
+  line-height: 1;
+}
+
+.note-formatting-tool__button--heading,
+.note-formatting-tool__button--bold {
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.note-formatting-tool__button--italic {
+  font-family: Georgia, serif;
+  font-size: 1rem;
+  font-style: italic;
+  font-weight: 700;
+}
+
+.note-formatting-tool__button--strike span {
+  text-decoration: line-through;
+}
+
+.note-formatting-tool__button svg {
+  width: 1rem;
+  height: 1rem;
+  flex: none;
+  stroke-width: 2.4;
+}
+
+.note-formatting-tool__button:hover:not(:disabled),
+.note-formatting-tool__button:focus-visible {
+  outline: none;
+  border-color: var(--primary-accent-border);
+  color: var(--primary-accent-text);
+  background: var(--primary-accent-soft);
+}
+
+.note-formatting-tool__tooltip {
+  position: absolute;
+  z-index: 4;
+  top: calc(100% + 0.35rem);
+  left: 50%;
+  width: max-content;
+  max-width: min(12rem, 70vw);
+  border: 1px solid #d7dce6;
+  border-radius: 0.38rem;
+  padding: 0.28rem 0.42rem;
+  color: #f7f9fc;
+  background: #293548;
+  box-shadow: 0 8px 18px rgb(27 38 58 / 18%);
+  font-size: 0.7rem;
+  font-weight: 650;
+  line-height: 1.2;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, -0.18rem);
+  transition: opacity var(--interaction-duration) var(--interaction-easing), transform var(--interaction-duration) var(--interaction-easing);
+}
+
+.note-formatting-tool:hover .note-formatting-tool__tooltip,
+.note-formatting-tool__button:focus-visible + .note-formatting-tool__tooltip {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+.note-content-field.is-preview .note-formatting-toolbar {
+  display: none;
 }
 
 .note-content-editor {
@@ -5784,6 +5905,20 @@ html[data-theme="dark"] .note-editor-modes {
   background: #202a3b;
 }
 
+html[data-theme="dark"] .note-formatting-toolbar {
+  border-bottom-color: #344055;
+  background: transparent;
+}
+
+html[data-theme="dark"] .note-formatting-tool__button {
+  color: #b3bfd1;
+}
+
+html[data-theme="dark"] .note-formatting-tool__tooltip {
+  border-color: #46516a;
+  background: #111a2a;
+}
+
 html[data-theme="dark"] .note-editor-mode__button:hover:not(:disabled),
 html[data-theme="dark"] .note-editor-mode__button[aria-pressed="true"] {
   border-color: var(--primary-accent-border);
@@ -5802,8 +5937,18 @@ html[data-theme="dark"] .note-editor-pane__label {
 }
 
 html[data-theme="dark"] .note-editor-mode__tooltip {
-  border-color: #46516a;
-  background: #111a2a;
+  border-color: #3a465c;
+  color: #bbc6d7;
+  background: #202a3b;
+  box-shadow: 0 0.65rem 1.6rem rgb(0 0 0 / 34%);
+}
+
+html[data-theme="dark"] .note-editor-mode__tooltip kbd {
+  border-color: #46536a;
+  border-bottom-color: #53617a;
+  color: #c1ccdc;
+  background: #293448;
+  box-shadow: 0 1px 0 rgb(0 0 0 / 25%);
 }
 
 @media (max-width: 620px) {
@@ -6806,8 +6951,7 @@ html[data-theme="dark"] .management-row__name {
   color: #172033;
   background: transparent;
   box-shadow: none;
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(1.45rem, 3vw, 2.25rem);
+  font-size: clamp(1.4rem, 2.6vw, 2rem);
   font-weight: 650;
   letter-spacing: -0.04em;
   line-height: 1.12;
@@ -7031,8 +7175,8 @@ html[data-theme="dark"] .management-row__name {
 
 .note-dialog .note-content-field {
   min-height: 0;
-  grid-template-rows: minmax(0, 1fr);
-  gap: 0.65rem;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 0;
 }
 
 .note-dialog .field-label-row {
@@ -7222,8 +7366,7 @@ html[data-theme="dark"] .note-dialog .note-content-preview {
 .quick-view-document-header h1 {
   margin: 0 0 1.1rem;
   color: #172033;
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(1.45rem, 3vw, 2.25rem);
+  font-size: clamp(1.4rem, 2.6vw, 2rem);
   font-weight: 650;
   letter-spacing: -0.04em;
   line-height: 1.12;
@@ -7402,7 +7545,7 @@ html[data-theme="dark"] .note-detail-surface .note-markdown-help__trigger:hover 
   }
 
   .note-dialog .field--title input {
-    font-size: clamp(1.4rem, 8vw, 1.9rem);
+    font-size: clamp(1.35rem, 7vw, 1.75rem);
   }
 
   .note-dialog .note-editor-pane {
@@ -7419,7 +7562,7 @@ html[data-theme="dark"] .note-detail-surface .note-markdown-help__trigger:hover 
   }
 
   .quick-view-document-header h1 {
-    font-size: clamp(1.4rem, 8vw, 1.9rem);
+    font-size: clamp(1.35rem, 7vw, 1.75rem);
   }
 
   .note-detail-surface .dialog-body,
@@ -7590,4 +7733,12 @@ html[data-theme="dark"] .note-card--pinned:focus-within:not(:hover) {
   outline: none !important;
   outline-offset: 0 !important;
   box-shadow: none !important;
+}
+
+/* The editor surface is focused programmatically as a navigation target.
+ * Its child controls retain their own visible keyboard focus treatment. */
+.note-detail-surface.note-dialog[tabindex]:focus,
+.note-detail-surface.note-dialog[tabindex]:focus-visible {
+  outline: none !important;
+  outline-offset: 0 !important;
 }
