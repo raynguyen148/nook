@@ -205,46 +205,25 @@
               </span>
               <span id="theme-toggle-label" class="button-label">Dark</span>
             </button>
-            <div class="topbar-more-menu">
-              <button
-                id="topbar-more-toggle"
-                class="button button-secondary"
-                type="button"
-                aria-label="More actions"
-                title="More actions"
-                aria-haspopup="menu"
-                aria-expanded="false"
-                aria-controls="topbar-more-panel"
-              >
-                <span class="button-icon button-icon--more" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round">
-                    <circle cx="5" cy="12" r="1.45" fill="currentColor" stroke="none" />
-                    <circle cx="12" cy="12" r="1.45" fill="currentColor" stroke="none" />
-                    <circle cx="19" cy="12" r="1.45" fill="currentColor" stroke="none" />
-                  </svg>
-                </span>
-                <span class="button-label">More</span>
-              </button>
-              <div id="topbar-more-panel" class="topbar-more-menu__panel is-hidden" role="menu" aria-label="Workspace actions">
-                <button id="organize-btn" class="topbar-more-menu__item" type="button" role="menuitem" aria-label="Settings" title="Settings">
-                  <span class="button-icon button-icon--settings" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
-                      <circle cx="12" cy="12" r="3" />
-                    </svg>
-                  </span>
-                  <span>Settings</span>
-                </button>
-                <button id="export-btn" class="topbar-more-menu__item" type="button" role="menuitem" aria-label="Export backup" title="Export backup">
-                  <span class="button-icon" aria-hidden="true">↓</span>
-                  <span>Backup</span>
-                </button>
-                <button id="import-btn" class="topbar-more-menu__item" type="button" role="menuitem" aria-label="Import backup" title="Import backup">
-                  <span class="button-icon" aria-hidden="true">↑</span>
-                  <span>Import</span>
-                </button>
-              </div>
-            </div>
+            <button id="organize-btn" class="button button-secondary" type="button" aria-label="Settings" title="Settings">
+              <svg class="button-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
+                <circle cx="12" cy="12" r="3" />
+              </svg>
+              <span class="button-label">Settings</span>
+            </button>
+            <button id="export-btn" class="button button-secondary" type="button" aria-label="Export backup" title="Export backup">
+              <svg class="button-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M12 3v12M7.5 10.5 12 15l4.5-4.5M4.5 19.5h15" />
+              </svg>
+              <span class="button-label">Backup</span>
+            </button>
+            <button id="import-btn" class="button button-secondary" type="button" aria-label="Import backup" title="Import backup">
+              <svg class="button-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M12 15V3M7.5 7.5 12 3l4.5 4.5M4.5 19.5h15" />
+              </svg>
+              <span class="button-label">Import</span>
+            </button>
             <button id="empty-trash-btn" class="button button-danger button-compact topbar-empty-trash is-hidden" type="button" aria-label="Permanently delete all notes in Trash" title="Permanently delete all notes in Trash">
               <svg class="button-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="M4.5 7.5h15M9.5 4.5h5M6.5 7.5l.8 12h9.4l.8-12" />
@@ -253,7 +232,9 @@
               <span class="button-label">Empty Trash</span>
             </button>
             <button id="new-note-btn" class="button button-primary" type="button" aria-label="New note" aria-keyshortcuts="C" title="New note (C)">
-              <span class="button-icon" aria-hidden="true">+</span>
+              <svg class="button-icon-svg" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M10 4.5v11M4.5 10h11" />
+              </svg>
               <span>New note</span>
             </button>
           </div>
@@ -551,98 +532,100 @@
         </div>
 
         <div class="dialog-footer">
-          <button id="delete-note-btn" class="icon-button note-delete-button is-hidden" type="button" aria-label="Move note to Trash" title="Move to Trash">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M4.5 7h15M9.5 10.5v6M14.5 10.5v6M9 4.5h6l.75 2.5h-7.5L9 4.5Z" />
-              <path d="M6.5 7 7.4 20h9.2l.9-13" />
-            </svg>
-          </button>
-          <div class="dialog-footer__help">
-            <div class="note-save-shortcut">
-            <button
-              class="note-save-shortcut__trigger"
-              type="button"
-              aria-label="Show note editing, viewing, and saving keyboard shortcuts"
-              aria-describedby="note-save-shortcut-help"
-            >
-              <svg viewBox="0 0 24 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <rect x="1.5" y="1.5" width="21" height="15" rx="2.5"></rect>
-                <path d="M5 6h.01M9 6h.01M13 6h.01M17 6h.01M5 10h.01M9 10h.01M13 10h.01M17 10h.01M7.5 13h9"></path>
+          <div class="dialog-footer__tools">
+            <button id="delete-note-btn" class="icon-button note-delete-button is-hidden" type="button" aria-label="Move note to Trash" title="Move to Trash">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M4.5 7h15M9.5 10.5v6M14.5 10.5v6M9 4.5h6l.75 2.5h-7.5L9 4.5Z" />
+                <path d="M6.5 7 7.4 20h9.2l.9-13" />
               </svg>
             </button>
-            <span id="note-save-shortcut-help" class="sr-only">Press 1 for the Markdown editor, 2 for split preview, and 3 for Preview. Bold, italic, and link shortcuts format selected note content. Quick save keeps this note open. Save note closes it.</span>
-            <div class="note-save-shortcut__tooltip" role="tooltip">
-              <p>Note shortcuts</p>
-              <div class="note-save-shortcut__row">
-                <span>Markdown editor</span>
-                <span class="note-save-shortcut__keys"><kbd>1</kbd></span>
-              </div>
-              <div class="note-save-shortcut__row">
-                <span>Split preview</span>
-                <span class="note-save-shortcut__keys"><kbd>2</kbd></span>
-              </div>
-              <div class="note-save-shortcut__row">
-                <span>Preview</span>
-                <span class="note-save-shortcut__keys"><kbd>3</kbd></span>
-              </div>
-              <div class="note-save-shortcut__row">
-                <span>Bold</span>
-                <span class="note-save-shortcut__keys">
-                  <kbd class="note-formatting-shortcut-modifier">⌘</kbd><span>+</span><kbd>B</kbd>
-                </span>
-              </div>
-              <div class="note-save-shortcut__row">
-                <span>Italic</span>
-                <span class="note-save-shortcut__keys">
-                  <kbd class="note-formatting-shortcut-modifier">⌘</kbd><span>+</span><kbd>I</kbd>
-                </span>
-              </div>
-              <div class="note-save-shortcut__row">
-                <span>Insert link</span>
-                <span class="note-save-shortcut__keys">
-                  <kbd class="note-formatting-shortcut-modifier">⌘</kbd><span>+</span><kbd>K</kbd>
-                </span>
-              </div>
-              <div class="note-save-shortcut__row">
-                <span>Quick save</span>
-                <span class="note-save-shortcut__keys">
-                  <kbd id="note-quick-save-shortcut-modifier">⌘</kbd><span>+</span><kbd>Shift</kbd><span>+</span><kbd>S</kbd>
-                </span>
-              </div>
-              <div class="note-save-shortcut__row">
-                <span>Save &amp; close</span>
-                <span class="note-save-shortcut__keys">
-                  <kbd id="note-save-shortcut-modifier">⌘</kbd><span>+</span><kbd>Enter</kbd>
-                </span>
-              </div>
-            </div>
-            </div>
-            <div class="note-markdown-help">
+            <div class="dialog-footer__help">
+              <div class="note-save-shortcut">
               <button
-                class="note-markdown-help__trigger"
+                class="note-save-shortcut__trigger"
                 type="button"
-                aria-label="Show Markdown formatting guide"
-                aria-describedby="note-markdown-help-description"
+                aria-label="Show note editing, viewing, and saving keyboard shortcuts"
+                aria-describedby="note-save-shortcut-help"
               >
-                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <path d="m7 2.5-2 15M14 2.5l-2 15M2.5 7h15M1.5 12h15"></path>
+                <svg viewBox="0 0 24 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <rect x="1.5" y="1.5" width="21" height="15" rx="2.5"></rect>
+                  <path d="M5 6h.01M9 6h.01M13 6h.01M17 6h.01M5 10h.01M9 10h.01M13 10h.01M17 10h.01M7.5 13h9"></path>
                 </svg>
               </button>
-              <span id="note-markdown-help-description" class="sr-only">Markdown formatting guide for headings, emphasis, code, lists, tables, alerts, and footnotes.</span>
-              <div class="note-markdown-help__tooltip" role="tooltip">
-                <p>Markdown guide</p>
-                <div class="note-markdown-help__row"><span>Heading</span><code># &nbsp;## &nbsp;###</code></div>
-                <div class="note-markdown-help__row"><span>Bold</span><code>**text**</code></div>
-                <div class="note-markdown-help__row"><span>Italic</span><code>*text*</code></div>
-                <div class="note-markdown-help__row"><span>Strikethrough</span><code>~~text~~</code></div>
-                <div class="note-markdown-help__row"><span>Inline code</span><code>`code`</code></div>
-                <div class="note-markdown-help__row"><span>Code block</span><code>```js ... ```</code></div>
-                <div class="note-markdown-help__row"><span>Bullet list</span><code>- item</code></div>
-                <div class="note-markdown-help__row"><span>Numbered list</span><code>1. item</code></div>
-                <div class="note-markdown-help__row"><span>Task list</span><code>- [ ] item</code></div>
-                <div class="note-markdown-help__row"><span>Table</span><code>| A | B |</code></div>
-                <div class="note-markdown-help__row"><span>Alert</span><code>&gt; [!NOTE]</code></div>
-                <div class="note-markdown-help__row"><span>Footnote</span><code>Text[^1]</code></div>
+              <span id="note-save-shortcut-help" class="sr-only">Press 1 for the Markdown editor, 2 for split preview, and 3 for Preview. Bold, italic, and link shortcuts format selected note content. Quick save keeps this note open. Save note closes it.</span>
+              <div class="note-save-shortcut__tooltip" role="tooltip">
+                <p>Note shortcuts</p>
+                <div class="note-save-shortcut__row">
+                  <span>Markdown editor</span>
+                  <span class="note-save-shortcut__keys"><kbd>1</kbd></span>
+                </div>
+                <div class="note-save-shortcut__row">
+                  <span>Split preview</span>
+                  <span class="note-save-shortcut__keys"><kbd>2</kbd></span>
+                </div>
+                <div class="note-save-shortcut__row">
+                  <span>Preview</span>
+                  <span class="note-save-shortcut__keys"><kbd>3</kbd></span>
+                </div>
+                <div class="note-save-shortcut__row">
+                  <span>Bold</span>
+                  <span class="note-save-shortcut__keys">
+                    <kbd class="note-formatting-shortcut-modifier">⌘</kbd><span>+</span><kbd>B</kbd>
+                  </span>
+                </div>
+                <div class="note-save-shortcut__row">
+                  <span>Italic</span>
+                  <span class="note-save-shortcut__keys">
+                    <kbd class="note-formatting-shortcut-modifier">⌘</kbd><span>+</span><kbd>I</kbd>
+                  </span>
+                </div>
+                <div class="note-save-shortcut__row">
+                  <span>Insert link</span>
+                  <span class="note-save-shortcut__keys">
+                    <kbd class="note-formatting-shortcut-modifier">⌘</kbd><span>+</span><kbd>K</kbd>
+                  </span>
+                </div>
+                <div class="note-save-shortcut__row">
+                  <span>Quick save</span>
+                  <span class="note-save-shortcut__keys">
+                    <kbd id="note-quick-save-shortcut-modifier">⌘</kbd><span>+</span><kbd>Shift</kbd><span>+</span><kbd>S</kbd>
+                  </span>
+                </div>
+                <div class="note-save-shortcut__row">
+                  <span>Save &amp; close</span>
+                  <span class="note-save-shortcut__keys">
+                    <kbd id="note-save-shortcut-modifier">⌘</kbd><span>+</span><kbd>Enter</kbd>
+                  </span>
+                </div>
+              </div>
+              </div>
+              <div class="note-markdown-help">
+                <button
+                  class="note-markdown-help__trigger"
+                  type="button"
+                  aria-label="Show Markdown formatting guide"
+                  aria-describedby="note-markdown-help-description"
+                >
+                  <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="m7 2.5-2 15M14 2.5l-2 15M2.5 7h15M1.5 12h15"></path>
+                  </svg>
+                </button>
+                <span id="note-markdown-help-description" class="sr-only">Markdown formatting guide for headings, emphasis, code, lists, tables, alerts, and footnotes.</span>
+                <div class="note-markdown-help__tooltip" role="tooltip">
+                  <p>Markdown guide</p>
+                  <div class="note-markdown-help__row"><span>Heading</span><code># &nbsp;## &nbsp;###</code></div>
+                  <div class="note-markdown-help__row"><span>Bold</span><code>**text**</code></div>
+                  <div class="note-markdown-help__row"><span>Italic</span><code>*text*</code></div>
+                  <div class="note-markdown-help__row"><span>Strikethrough</span><code>~~text~~</code></div>
+                  <div class="note-markdown-help__row"><span>Inline code</span><code>`code`</code></div>
+                  <div class="note-markdown-help__row"><span>Code block</span><code>```js ... ```</code></div>
+                  <div class="note-markdown-help__row"><span>Bullet list</span><code>- item</code></div>
+                  <div class="note-markdown-help__row"><span>Numbered list</span><code>1. item</code></div>
+                  <div class="note-markdown-help__row"><span>Task list</span><code>- [ ] item</code></div>
+                  <div class="note-markdown-help__row"><span>Table</span><code>| A | B |</code></div>
+                  <div class="note-markdown-help__row"><span>Alert</span><code>&gt; [!NOTE]</code></div>
+                  <div class="note-markdown-help__row"><span>Footnote</span><code>Text[^1]</code></div>
+                </div>
               </div>
             </div>
           </div>

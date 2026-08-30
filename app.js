@@ -66,9 +66,6 @@
     toolbar: document.querySelector(".toolbar"),
     themeToggle: document.querySelector("#theme-toggle"),
     themeToggleLabel: document.querySelector("#theme-toggle-label"),
-    topbarMoreMenu: document.querySelector(".topbar-more-menu"),
-    topbarMoreToggle: document.querySelector("#topbar-more-toggle"),
-    topbarMorePanel: document.querySelector("#topbar-more-panel"),
     organize: document.querySelector("#organize-btn"),
     export: document.querySelector("#export-btn"),
     import: document.querySelector("#import-btn"),
@@ -365,40 +362,7 @@
     });
   }
 
-  function closeTopbarMoreMenu({ restoreFocus = false } = {}) {
-    if (!elements.topbarMorePanel || !elements.topbarMoreToggle) return;
-    const wasOpen = !elements.topbarMorePanel.classList.contains("is-hidden");
-    elements.topbarMorePanel.classList.add("is-hidden");
-    elements.topbarMoreToggle.setAttribute("aria-expanded", "false");
-    if (restoreFocus && wasOpen) elements.topbarMoreToggle.focus();
-  }
 
-  function toggleTopbarMoreMenu() {
-    const willOpen = elements.topbarMorePanel.classList.contains("is-hidden");
-    if (!willOpen) {
-      closeTopbarMoreMenu();
-      return;
-    }
-    elements.topbarMorePanel.classList.remove("is-hidden");
-    elements.topbarMoreToggle.setAttribute("aria-expanded", "true");
-    window.requestAnimationFrame(() => elements.topbarMorePanel.querySelector("button")?.focus());
-  }
-
-  function handleTopbarMoreMenuKeydown(event) {
-    if (!["ArrowDown", "ArrowUp", "Home", "End"].includes(event.key)) return;
-    const menuItems = [...elements.topbarMorePanel.querySelectorAll("button:not(:disabled)")];
-    if (!menuItems.length) return;
-
-    event.preventDefault();
-    const currentIndex = Math.max(0, menuItems.indexOf(document.activeElement));
-    const nextIndex =
-      event.key === "Home"
-        ? 0
-        : event.key === "End"
-          ? menuItems.length - 1
-          : (currentIndex + (event.key === "ArrowDown" ? 1 : -1) + menuItems.length) % menuItems.length;
-    menuItems[nextIndex].focus();
-  }
 
   function activeRegularFilterCount() {
     return Number(ui.typeId !== "all") + ui.tagIds.size + Number(ui.todayOnly) + Number(ui.updatedTodayOnly);
@@ -1120,26 +1084,26 @@
       className: `type-badge type-badge--${safeTypeColor(type)}${isFilter ? " type-badge--filter" : ""}`,
       type: isFilter ? "button" : undefined,
       text: type.name,
-      attributes: isFilter
-        ? {
-            "aria-label": `Filter by note type ${type.name}`,
-            "aria-pressed": String(selected),
-            title: `Filter by ${type.name}`,
-          }
-        : undefined,
+      attributes: {
+        "aria-label": isFilter ? `Filter by note type ${type.name}` : type.name,
+        "aria-pressed": isFilter ? String(selected) : undefined,
+        title: isFilter ? `Filter by ${type.name}` : type.name,
+      },
     });
     if (isFilter) badge.addEventListener("click", () => setTypeFilter(type.id));
     return badge;
   }
 
   function makeTagButton(tag, selected = false) {
+    const name = tagLabel(tag);
     const button = createElement("button", {
       className: `tag-chip${selected ? " is-selected" : ""}`,
       type: "button",
-      text: tagLabel(tag),
+      text: name,
       attributes: {
-        "aria-label": `Filter by tag ${tagLabel(tag)}`,
+        "aria-label": `Filter by tag ${name}`,
         "aria-pressed": String(selected),
+        title: `Filter by ${name}`,
       },
     });
     button.addEventListener("click", () => toggleTagFilter(tag.id));
@@ -1187,6 +1151,8 @@
     elements.updatedTodayFilterCount.textContent = updatedTodayCount;
     elements.updatedTodayFilter.title = `Updated Today (${updatedTodayCount})`;
     elements.emptyTrash.classList.toggle("is-hidden", !ui.trashOnly || trashCount === 0);
+    elements.newNote.classList.toggle("is-hidden", ui.trashOnly);
+    elements.sidebar?.classList.toggle("is-trash-view", ui.trashOnly);
     elements.mobileFilterToggle.classList.toggle("is-hidden", ui.trashOnly);
     elements.regularFilterControls.classList.toggle("is-hidden", ui.trashOnly);
     elements.typeFilterList.replaceChildren();
@@ -1201,7 +1167,7 @@
           "aria-label": `Filter by type ${type.name} (${typeCount})`,
         },
       });
-      button.title = `${type.name} (${typeCount})`;
+      button.title = `Filter by ${type.name} (${typeCount})`;
       const label = createElement("span", { className: "sidebar-filter__label" });
       label.append(createElement("span", { className: `type-dot type-dot--${safeTypeColor(type)}` }));
       label.append(document.createTextNode(type.name));
@@ -1218,7 +1184,7 @@
       const isSelected = ui.tagIds.has(tag.id);
       const label = createElement("label", {
         className: `tag-filter-option${isSelected ? " is-active" : ""}`,
-        attributes: { title: `${tagLabel(tag)} (${tagCount})` },
+        attributes: { title: `Filter by ${tagLabel(tag)} (${tagCount})` },
       });
       const input = createElement("input", {
         type: "checkbox",
@@ -1254,14 +1220,17 @@
     return svg;
   }
 
-  function makeFilterPill(label, onClear, kinds = []) {
+  function makeFilterPill(label, onClear, kinds = [], hoverTitle = "") {
     const normalizedKinds = (Array.isArray(kinds) ? kinds : [kinds]).filter(Boolean);
-    const chip = createElement("span", { className: ["active-filter-pill", ...normalizedKinds.map((kind) => `active-filter-pill--${kind}`)].join(" ") });
+    const chip = createElement("span", {
+      className: ["active-filter-pill", ...normalizedKinds.map((kind) => `active-filter-pill--${kind}`)].join(" "),
+      attributes: { title: hoverTitle || label },
+    });
     chip.append(createElement("span", { text: label }));
     const clear = createElement("button", {
       className: "active-filter-pill__clear",
       type: "button",
-      attributes: { "aria-label": `Remove ${label} filter` },
+      attributes: { "aria-label": `Remove ${label} filter`, title: `Remove ${label} filter` },
     });
     clear.append(createChipCloseIcon());
     clear.addEventListener("click", onClear);
@@ -1289,7 +1258,7 @@
           persistFilters();
           resetToFirstPage();
           renderLibrary();
-        }, ["type", `type-${safeTypeColor(type)}`]),
+        }, ["type", `type-${safeTypeColor(type)}`], `Filter by ${type.name}`),
       );
     }
     if (ui.todayOnly) {
@@ -1299,7 +1268,7 @@
           persistFilters();
           resetToFirstPage();
           renderLibrary();
-        }),
+        }, [], "Filter by Created Today"),
       );
     }
     if (ui.updatedTodayOnly) {
@@ -1309,7 +1278,7 @@
           persistFilters();
           resetToFirstPage();
           renderLibrary();
-        }),
+        }, [], "Filter by Updated Today"),
       );
     }
     [...ui.tagIds].map(tagFor).filter(Boolean).forEach((tag) => {
@@ -1319,7 +1288,7 @@
           persistFilters();
           resetToFirstPage();
           renderLibrary();
-        }, "tag"),
+        }, "tag", `Filter by ${tagLabel(tag)}`),
       );
     });
     elements.activeFilters.replaceChildren(fragment);
@@ -1360,7 +1329,11 @@
     if (tags.length) {
       const fragment = document.createDocumentFragment();
       tags.forEach((tag) => {
-        fragment.append(createElement("span", { className: "quick-view-tag", text: tagLabel(tag) }));
+        fragment.append(createElement("span", {
+          className: "quick-view-tag",
+          text: tagLabel(tag),
+          attributes: { title: tagLabel(tag) },
+        }));
       });
       elements.quickViewTags.append(fragment);
     } else {
@@ -2070,7 +2043,10 @@
     elements.selectedNoteTags.replaceChildren();
     const selectedTags = [...ui.selectedNoteTagIds].map(tagFor).filter(Boolean);
     selectedTags.forEach((tag) => {
-      const chip = createElement("span", { className: "selected-tag" });
+      const chip = createElement("span", {
+        className: "selected-tag",
+        attributes: { title: tagLabel(tag) },
+      });
       chip.append(createElement("span", { text: tagLabel(tag) }));
       const remove = createElement("button", {
         type: "button",
@@ -3259,7 +3235,6 @@
   }
 
   function openOrganize(tab = "types") {
-    closeTopbarMoreMenu();
     setManagementTab(tab);
     renderManagement();
     if (!elements.organizeDialog.open) elements.organizeDialog.showModal();
@@ -3429,17 +3404,9 @@
       }
     });
     elements.themeToggle.addEventListener("click", () => setTheme(ui.theme === "dark" ? "light" : "dark"));
-    elements.topbarMoreToggle.addEventListener("click", toggleTopbarMoreMenu);
-    elements.topbarMorePanel.addEventListener("keydown", handleTopbarMoreMenuKeydown);
     elements.organize.addEventListener("click", () => openOrganize());
-    elements.export.addEventListener("click", () => {
-      closeTopbarMoreMenu();
-      exportLibrary();
-    });
-    elements.import.addEventListener("click", () => {
-      closeTopbarMoreMenu();
-      elements.importInput.click();
-    });
+    elements.export.addEventListener("click", () => exportLibrary());
+    elements.import.addEventListener("click", () => elements.importInput.click());
     elements.importInput.addEventListener("change", importLibrary);
     elements.newNote.addEventListener("click", () => openNoteEditor());
     elements.search.addEventListener("input", () => {
@@ -3582,7 +3549,6 @@
     elements.newTypeForm.addEventListener("submit", addNewType);
     elements.newTagForm.addEventListener("submit", addNewTag);
     document.addEventListener("pointerdown", (event) => {
-      if (!elements.topbarMoreMenu.contains(event.target)) closeTopbarMoreMenu();
       openColorPickers.forEach((picker) => {
         if (!picker.select.parentElement.contains(event.target)) closeColorPicker(picker);
       });
@@ -3597,11 +3563,6 @@
       if (event.key === "Escape" && !activeModalDialog() && isQuickViewOpen()) {
         event.preventDefault();
         closeQuickView();
-        return;
-      }
-      if (event.key === "Escape" && !elements.topbarMorePanel.classList.contains("is-hidden") && !activeModalDialog()) {
-        event.preventDefault();
-        closeTopbarMoreMenu({ restoreFocus: true });
         return;
       }
       const usesCommandKey = usesMacKeyboardShortcuts();
@@ -3723,7 +3684,6 @@
 
       if (matchesQuickCaptureShortcut && !editingText && !activeModalDialog() && !isDetailWorkspaceOpen()) {
         event.preventDefault();
-        closeTopbarMoreMenu();
         openNoteEditor();
         return;
       }
@@ -3754,8 +3714,8 @@
     // Preview and editor now share one document surface. Move the former
     // Quick View actions/content into it without dropping any existing action.
     elements.noteEditorCommandActions.append(modes);
-    const footer = elements.noteDialog.querySelector(".dialog-footer");
-    footer?.insertBefore(elements.notePreviewActions, elements.deleteNote);
+    const tools = elements.noteDialog.querySelector(".dialog-footer__tools") || elements.noteDialog.querySelector(".dialog-footer");
+    tools?.insertBefore(elements.notePreviewActions, elements.deleteNote.nextSibling);
     elements.notePreviewPanel.append(elements.quickViewBody);
     elements.noteDialog.querySelector(".dialog-header")?.append(elements.closeQuickView);
     elements.quickViewDialog.remove();
