@@ -2,11 +2,14 @@
   --control-height: 2.3125rem;
   --select-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='m4 6 4 4 4-4' stroke='%236d7890' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
   --font-sans:
-    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
-    "Segoe UI", sans-serif;
+    Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
+    sans-serif;
   --font-display:
-    "Iowan Old Style", "Baskerville", "Palatino Linotype", "Book Antiqua",
-    Palatino, Georgia, serif;
+    Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
+    sans-serif;
+  --font-mono:
+    ui-monospace, "SF Mono", SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+    "Courier New", monospace;
   color-scheme: light;
   font-family: var(--font-sans);
   color: #0f172a;
@@ -584,18 +587,19 @@ h1 {
   margin-bottom: 0.42rem;
   color: #0f172a;
   font-family: var(--font-display);
-  font-size: clamp(2rem, 3.2vw, 2.5rem);
-  font-weight: 600;
-  letter-spacing: -0.045em;
-  line-height: 1.08;
+  font-size: clamp(1.85rem, 3vw, 2.35rem);
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  line-height: 1.16;
 }
 
 h2 {
   margin-bottom: 0;
   color: #0f172a;
-  font-size: 1.16rem;
+  font-size: 1.2rem;
+  font-weight: 680;
   letter-spacing: -0.025em;
-  line-height: 1.22;
+  line-height: 1.24;
 }
 
 .subtitle {
@@ -2119,10 +2123,10 @@ select::-ms-expand {
 
 .quick-view-content {
   min-height: 6rem;
-  color: #394557;
-  font-size: 0.88rem;
-  font-weight: 430;
-  line-height: 1.68;
+  color: #334155;
+  font-size: 0.95rem;
+  font-weight: 400;
+  line-height: 1.7;
   overflow-wrap: anywhere;
 }
 
@@ -2138,14 +2142,8 @@ select::-ms-expand {
 .quick-view-content ul,
 .quick-view-content ol,
 .quick-view-content blockquote,
-.quick-view-content pre,
-.quick-view-content h1,
-.quick-view-content h2,
-.quick-view-content h3,
-.quick-view-content h4,
-.quick-view-content h5,
-.quick-view-content h6 {
-  margin: 0.8rem 0;
+.quick-view-content pre {
+  margin: 0.85rem 0;
 }
 
 .quick-view-content h1,
@@ -2154,27 +2152,48 @@ select::-ms-expand {
 .quick-view-content h4,
 .quick-view-content h5,
 .quick-view-content h6 {
-  color: #2f3b50;
-  font-weight: 730;
+  color: #0f172a;
+  font-family: var(--font-display);
   line-height: 1.3;
 }
 
 .quick-view-content h1 {
-  font-size: 1.35rem;
+  margin: 1.45rem 0 0.65rem;
+  font-size: 1.55rem;
+  font-weight: 750;
+  letter-spacing: -0.03em;
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 0.35rem;
 }
 
 .quick-view-content h2 {
-  font-size: 1.16rem;
+  margin: 1.25rem 0 0.55rem;
+  font-size: 1.28rem;
+  font-weight: 700;
+  letter-spacing: -0.025em;
 }
 
 .quick-view-content h3 {
-  font-size: 1.02rem;
+  margin: 1.1rem 0 0.45rem;
+  font-size: 1.08rem;
+  font-weight: 650;
+  letter-spacing: -0.015em;
+  color: #1e293b;
 }
 
-.quick-view-content h4,
+.quick-view-content h4 {
+  margin: 0.95rem 0 0.35rem;
+  font-size: 0.96rem;
+  font-weight: 650;
+  color: #334155;
+}
+
 .quick-view-content h5,
 .quick-view-content h6 {
-  font-size: 0.92rem;
+  margin: 0.85rem 0 0.35rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #475569;
 }
 
 .quick-view-content ul,
@@ -2183,7 +2202,7 @@ select::-ms-expand {
 }
 
 .quick-view-content li + li {
-  margin-top: 0.28rem;
+  margin-top: 0.32rem;
 }
 
 .quick-view-content li > p,
@@ -2196,41 +2215,46 @@ select::-ms-expand {
 }
 
 .quick-view-content blockquote {
-  border-left: 3px solid #c9cdf1;
-  padding-left: 0.85rem;
-  color: #69758a;
+  border-left: 3px solid #6366f1;
+  border-radius: 0 0.35rem 0.35rem 0;
+  padding: 0.45rem 0.95rem;
+  color: #475569;
+  background: rgb(99 102 241 / 4%);
 }
 
 .quick-view-content hr {
-  margin: 1.15rem 0;
+  margin: 1.25rem 0;
   border: 0;
-  border-top: 1px solid #e1e5ec;
+  border-top: 1px solid #e2e8f0;
 }
 
 .quick-view-content code {
-  border-radius: 0.28rem;
-  padding: 0.1rem 0.28rem;
-  color: #4e4a9b;
-  background: #f0efff;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 0.87em;
+  border-radius: 0.35rem;
+  padding: 0.12rem 0.35rem;
+  color: #0f172a;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace);
+  font-size: 0.86em;
 }
 
 .quick-view-content pre {
   overflow-x: auto;
-  border: 1px solid #e4e7ee;
-  border-radius: 0.5rem;
-  padding: 0.75rem 0.85rem;
-  background: #f3f5f8;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.65rem;
+  padding: 0.85rem 1rem;
+  background: #f8fafc;
+  line-height: 1.6;
 }
 
 .quick-view-content pre code {
   display: block;
   overflow-wrap: normal;
+  border: 0;
   padding: 0;
-  color: #3d485b;
+  color: #1e293b;
   background: transparent;
-  font-size: 0.82rem;
+  font-size: 0.86rem;
   white-space: pre;
 }
 
@@ -5840,9 +5864,9 @@ html[data-theme="dark"] .startup-error p {
 
 .note-editor-pane__label {
   display: none;
-  color: #8993a5;
-  font-size: 0.66rem;
-  font-weight: 750;
+  color: #94a3b8;
+  font-size: 0.68rem;
+  font-weight: 700;
   letter-spacing: 0.08em;
   line-height: 1.2;
   text-transform: uppercase;
@@ -5881,11 +5905,11 @@ html[data-theme="dark"] .startup-error p {
   min-height: 0;
   max-height: none;
   overflow: auto;
-  border: 1px solid #e8ebf0;
+  border: 1px solid #e2e8f0;
   border-radius: 0.6rem;
-  padding: 0.75rem;
-  color: #394557;
-  background: #fbfcfe;
+  padding: 0.85rem 1rem;
+  color: #334155;
+  background: #ffffff;
 }
 
 .note-content-preview > :first-child {
@@ -6948,13 +6972,19 @@ html[data-theme="dark"] .management-row__name {
   border: 0;
   border-radius: 0;
   padding: 0;
-  color: #172033;
+  color: #0f172a;
   background: transparent;
   box-shadow: none;
-  font-size: clamp(1.4rem, 2.6vw, 2rem);
-  font-weight: 650;
-  letter-spacing: -0.04em;
-  line-height: 1.12;
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 2.8vw, 2.25rem);
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  line-height: 1.2;
+}
+
+.note-dialog .field--title input::placeholder {
+  color: #94a3b8;
+  font-weight: 500;
 }
 
 .note-dialog .field--title input:focus {
@@ -7202,21 +7232,21 @@ html[data-theme="dark"] .management-row__name {
   border: 0;
   border-radius: 0.85rem;
   padding: 0.95rem 1rem;
-  color: #263143;
+  color: #1e293b;
   background: transparent;
   box-shadow: none;
 }
 
 .note-dialog #note-content {
   resize: none;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 0.92rem;
-  line-height: 1.75;
+  font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace);
+  font-size: 0.94rem;
+  line-height: 1.72;
 }
 
 .note-dialog .note-content-preview {
-  font-size: 1rem;
-  line-height: 1.75;
+  font-size: 0.98rem;
+  line-height: 1.72;
 }
 
 html[data-theme="dark"] .note-dialog .field--title input {
@@ -7365,11 +7395,12 @@ html[data-theme="dark"] .note-dialog .note-content-preview {
 
 .quick-view-document-header h1 {
   margin: 0 0 1.1rem;
-  color: #172033;
-  font-size: clamp(1.4rem, 2.6vw, 2rem);
-  font-weight: 650;
-  letter-spacing: -0.04em;
-  line-height: 1.12;
+  color: #0f172a;
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 2.8vw, 2.25rem);
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  line-height: 1.2;
   overflow-wrap: anywhere;
 }
 
