@@ -645,18 +645,24 @@
               </div>
             </div>
           </div>
+          <div id="note-editor-stats" class="dialog-footer__stats" aria-live="polite">
+            <span id="note-save-status" class="note-save-status is-saved">
+              <svg class="note-save-status__icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3.5 8.5 3 3 6-6"/></svg>
+              <span id="note-save-status-label" class="note-save-status__label">All changes saved</span>
+            </span>
+          </div>
           <div class="dialog-footer__actions">
-            <button id="cancel-note-btn" class="button button-secondary" type="button">Cancel</button>
+            <button id="cancel-note-btn" class="button button-secondary" type="button">Close</button>
             <button
               id="quick-save-note-btn"
-              class="button button-secondary quick-save-note-button"
+              class="button button-secondary quick-save-note-button is-hidden"
               type="button"
               aria-label="Save changes without closing"
               title="Save changes — keep editing"
             >
               Save changes
             </button>
-            <button class="button button-primary" type="submit">Save &amp; close</button>
+            <button class="button button-primary" type="submit">Done</button>
           </div>
         </div>
       </form>

@@ -1957,25 +1957,30 @@ select::-ms-expand {
 }
 
 .tag-add-button {
-  display: grid;
-  width: 1.75rem;
-  height: 1.75rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.48rem;
+  height: 1.48rem;
   flex: none;
-  place-items: center;
-  border: 0;
-  border-radius: 0.45rem;
-  color: #5964c5;
-  background: #eef0ff;
-  font-size: 1.05rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 999px;
+  padding: 0 0.42rem;
+  color: #64748b;
+  background: #ffffff;
+  font-size: 0.95rem;
+  font-weight: 500;
   line-height: 1;
   transition:
-    color 150ms ease,
-    background 150ms ease;
+    color 140ms ease,
+    border-color 140ms ease,
+    background 140ms ease;
 }
 
 .tag-add-button:hover:not(:disabled) {
-  color: #fff;
-  background: #5b65ca;
+  border-color: #cbd5e1;
+  color: #0f172a;
+  background: #f1f5f9;
 }
 
 .tag-suggestions {
@@ -2584,6 +2589,62 @@ select::-ms-expand {
   display: flex;
   align-items: center;
   gap: 0.15rem;
+}
+
+.dialog-footer__stats {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin-left: 0.85rem;
+  margin-right: auto;
+  color: #64748b;
+  font-size: 0.78rem;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.note-save-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.32rem;
+  font-size: 0.76rem;
+  font-weight: 550;
+  transition: all 180ms ease;
+}
+
+.note-save-status__icon {
+  width: 0.85rem;
+  height: 0.85rem;
+  flex: none;
+}
+
+.note-save-status.is-saved {
+  color: #059669;
+}
+
+.note-save-status.is-saving {
+  color: #4f46e5;
+}
+
+.note-save-status.is-saving .note-save-status__icon {
+  animation: note-save-spinner 800ms linear infinite;
+}
+
+@keyframes note-save-spinner {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.note-save-status.is-dirty {
+  color: #d97706;
+}
+
+.note-save-status.is-error {
+  color: #dc2626;
 }
 
 .quick-view-footer__left-actions {
@@ -4554,13 +4615,15 @@ html[data-theme="dark"] .selected-tag button:hover {
 }
 
 html[data-theme="dark"] .tag-add-button {
-  color: #c0c5ff;
-  background: #303666;
+  border-color: #475467;
+  color: #94a3b8;
+  background: #1e293b;
 }
 
 html[data-theme="dark"] .tag-add-button:hover:not(:disabled) {
-  color: #171d2b;
-  background: #aeb5ff;
+  border-color: #64748b;
+  color: #f1f5f9;
+  background: #334155;
 }
 
 html[data-theme="dark"] .tag-suggestions__label,
@@ -5092,16 +5155,6 @@ html[data-theme="dark"] .note-card--pinned:focus-within {
   color: var(--primary-accent-hover);
 }
 
-.tag-add-button {
-  color: var(--primary-accent-text);
-  background: var(--primary-accent-soft);
-}
-
-.tag-add-button:hover:not(:disabled) {
-  color: var(--primary-button-text);
-  background: var(--primary-accent);
-}
-
 .tag-suggestion--create {
   border-color: var(--primary-accent-border);
   color: var(--primary-accent-text);
@@ -5547,7 +5600,6 @@ html[data-theme="dark"] .note-card__action--danger:focus-visible {
 html[data-theme="dark"] .empty-state__icon,
 html[data-theme="dark"] .pagination-button.is-active,
 html[data-theme="dark"] .quick-view-content code,
-html[data-theme="dark"] .tag-add-button,
 html[data-theme="dark"] .tag-suggestion--create,
 html[data-theme="dark"] .quick-save-note-button {
   color: var(--primary-accent-text);
@@ -5572,11 +5624,6 @@ html[data-theme="dark"] .quick-view-content a {
 
 html[data-theme="dark"] .quick-view-content a:hover {
   color: var(--primary-accent-hover);
-}
-
-html[data-theme="dark"] .tag-add-button:hover:not(:disabled) {
-  color: var(--primary-button-text);
-  background: var(--primary-accent-hover);
 }
 
 html[data-theme="dark"] .note-type-picker__option:hover,
@@ -6921,7 +6968,7 @@ html[data-theme="dark"] .management-row__name {
   overflow-y: auto;
   overscroll-behavior: contain;
   scrollbar-gutter: stable;
-  padding: clamp(1rem, 2vw, 1.75rem);
+  padding: clamp(1rem, 2vw, 1.75rem) clamp(1rem, 2vw, 1.75rem) 0.5rem;
 }
 
 .note-detail-surface .dialog-body {
@@ -7428,6 +7475,7 @@ html[data-theme="dark"] .note-dialog .note-content-preview {
   border-radius: 0;
   height: 100%;
   min-height: 0;
+  padding-right: 1.5rem;
   overflow-x: hidden;
   overflow-y: auto;
   overscroll-behavior: contain;
@@ -7449,14 +7497,14 @@ html[data-theme="dark"] .note-dialog .note-content-preview {
 .note-detail-surface .quick-view-dates {
   display: flex;
   width: min(100%, 100rem);
-  min-height: 2.25rem;
+  min-height: 0;
   flex-wrap: wrap;
-  align-items: flex-start;
+  align-items: center;
   align-self: end;
   gap: 0.3rem 1.1rem;
   margin-inline: auto;
-  border-top: 1px solid #edf0f4;
-  padding-top: 0.8rem;
+  padding-top: 0.45rem;
+  padding-bottom: 0;
   color: #8994a6;
   font-size: 0.72rem;
   font-weight: 500;
@@ -7492,6 +7540,26 @@ html[data-theme="dark"] .note-detail-surface .dialog-footer {
   border-color: #344055;
   background: #1b2537;
   box-shadow: 0 -10px 22px -20px rgb(0 0 0 / 58%);
+}
+
+html[data-theme="dark"] .dialog-footer__stats {
+  color: #94a3b8;
+}
+
+html[data-theme="dark"] .note-save-status.is-saved {
+  color: #34d399;
+}
+
+html[data-theme="dark"] .note-save-status.is-saving {
+  color: #818cf8;
+}
+
+html[data-theme="dark"] .note-save-status.is-dirty {
+  color: #fbbf24;
+}
+
+html[data-theme="dark"] .note-save-status.is-error {
+  color: #f87171;
 }
 
 html[data-theme="dark"] .note-detail-surface .note-delete-button:hover:not(:disabled) {
@@ -7598,7 +7666,7 @@ html[data-theme="dark"] .note-detail-surface .note-markdown-help__trigger:hover 
 
   .note-detail-surface .dialog-body,
   .note-detail-surface .quick-view-body {
-    padding: 0.9rem;
+    padding: 0.9rem 0.9rem 0.45rem;
   }
 
   .note-detail-surface .dialog-footer {

@@ -3,7 +3,7 @@
 
   const storage = globalThis.PersonalNotesStorage;
   const PAGE_SIZE = 30;
-  const NOTE_AUTO_SAVE_DELAY = 5000;
+  const NOTE_AUTO_SAVE_DELAY = 1500;
   const SEARCH_RENDER_DELAY = 150;
   const THEME_STORAGE_KEY = "nook:theme";
   const SIDEBAR_COLLAPSED_STORAGE_KEY = "nook:sidebar-collapsed";
@@ -100,6 +100,9 @@
     cancelNote: document.querySelector("#cancel-note-btn"),
     quickSaveNote: document.querySelector("#quick-save-note-btn"),
     deleteNote: document.querySelector("#delete-note-btn"),
+    noteEditorStats: document.querySelector("#note-editor-stats"),
+    noteSaveStatus: document.querySelector("#note-save-status"),
+    noteSaveStatusLabel: document.querySelector("#note-save-status-label"),
     noteQuickSaveShortcutModifier: document.querySelector("#note-quick-save-shortcut-modifier"),
     noteSaveShortcutModifier: document.querySelector("#note-save-shortcut-modifier"),
     noteFormattingShortcutModifiers: [...document.querySelectorAll(".note-formatting-shortcut-modifier")],
@@ -2231,16 +2234,64 @@
     ui.noteAutoSaveTimer = 0;
   }
 
+  function setNoteSaveStatus(state, customLabel = "") {
+    if (!elements.noteSaveStatus || !elements.noteSaveStatusLabel) return;
+    elements.noteSaveStatus.classList.remove("is-saved", "is-saving", "is-dirty", "is-error");
+    elements.noteSaveStatus.classList.add(`is-${state}`);
+    const icon = elements.noteSaveStatus.querySelector(".note-save-status__icon");
+    if (state === "saved") {
+      elements.noteSaveStatusLabel.textContent = customLabel || "All changes saved";
+      if (icon) {
+        icon.setAttribute("viewBox", "0 0 16 16");
+        const path = icon.querySelector("path") || document.createElementNS("http://www.w3.org/2000/svg", "path");
+        path.setAttribute("d", "m3.5 8.5 3 3 6-6");
+        path.removeAttribute("fill");
+        if (!path.parentElement) icon.append(path);
+      }
+    } else if (state === "saving") {
+      elements.noteSaveStatusLabel.textContent = customLabel || "Saving…";
+      if (icon) {
+        icon.setAttribute("viewBox", "0 0 16 16");
+        const path = icon.querySelector("path") || document.createElementNS("http://www.w3.org/2000/svg", "path");
+        path.setAttribute("d", "M8 2a6 6 0 1 0 6 6");
+        path.removeAttribute("fill");
+        if (!path.parentElement) icon.append(path);
+      }
+    } else if (state === "dirty") {
+      elements.noteSaveStatusLabel.textContent = customLabel || "Unsaved changes";
+      if (icon) {
+        icon.setAttribute("viewBox", "0 0 16 16");
+        const path = icon.querySelector("path") || document.createElementNS("http://www.w3.org/2000/svg", "path");
+        path.setAttribute("d", "M8 4a4 4 0 1 0 0.01 0");
+        path.setAttribute("fill", "currentColor");
+        if (!path.parentElement) icon.append(path);
+      }
+    } else if (state === "error") {
+      elements.noteSaveStatusLabel.textContent = customLabel || "Save failed";
+      if (icon) {
+        icon.setAttribute("viewBox", "0 0 16 16");
+        const path = icon.querySelector("path") || document.createElementNS("http://www.w3.org/2000/svg", "path");
+        path.setAttribute("d", "M8 3.5v5M8 12h.01");
+        path.removeAttribute("fill");
+        if (!path.parentElement) icon.append(path);
+      }
+    }
+  }
+
   function scheduleNoteAutoSave() {
     syncStoredNoteDraft();
     clearNoteAutoSave();
-    if (
-      !isNoteEditorOpen() ||
-      ui.noteSaveInFlight ||
-      !hasUnsavedNoteChanges() ||
-      !elements.noteId.value ||
-      !elements.noteTitle.value.trim()
-    ) {
+    if (!isNoteEditorOpen() || ui.noteSaveInFlight) return;
+
+    if (!hasUnsavedNoteChanges()) {
+      setNoteSaveStatus("saved");
+      return;
+    }
+
+    setNoteSaveStatus("dirty");
+
+    const rawTitle = elements.noteTitle.value.trim();
+    if (!rawTitle) {
       return;
     }
 
@@ -2442,8 +2493,10 @@
     elements.tagInput.disabled = disabled || isCreatingTag;
     elements.addTag.disabled = disabled || isCreatingTag;
     const submitButton = noteSubmitButton();
-    submitButton.disabled = disabled || isCreatingTag;
-    submitButton.textContent = disabled ? "Saving…" : "Save & close";
+    if (submitButton) {
+      submitButton.disabled = disabled || isCreatingTag;
+      submitButton.textContent = disabled ? "Saving…" : "Done";
+    }
   }
 
   function openNoteEditor(note = null, {
@@ -2477,6 +2530,7 @@
     ui.noteEditorSnapshot = getNoteEditorDraft();
     syncToastHost();
     syncNoteEditorControls();
+    setNoteSaveStatus("saved");
     scheduleNoteEditorHeight({ allowShrink: true });
     if (!preserveDetail && focusTitle && initialMode === "edit") {
       window.requestAnimationFrame(() => elements.noteTitle.focus());
@@ -2547,6 +2601,11 @@
     if (ui.noteSaveInFlight) return;
     if (!hasUnsavedNoteChanges()) {
       closeNoteEditor();
+      afterClose?.();
+      return;
+    }
+    if (elements.noteTitle.value.trim()) {
+      await saveNote({ preventDefault() {} }, { closeAfterSave: true });
       afterClose?.();
       return;
     }
@@ -2629,10 +2688,10 @@
   }
 
   async function saveNote(event, { closeAfterSave = true, isAutoSave = false } = {}) {
-    event.preventDefault();
+    event?.preventDefault?.();
     clearNoteAutoSave();
     if (ui.noteSaveInFlight) return;
-    if (isAutoSave && (!elements.noteId.value || !elements.noteTitle.value.trim())) return;
+    if (isAutoSave && !elements.noteTitle.value.trim()) return;
     const session = ui.noteEditorSession;
     const pendingTagCreation = ui.pendingTagCreation;
     if (pendingTagCreation?.session === session) {
@@ -2642,6 +2701,7 @@
 
     ui.noteSaveInFlight = true;
     ui.noteAutoSaveInFlight = isAutoSave;
+    setNoteSaveStatus("saving");
     syncNoteEditorControls();
     const input = {
       id: elements.noteId.value || undefined,
@@ -2664,12 +2724,15 @@
         renderNoteMetadata(savedNote);
         ui.noteEditorSnapshot = createNoteEditorDraft({ ...input, id: savedNote.id });
         syncStoredNoteDraft();
+        setNoteSaveStatus("saved");
         if (closeAfterSave) closeNoteEditor();
       }
-      if (isAutoSave) showToast("Note autosaved.");
-      else showToast(closeAfterSave ? (isEditing ? "Note updated." : "Note saved.") : "Changes saved. Keep editing.");
+      if (!isAutoSave) {
+        showToast(closeAfterSave ? (isEditing ? "Note updated." : "Note saved.") : "Changes saved. Keep editing.");
+      }
     } catch (error) {
       if (isCurrentNoteEditorSession(session)) {
+        setNoteSaveStatus("error");
         showError(error, "We could not save this note.");
       }
     } finally {
