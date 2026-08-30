@@ -2803,8 +2803,8 @@
     elements.newTagForm.classList.toggle("is-hidden", !showingTags);
     elements.addTypeToggle.setAttribute("aria-expanded", String(showingTypes));
     elements.addTagToggle.setAttribute("aria-expanded", String(showingTags));
-    elements.addTypeToggle.textContent = showingTypes ? "Cancel" : "Add type";
-    elements.addTagToggle.textContent = showingTags ? "Cancel" : "Add tag";
+    elements.addTypeToggle.textContent = showingTypes ? "Cancel" : "+ New type";
+    elements.addTagToggle.textContent = showingTags ? "Cancel" : "+ New tag";
     elements.addTypeToggle.classList.toggle("button-primary", !showingTypes);
     elements.addTypeToggle.classList.toggle("button-secondary", showingTypes);
     elements.addTagToggle.classList.toggle("button-primary", !showingTags);
@@ -3011,7 +3011,7 @@
       const usage = usageCounts.get(type.id) || 0;
       const isEditing = ui.managementEditing?.kind === "types" && ui.managementEditing.id === type.id;
       const row = isEditing
-        ? createElement("form", { className: "management-row management-row--type management-row--editing", dataset: { managementEditId: type.id } })
+        ? createElement("form", { className: "management-row management-row--type", dataset: { managementEditId: type.id } })
         : createElement("div", { className: "management-row management-row--summary management-row--type" });
       const main = createElement("div", { className: "management-row__main" });
       main.append(createElement("span", { className: `type-dot type-dot--${safeTypeColor(type)}`, attributes: { "aria-hidden": "true" } }));
@@ -3047,7 +3047,6 @@
           }
         });
       } else {
-        const metadata = createElement("div", { className: "management-row__metadata" });
         const actions = createElement("div", { className: "management-row__actions" });
         const edit = createElement("button", {
           className: "button button-secondary button-compact",
@@ -3056,8 +3055,8 @@
           attributes: { "aria-label": `Edit ${type.name}` },
         });
         main.append(createElement("span", { className: "management-row__name", text: type.name }));
-        if (type.id === storage.FALLBACK_TYPE_ID) metadata.append(createElement("span", { className: "management-row__default", text: "Default" }));
-        metadata.append(createElement("span", { className: "usage-count", text: pluralize(usage, "note") }));
+        if (type.id === storage.FALLBACK_TYPE_ID) main.append(createElement("span", { className: "management-row__default", text: "Default" }));
+        main.append(createElement("span", { className: "usage-count", text: pluralize(usage, "note") }));
         actions.append(edit);
         edit.addEventListener("click", () => startManagementEdit("types", type.id));
 
@@ -3091,7 +3090,7 @@
             }
           });
         }
-        row.append(main, metadata, actions);
+        row.append(main, actions);
       }
       fragment.append(row);
     });
@@ -3121,7 +3120,7 @@
       const label = tagLabel(tag);
       const isEditing = ui.managementEditing?.kind === "tags" && ui.managementEditing.id === tag.id;
       const row = isEditing
-        ? createElement("form", { className: "management-row management-row--editing", dataset: { managementEditId: tag.id } })
+        ? createElement("form", { className: "management-row", dataset: { managementEditId: tag.id } })
         : createElement("div", { className: "management-row management-row--summary" });
       const main = createElement("div", { className: "management-row__main" });
       main.append(createElement("span", { className: "tag-marker", attributes: { "aria-hidden": "true" } }));
@@ -3151,7 +3150,6 @@
           }
         });
       } else {
-        const metadata = createElement("div", { className: "management-row__metadata" });
         const actions = createElement("div", { className: "management-row__actions" });
         const edit = createElement("button", {
           className: "button button-secondary button-compact",
@@ -3166,7 +3164,7 @@
           attributes: { "aria-label": `Delete ${label}` },
         });
         main.append(createElement("span", { className: "management-row__name", text: label }));
-        metadata.append(createElement("span", { className: "usage-count", text: pluralize(usage, "note") }));
+        main.append(createElement("span", { className: "usage-count", text: pluralize(usage, "note") }));
         actions.append(edit, remove);
         edit.addEventListener("click", () => startManagementEdit("tags", tag.id));
         remove.addEventListener("click", async () => {
@@ -3189,7 +3187,7 @@
             showError(error);
           }
         });
-        row.append(main, metadata, actions);
+        row.append(main, actions);
       }
       fragment.append(row);
     });
