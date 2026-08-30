@@ -7131,7 +7131,6 @@ html[data-theme="dark"] .note-dialog .note-content-preview {
   border-radius: 0 0 1rem 1rem;
   padding: 0.85rem 1.25rem max(0.85rem, env(safe-area-inset-bottom));
   background: #ffffff;
-  box-shadow: 0 -10px 22px -20px rgb(15 23 42 / 48%);
 }
 
 .note-detail-surface .dialog-footer > .note-delete-button {
