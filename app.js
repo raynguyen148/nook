@@ -1215,8 +1215,9 @@
     const tagFragment = document.createDocumentFragment();
     library.tags.forEach((tag) => {
       const tagCount = noteCountsByTag.get(tag.id) || 0;
+      const isSelected = ui.tagIds.has(tag.id);
       const label = createElement("label", {
-        className: "tag-filter-option",
+        className: `tag-filter-option${isSelected ? " is-active" : ""}`,
         attributes: { title: `${tagLabel(tag)} (${tagCount})` },
       });
       const input = createElement("input", {
@@ -1224,7 +1225,7 @@
         value: tag.id,
         attributes: { "aria-label": `Filter by tag ${tagLabel(tag)} (${tagCount})` },
       });
-      input.checked = ui.tagIds.has(tag.id);
+      input.checked = isSelected;
       input.addEventListener("change", () => toggleTagFilter(tag.id));
       label.append(input);
       label.append(createElement("span", { className: "tag-filter-option__box", attributes: { "aria-hidden": "true" } }));
