@@ -1240,6 +1240,20 @@
     syncClearFiltersState();
   }
 
+  function createChipCloseIcon() {
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("viewBox", "0 0 16 16");
+    svg.setAttribute("fill", "none");
+    svg.setAttribute("stroke", "currentColor");
+    svg.setAttribute("stroke-width", "2");
+    svg.setAttribute("stroke-linecap", "round");
+    svg.setAttribute("aria-hidden", "true");
+    const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    path.setAttribute("d", "m4.5 4.5 7 7M11.5 4.5l-7 7");
+    svg.append(path);
+    return svg;
+  }
+
   function makeFilterPill(label, onClear, kinds = []) {
     const normalizedKinds = (Array.isArray(kinds) ? kinds : [kinds]).filter(Boolean);
     const chip = createElement("span", { className: ["active-filter-pill", ...normalizedKinds.map((kind) => `active-filter-pill--${kind}`)].join(" ") });
@@ -1247,9 +1261,9 @@
     const clear = createElement("button", {
       className: "active-filter-pill__clear",
       type: "button",
-      text: "×",
       attributes: { "aria-label": `Remove ${label} filter` },
     });
+    clear.append(createChipCloseIcon());
     clear.addEventListener("click", onClear);
     chip.append(clear);
     return chip;
@@ -2060,10 +2074,10 @@
       chip.append(createElement("span", { text: tagLabel(tag) }));
       const remove = createElement("button", {
         type: "button",
-        text: "×",
         disabled: ui.noteSaveInFlight,
         attributes: { "aria-label": `Remove tag ${tagLabel(tag)}` },
       });
+      remove.append(createChipCloseIcon());
       remove.addEventListener("click", () => {
         if (ui.noteSaveInFlight) return;
         ui.selectedNoteTagIds.delete(tag.id);
