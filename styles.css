@@ -2932,13 +2932,13 @@ html[data-theme="dark"] .note-content-preview .markdown-task-item > input {
 }
 
 .organize-dialog {
-  width: min(calc(100% - 2rem), 960px);
+  width: min(calc(100% - 2rem), 560px);
 }
 
 .organize-tabs {
   display: flex;
   gap: 0.25rem;
-  padding: 0.8rem 1.45rem 0;
+  padding: 0.65rem 1.25rem 0;
   border-bottom: 1px solid #edf0f4;
 }
 
@@ -2964,7 +2964,7 @@ html[data-theme="dark"] .note-content-preview .markdown-task-item > input {
 }
 
 .organize-panel {
-  padding: 1.1rem 1.45rem 1.35rem;
+  padding: 1rem 1.25rem 1.25rem;
 }
 
 .dialog-description {
