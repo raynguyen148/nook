@@ -49,11 +49,13 @@ button:disabled {
 }
 
 button:focus-visible,
-input:focus-visible,
-select:focus-visible,
-textarea:focus-visible {
+select:focus-visible {
   outline: 2px solid var(--primary-accent);
   outline-offset: 2px;
+}
+
+:focus:not(:focus-visible) {
+  outline: none;
 }
 
 .is-hidden {
@@ -1613,9 +1615,16 @@ select::-ms-expand {
   border-left: 1px solid #e2e8f0;
 }
 
-.note-card__action:hover:not(:disabled) {
-  color: #9e6b02;
-  background: #fdf5db;
+.note-card__action:hover:not(:disabled),
+.note-card__action:focus-visible {
+  color: #4338ca;
+  background: #eef2ff;
+}
+
+.note-card__action--danger:hover:not(:disabled),
+.note-card__action--danger:focus-visible {
+  color: #dc2626;
+  background: #fef2f2;
 }
 
 .note-card__action:disabled {
@@ -2396,10 +2405,25 @@ select::-ms-expand {
 .quick-view-content .markdown-task-item > input,
 .note-content-preview .markdown-task-item > input {
   flex: none;
-  width: 0.9rem;
-  height: 0.9rem;
-  margin-top: 0.34rem;
-  accent-color: var(--primary-accent);
+  width: 0.92rem !important;
+  height: 0.92rem !important;
+  min-height: 0 !important;
+  max-height: 0.92rem !important;
+  margin: 0.32rem 0 0 0;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0.2rem;
+  background: transparent !important;
+  box-shadow: none !important;
+  accent-color: var(--primary-accent, #6366f1);
+  cursor: default;
+}
+
+html[data-theme="dark"] .quick-view-content .markdown-task-item > input,
+html[data-theme="dark"] .note-content-preview .markdown-task-item > input {
+  background: transparent !important;
+  box-shadow: none !important;
+  border: 0 !important;
 }
 
 .quick-view-content .markdown-task-content,
@@ -5143,27 +5167,28 @@ html[data-theme="dark"] .note-card--pinned:focus-within {
 }
 
 .note-card__title:hover,
-.note-card__action:hover {
+.note-card__action:hover:not(:disabled),
+.note-card__action:focus-visible {
   color: var(--primary-accent-text);
 }
 
-.note-card__action:hover {
-  background: var(--primary-accent-soft);
-}
-
+.note-card__action:hover:not(:disabled),
 .note-card__action:focus-visible {
   position: relative;
   z-index: 1;
-  outline: 0;
-  color: var(--primary-accent-text);
+  outline: none;
   background: var(--primary-accent-soft);
-  box-shadow: inset 0 0 0 2px var(--primary-accent-border);
+  box-shadow: none;
 }
 
-.note-card__action--danger:hover,
+.note-card__action--danger:hover:not(:disabled),
 .note-card__action--danger:focus-visible {
-  color: #a43948;
-  background: #fff2f3;
+  position: relative;
+  z-index: 1;
+  outline: none;
+  color: #dc2626;
+  background: #fef2f2;
+  box-shadow: none;
 }
 
 .empty-state__icon {
@@ -5600,18 +5625,28 @@ html[data-theme="dark"] .note-card:focus-within {
 }
 
 html[data-theme="dark"] .note-card__title:hover,
-html[data-theme="dark"] .note-card__action:hover {
+html[data-theme="dark"] .note-card__action:hover:not(:disabled),
+html[data-theme="dark"] .note-card__action:focus-visible {
   color: var(--primary-accent-text);
 }
 
-html[data-theme="dark"] .note-card__action:hover {
+html[data-theme="dark"] .note-card__action:hover:not(:disabled),
+html[data-theme="dark"] .note-card__action:focus-visible {
+  position: relative;
+  z-index: 1;
+  outline: none;
   background: var(--primary-accent-soft);
+  box-shadow: none;
 }
 
-html[data-theme="dark"] .note-card__action--danger:hover,
+html[data-theme="dark"] .note-card__action--danger:hover:not(:disabled),
 html[data-theme="dark"] .note-card__action--danger:focus-visible {
+  position: relative;
+  z-index: 1;
+  outline: none;
   color: #fca5a5;
-  background: rgb(239 68 68 / 16%);
+  background: rgb(239 68 68 / 18%);
+  box-shadow: none;
 }
 
 html[data-theme="dark"] .empty-state__icon,
@@ -7692,23 +7727,22 @@ html[data-theme="dark"] .note-detail-surface .note-markdown-help__trigger:hover 
   }
 }
 
-/* Keep the shared keyboard ring on actual controls only. Layout containers
- * may receive programmatic focus for navigation, but must remain visually
- * quiet. Document reading surfaces define their own focus treatment below. */
+/* Keep the shared keyboard ring on actual controls only (buttons, interactive links, tabs).
+ * Layout containers, dialogs, and reading/editing surfaces must remain clean and borderless. */
 :where(
   button,
   a[href],
-  input:not([type="hidden"]),
-  select,
-  textarea,
   summary,
   [role="button"],
   [role="tab"],
-  [role="option"],
-  [contenteditable="true"]
+  [role="option"]
 ):focus-visible {
-  outline: 2px solid var(--focus-color) !important;
-  outline-offset: 2px !important;
+  outline: 2px solid var(--focus-color);
+  outline-offset: 2px;
+}
+
+:focus:not(:focus-visible) {
+  outline: none;
 }
 
 /* Native fields keep the same primary edge without adding a competing glow. */
@@ -7726,6 +7760,19 @@ html[data-theme="dark"] .note-detail-surface .note-markdown-help__trigger:hover 
 .color-picker__trigger:focus-visible {
   border-color: var(--focus-color);
   box-shadow: none;
+}
+
+.search-field input:focus-visible,
+.sort-field select:focus-visible,
+.field input:focus-visible,
+.field select:focus-visible,
+.create-row input:focus-visible,
+.create-row select:focus-visible,
+.management-row input:focus-visible,
+.management-row select:focus-visible,
+.management-search input:focus-visible {
+  outline: none !important;
+  outline-offset: 0 !important;
 }
 
 /* A card is an indirect focus surface. When one of its controls receives
@@ -7752,8 +7799,6 @@ html[data-theme="dark"] .note-card--pinned:focus-within:not(:hover) {
 
 /* Controls rely on the shared outline rather than a second colored fill. */
 .view-mode-button:focus-visible,
-.note-card__action:focus-visible,
-.note-card__action--danger:focus-visible,
 .note-card__pin-toggle:focus-visible,
 .note-markdown-help__trigger:focus-visible,
 .topbar-more-menu__item:focus-visible,
@@ -7762,8 +7807,6 @@ html[data-theme="dark"] .note-card--pinned:focus-within:not(:hover) {
   box-shadow: none;
 }
 
-.note-card__action:focus-visible,
-.note-card__action--danger:focus-visible,
 .note-card__pin-toggle:focus-visible,
 .note-markdown-help__trigger:focus-visible,
 .topbar-more-menu__item:focus-visible {
@@ -7781,79 +7824,64 @@ html[data-theme="dark"] .note-card--pinned:focus-within:not(:hover) {
   outline: 0 !important;
 }
 
-/* Framed fields use their own primary border for focus. Suppressing the
- * global outline here avoids a second concentric ring. */
-.search-field input:focus-visible,
-.sort-field select:focus-visible,
-.field input:focus-visible,
-.field select:focus-visible,
-.create-row input:focus-visible,
-.create-row select:focus-visible,
-.management-row input:focus-visible,
-.management-row select:focus-visible,
-.management-search input:focus-visible {
-  outline: 0 !important;
-  outline-offset: 0 !important;
-}
-
-/* These document surfaces deliberately have no visible border, so retain
- * their own rounded keyboard focus treatment. */
-.note-detail-surface .quick-view-content:focus-visible,
-.note-dialog .field--title input:focus-visible,
-.note-dialog #note-content:focus-visible,
-.note-dialog .note-content-preview:focus-visible {
-  outline: 2px solid var(--focus-color) !important;
-  outline-offset: 2px !important;
-}
-
-/* Inputs already have their own rounded control shapes. These document
- * surfaces are intentionally borderless, so give their shared focus outline a
- * subtle radius instead of leaving a harsh rectangular edge. */
-.quick-view-document-header h1:focus-visible,
-.note-detail-surface .quick-view-content:focus-visible,
-.note-dialog .field--title input:focus-visible,
-.note-dialog #note-content:focus-visible,
-.note-dialog .note-content-preview:focus-visible {
-  border-radius: var(--focus-radius);
-}
-
 .tag-filter-option:has(input:focus-visible),
 .tag-filter-option:focus-within {
   outline: 2px solid var(--focus-color);
   outline-offset: 2px;
 }
 
-@media (forced-colors: active) {
-  :where(
-    button,
-    a[href],
-    input:not([type="hidden"]),
-    select,
-    textarea,
-    summary,
-    [role="button"],
-    [role="tab"],
-    [role="option"],
-    [contenteditable="true"]
-  ):focus-visible {
-    outline-color: Highlight !important;
-  }
-}
-
-/* `#notes-list` is focused programmatically after list updates. It is only a
- * navigation anchor, so suppress the browser's native focus outline here;
- * actual card controls retain their keyboard focus indicators. */
-.notes-list[tabindex]:focus,
-.notes-list[tabindex]:focus-visible {
+/* Document writing and reading surfaces must remain completely seamless and borderless when focused. */
+.note-detail-surface .quick-view-content:focus,
+.note-detail-surface .quick-view-content:focus-visible,
+.note-dialog .field--title input:focus,
+.note-dialog .field--title input:focus-visible,
+.note-dialog #note-content:focus,
+.note-dialog #note-content:focus-visible,
+.note-dialog .note-content-preview:focus,
+.note-dialog .note-content-preview:focus-visible,
+.quick-view-document-header h1:focus,
+.quick-view-document-header h1:focus-visible {
   outline: none !important;
   outline-offset: 0 !important;
   box-shadow: none !important;
 }
 
-/* The editor surface is focused programmatically as a navigation target.
- * Its child controls retain their own visible keyboard focus treatment. */
-.note-detail-surface.note-dialog[tabindex]:focus,
-.note-detail-surface.note-dialog[tabindex]:focus-visible {
+/* Layout containers, modal dialogs, and navigation anchors receive programmatic focus
+ * but must NEVER draw visual focus rings. */
+.notes-list[tabindex]:focus,
+.notes-list[tabindex]:focus-visible,
+.note-detail-surface[tabindex]:focus,
+.note-detail-surface[tabindex]:focus-visible,
+.note-dialog:focus,
+.note-dialog:focus-visible,
+.quick-view-dialog:focus,
+.quick-view-dialog:focus-visible,
+.confirmation-dialog:focus,
+.confirmation-dialog:focus-visible,
+.organize-dialog:focus,
+.organize-dialog:focus-visible,
+.detail-preview-panel:focus,
+.detail-preview-panel:focus-visible,
+.quick-view-body:focus,
+.quick-view-body:focus-visible,
+.dialog-body:focus,
+.dialog-body:focus-visible,
+.workspace:focus,
+.workspace:focus-visible {
   outline: none !important;
   outline-offset: 0 !important;
+  box-shadow: none !important;
+}
+
+@media (forced-colors: active) {
+  :where(
+    button,
+    a[href],
+    summary,
+    [role="button"],
+    [role="tab"],
+    [role="option"]
+  ):focus-visible {
+    outline-color: Highlight !important;
+  }
 }
