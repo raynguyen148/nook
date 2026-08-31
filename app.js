@@ -193,6 +193,7 @@
     noteAutoSaveTimer: 0,
     noteEditorMode: "edit",
     noteScrollSyncing: false,
+    noteEditorPreviewFrame: 0,
     noteEditorSnapshot: null,
     viewingNoteId: "",
     viewInvoker: null,
@@ -2236,6 +2237,14 @@
     syncNoteEditorScroll(elements.noteContent, elements.noteContentPreview);
   }
 
+  function scheduleNoteEditorPreview() {
+    if (ui.noteEditorMode !== "split") return;
+    window.cancelAnimationFrame(ui.noteEditorPreviewFrame);
+    ui.noteEditorPreviewFrame = window.requestAnimationFrame(() => {
+      renderNoteEditorPreview();
+    });
+  }
+
   function setNoteEditorMode(mode) {
     if (!["edit", "split", "preview"].includes(mode)) return;
     ui.noteEditorMode = mode;
@@ -3519,6 +3528,11 @@
         showError(error);
       }
     });
+    window.addEventListener("nook:toast", (event) => {
+      const message = event?.detail?.message;
+      const tone = event?.detail?.tone || "success";
+      if (message) showToast(message, tone);
+    });
     elements.themeToggle.addEventListener("click", () => setTheme(ui.theme === "dark" ? "light" : "dark"));
     elements.organize.addEventListener("click", () => openOrganize());
     elements.export.addEventListener("click", () => exportLibrary());
@@ -3555,7 +3569,7 @@
     elements.noteContent.addEventListener("input", () => {
       if (ui.noteEditorMode === "preview") renderQuickView();
       syncNotePreviewActions();
-      renderNoteEditorPreview();
+      scheduleNoteEditorPreview();
       scheduleNoteEditorHeight();
       scheduleNoteAutoSave();
     });

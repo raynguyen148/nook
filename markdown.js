@@ -453,15 +453,651 @@
     parent.append(paragraph);
   }
 
+  const JS_KEYWORDS = new Set([
+    "async", "await", "break", "case", "catch", "class", "const", "continue",
+    "debugger", "default", "delete", "do", "else", "enum", "export", "extends",
+    "finally", "for", "from", "function", "if", "implements", "import",
+    "in", "instanceof", "interface", "let", "new", "of", "package",
+    "private", "protected", "public", "readonly", "return", "static", "super",
+    "switch", "this", "throw", "try", "type", "typeof", "var", "void", "while",
+    "with", "yield"
+  ]);
+
+  const JS_LITERALS = new Set([
+    "true", "false", "null", "undefined", "NaN", "Infinity"
+  ]);
+
+  const PY_KEYWORDS = new Set([
+    "and", "as", "assert", "async", "await", "break", "class", "continue", "def",
+    "del", "elif", "else", "except", "finally", "for", "from", "global", "if",
+    "import", "in", "is", "lambda", "nonlocal", "not", "or", "pass", "raise",
+    "return", "try", "while", "with", "yield", "self", "cls"
+  ]);
+
+  const PY_LITERALS = new Set([
+    "True", "False", "None"
+  ]);
+
+  const SQL_KEYWORDS = new Set([
+    "SELECT", "FROM", "WHERE", "INSERT", "INTO", "VALUES", "UPDATE", "SET",
+    "DELETE", "CREATE", "TABLE", "DROP", "ALTER", "JOIN", "LEFT", "RIGHT",
+    "INNER", "OUTER", "FULL", "CROSS", "ON", "GROUP", "BY", "ORDER", "HAVING",
+    "LIMIT", "OFFSET", "AND", "OR", "NOT", "NULL", "PRIMARY", "KEY", "FOREIGN",
+    "REFERENCES", "AS", "DISTINCT", "UNION", "ALL", "CASE", "WHEN", "THEN",
+    "ELSE", "END", "EXISTS", "IN", "LIKE", "IS", "INDEX", "VIEW", "TRIGGER",
+    "COUNT", "SUM", "AVG", "MIN", "MAX", "COALESCE", "CAST", "BEGIN", "COMMIT",
+    "ROLLBACK", "TRANSACTION", "BETWEEN", "ASC", "DESC"
+  ]);
+
+  const BASH_KEYWORDS = new Set([
+    "if", "then", "else", "elif", "fi", "for", "while", "do", "done", "in",
+    "case", "esac", "function", "return", "exit", "select", "until", "export",
+    "local", "declare", "readonly"
+  ]);
+
+  function pushToken(tokens, type, text) {
+    if (!text) return;
+    const last = tokens[tokens.length - 1];
+    if (last && last.type === type && type === "plain") {
+      last.text += text;
+    } else {
+      tokens.push({ type, text });
+    }
+  }
+
+  function tokenizeCode(code, language) {
+    const lang = (language || "").toLowerCase().trim();
+    const tokens = [];
+    let i = 0;
+    const len = code.length;
+    let lastSigToken = "";
+
+    if (lang === "javascript" || lang === "js" || lang === "typescript" || lang === "ts" || lang === "jsx" || lang === "tsx") {
+      while (i < len) {
+        if (code[i] === "/" && code[i + 1] === "/") {
+          const end = code.indexOf("\n", i + 2);
+          const comment = end === -1 ? code.slice(i) : code.slice(i, end);
+          pushToken(tokens, "comment", comment);
+          i = end === -1 ? len : end;
+          continue;
+        }
+        if (code[i] === "/" && code[i + 1] === "*") {
+          const end = code.indexOf("*/", i + 2);
+          const comment = end === -1 ? code.slice(i) : code.slice(i, end + 2);
+          pushToken(tokens, "comment", comment);
+          i = end === -1 ? len : end + 2;
+          continue;
+        }
+        // Regex literals
+        if (code[i] === "/" && code[i + 1] !== "/" && code[i + 1] !== "*") {
+          const isRegexContext = !lastSigToken ||
+            /[=([{:;,!&|?+*\-%^~<>]/.test(lastSigToken) ||
+            /^(?:return|case|typeof|void|delete|yield|await)$/.test(lastSigToken);
+          if (isRegexContext) {
+            let end = i + 1;
+            let inCharClass = false;
+            while (end < len) {
+              if (code[end] === "\\") {
+                end += 2;
+              } else if (code[end] === "[" && !inCharClass) {
+                inCharClass = true;
+                end += 1;
+              } else if (code[end] === "]" && inCharClass) {
+                inCharClass = false;
+                end += 1;
+              } else if (code[end] === "/" && !inCharClass) {
+                end += 1;
+                while (end < len && /[gimsuy]/.test(code[end])) end += 1;
+                break;
+              } else if (code[end] === "\n") {
+                break;
+              } else {
+                end += 1;
+              }
+            }
+            if (end <= len && code[end - 1] !== "\n") {
+              const regexStr = code.slice(i, end);
+              pushToken(tokens, "string", regexStr);
+              lastSigToken = "/";
+              i = end;
+              continue;
+            }
+          }
+        }
+        if (code[i] === '"' || code[i] === "'" || code[i] === "`") {
+          const quote = code[i];
+          let end = i + 1;
+          while (end < len) {
+            if (code[end] === "\\") {
+              end += 2;
+            } else if (code[end] === quote) {
+              end += 1;
+              break;
+            } else {
+              end += 1;
+            }
+          }
+          pushToken(tokens, "string", code.slice(i, end));
+          lastSigToken = quote;
+          i = end;
+          continue;
+        }
+        if (/\d/.test(code[i]) || (code[i] === "." && /\d/.test(code[i + 1] || ""))) {
+          const match = code.slice(i).match(/^(?:0x[\da-fA-F]+|0b[01]+|\d+(?:\.\d+)?(?:[eE][+-]?\d+)?)/);
+          if (match) {
+            pushToken(tokens, "number", match[0]);
+            lastSigToken = match[0];
+            i += match[0].length;
+            continue;
+          }
+        }
+        if (/[a-zA-Z_$]/.test(code[i])) {
+          const match = code.slice(i).match(/^[a-zA-Z0-9_$]+/);
+          if (match) {
+            const word = match[0];
+            const nextIndex = i + word.length;
+            let peek = nextIndex;
+            while (peek < len && /[ \t]/.test(code[peek])) peek += 1;
+
+            if (JS_KEYWORDS.has(word)) {
+              pushToken(tokens, "keyword", word);
+            } else if (JS_LITERALS.has(word)) {
+              pushToken(tokens, "boolean", word);
+            } else if (code[peek] === "(") {
+              pushToken(tokens, "function", word);
+            } else if (/^[A-Z]/.test(word)) {
+              pushToken(tokens, "type", word);
+            } else {
+              pushToken(tokens, "plain", word);
+            }
+            lastSigToken = word;
+            i = nextIndex;
+            continue;
+          }
+        }
+        const opMatch = code.slice(i).match(/^(?:=>|===|!==|==|!=|<=|>=|&&|\|\||\?\?|\?\:|\+\+|--|\+=|-=|\*=|\/=|[\+\-\*\/%&|^~<>=!?:;,.\(\)\{\}\[\]])/);
+        if (opMatch) {
+          pushToken(tokens, "operator", opMatch[0]);
+          lastSigToken = opMatch[0];
+          i += opMatch[0].length;
+          continue;
+        }
+        pushToken(tokens, "plain", code[i]);
+        i += 1;
+      }
+    } else if (lang === "python" || lang === "py") {
+      while (i < len) {
+        if (code[i] === "#") {
+          const end = code.indexOf("\n", i + 1);
+          const comment = end === -1 ? code.slice(i) : code.slice(i, end);
+          pushToken(tokens, "comment", comment);
+          i = end === -1 ? len : end;
+          continue;
+        }
+        if (code.startsWith('"""', i) || code.startsWith("'''", i)) {
+          const quote = code.slice(i, i + 3);
+          const end = code.indexOf(quote, i + 3);
+          const str = end === -1 ? code.slice(i) : code.slice(i, end + 3);
+          pushToken(tokens, "string", str);
+          i = end === -1 ? len : end + 3;
+          continue;
+        }
+        if (code[i] === '"' || code[i] === "'") {
+          const quote = code[i];
+          let end = i + 1;
+          while (end < len) {
+            if (code[end] === "\\") {
+              end += 2;
+            } else if (code[end] === quote) {
+              end += 1;
+              break;
+            } else {
+              end += 1;
+            }
+          }
+          pushToken(tokens, "string", code.slice(i, end));
+          i = end;
+          continue;
+        }
+        if (/\d/.test(code[i])) {
+          const match = code.slice(i).match(/^(?:0x[\da-fA-F]+|\d+(?:\.\d+)?(?:[eE][+-]?\d+)?)/);
+          if (match) {
+            pushToken(tokens, "number", match[0]);
+            i += match[0].length;
+            continue;
+          }
+        }
+        if (code[i] === "@" && /[a-zA-Z_]/.test(code[i + 1] || "")) {
+          const match = code.slice(i).match(/^@[a-zA-Z0-9_.]+/);
+          if (match) {
+            pushToken(tokens, "keyword", match[0]);
+            i += match[0].length;
+            continue;
+          }
+        }
+        if (/[a-zA-Z_]/.test(code[i])) {
+          const match = code.slice(i).match(/^[a-zA-Z0-9_]+/);
+          if (match) {
+            const word = match[0];
+            const nextIndex = i + word.length;
+            let peek = nextIndex;
+            while (peek < len && /[ \t]/.test(code[peek])) peek += 1;
+
+            if (PY_KEYWORDS.has(word)) {
+              pushToken(tokens, "keyword", word);
+            } else if (PY_LITERALS.has(word)) {
+              pushToken(tokens, "boolean", word);
+            } else if (code[peek] === "(") {
+              pushToken(tokens, "function", word);
+            } else if (/^[A-Z]/.test(word)) {
+              pushToken(tokens, "type", word);
+            } else {
+              pushToken(tokens, "plain", word);
+            }
+            i = nextIndex;
+            continue;
+          }
+        }
+        const opMatch = code.slice(i).match(/^(?:==|!=|<=|>=|\+=|-=|\*=|\/\/=|\/\/|\*\*|->|[\+\-\*\/%&|^~<>=!?:;,.\(\)\{\}\[\]])/);
+        if (opMatch) {
+          pushToken(tokens, "operator", opMatch[0]);
+          i += opMatch[0].length;
+          continue;
+        }
+        pushToken(tokens, "plain", code[i]);
+        i += 1;
+      }
+    } else if (lang === "json") {
+      while (i < len) {
+        if (code[i] === '"') {
+          let end = i + 1;
+          while (end < len) {
+            if (code[end] === "\\") end += 2;
+            else if (code[end] === '"') { end += 1; break; }
+            else end += 1;
+          }
+          const str = code.slice(i, end);
+          let peek = end;
+          while (peek < len && /[ \t\r\n]/.test(code[peek])) peek += 1;
+          if (code[peek] === ":") {
+            pushToken(tokens, "property", str);
+          } else {
+            pushToken(tokens, "string", str);
+          }
+          i = end;
+          continue;
+        }
+        if (/\d/.test(code[i]) || code[i] === "-") {
+          const match = code.slice(i).match(/^-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?/);
+          if (match) {
+            pushToken(tokens, "number", match[0]);
+            i += match[0].length;
+            continue;
+          }
+        }
+        if (code.startsWith("true", i) || code.startsWith("false", i) || code.startsWith("null", i)) {
+          const match = code.slice(i).match(/^(?:true|false|null)/);
+          pushToken(tokens, "boolean", match[0]);
+          i += match[0].length;
+          continue;
+        }
+        if (/[{}\[\],:]/.test(code[i])) {
+          pushToken(tokens, "operator", code[i]);
+          i += 1;
+          continue;
+        }
+        pushToken(tokens, "plain", code[i]);
+        i += 1;
+      }
+    } else if (lang === "html" || lang === "xml" || lang === "svg") {
+      while (i < len) {
+        if (code.startsWith("<!--", i)) {
+          const end = code.indexOf("-->", i + 4);
+          const comment = end === -1 ? code.slice(i) : code.slice(i, end + 3);
+          pushToken(tokens, "comment", comment);
+          i = end === -1 ? len : end + 3;
+          continue;
+        }
+        if (code.startsWith("</", i) || code[i] === "<") {
+          const match = code.slice(i).match(/^<\/?([a-zA-Z0-9:-]+)/);
+          if (match) {
+            pushToken(tokens, "operator", code.slice(i, i + (match[0].startsWith("</") ? 2 : 1)));
+            pushToken(tokens, "tag", match[1]);
+            i += match[0].length;
+            continue;
+          }
+        }
+        if (code[i] === '"' || code[i] === "'") {
+          const quote = code[i];
+          let end = i + 1;
+          while (end < len && code[end] !== quote) end += 1;
+          if (end < len) end += 1;
+          pushToken(tokens, "string", code.slice(i, end));
+          i = end;
+          continue;
+        }
+        if (/[a-zA-Z:-]/.test(code[i])) {
+          const match = code.slice(i).match(/^[a-zA-Z0-9:-]+/);
+          let peek = i + match[0].length;
+          while (peek < len && /[ \t]/.test(code[peek])) peek += 1;
+          if (code[peek] === "=") {
+            pushToken(tokens, "property", match[0]);
+          } else {
+            pushToken(tokens, "plain", match[0]);
+          }
+          i += match[0].length;
+          continue;
+        }
+        if (/[=>\/]/.test(code[i])) {
+          pushToken(tokens, "operator", code[i]);
+          i += 1;
+          continue;
+        }
+        pushToken(tokens, "plain", code[i]);
+        i += 1;
+      }
+    } else if (lang === "css" || lang === "scss") {
+      while (i < len) {
+        if (code[i] === "/" && code[i + 1] === "*") {
+          const end = code.indexOf("*/", i + 2);
+          const comment = end === -1 ? code.slice(i) : code.slice(i, end + 2);
+          pushToken(tokens, "comment", comment);
+          i = end === -1 ? len : end + 2;
+          continue;
+        }
+        if (code[i] === '"' || code[i] === "'") {
+          const quote = code[i];
+          let end = i + 1;
+          while (end < len && code[end] !== quote) end += 1;
+          if (end < len) end += 1;
+          pushToken(tokens, "string", code.slice(i, end));
+          i = end;
+          continue;
+        }
+        if (code.startsWith("--", i)) {
+          const match = code.slice(i).match(/^--[a-zA-Z0-9_-]+/);
+          if (match) {
+            pushToken(tokens, "property", match[0]);
+            i += match[0].length;
+            continue;
+          }
+        }
+        if (code[i] === "#" && /[0-9a-fA-F]/.test(code[i + 1] || "")) {
+          const match = code.slice(i).match(/^#[0-9a-fA-F]{3,8}/);
+          if (match) {
+            pushToken(tokens, "number", match[0]);
+            i += match[0].length;
+            continue;
+          }
+        }
+        if (/\d/.test(code[i])) {
+          const match = code.slice(i).match(/^\d+(?:\.\d+)?(?:px|rem|em|%|vh|vw|s|ms|deg|fr)?/);
+          if (match) {
+            pushToken(tokens, "number", match[0]);
+            i += match[0].length;
+            continue;
+          }
+        }
+        if (/[a-zA-Z_-]/.test(code[i])) {
+          const match = code.slice(i).match(/^[a-zA-Z0-9_-]+/);
+          const word = match[0];
+          let peek = i + word.length;
+          while (peek < len && /[ \t]/.test(code[peek])) peek += 1;
+          if (code[peek] === ":") {
+            pushToken(tokens, "property", word);
+          } else if (code[peek] === "(") {
+            pushToken(tokens, "function", word);
+          } else {
+            pushToken(tokens, "keyword", word);
+          }
+          i += word.length;
+          continue;
+        }
+        if (/[{}:;,().>+*~=]/.test(code[i])) {
+          pushToken(tokens, "operator", code[i]);
+          i += 1;
+          continue;
+        }
+        pushToken(tokens, "plain", code[i]);
+        i += 1;
+      }
+    } else if (lang === "sql") {
+      while (i < len) {
+        if (code.startsWith("--", i)) {
+          const end = code.indexOf("\n", i + 2);
+          const comment = end === -1 ? code.slice(i) : code.slice(i, end);
+          pushToken(tokens, "comment", comment);
+          i = end === -1 ? len : end;
+          continue;
+        }
+        if (code.startsWith("/*", i)) {
+          const end = code.indexOf("*/", i + 2);
+          const comment = end === -1 ? code.slice(i) : code.slice(i, end + 2);
+          pushToken(tokens, "comment", comment);
+          i = end === -1 ? len : end + 2;
+          continue;
+        }
+        if (code[i] === "'" || code[i] === '"') {
+          const quote = code[i];
+          let end = i + 1;
+          while (end < len && code[end] !== quote) end += 1;
+          if (end < len) end += 1;
+          pushToken(tokens, "string", code.slice(i, end));
+          i = end;
+          continue;
+        }
+        if (/\d/.test(code[i])) {
+          const match = code.slice(i).match(/^\d+(?:\.\d+)?/);
+          pushToken(tokens, "number", match[0]);
+          i += match[0].length;
+          continue;
+        }
+        if (/[a-zA-Z_]/.test(code[i])) {
+          const match = code.slice(i).match(/^[a-zA-Z0-9_]+/);
+          const word = match[0];
+          if (SQL_KEYWORDS.has(word.toUpperCase())) {
+            pushToken(tokens, "keyword", word);
+          } else {
+            pushToken(tokens, "plain", word);
+          }
+          i += word.length;
+          continue;
+        }
+        if (/[,;()=<>+\-*\/.]/.test(code[i])) {
+          pushToken(tokens, "operator", code[i]);
+          i += 1;
+          continue;
+        }
+        pushToken(tokens, "plain", code[i]);
+        i += 1;
+      }
+    } else if (lang === "bash" || lang === "sh" || lang === "zsh" || lang === "shell") {
+      while (i < len) {
+        if (code[i] === "#") {
+          const end = code.indexOf("\n", i + 1);
+          const comment = end === -1 ? code.slice(i) : code.slice(i, end);
+          pushToken(tokens, "comment", comment);
+          i = end === -1 ? len : end;
+          continue;
+        }
+        if (code[i] === '"' || code[i] === "'") {
+          const quote = code[i];
+          let end = i + 1;
+          while (end < len && code[end] !== quote) {
+            if (code[end] === "\\") end += 2;
+            else end += 1;
+          }
+          if (end < len) end += 1;
+          pushToken(tokens, "string", code.slice(i, end));
+          i = end;
+          continue;
+        }
+        if (code[i] === "$") {
+          const match = code.slice(i).match(/^\$(?:\{[^}]+\}|[a-zA-Z0-9_?#]+)/);
+          if (match) {
+            pushToken(tokens, "property", match[0]);
+            i += match[0].length;
+            continue;
+          }
+        }
+        if (code[i] === "-" && /[a-zA-Z-]/.test(code[i + 1] || "")) {
+          const match = code.slice(i).match(/^--?[a-zA-Z0-9-]+/);
+          if (match) {
+            pushToken(tokens, "number", match[0]);
+            i += match[0].length;
+            continue;
+          }
+        }
+        if (/[a-zA-Z_]/.test(code[i])) {
+          const match = code.slice(i).match(/^[a-zA-Z0-9_.-]+/);
+          const word = match[0];
+          if (BASH_KEYWORDS.has(word)) {
+            pushToken(tokens, "keyword", word);
+          } else {
+            pushToken(tokens, "plain", word);
+          }
+          i += word.length;
+          continue;
+        }
+        if (/[|&;=()<>]/.test(code[i])) {
+          pushToken(tokens, "operator", code[i]);
+          i += 1;
+          continue;
+        }
+        pushToken(tokens, "plain", code[i]);
+        i += 1;
+      }
+    } else {
+      pushToken(tokens, "plain", code);
+    }
+
+    return tokens;
+  }
+
+  function createCopyCodeIcon() {
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("viewBox", "0 0 24 24");
+    svg.setAttribute("fill", "none");
+    svg.setAttribute("stroke", "currentColor");
+    svg.setAttribute("stroke-width", "1.8");
+    svg.setAttribute("stroke-linecap", "round");
+    svg.setAttribute("stroke-linejoin", "round");
+    svg.setAttribute("aria-hidden", "true");
+    svg.classList.add("markdown-code-copy-icon");
+
+    const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+    rect.setAttribute("x", "9");
+    rect.setAttribute("y", "9");
+    rect.setAttribute("width", "13");
+    rect.setAttribute("height", "13");
+    rect.setAttribute("rx", "2");
+    rect.setAttribute("ry", "2");
+    svg.append(rect);
+
+    const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    path.setAttribute("d", "M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1");
+    svg.append(path);
+
+    return svg;
+  }
+
+  function createCheckCodeIcon() {
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("viewBox", "0 0 24 24");
+    svg.setAttribute("fill", "none");
+    svg.setAttribute("stroke", "currentColor");
+    svg.setAttribute("stroke-width", "2.2");
+    svg.setAttribute("stroke-linecap", "round");
+    svg.setAttribute("stroke-linejoin", "round");
+    svg.setAttribute("aria-hidden", "true");
+    svg.classList.add("markdown-code-check-icon");
+
+    const polyline = document.createElementNS("http://www.w3.org/2000/svg", "polyline");
+    polyline.setAttribute("points", "20 6 9 17 4 12");
+    svg.append(polyline);
+
+    return svg;
+  }
+
   function appendCodeBlock(parent, codeLines, language = "") {
-    const pre = createElement("pre");
+    const pre = createElement("pre", "markdown-code-block");
     const code = createElement("code");
+    const rawCode = codeLines.join("\n");
     const normalizedLanguage = language.trim().split(/[\s,]+/)[0].replace(/[^a-z\d_-]/gi, "");
+
+    const header = createElement("div", "markdown-code-header");
+    const langLabel = createElement("span", "markdown-code-lang");
+    langLabel.textContent = (normalizedLanguage || "code").toUpperCase();
+    header.append(langLabel);
+
+    const copyBtn = createElement("button", "markdown-code-copy-btn");
+    copyBtn.type = "button";
+    copyBtn.setAttribute("aria-label", "Copy code");
+    copyBtn.setAttribute("title", "Copy code");
+
+    const copyText = createElement("span", "markdown-code-copy-text");
+    copyText.textContent = "Copy";
+
+    copyBtn.append(createCopyCodeIcon(), createCheckCodeIcon(), copyText);
+
+    copyBtn.addEventListener("click", async (event) => {
+      event.stopPropagation();
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          await navigator.clipboard.writeText(rawCode);
+        } else {
+          const textarea = document.createElement("textarea");
+          textarea.value = rawCode;
+          textarea.style.position = "fixed";
+          textarea.style.opacity = "0";
+          document.body.append(textarea);
+          textarea.select();
+          document.execCommand("copy");
+          textarea.remove();
+        }
+        copyBtn.classList.add("is-copied");
+        copyText.textContent = "Copied!";
+        copyBtn.setAttribute("title", "Copied to clipboard!");
+
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(new CustomEvent("nook:toast", {
+            detail: { message: "Code copied to clipboard.", tone: "success" }
+          }));
+        }
+
+        setTimeout(() => {
+          copyBtn.classList.remove("is-copied");
+          copyText.textContent = "Copy";
+          copyBtn.setAttribute("title", "Copy code");
+        }, 2000);
+      } catch (err) {
+        // Fallback or ignore
+      }
+    });
+
+    header.append(copyBtn);
+    pre.append(header);
+
     if (normalizedLanguage) {
       code.dataset.language = normalizedLanguage;
       code.classList.add(`language-${normalizedLanguage.toLowerCase()}`);
+      const tokens = tokenizeCode(rawCode, normalizedLanguage);
+      const fragment = document.createDocumentFragment();
+      for (let idx = 0; idx < tokens.length; idx++) {
+        const token = tokens[idx];
+        if (token.type === "plain") {
+          appendText(fragment, token.text);
+        } else {
+          const span = createElement("span", `token token-${token.type}`);
+          appendText(span, token.text);
+          fragment.append(span);
+        }
+      }
+      code.append(fragment);
+    } else {
+      appendText(code, rawCode);
     }
-    appendText(code, codeLines.join("\n"));
+
     pre.append(code);
     parent.append(pre);
   }
