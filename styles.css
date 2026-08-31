@@ -667,6 +667,11 @@ h2 {
   flex: none;
 }
 
+.shortcut-button {
+  position: relative;
+  display: inline-flex;
+}
+
 @media (min-width: 621px) and (max-width: 1366px) {
   #theme-toggle,
   #organize-btn,
@@ -5793,7 +5798,7 @@ html[data-theme="dark"] .startup-error p {
   background: var(--primary-accent-soft);
 }
 
-.note-editor-mode__tooltip {
+.shortcut-tooltip {
   position: absolute;
   z-index: 3;
   top: calc(100% + 0.4rem);
@@ -5819,11 +5824,11 @@ html[data-theme="dark"] .startup-error p {
   transition: opacity var(--interaction-duration) var(--interaction-easing), transform var(--interaction-duration) var(--interaction-easing);
 }
 
-.note-editor-mode__tooltip > span {
+.shortcut-tooltip > span {
   white-space: nowrap;
 }
 
-.note-editor-mode__tooltip kbd {
+.shortcut-tooltip kbd {
   min-width: 1.3rem;
   border: 1px solid #d9dee7;
   border-bottom-color: #cbd2dc;
@@ -5837,8 +5842,10 @@ html[data-theme="dark"] .startup-error p {
   text-align: center;
 }
 
-.note-editor-mode:hover .note-editor-mode__tooltip,
-.note-editor-mode__button:focus-visible + .note-editor-mode__tooltip {
+.shortcut-button:hover .shortcut-tooltip,
+.shortcut-button > button:focus-visible + .shortcut-tooltip,
+.note-editor-mode:hover .shortcut-tooltip,
+.note-editor-mode__button:focus-visible + .shortcut-tooltip {
   opacity: 1;
   transform: translateY(0);
 }
@@ -6060,14 +6067,14 @@ html[data-theme="dark"] .note-editor-pane__label {
   color: #8996aa;
 }
 
-html[data-theme="dark"] .note-editor-mode__tooltip {
+html[data-theme="dark"] .shortcut-tooltip {
   border-color: #3a465c;
   color: #bbc6d7;
   background: #202a3b;
   box-shadow: 0 0.65rem 1.6rem rgb(0 0 0 / 34%);
 }
 
-html[data-theme="dark"] .note-editor-mode__tooltip kbd {
+html[data-theme="dark"] .shortcut-tooltip kbd {
   border-color: #46536a;
   border-bottom-color: #53617a;
   color: #c1ccdc;
@@ -6440,6 +6447,11 @@ html[data-theme="dark"] .note-card.is-detail-source {
     font-weight: 600;
     border-radius: 0.52rem;
     gap: 0.35rem;
+  }
+
+  #new-note-shortcut {
+    flex: 0 0 auto;
+    margin-left: auto;
   }
 
   .space-link {

@@ -231,12 +231,18 @@
               </svg>
               <span class="button-label">Empty Trash</span>
             </button>
-            <button id="new-note-btn" class="button button-primary" type="button" aria-label="New note" aria-keyshortcuts="C" title="New note (C)">
-              <svg class="button-icon-svg" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M10 4.5v11M4.5 10h11" />
-              </svg>
-              <span>New note</span>
-            </button>
+            <div id="new-note-shortcut" class="shortcut-button">
+              <button id="new-note-btn" class="button button-primary" type="button" aria-label="New note" aria-describedby="new-note-shortcut-tooltip" aria-keyshortcuts="C">
+                <svg class="button-icon-svg" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M10 4.5v11M4.5 10h11" />
+                </svg>
+                <span>New note</span>
+              </button>
+              <span id="new-note-shortcut-tooltip" class="shortcut-tooltip" role="tooltip">
+                <span>New note</span>
+                <kbd>C</kbd>
+              </span>
+            </div>
           </div>
         </header>
 
@@ -402,7 +408,7 @@
                     </svg>
                     <span class="note-editor-mode__label">Edit</span>
                   </button>
-                  <span id="note-editor-mode-edit-tooltip" class="note-editor-mode__tooltip" role="tooltip">
+                  <span id="note-editor-mode-edit-tooltip" class="shortcut-tooltip" role="tooltip">
                     <span>Markdown editor</span>
                     <kbd>1</kbd>
                   </span>
@@ -423,7 +429,7 @@
                     </svg>
                     <span class="note-editor-mode__label">Split</span>
                   </button>
-                  <span id="note-editor-mode-split-tooltip" class="note-editor-mode__tooltip" role="tooltip">
+                  <span id="note-editor-mode-split-tooltip" class="shortcut-tooltip" role="tooltip">
                     <span>Split editor and preview</span>
                     <kbd>2</kbd>
                   </span>
@@ -444,7 +450,7 @@
                     </svg>
                     <span class="note-editor-mode__label">Preview</span>
                   </button>
-                  <span id="note-editor-mode-preview-tooltip" class="note-editor-mode__tooltip" role="tooltip">
+                  <span id="note-editor-mode-preview-tooltip" class="shortcut-tooltip" role="tooltip">
                     <span>Preview rendered note</span>
                     <kbd>3</kbd>
                   </span>
