@@ -346,7 +346,13 @@
       <form id="note-form" novalidate>
         <div class="dialog-header detail-commandbar note-editor-commandbar">
           <button id="close-note-dialog-btn" class="button button-secondary detail-back-button" type="button" aria-label="Return to all notes" title="All notes">← <span>All notes</span></button>
-          <p id="note-dialog-title" class="detail-commandbar__state">New note</p>
+          <div class="detail-commandbar__info">
+            <p id="note-dialog-title" class="detail-commandbar__state">New note</p>
+            <span id="note-save-status" class="note-save-status is-saved" role="status" aria-atomic="true">
+              <svg class="note-save-status__icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3.5 8.5 3 3 6-6"/></svg>
+              <span id="note-save-status-label" class="note-save-status__label">Saved</span>
+            </span>
+          </div>
           <div id="note-editor-command-actions" class="note-editor-commandbar__actions" aria-label="Note editing actions"></div>
         </div>
 
@@ -629,12 +635,7 @@
               </div>
             </div>
           </div>
-          <div id="note-editor-stats" class="dialog-footer__stats" aria-live="polite">
-            <span id="note-save-status" class="note-save-status is-saved">
-              <svg class="note-save-status__icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3.5 8.5 3 3 6-6"/></svg>
-              <span id="note-save-status-label" class="note-save-status__label">All changes saved</span>
-            </span>
-          </div>
+
           <div class="dialog-footer__actions">
             <button id="cancel-note-btn" class="button button-secondary" type="button">Close</button>
             <button
@@ -724,7 +725,11 @@
           <p class="eyebrow">Confirm action</p>
           <h2 id="confirmation-dialog-title">Are you sure?</h2>
         </div>
-        <button id="close-confirmation-dialog-btn" class="icon-button" type="button" aria-label="Cancel confirmation">×</button>
+        <button id="close-confirmation-dialog-btn" class="icon-button" type="button" aria-label="Cancel confirmation" title="Cancel">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M18 6 6 18M6 6l12 12" />
+          </svg>
+        </button>
       </div>
 
       <div class="confirmation-dialog__body">
@@ -745,7 +750,11 @@
           <p class="eyebrow">LIBRARY SETTINGS</p>
           <h2 id="organize-dialog-title">Organize Notes</h2>
         </div>
-        <button id="close-organize-dialog-btn" class="icon-button" type="button" aria-label="Close settings">×</button>
+        <button id="close-organize-dialog-btn" class="icon-button" type="button" aria-label="Close settings" title="Close settings">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M18 6 6 18M6 6l12 12" />
+          </svg>
+        </button>
       </div>
 
       <div class="organize-tabs" role="tablist" aria-label="Manage note organization">

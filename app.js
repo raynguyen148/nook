@@ -1766,7 +1766,36 @@
 
   function renderEmptyState(hasAnyNotes) {
     const empty = createElement("section", { className: "empty-state" });
-    empty.append(createElement("span", { className: "empty-state__icon", text: hasAnyNotes ? "⌕" : "✦", attributes: { "aria-hidden": "true" } }));
+    const icon = createElement("span", { className: "empty-state__icon", attributes: { "aria-hidden": "true" } });
+    if (hasAnyNotes) {
+      icon.append(
+        createNoteCardActionIcon([
+          ["circle", { cx: "11", cy: "11", r: "6.5" }],
+          ["path", { d: "m16 16 4.5 4.5" }],
+          ["path", { d: "M8.5 11h5" }],
+        ]),
+      );
+    } else if (ui.trashOnly) {
+      icon.append(
+        createNoteCardActionIcon([
+          ["path", { d: "M4.5 7.5h15" }],
+          ["path", { d: "M9.5 4.5h5" }],
+          ["path", { d: "m6.5 7.5.8 12h9.4l.8-12" }],
+          ["path", { d: "M10 11v5" }],
+          ["path", { d: "M14 11v5" }],
+        ]),
+      );
+    } else {
+      icon.append(
+        createNoteCardActionIcon([
+          ["path", { d: "M14.5 3.5H6a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9.5L14.5 3.5z" }],
+          ["path", { d: "M14 3.5v6h6" }],
+          ["path", { d: "M12 12.5v4.5" }],
+          ["path", { d: "M9.75 14.75h4.5" }],
+        ]),
+      );
+    }
+    empty.append(icon);
     empty.append(
       createElement("h3", {
         text: hasAnyNotes
@@ -2229,9 +2258,16 @@
     if (!elements.noteSaveStatus || !elements.noteSaveStatusLabel) return;
     elements.noteSaveStatus.classList.remove("is-saved", "is-saving", "is-dirty", "is-error");
     elements.noteSaveStatus.classList.add(`is-${state}`);
+    const statusTitles = {
+      saved: "All changes are saved locally",
+      saving: "Saving changes locally",
+      dirty: "Changes will save automatically",
+      error: "Save failed. Keep this note open and try saving again.",
+    };
+    elements.noteSaveStatus.title = statusTitles[state] || "";
     const icon = elements.noteSaveStatus.querySelector(".note-save-status__icon");
     if (state === "saved") {
-      elements.noteSaveStatusLabel.textContent = customLabel || "All changes saved";
+      elements.noteSaveStatusLabel.textContent = customLabel || "Saved";
       if (icon) {
         icon.setAttribute("viewBox", "0 0 16 16");
         const path = icon.querySelector("path") || document.createElementNS("http://www.w3.org/2000/svg", "path");
