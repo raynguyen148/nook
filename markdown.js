@@ -5,6 +5,33 @@
   const SAFE_RELATIVE_LINK = /^(?:[./#?]|$)/;
   const ESCAPABLE_PUNCTUATION = /[\\`*_{}[\]()#+.\-!~|>]/;
   const ALERT_TYPES = new Set(["NOTE", "TIP", "IMPORTANT", "WARNING", "CAUTION"]);
+  const ALERT_ICON_PATHS = Object.freeze({
+    note: [
+      "M12 8h.01",
+      "M12 12v4",
+      "M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z",
+    ],
+    tip: [
+      "M9 18h6",
+      "M10 22h4",
+      "M12 2a7 7 0 0 0-7 7c0 2.5 1.5 4.5 3 6h8c1.5-1.5 3-3.5 3-6a7 7 0 0 0-7-7z",
+    ],
+    important: [
+      "M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z",
+      "M12 7v4",
+      "M12 14h.01",
+    ],
+    warning: [
+      "M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z",
+      "M12 9v4",
+      "M12 17h.01",
+    ],
+    caution: [
+      "M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z",
+      "M12 8v4",
+      "M12 16h.01",
+    ],
+  });
   const HTML_ENTITIES = Object.freeze({
     amp: "&",
     apos: "'",
@@ -24,6 +51,25 @@
     const element = document.createElement(tagName);
     if (className) element.className = className;
     return element;
+  }
+
+  function createAlertIcon(kind) {
+    const paths = ALERT_ICON_PATHS[kind] || ALERT_ICON_PATHS.note;
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("viewBox", "0 0 24 24");
+    svg.setAttribute("fill", "none");
+    svg.setAttribute("stroke", "currentColor");
+    svg.setAttribute("stroke-width", "2");
+    svg.setAttribute("stroke-linecap", "round");
+    svg.setAttribute("stroke-linejoin", "round");
+    svg.setAttribute("aria-hidden", "true");
+    svg.classList.add("markdown-alert__icon");
+    paths.forEach((d) => {
+      const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      path.setAttribute("d", d);
+      svg.append(path);
+    });
+    return svg;
   }
 
   function appendText(parent, text) {
@@ -703,11 +749,20 @@
       if (/^\s{0,3}>/.test(line)) {
         const quoteLines = [];
         while (index < lines.length) {
-          if (/^\s{0,3}>/.test(lines[index])) {
-            quoteLines.push(lines[index].replace(/^\s{0,3}>[ \t]?/, ""));
+          const currentLine = lines[index];
+          if (/^\s{0,3}>/.test(currentLine)) {
+            quoteLines.push(currentLine.replace(/^\s{0,3}>[ \t]?/, ""));
             index += 1;
-          } else if (!lines[index].trim()) {
-            quoteLines.push("");
+          } else if (
+            currentLine.trim() &&
+            quoteLines.length > 0 &&
+            quoteLines[quoteLines.length - 1].trim() &&
+            !/^\s{0,3}#{1,6}\s/.test(currentLine) &&
+            !/^\s{0,3}(?:`{3,}|~{3,})/.test(currentLine) &&
+            !isThematicBreak(currentLine) &&
+            !getListMarker(currentLine)
+          ) {
+            quoteLines.push(currentLine.trim());
             index += 1;
           } else {
             break;
@@ -877,7 +932,10 @@
       const alert = createElement("aside", `markdown-alert markdown-alert--${block.kind}`);
       alert.setAttribute("role", block.kind === "warning" || block.kind === "caution" ? "alert" : "note");
       const title = createElement("p", "markdown-alert__title");
-      title.textContent = block.kind[0].toLocaleUpperCase() + block.kind.slice(1);
+      title.append(createAlertIcon(block.kind));
+      const label = createElement("span", "markdown-alert__title-text");
+      label.textContent = block.kind[0].toLocaleUpperCase() + block.kind.slice(1);
+      title.append(label);
       alert.append(title);
       renderBlocks(alert, block.children, context);
       parent.append(alert);
