@@ -189,6 +189,7 @@
     tagInputExpanded: false,
     noteSaveInFlight: false,
     noteAutoSaveInFlight: false,
+    noteCloseAfterSaveRequested: false,
     noteAutoSaveTimer: 0,
     noteEditorMode: "edit",
     noteScrollSyncing: false,
@@ -210,8 +211,11 @@
     toastAction: null,
     searchRenderTimer: 0,
     topbarActionsPinned: false,
+    toolbarPinned: false,
     topbarActionsPinStart: 0,
     topbarActionsPinEnd: 0,
+    toolbarPinStart: 0,
+    toolbarPinEnd: 0,
     topbarActionsPinFrame: 0,
     topbarActionsUnpinTimer: 0,
   };
@@ -278,9 +282,13 @@
 
   function measureTopbarActionsPinBounds() {
     if (ui.topbarActionsPinned) return;
+    const actionBounds = elements.topbarActions.getBoundingClientRect();
     const toolbarBounds = elements.toolbar.getBoundingClientRect();
-    ui.topbarActionsPinStart = window.scrollY + toolbarBounds.top;
-    ui.topbarActionsPinEnd = window.scrollY + toolbarBounds.bottom;
+    const isMobileLayout = window.matchMedia("(max-width: 620px)").matches;
+    ui.topbarActionsPinStart = window.scrollY + actionBounds.top;
+    ui.topbarActionsPinEnd = window.scrollY + (isMobileLayout ? toolbarBounds.bottom : actionBounds.bottom);
+    ui.toolbarPinStart = window.scrollY + toolbarBounds.top;
+    ui.toolbarPinEnd = window.scrollY + toolbarBounds.bottom;
   }
 
   function finishTopbarActionsUnpin() {
@@ -288,12 +296,26 @@
     ui.topbarActionsPinned = false;
     elements.topbar.classList.remove("is-actions-pinned");
     elements.topbarActions.classList.remove("is-pinned", "is-unpinning");
-    elements.notesPanel.classList.remove("is-toolbar-pinned");
-    elements.toolbar.classList.remove("is-pinned", "is-unpinning");
     elements.appShell.style.removeProperty("--pinned-actions-height");
     elements.appShell.style.removeProperty("--pinned-actions-width");
     elements.appShell.style.removeProperty("--pinned-toolbar-left");
     elements.appShell.style.removeProperty("--pinned-controls-right");
+  }
+
+  function setToolbarPinned(pinned) {
+    if (pinned === ui.toolbarPinned) return;
+    ui.toolbarPinned = pinned;
+    elements.notesPanel.classList.toggle("is-toolbar-pinned", pinned);
+    elements.toolbar.classList.toggle("is-pinned", pinned);
+    elements.toolbar.classList.remove("is-unpinning");
+
+    if (pinned) {
+      const toolbarBounds = elements.toolbar.getBoundingClientRect();
+      elements.notesPanel.style.setProperty("--pinned-toolbar-height", `${toolbarBounds.height}px`);
+      syncPinnedTopbarControlMetrics();
+      return;
+    }
+
     elements.notesPanel.style.removeProperty("--pinned-toolbar-height");
   }
 
@@ -310,17 +332,16 @@
 
     if (pinned) {
       const actionBounds = elements.topbarActions.getBoundingClientRect();
-      const toolbarBounds = elements.toolbar.getBoundingClientRect();
       elements.appShell.style.setProperty("--pinned-actions-height", `${actionBounds.height}px`);
-      elements.notesPanel.style.setProperty("--pinned-toolbar-height", `${toolbarBounds.height}px`);
       ui.topbarActionsPinned = true;
       elements.topbar.classList.add("is-actions-pinned");
       elements.topbarActions.classList.add("is-pinned");
-      elements.notesPanel.classList.add("is-toolbar-pinned");
-      elements.toolbar.classList.add("is-pinned");
       syncPinnedTopbarControlMetrics();
+      if (window.matchMedia("(max-width: 620px)").matches) setToolbarPinned(true);
       return;
     }
+
+    setToolbarPinned(false);
 
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       finishTopbarActionsUnpin();
@@ -347,10 +368,12 @@
 
     if (!ui.topbarActionsPinned) {
       measureTopbarActionsPinBounds();
-      if (scrollTop > ui.topbarActionsPinEnd) setTopbarActionsPinned(true);
-      return;
+      if (scrollTop <= ui.topbarActionsPinEnd) return;
+      setTopbarActionsPinned(true);
     }
 
+    if (!ui.toolbarPinned && scrollTop > ui.toolbarPinEnd) setToolbarPinned(true);
+    if (ui.toolbarPinned && scrollTop <= ui.toolbarPinStart) setToolbarPinned(false);
     if (scrollTop <= ui.topbarActionsPinStart) setTopbarActionsPinned(false);
   }
 
@@ -2576,6 +2599,7 @@
     ui.pendingTagCreation = null;
     ui.noteSaveInFlight = false;
     ui.noteAutoSaveInFlight = false;
+    ui.noteCloseAfterSaveRequested = false;
     ui.editingNoteId = note?.id || "";
     ui.selectedNoteTagIds = new Set(note?.tagIds || []);
     elements.noteForm.reset();
@@ -2649,6 +2673,7 @@
     ui.pendingTagCreation = null;
     ui.noteSaveInFlight = false;
     ui.noteAutoSaveInFlight = false;
+    ui.noteCloseAfterSaveRequested = false;
     setTagInputExpanded(false);
     elements.noteDialog.classList.add("is-hidden");
     elements.noteContentEditor.style.removeProperty("height");
@@ -2664,7 +2689,10 @@
   }
 
   async function requestNoteEditorClose({ afterClose = null } = {}) {
-    if (ui.noteSaveInFlight) return;
+    if (ui.noteSaveInFlight) {
+      ui.noteCloseAfterSaveRequested = true;
+      return;
+    }
     if (!hasUnsavedNoteChanges()) {
       closeNoteEditor();
       afterClose?.();
@@ -2756,7 +2784,10 @@
   async function saveNote(event, { closeAfterSave = true, isAutoSave = false } = {}) {
     event?.preventDefault?.();
     clearNoteAutoSave();
-    if (ui.noteSaveInFlight) return;
+    if (ui.noteSaveInFlight) {
+      if (closeAfterSave) ui.noteCloseAfterSaveRequested = true;
+      return;
+    }
     if (isAutoSave && !elements.noteTitle.value.trim()) return;
     const session = ui.noteEditorSession;
     const pendingTagCreation = ui.pendingTagCreation;
@@ -2798,6 +2829,7 @@
       }
     } catch (error) {
       if (isCurrentNoteEditorSession(session)) {
+        ui.noteCloseAfterSaveRequested = false;
         setNoteSaveStatus("error");
         showError(error, "We could not save this note.");
       }
@@ -2807,6 +2839,15 @@
         ui.noteAutoSaveInFlight = false;
         syncNoteEditorControls();
         if (isAutoSave && didSave && hasUnsavedNoteChanges()) scheduleNoteAutoSave();
+        if (ui.noteCloseAfterSaveRequested) {
+          ui.noteCloseAfterSaveRequested = false;
+          if (didSave && hasUnsavedNoteChanges()) {
+            void saveNote({ preventDefault() {} }, { closeAfterSave: true });
+          } else if (didSave) {
+            closeNoteEditor();
+            showToast("Note saved.");
+          }
+        }
       }
     }
   }
@@ -3678,7 +3719,7 @@
 
       if (matchesSaveNoteShortcut && isNoteEditorOpen()) {
         event.preventDefault();
-        if (!event.repeat && !event.isComposing && !ui.noteSaveInFlight) elements.noteForm.requestSubmit();
+        if (!event.repeat && !event.isComposing) elements.noteForm.requestSubmit();
         return;
       }
 
