@@ -918,5 +918,96 @@
     renderFootnotes(container, context);
   }
 
-  globalThis.NookMarkdown = Object.freeze({ renderInto });
+  function toPlainText(source) {
+    if (!source) return "";
+    let text = String(source);
+
+    // HTML comments
+    text = text.replace(/<!--[\s\S]*?-->/g, "");
+
+    // Fenced code blocks ```...``` and ~~~...~~~
+    text = text.replace(/```[\s\S]*?```/g, (match) => {
+      return match.replace(/^```[^\n]*\n?/, "").replace(/\n?```$/, "");
+    });
+    text = text.replace(/~~~[\s\S]*?~~~/g, (match) => {
+      return match.replace(/^~~~[^\n]*\n?/, "").replace(/\n?~~~$/, "");
+    });
+
+    // GitHub-style alert headers
+    text = text.replace(/^>\s*\[!(?:NOTE|TIP|IMPORTANT|WARNING|CAUTION)\][^\n]*/gim, "");
+
+    // Blockquotes prefix
+    text = text.replace(/^>+\s?/gm, "");
+
+    // ATX headings (# ... ######)
+    text = text.replace(/^#{1,6}\s+(.+)$/gm, "$1");
+
+    // Setext headings
+    text = text.replace(/^([^\n]+)\n[=-]{2,}\s*$/gm, "$1");
+
+    // Horizontal rules
+    text = text.replace(/^(?:[-*_]\s*){3,}$/gm, "");
+
+    // Table delimiter rows and pipe separators
+    text = text.replace(/^\|?(?:\s*:?-+:?\s*\|)+\s*$/gm, "");
+    text = text.replace(/^\||\|$/gm, "").replace(/\|/g, " ");
+
+    // Task list checkboxes
+    text = text.replace(/^(\s*[-*+]\s+)\[[ xX]\]\s+/gm, "$1");
+
+    // List item markers
+    text = text.replace(/^\s*(?:[-*+]|\d+\.)\s+/gm, "");
+
+    // Images: ![alt](url) -> alt
+    text = text.replace(/!\[([^\]]*)\](?:\([^)]*\)|\[[^\]]*\])/g, "$1");
+
+    // Links: [text](url) -> text
+    text = text.replace(/\[([^\]]+)\](?:\([^)]*\)|\[[^\]]*\])/g, "$1");
+
+    // Autolinks
+    text = text.replace(/<([a-zA-Z][a-zA-Z0-9+.-]*:[^>]+|[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+)>/g, "$1");
+
+    // Footnotes
+    text = text.replace(/^\[\^[^\]]+\]:\s*/gm, "");
+    text = text.replace(/\[\^[^\]]+\]/g, "");
+
+    // Bold & italic with asterisks
+    text = text.replace(/\*\*\*(.*?)\*\*\*/g, "$1");
+    text = text.replace(/\*\*(.*?)\*\*/g, "$1");
+    text = text.replace(/\*(.*?)\*/g, "$1");
+
+    // Strikethrough
+    text = text.replace(/~~(.*?)~~/g, "$1");
+
+    // Bold & italic with underscores at word boundaries
+    text = text.replace(/(?<=^|[\s\p{P}])___(.*?)___(?=[\s\p{P}]|$)/gu, "$1");
+    text = text.replace(/(?<=^|[\s\p{P}])__(.*?)__(?=[\s\p{P}]|$)/gu, "$1");
+    text = text.replace(/(?<=^|[\s\p{P}])_(.*?)_(?=[\s\p{P}]|$)/gu, "$1");
+
+    // Inline code
+    text = text.replace(/`+([^`]+)`+/g, "$1");
+
+    // Math
+    text = text.replace(/\$\$([\s\S]*?)\$\$/g, "$1");
+    text = text.replace(/\$([^$\n]+)\$/g, "$1");
+
+    // Details / Summary
+    text = text.replace(/<\/?(?:details|summary)[^>]*>/gi, "");
+
+    // Remaining HTML tags
+    text = text.replace(/<[^>]+>/g, "");
+
+    // HTML entities
+    text = text
+      .replace(/&amp;/gi, "&")
+      .replace(/&lt;/gi, "<")
+      .replace(/&gt;/gi, ">")
+      .replace(/&quot;/gi, '"')
+      .replace(/&#39;|&apos;/gi, "'")
+      .replace(/&nbsp;/gi, " ");
+
+    return text.replace(/\s+/g, " ").trim();
+  }
+
+  globalThis.NookMarkdown = Object.freeze({ renderInto, toPlainText });
 })();

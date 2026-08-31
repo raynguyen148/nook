@@ -759,7 +759,10 @@
   }
 
   function previewForSearch(noteContent) {
-    const preview = noteContent.replace(/\s+/g, " ").trim();
+    const plainText = globalThis.NookMarkdown?.toPlainText
+      ? globalThis.NookMarkdown.toPlainText(noteContent)
+      : String(noteContent || "").replace(/\s+/g, " ").trim();
+    const preview = plainText.replace(/\s+/g, " ").trim();
     const normalizedQuery = normalizedSearchQuery();
     if (!preview || !normalizedQuery) return preview || "No content yet.";
 
