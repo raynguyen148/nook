@@ -807,19 +807,44 @@
 
   function formatShortDate(value) {
     const date = new Date(value);
-    if (Number.isNaN(date.getTime())) return "Unknown date";
+    if (Number.isNaN(date.getTime())) return "unknown date";
     const today = new Date();
     const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime();
     const dateStart = new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
     const dayDifference = Math.round((todayStart - dateStart) / 86400000);
-    if (dayDifference === 0) return "Today";
-    if (dayDifference === 1) return "Yesterday";
+    if (dayDifference === 0) return "today";
+    if (dayDifference === 1) return "yesterday";
     return shortDateFormatter.format(date);
+  }
+
+  function getNoteCardDateInfo(note) {
+    const isEdited = Boolean(
+      note?.updatedAt &&
+      note?.createdAt &&
+      new Date(note.updatedAt).getTime() > new Date(note.createdAt).getTime()
+    );
+    const prefersUpdated = typeof ui.sort === "string" && ui.sort.startsWith("updated");
+
+    if (prefersUpdated && isEdited) {
+      return {
+        text: `Updated ${formatShortDate(note.updatedAt)}`,
+        datetime: note.updatedAt,
+        title: `Updated ${formatFullDate(note.updatedAt)} · Created ${formatFullDate(note.createdAt)}`,
+      };
+    }
+
+    return {
+      text: `Created ${formatShortDate(note.createdAt)}`,
+      datetime: note.createdAt,
+      title: isEdited
+        ? `Created ${formatFullDate(note.createdAt)} · Updated ${formatFullDate(note.updatedAt)}`
+        : `Created ${formatFullDate(note.createdAt)}`,
+    };
   }
 
   function formatFullDate(value) {
     const date = new Date(value);
-    return Number.isNaN(date.getTime()) ? "Unknown date" : fullDateFormatter.format(date);
+    return Number.isNaN(date.getTime()) ? "unknown date" : fullDateFormatter.format(date);
   }
 
   function activeModalDialog() {
@@ -1620,12 +1645,13 @@
     const content = createElement("div", { className: "note-card__content" });
     const meta = createElement("div", { className: "note-card__meta" });
     meta.append(makeTypeBadge(type, { isFilter: !ui.trashOnly }));
-    const created = createElement("time", {
+    const dateInfo = getNoteCardDateInfo(note);
+    const dateElement = createElement("time", {
       className: "note-card__date",
-      text: `Created ${formatShortDate(note.createdAt)}`,
-      attributes: { datetime: note.createdAt, title: formatFullDate(note.createdAt) },
+      text: dateInfo.text,
+      attributes: { datetime: dateInfo.datetime, title: dateInfo.title },
     });
-    meta.append(created);
+    meta.append(dateElement);
 
     const titleButton = createElement("button", {
       className: "note-card__title",
@@ -2256,9 +2282,10 @@
 
   function setNoteSaveStatus(state, customLabel = "") {
     if (!elements.noteSaveStatus || !elements.noteSaveStatusLabel) return;
-    elements.noteSaveStatus.classList.remove("is-saved", "is-saving", "is-dirty", "is-error");
+    elements.noteSaveStatus.classList.remove("is-new", "is-saved", "is-saving", "is-dirty", "is-error");
     elements.noteSaveStatus.classList.add(`is-${state}`);
     const statusTitles = {
+      new: "This note has not been saved yet",
       saved: "All changes are saved locally",
       saving: "Saving changes locally",
       dirty: "Changes will save automatically",
@@ -2266,7 +2293,16 @@
     };
     elements.noteSaveStatus.title = statusTitles[state] || "";
     const icon = elements.noteSaveStatus.querySelector(".note-save-status__icon");
-    if (state === "saved") {
+    if (state === "new") {
+      elements.noteSaveStatusLabel.textContent = customLabel || "Not saved yet";
+      if (icon) {
+        icon.setAttribute("viewBox", "0 0 16 16");
+        const path = icon.querySelector("path") || document.createElementNS("http://www.w3.org/2000/svg", "path");
+        path.setAttribute("d", "M8 5a3 3 0 1 0 0 6 3 3 0 0 0 0-6");
+        path.setAttribute("fill", "currentColor");
+        if (!path.parentElement) icon.append(path);
+      }
+    } else if (state === "saved") {
       elements.noteSaveStatusLabel.textContent = customLabel || "Saved";
       if (icon) {
         icon.setAttribute("viewBox", "0 0 16 16");
@@ -2557,7 +2593,7 @@
     ui.noteEditorSnapshot = getNoteEditorDraft();
     syncToastHost();
     syncNoteEditorControls();
-    setNoteSaveStatus("saved");
+    setNoteSaveStatus(note ? "saved" : "new");
     scheduleNoteEditorHeight({ allowShrink: true });
     if (!preserveDetail && focusTitle && initialMode === "edit") {
       window.requestAnimationFrame(() => elements.noteTitle.focus());

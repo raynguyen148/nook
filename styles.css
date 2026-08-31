@@ -1147,8 +1147,9 @@ select::-ms-expand {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 1.12rem;
-  height: 1.12rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  margin: -0.19rem;
   padding: 0;
   border: 0;
   border-radius: 50%;
@@ -1885,8 +1886,9 @@ select::-ms-expand {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 1.12rem;
-  height: 1.12rem;
+  width: 1.15rem;
+  height: 1.15rem;
+  margin: 0;
   padding: 0;
   border: 0;
   border-radius: 50%;
@@ -1894,18 +1896,26 @@ select::-ms-expand {
   background: transparent;
   cursor: pointer;
   flex: none;
-  transition: background-color var(--interaction-duration) var(--interaction-easing);
+  transition: background-color var(--interaction-duration) var(--interaction-easing), color var(--interaction-duration) var(--interaction-easing);
 }
 
 .selected-tag button svg {
-  width: 0.55rem;
-  height: 0.55rem;
+  width: 0.65rem;
+  height: 0.65rem;
   display: block;
   pointer-events: none;
 }
 
-.selected-tag button:hover {
-  background: #e1e5eb;
+.selected-tag button:hover,
+.selected-tag button:focus-visible {
+  outline: none;
+  color: #dc2626;
+  background: #fee2e2;
+}
+
+.selected-tag:has(button:focus-visible) {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
 }
 
 .tag-picker__input-row {
@@ -2619,6 +2629,10 @@ html[data-theme="dark"] .note-content-preview .markdown-task-item > input {
 
 .note-save-status.is-saved {
   color: #059669;
+}
+
+.note-save-status.is-new {
+  color: #64748b;
 }
 
 .note-save-status.is-saving {
@@ -4661,8 +4675,16 @@ html[data-theme="dark"] .selected-tag {
   background: #293448;
 }
 
-html[data-theme="dark"] .selected-tag button:hover {
-  background: #3a475d;
+html[data-theme="dark"] .selected-tag button:hover,
+html[data-theme="dark"] .selected-tag button:focus-visible {
+  outline: none;
+  color: #fca5a5;
+  background: rgba(239, 68, 68, 0.25);
+}
+
+html[data-theme="dark"] .selected-tag:has(button:focus-visible) {
+  border-color: #818cf8;
+  box-shadow: 0 0 0 2px rgba(129, 140, 248, 0.25);
 }
 
 html[data-theme="dark"] .tag-add-button {
@@ -6999,6 +7021,13 @@ html[data-theme="dark"] .management-empty {
   border-color: transparent;
 }
 
+.detail-commandbar__info .note-save-status.is-new {
+  color: #64748b;
+  padding-inline: 0;
+  background: transparent;
+  border-color: transparent;
+}
+
 .detail-commandbar__info .note-save-status.is-saving {
   color: #4338ca;
   background: #eef2ff;
@@ -7019,6 +7048,12 @@ html[data-theme="dark"] .management-empty {
 
 html[data-theme="dark"] .detail-commandbar__info .note-save-status.is-saved {
   color: #6ee7b7;
+  background: transparent;
+  border-color: transparent;
+}
+
+html[data-theme="dark"] .detail-commandbar__info .note-save-status.is-new {
+  color: #a4afc0;
   background: transparent;
   border-color: transparent;
 }
@@ -7253,8 +7288,8 @@ html[data-theme="dark"] .detail-commandbar__info .note-save-status.is-error {
 }
 
 .note-dialog .selected-tag button {
-  width: 1.12rem;
-  height: 1.12rem;
+  width: 1.15rem;
+  height: 1.15rem;
 }
 
 .note-dialog .tag-picker__input-row {
