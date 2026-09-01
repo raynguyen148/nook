@@ -206,7 +206,7 @@
     if (value.length > MAX_CONTENT_LENGTH) {
       throw new Error(`Note content must be ${MAX_CONTENT_LENGTH} characters or fewer.`);
     }
-    return value.replace(/\r\n/g, "\n").trim();
+    return value.replace(/\r\n/g, "\n");
   }
 
   function requireId(value, label) {
@@ -821,7 +821,7 @@
       const existing = snapshot.notes.find(({ id: itemId }) => itemId === noteId);
       if (!existing) throw new Error("This note no longer exists.");
       if (existing.isPinned === isPinned) return existing;
-      const note = { ...existing, isPinned, updatedAt: nowIso() };
+      const note = { ...existing, isPinned };
       stores.notes.put(note);
       return note;
     }, { readStores: [STORE.notes] });

@@ -1560,7 +1560,7 @@ select::-ms-expand {
   border: 1px solid transparent;
   border-radius: 0.5rem;
   padding: 0;
-  color: #9aa3b1;
+  color: #64748b;
   background: transparent;
   opacity: 0;
   pointer-events: none;
@@ -6576,7 +6576,7 @@ html[data-theme="dark"] ::selection {
 
 @media (hover: hover) and (min-width: 621px) {
   .note-card__actions {
-    opacity: 0.5;
+    opacity: 0.8;
     transition: opacity var(--interaction-duration) var(--interaction-easing);
   }
 

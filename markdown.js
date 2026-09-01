@@ -2,7 +2,6 @@
   "use strict";
 
   const SAFE_LINK_SCHEME = /^(?:https?:|mailto:|tel:)/i;
-  const SAFE_IMAGE_SCHEME = /^(?:https?:|data:image\/(?:png|jpeg|jpg|gif|webp|svg\+xml|avif|bmp|ico);base64,|blob:)/i;
   const SAFE_RELATIVE_LINK = /^(?:[./#?]|$)/;
   const ESCAPABLE_PUNCTUATION = /[\\`*_{}[\]()#+.\-!~|>]/;
   const ALERT_TYPES = new Set(["NOTE", "TIP", "IMPORTANT", "WARNING", "CAUTION"]);
@@ -133,13 +132,6 @@
     return SAFE_LINK_SCHEME.test(url) || SAFE_RELATIVE_LINK.test(url);
   }
 
-  function isSafeImage(value) {
-    const url = unescapeMarkdown(value).trim();
-    if (!url || /[\u0000-\u0020]/.test(url)) return false;
-    if (/^www\./i.test(url)) return true;
-    return SAFE_IMAGE_SCHEME.test(url) || SAFE_RELATIVE_LINK.test(url);
-  }
-
   function findMatchingPair(source, start, opening, closing) {
     let depth = 0;
     let index = start;
@@ -205,23 +197,13 @@
     return link;
   }
 
-  function makeImage(label, destination) {
-    if (!destination || !isSafeImage(destination.url)) {
-      const imageAlt = createElement("span", "markdown-image-alt");
-      imageAlt.setAttribute("role", "img");
-      imageAlt.setAttribute("aria-label", `Image: ${label || "untitled"}`);
-      appendText(imageAlt, label || "Image");
-      return imageAlt;
-    }
-    const img = createElement("img", "markdown-image");
-    const rawUrl = unescapeMarkdown(destination.url).trim();
-    img.src = rawUrl.startsWith("www.") ? `https://${rawUrl}` : rawUrl;
-    img.alt = label || destination.title || "";
-    if (destination.title) img.title = destination.title;
-    img.loading = "lazy";
-    img.decoding = "async";
-    img.referrerPolicy = "no-referrer";
-    return img;
+  function makeImage(label) {
+    // Keep image syntax offline: expose its accessible label without creating a fetchable element.
+    const imageAlt = createElement("span", "markdown-image-alt");
+    imageAlt.setAttribute("role", "img");
+    imageAlt.setAttribute("aria-label", `Image: ${label || "untitled"}`);
+    appendText(imageAlt, label || "Image");
+    return imageAlt;
   }
 
   function parseInlineLinkAt(source, index, context) {
@@ -321,7 +303,7 @@
         const image = parseInlineLinkAt(source, index, context);
         if (image) {
           flushText(index);
-          const element = makeImage(image.label, image.destination);
+          const element = makeImage(image.label);
           if (element) parent.append(element);
           else appendDecodedText(parent, source.slice(index, image.end));
           index = image.end;
