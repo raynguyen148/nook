@@ -80,6 +80,16 @@ html[data-theme="light"] .note-card {
   border-color: #e2e8f0;
 }
 
+html[data-theme="light"] .note-card--pinned {
+  border-color: var(--pinned-card-border);
+  border-top-width: 2px;
+}
+
+html[data-theme="light"] .note-card--pinned:hover,
+html[data-theme="light"] .note-card--pinned:focus-within {
+  border-color: var(--pinned-card-border);
+}
+
 html[data-theme="light"] .note-card__title {
   font-family: var(--font-display);
   color: #0f172a;

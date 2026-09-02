@@ -6,6 +6,7 @@
   const NOTE_AUTO_SAVE_DELAY = 1500;
   const SEARCH_RENDER_DELAY = 150;
   const THEME_STORAGE_KEY = "nook:theme";
+  const THEMES = ["light", "warm", "dark"];
   const SIDEBAR_COLLAPSED_STORAGE_KEY = "nook:sidebar-collapsed";
   const VIEW_MODE_STORAGE_KEY = "nook:notes-view-mode";
   const FILTER_STORAGE_KEY = "nook:active-filters";
@@ -221,14 +222,12 @@
     topbarActionsUnpinTimer: 0,
   };
 
-  const THEMES = ["light", "warm", "dark"];
-
   function getStoredTheme() {
     try {
       const theme = window.localStorage.getItem(THEME_STORAGE_KEY);
-      return THEMES.includes(theme) ? theme : "warm";
+      return THEMES.includes(theme) ? theme : "light";
     } catch {
-      return "warm";
+      return "light";
     }
   }
 
@@ -255,7 +254,7 @@
     };
 
     const nextTheme = getNextTheme(theme);
-    const label = themeLabels[theme] || "Theme";
+    const label = themeLabels[theme] || "Classic";
     elements.themeToggle.setAttribute(
       "aria-label",
       `Current theme: ${label}. Switch to ${nextThemeNames[theme]} theme`,
@@ -265,7 +264,7 @@
 
     const themeColorMeta = document.querySelector('meta[name="theme-color"]');
     if (themeColorMeta) {
-      themeColorMeta.content = theme === "dark" ? "#0b0f19" : (theme === "light" ? "#9e6b02" : "#9a5619");
+      themeColorMeta.content = theme === "dark" ? "#0b0f19" : (theme === "warm" ? "#a35616" : "#9e6b02");
     }
   }
 
@@ -3563,6 +3562,12 @@
       const message = event?.detail?.message;
       const tone = event?.detail?.tone || "success";
       if (message) showToast(message, tone);
+    });
+    window.addEventListener("storage", (event) => {
+      if (event.key === THEME_STORAGE_KEY && THEMES.includes(event.newValue) && event.newValue !== ui.theme) {
+        ui.theme = event.newValue;
+        syncThemeUI();
+      }
     });
     elements.themeToggle.addEventListener("click", () => setTheme(getNextTheme(ui.theme)));
     elements.organize.addEventListener("click", () => openOrganize());
