@@ -1,0 +1,105 @@
+/* ==========================================================================
+   Nook - Theme: Classic Light (Original)
+   Clean minimal Slate 50 background with Inter typography & golden accent
+   ========================================================================== */
+
+:root,
+html[data-theme="light"] {
+  --font-sans: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  --font-display: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  --primary-accent: #9e6b02;
+  --primary-accent-hover: #805600;
+  --primary-accent-text: #805600;
+  --primary-accent-soft: #fdf5db;
+  --primary-accent-soft-hover: #fcebc2;
+  --primary-accent-border: #f2d184;
+  --primary-accent-focus: rgb(158 107 2 / 24%);
+  --primary-accent-shadow: rgb(158 107 2 / 20%);
+  --pinned-card-border: #c48805;
+  --pinned-card-shadow: rgb(196 136 5 / 15%);
+  --pinned-marker-background: #fdf5db;
+  --primary-button-text: #ffffff;
+  --focus-color: var(--primary-accent);
+  --focus-radius: 0.7rem;
+  --interaction-duration: 160ms;
+  --interaction-easing: cubic-bezier(0.2, 0, 0, 1);
+}
+
+html[data-theme="light"] {
+  background: #f8fafc;
+  color: #0f172a;
+}
+
+html[data-theme="light"] body {
+  background: #f8fafc;
+  color: #0f172a;
+  font-family: var(--font-sans);
+}
+
+html[data-theme="light"] .sidebar {
+  border-color: #e2e8f0;
+  background: #ffffff;
+}
+
+html[data-theme="light"] .sidebar-toggle-btn {
+  border-color: #e2e8f0;
+  color: #94a3b8;
+  background: #f8fafc;
+}
+
+html[data-theme="light"] .sidebar-toggle-btn:hover {
+  color: #0f172a;
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+html[data-theme="light"] .brand strong {
+  font-family: var(--font-display);
+  color: #0f172a;
+}
+
+html[data-theme="light"] .brand small,
+html[data-theme="light"] .filter-heading,
+html[data-theme="light"] .filter-section-title h2 {
+  color: #64748b;
+}
+
+html[data-theme="light"] .storage-status {
+  border-color: #e2e8f0;
+  color: #334155;
+  background: #f8fafc;
+}
+
+html[data-theme="light"] .topbar h1 {
+  font-family: var(--font-display);
+  color: #0f172a;
+}
+
+html[data-theme="light"] .note-card {
+  background: #ffffff;
+  border-color: #e2e8f0;
+}
+
+html[data-theme="light"] .note-card__title {
+  font-family: var(--font-display);
+  color: #0f172a;
+}
+
+html[data-theme="light"] .note-card:hover .note-card__title {
+  color: var(--primary-accent);
+}
+
+html[data-theme="light"] .quick-view-document-header h1 {
+  font-family: var(--font-display);
+  color: #0f172a;
+}
+
+/* Classic Light Theme Toggle Icon */
+html[data-theme="light"] .theme-toggle__icon--sun {
+  display: inline-flex !important;
+}
+
+html[data-theme="light"] .theme-toggle__icon--warm,
+html[data-theme="light"] .theme-toggle__icon--moon {
+  display: none !important;
+}

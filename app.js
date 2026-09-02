@@ -221,25 +221,56 @@
     topbarActionsUnpinTimer: 0,
   };
 
+  const THEMES = ["light", "warm", "dark"];
+
   function getStoredTheme() {
     try {
-      return window.localStorage.getItem(THEME_STORAGE_KEY) === "dark" ? "dark" : "light";
+      const theme = window.localStorage.getItem(THEME_STORAGE_KEY);
+      return THEMES.includes(theme) ? theme : "warm";
     } catch {
-      return "light";
+      return "warm";
     }
   }
 
+  function getNextTheme(currentTheme) {
+    const currentIndex = THEMES.indexOf(currentTheme);
+    const nextIndex = (currentIndex + 1) % THEMES.length;
+    return THEMES[nextIndex];
+  }
+
   function syncThemeUI() {
-    const isDark = ui.theme === "dark";
-    document.documentElement.dataset.theme = isDark ? "dark" : "light";
-    elements.themeToggle.setAttribute("aria-pressed", String(isDark));
-    elements.themeToggle.setAttribute("aria-label", `Switch to ${isDark ? "light" : "dark"} theme`);
-    elements.themeToggle.title = `Switch to ${isDark ? "light" : "dark"} theme`;
-    elements.themeToggleLabel.textContent = isDark ? "Light" : "Dark";
+    const theme = ui.theme;
+    document.documentElement.dataset.theme = theme;
+    elements.themeToggle.setAttribute("aria-pressed", String(theme === "dark"));
+
+    const themeLabels = {
+      light: "Classic",
+      warm: "Warm",
+      dark: "Dark",
+    };
+    const nextThemeNames = {
+      light: "Warm Light",
+      warm: "Dark",
+      dark: "Classic Light",
+    };
+
+    const nextTheme = getNextTheme(theme);
+    const label = themeLabels[theme] || "Theme";
+    elements.themeToggle.setAttribute(
+      "aria-label",
+      `Current theme: ${label}. Switch to ${nextThemeNames[theme]} theme`,
+    );
+    elements.themeToggle.title = `Theme: ${label} (click for ${nextThemeNames[theme]})`;
+    elements.themeToggleLabel.textContent = label;
+
+    const themeColorMeta = document.querySelector('meta[name="theme-color"]');
+    if (themeColorMeta) {
+      themeColorMeta.content = theme === "dark" ? "#0b0f19" : (theme === "light" ? "#9e6b02" : "#9a5619");
+    }
   }
 
   function setTheme(theme) {
-    if (!["light", "dark"].includes(theme) || theme === ui.theme) return;
+    if (!THEMES.includes(theme) || theme === ui.theme) return;
     ui.theme = theme;
     syncThemeUI();
     try {
@@ -3533,7 +3564,7 @@
       const tone = event?.detail?.tone || "success";
       if (message) showToast(message, tone);
     });
-    elements.themeToggle.addEventListener("click", () => setTheme(ui.theme === "dark" ? "light" : "dark"));
+    elements.themeToggle.addEventListener("click", () => setTheme(getNextTheme(ui.theme)));
     elements.organize.addEventListener("click", () => openOrganize());
     elements.export.addEventListener("click", () => exportLibrary());
     elements.import.addEventListener("click", () => elements.importInput.click());
