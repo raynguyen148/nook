@@ -34,6 +34,11 @@ html:not([data-theme]) {
   --interaction-duration: 180ms;
   --interaction-easing: cubic-bezier(0.16, 1, 0.3, 1);
 
+  /* Fallback for uncolored type chips */
+  --detail-type-chip-border: #d8ccbd;
+  --detail-type-chip-color: #5e4d41;
+  --detail-type-chip-background: #fdfbf7;
+
   background: #f5efe6;
   color: #261e18;
 }
@@ -136,15 +141,36 @@ html[data-theme="warm"] .space-link.is-active .filter-count,
 html[data-theme="warm"] .sidebar-filter.is-active .filter-count,
 html:not([data-theme]) .space-link.is-active .filter-count,
 html:not([data-theme]) .sidebar-filter.is-active .filter-count {
-  background: #ffffff;
   color: var(--primary-accent-text);
-  box-shadow: 0 1px 2px rgba(65, 45, 25, 0.06);
+}
+
+/* --------------------------------------------------------------------------
+   Sidebar Tag Filters (Cohesive with Note Card .tag-chip style)
+   -------------------------------------------------------------------------- */
+html[data-theme="warm"] .tag-filter-option,
+html:not([data-theme]) .tag-filter-option {
+  background: #f0e6d6;
+  border: 1px solid #e5dacb;
+  color: #5e4d41;
+  border-radius: 5px;
+  transition: all var(--interaction-duration) var(--interaction-easing);
+}
+
+html[data-theme="warm"] .tag-filter-option .filter-count,
+html:not([data-theme]) .tag-filter-option .filter-count {
+  color: #8c7766;
 }
 
 html[data-theme="warm"] .tag-filter-option:hover,
 html:not([data-theme]) .tag-filter-option:hover {
-  background: #f0e6d6;
+  background: #ebe1d2;
+  border-color: #d8ccbd;
   color: #261e18;
+}
+
+html[data-theme="warm"] .tag-filter-option:hover .filter-count,
+html:not([data-theme]) .tag-filter-option:hover .filter-count {
+  color: #5e4d41;
 }
 
 html[data-theme="warm"] .tag-filter-option:has(input:checked),
@@ -154,6 +180,13 @@ html:not([data-theme]) .tag-filter-option.is-active {
   background: var(--primary-accent-soft);
   color: var(--primary-accent-text);
   border-color: var(--primary-accent-border);
+}
+
+html[data-theme="warm"] .tag-filter-option:has(input:checked) .filter-count,
+html[data-theme="warm"] .tag-filter-option.is-active .filter-count,
+html:not([data-theme]) .tag-filter-option:has(input:checked) .filter-count,
+html:not([data-theme]) .tag-filter-option.is-active .filter-count {
+  color: var(--primary-accent-text);
 }
 
 /* --------------------------------------------------------------------------
@@ -232,15 +265,8 @@ html:not([data-theme]) .toolbar.is-pinned {
   backdrop-filter: blur(8px);
 }
 
-html[data-theme="warm"] .search-field,
-html:not([data-theme]) .search-field {
-  border-color: #d8ccbd;
-  background: #fdfbf7;
-  box-shadow: 0 1px 2px rgba(65, 45, 25, 0.03);
-}
-
-html[data-theme="warm"] .search-field:focus-within,
-html:not([data-theme]) .search-field:focus-within {
+html[data-theme="warm"] .search-field input:focus,
+html:not([data-theme]) .search-field input:focus {
   border-color: var(--primary-accent);
   box-shadow: 0 0 0 3px var(--primary-accent-focus);
 }
@@ -413,8 +439,10 @@ html:not([data-theme]) .note-card__footer {
 
 html[data-theme="warm"] .tag-chip,
 html[data-theme="warm"] .note-tag-chip,
+html[data-theme="warm"] .selected-tag,
 html:not([data-theme]) .tag-chip,
-html:not([data-theme]) .note-tag-chip {
+html:not([data-theme]) .note-tag-chip,
+html:not([data-theme]) .selected-tag {
   background: #f0e6d6;
   border-color: #e5dacb;
   color: #5e4d41;
@@ -463,7 +491,7 @@ html:not([data-theme]) .pagination-ellipsis {
 }
 
 /* --------------------------------------------------------------------------
-   Buttons (Tactile Craftsman)
+   Buttons & Interactive Elements (Tactile Craftsman)
    -------------------------------------------------------------------------- */
 html[data-theme="warm"] .button-primary,
 html:not([data-theme]) .button-primary {
@@ -508,6 +536,27 @@ html:not([data-theme]) .button-danger:hover:not(:disabled) {
   background: #a83232;
   color: #ffffff;
   border-color: #a83232;
+}
+
+html[data-theme="warm"] .note-card__action,
+html:not([data-theme]) .note-card__action {
+  color: #8c7766;
+}
+
+html[data-theme="warm"] .note-card__action:hover:not(:disabled),
+html[data-theme="warm"] .note-card__action:focus-visible,
+html:not([data-theme]) .note-card__action:hover:not(:disabled),
+html:not([data-theme]) .note-card__action:focus-visible {
+  color: #261e18;
+  background: #f0e6d6;
+}
+
+html[data-theme="warm"] .note-card__action--danger:hover:not(:disabled),
+html[data-theme="warm"] .note-card__action--danger:focus-visible,
+html:not([data-theme]) .note-card__action--danger:hover:not(:disabled),
+html:not([data-theme]) .note-card__action--danger:focus-visible {
+  color: #a83232;
+  background: #fbf0ee;
 }
 
 /* --------------------------------------------------------------------------
@@ -564,6 +613,26 @@ html:not([data-theme]) .detail-commandbar__info .note-save-status.is-error {
   border-color: #f2d2cd;
 }
 
+html[data-theme="warm"] input[type="text"],
+html[data-theme="warm"] input[type="search"],
+html[data-theme="warm"] select,
+html[data-theme="warm"] textarea,
+html:not([data-theme]) input[type="text"],
+html:not([data-theme]) input[type="search"],
+html:not([data-theme]) select,
+html:not([data-theme]) textarea {
+  background-color: #fdfbf7;
+  border-color: #d8ccbd;
+  color: #261e18;
+}
+
+html[data-theme="warm"] input::placeholder,
+html[data-theme="warm"] textarea::placeholder,
+html:not([data-theme]) input::placeholder,
+html:not([data-theme]) textarea::placeholder {
+  color: #9e8d7d;
+}
+
 html[data-theme="warm"] .field--title input,
 html:not([data-theme]) .field--title input {
   font-family: var(--font-display);
@@ -571,6 +640,14 @@ html:not([data-theme]) .field--title input {
   font-weight: 700;
   letter-spacing: -0.02em;
   color: #261e18;
+  background-color: transparent;
+  border-color: transparent;
+}
+
+html[data-theme="warm"] .field--title input:focus-visible,
+html:not([data-theme]) .field--title input:focus-visible {
+  background-color: #fdfbf7;
+  border-color: var(--primary-accent);
 }
 
 html[data-theme="warm"] .note-formatting-toolbar,
@@ -590,7 +667,8 @@ html:not([data-theme]) #note-content {
   background: #fdfbf7;
   border-color: #d8ccbd;
   color: #261e18;
-  font-family: var(--font-sans);
+  font-family: var(--font-mono);
+  font-size: 0.94rem;
   line-height: 1.7;
 }
 
@@ -950,6 +1028,18 @@ html:not([data-theme]) .toast {
   color: #fdfbf7;
   border: 1px solid #4a3b2c;
   box-shadow: 0 8px 24px rgba(40, 25, 15, 0.22);
+}
+
+html[data-theme="warm"] .toast__action,
+html:not([data-theme]) .toast__action {
+  color: #edd5bc;
+}
+
+html[data-theme="warm"] .toast__action:hover,
+html[data-theme="warm"] .toast__action:focus-visible,
+html:not([data-theme]) .toast__action:hover,
+html:not([data-theme]) .toast__action:focus-visible {
+  color: #ffffff;
 }
 
 /* --------------------------------------------------------------------------
