@@ -961,23 +961,22 @@
     svg.setAttribute("viewBox", "0 0 24 24");
     svg.setAttribute("fill", "none");
     svg.setAttribute("stroke", "currentColor");
-    svg.setAttribute("stroke-width", "1.8");
+    svg.setAttribute("stroke-width", "1.7");
     svg.setAttribute("stroke-linecap", "round");
     svg.setAttribute("stroke-linejoin", "round");
     svg.setAttribute("aria-hidden", "true");
-    svg.classList.add("markdown-code-copy-icon");
+    svg.classList.add("markdown-code-copy-icon", "copy-icon");
 
     const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-    rect.setAttribute("x", "9");
-    rect.setAttribute("y", "9");
-    rect.setAttribute("width", "13");
-    rect.setAttribute("height", "13");
+    rect.setAttribute("x", "8.25");
+    rect.setAttribute("y", "8.25");
+    rect.setAttribute("width", "11.5");
+    rect.setAttribute("height", "11.5");
     rect.setAttribute("rx", "2");
-    rect.setAttribute("ry", "2");
     svg.append(rect);
 
     const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-    path.setAttribute("d", "M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1");
+    path.setAttribute("d", "M15.75 8.25V6.5a2.25 2.25 0 0 0-2.25-2.25H6.5A2.25 2.25 0 0 0 4.25 6.5v7A2.25 2.25 0 0 0 6.5 15.75h1.75");
     svg.append(path);
 
     return svg;
@@ -988,11 +987,11 @@
     svg.setAttribute("viewBox", "0 0 24 24");
     svg.setAttribute("fill", "none");
     svg.setAttribute("stroke", "currentColor");
-    svg.setAttribute("stroke-width", "2.2");
+    svg.setAttribute("stroke-width", "2");
     svg.setAttribute("stroke-linecap", "round");
     svg.setAttribute("stroke-linejoin", "round");
     svg.setAttribute("aria-hidden", "true");
-    svg.classList.add("markdown-code-check-icon");
+    svg.classList.add("markdown-code-check-icon", "check-icon");
 
     const polyline = document.createElementNS("http://www.w3.org/2000/svg", "polyline");
     polyline.setAttribute("points", "20 6 9 17 4 12");
@@ -1047,10 +1046,14 @@
           }));
         }
 
-        setTimeout(() => {
+        if (copyBtn._copyTimeout) {
+          clearTimeout(copyBtn._copyTimeout);
+        }
+        copyBtn._copyTimeout = setTimeout(() => {
           copyBtn.classList.remove("is-copied");
           copyText.textContent = "Copy";
           copyBtn.setAttribute("title", "Copy code");
+          copyBtn._copyTimeout = null;
         }, 2000);
       } catch (err) {
         // Fallback or ignore

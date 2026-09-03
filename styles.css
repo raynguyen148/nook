@@ -2096,6 +2096,30 @@ select::-ms-expand {
 
 
 
+.copy-icon {
+  display: block;
+}
+
+
+
+.check-icon {
+  display: none;
+}
+
+
+
+.is-copied .copy-icon {
+  display: none;
+}
+
+
+
+.is-copied .check-icon {
+  display: block;
+}
+
+
+
 .icon-button:hover {
   color: #3e4a61;
   background: #f1f3f7;

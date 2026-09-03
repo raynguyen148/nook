@@ -1435,7 +1435,11 @@
   }
 
   function syncNotePreviewActions() {
-    elements.copyNoteContent.disabled = !elements.noteContent.value.trim() || ui.copyInFlight;
+    const hasContent = Boolean(elements.noteContent.value.trim());
+    elements.copyNoteContent.disabled = !hasContent || ui.copyInFlight;
+    if (!hasContent) {
+      resetCopyButtonFeedback(elements.copyNoteContent);
+    }
   }
 
   function isDetailWorkspaceOpen() {
@@ -1513,6 +1517,7 @@
   }
 
   function closeNoteDetail({ restoreFocus = true, invoker = ui.viewInvoker } = {}) {
+    resetCopyButtonFeedback(elements.copyNoteContent);
     elements.noteDialog.classList.add("is-hidden");
     elements.quickViewDialog.classList.add("is-hidden");
     elements.noteDetailWorkspace.classList.add("is-hidden");
@@ -1569,6 +1574,50 @@
     if (!copied) throw new Error("Copy is not available in this browser.");
   }
 
+  const copyFeedbackTimers = new WeakMap();
+
+  function markButtonCopied(button, {
+    copiedLabel,
+    originalLabel,
+    copiedTitle = "Copied!",
+    originalTitle = "Copy content",
+    duration = 2000,
+  } = {}) {
+    if (!button) return;
+    const existingTimer = copyFeedbackTimers.get(button);
+    if (existingTimer) {
+      clearTimeout(existingTimer);
+    }
+    button.classList.add("is-copied");
+    if (copiedTitle) button.setAttribute("title", copiedTitle);
+    if (copiedLabel) button.setAttribute("aria-label", copiedLabel);
+
+    const timer = setTimeout(() => {
+      copyFeedbackTimers.delete(button);
+      if (!button.isConnected) return;
+      button.classList.remove("is-copied");
+      if (originalTitle) button.setAttribute("title", originalTitle);
+      if (originalLabel) button.setAttribute("aria-label", originalLabel);
+    }, duration);
+
+    copyFeedbackTimers.set(button, timer);
+  }
+
+  function resetCopyButtonFeedback(button, {
+    originalLabel = "Copy note content",
+    originalTitle = "Copy content",
+  } = {}) {
+    if (!button) return;
+    const existingTimer = copyFeedbackTimers.get(button);
+    if (existingTimer) {
+      clearTimeout(existingTimer);
+      copyFeedbackTimers.delete(button);
+    }
+    button.classList.remove("is-copied");
+    if (originalTitle) button.setAttribute("title", originalTitle);
+    if (originalLabel) button.setAttribute("aria-label", originalLabel);
+  }
+
   async function copyQuickViewContent() {
     const note = previewNoteFromEditor();
     if (!note.content.trim()) {
@@ -1580,6 +1629,12 @@
     try {
       await writeClipboardText(note.content);
       showToast("Content copied.");
+      markButtonCopied(elements.copyNoteContent, {
+        copiedLabel: "Content copied",
+        originalLabel: "Copy note content",
+        copiedTitle: "Copied!",
+        originalTitle: "Copy content",
+      });
     } catch (error) {
       showError(error, "We could not copy this note.");
     } finally {
@@ -1595,6 +1650,12 @@
     try {
       await writeClipboardText(note.content);
       showToast("Content copied.");
+      markButtonCopied(button, {
+        copiedLabel: `Copied ${note.title}`,
+        originalLabel: `Copy ${note.title}`,
+        copiedTitle: "Copied!",
+        originalTitle: "Copy content",
+      });
     } catch (error) {
       showError(error, "We could not copy this note.");
     } finally {
@@ -1676,12 +1737,12 @@
     }
   }
 
-  function createNoteCardActionIcon(shapes) {
+  function createNoteCardActionIcon(shapes, strokeWidth = "1.7") {
     const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     svg.setAttribute("viewBox", "0 0 24 24");
     svg.setAttribute("fill", "none");
     svg.setAttribute("stroke", "currentColor");
-    svg.setAttribute("stroke-width", "1.7");
+    svg.setAttribute("stroke-width", String(strokeWidth));
     svg.setAttribute("stroke-linecap", "round");
     svg.setAttribute("stroke-linejoin", "round");
     svg.setAttribute("aria-hidden", "true");
@@ -1761,12 +1822,16 @@
       disabled: !note.content.trim(),
       attributes: { "aria-label": `Copy ${note.title}`, title: "Copy content" },
     });
-    copy.append(
-      createNoteCardActionIcon([
-        ["rect", { x: "8.25", y: "8.25", width: "11.5", height: "11.5", rx: "2" }],
-        ["path", { d: "M15.75 8.25V6.5a2.25 2.25 0 0 0-2.25-2.25H6.5A2.25 2.25 0 0 0 4.25 6.5v7A2.25 2.25 0 0 0 6.5 15.75h1.75" }],
-      ]),
-    );
+    const copyIcon = createNoteCardActionIcon([
+      ["rect", { x: "8.25", y: "8.25", width: "11.5", height: "11.5", rx: "2" }],
+      ["path", { d: "M15.75 8.25V6.5a2.25 2.25 0 0 0-2.25-2.25H6.5A2.25 2.25 0 0 0 4.25 6.5v7A2.25 2.25 0 0 0 6.5 15.75h1.75" }],
+    ]);
+    copyIcon.classList.add("copy-icon");
+    const checkIcon = createNoteCardActionIcon([
+      ["polyline", { points: "20 6 9 17 4 12" }],
+    ], 2);
+    checkIcon.classList.add("check-icon");
+    copy.append(copyIcon, checkIcon);
     copy.addEventListener("click", () => copyNoteCardContent(note, copy));
     const edit = createElement("button", {
       className: "note-card__action",
@@ -2277,6 +2342,7 @@
 
   function setNoteEditorMode(mode) {
     if (!["edit", "split", "preview"].includes(mode)) return;
+    resetCopyButtonFeedback(elements.copyNoteContent);
     ui.noteEditorMode = mode;
     elements.noteDialogTitle.textContent = mode === "preview"
       ? "Preview note"
@@ -2633,6 +2699,7 @@
     initialMode = "edit",
     focusTitle = true,
   } = {}) {
+    resetCopyButtonFeedback(elements.copyNoteContent);
     clearNoteAutoSave();
     ui.noteEditorSession += 1;
     ui.pendingTagCreation = null;
