@@ -1625,7 +1625,8 @@
       return;
     }
     ui.copyInFlight = true;
-    renderQuickView(note);
+    elements.copyNoteContent.setAttribute("aria-busy", "true");
+    syncNotePreviewActions();
     try {
       await writeClipboardText(note.content);
       showToast("Content copied.");
@@ -1639,6 +1640,8 @@
       showError(error, "We could not copy this note.");
     } finally {
       ui.copyInFlight = false;
+      elements.copyNoteContent.removeAttribute("aria-busy");
+      syncNotePreviewActions();
       if (isQuickViewOpen()) renderQuickView();
     }
   }

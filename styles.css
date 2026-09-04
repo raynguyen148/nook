@@ -5624,6 +5624,24 @@ textarea:focus-visible {
 
 
 
+.quick-view-copy-button .check-icon {
+  display: none;
+}
+
+
+
+.quick-view-copy-button.is-copied .copy-icon {
+  display: none;
+}
+
+
+
+.quick-view-copy-button.is-copied .check-icon {
+  display: block;
+}
+
+
+
 .quick-view-footer .dialog-footer__actions {
   flex-wrap: wrap;
 }
@@ -7729,6 +7747,26 @@ textarea:focus-visible {
 .note-detail-surface .note-markdown-help__trigger svg {
   width: 1.05rem;
   height: 1.05rem;
+}
+
+
+
+.note-detail-surface .dialog-footer__tools .check-icon,
+.note-detail-surface .dialog-footer__preview-actions .check-icon {
+  display: none;
+}
+
+
+
+.note-detail-surface .dialog-footer__tools .is-copied .copy-icon,
+.note-detail-surface .dialog-footer__preview-actions .is-copied .copy-icon {
+  display: none;
+}
+
+
+
+.note-detail-surface .dialog-footer__tools .is-copied .check-icon,
+.note-detail-surface .dialog-footer__preview-actions .is-copied .check-icon {
   display: block;
 }
 
