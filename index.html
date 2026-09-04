@@ -191,40 +191,56 @@
             <p class="subtitle">A private, offline space for ideas, work, and learning.</p>
           </div>
           <div class="topbar-actions">
-            <button
-              id="theme-toggle"
-              class="button button-secondary theme-toggle"
-              type="button"
-              aria-pressed="false"
-              aria-label="Theme: Classic"
-              title="Theme: Classic"
-            >
-              <span class="theme-toggle__icon theme-toggle__icon--sun" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round">
-                  <circle cx="12" cy="12" r="3.4" />
-                  <path d="M12 2.8v2M12 19.2v2M21.2 12h-2M4.8 12h-2M18.5 5.5l-1.4 1.4M6.9 17.1l-1.4 1.4M18.5 18.5l-1.4-1.4M6.9 6.9 5.5 5.5" />
-                </svg>
+            <div id="theme-toggle-shortcut" class="shortcut-button">
+              <button
+                id="theme-toggle"
+                class="button button-secondary theme-toggle"
+                type="button"
+                aria-pressed="false"
+                aria-label="Current theme: Light. Switch to Warm theme"
+                aria-describedby="theme-toggle-shortcut-tooltip"
+                aria-keyshortcuts="T"
+              >
+                <span class="theme-toggle__icon theme-toggle__icon--sun" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round">
+                    <circle cx="12" cy="12" r="3.4" />
+                    <path d="M12 2.8v2M12 19.2v2M21.2 12h-2M4.8 12h-2M18.5 5.5l-1.4 1.4M6.9 17.1l-1.4 1.4M18.5 18.5l-1.4-1.4M6.9 6.9 5.5 5.5" />
+                  </svg>
+                </span>
+                <span class="theme-toggle__icon theme-toggle__icon--warm" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M17 8h1a4 4 0 1 1 0 8h-1" />
+                    <path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z" />
+                    <line x1="6" y1="2" x2="6" y2="4" />
+                    <line x1="10" y1="2" x2="10" y2="4" />
+                    <line x1="14" y1="2" x2="14" y2="4" />
+                  </svg>
+                </span>
+                <span class="theme-toggle__icon theme-toggle__icon--moon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20.4 15.1A8.7 8.7 0 0 1 8.9 3.6 8.7 8.7 0 1 0 20.4 15.1Z" />
+                  </svg>
+                </span>
+                <span id="theme-toggle-label" class="button-label">Light</span>
+              </button>
+              <span id="theme-toggle-shortcut-tooltip" class="shortcut-tooltip" role="tooltip">
+                <span id="theme-toggle-tooltip-text">Theme: Light (switch to Warm)</span>
+                <kbd>T</kbd>
               </span>
-              <span class="theme-toggle__icon theme-toggle__icon--warm" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-                  <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+            </div>
+            <div id="organize-shortcut" class="shortcut-button">
+              <button id="organize-btn" class="button button-secondary" type="button" aria-label="Settings" aria-describedby="organize-shortcut-tooltip" aria-keyshortcuts="S">
+                <svg class="button-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
+                  <circle cx="12" cy="12" r="3" />
                 </svg>
+                <span class="button-label">Settings</span>
+              </button>
+              <span id="organize-shortcut-tooltip" class="shortcut-tooltip" role="tooltip">
+                <span>Settings</span>
+                <kbd>S</kbd>
               </span>
-              <span class="theme-toggle__icon theme-toggle__icon--moon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M20.4 15.1A8.7 8.7 0 0 1 8.9 3.6 8.7 8.7 0 1 0 20.4 15.1Z" />
-                </svg>
-              </span>
-              <span id="theme-toggle-label" class="button-label">Classic</span>
-            </button>
-            <button id="organize-btn" class="button button-secondary" type="button" aria-label="Settings" title="Settings">
-              <svg class="button-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
-                <circle cx="12" cy="12" r="3" />
-              </svg>
-              <span class="button-label">Settings</span>
-            </button>
+            </div>
             <button id="export-btn" class="button button-secondary" type="button" aria-label="Export backup" title="Export backup">
               <svg class="button-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="M12 3v12M7.5 10.5 12 15l4.5-4.5M4.5 19.5h15" />
@@ -303,54 +319,69 @@
             </label>
             <div class="view-mode-control" role="group" aria-label="Note layout">
               <div class="view-mode-control__choices">
-                <button
-                  id="focus-view-btn"
-                  class="view-mode-button"
-                  type="button"
-                  aria-pressed="true"
-                  aria-label="Focus view: one column"
-                  title="Focus view: one column"
-                >
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <rect x="3" y="3" width="18" height="8" rx="2" />
-                    <rect x="3" y="13" width="18" height="8" rx="2" />
-                  </svg>
-                </button>
-                <button
-                  id="comfortable-view-btn"
-                  class="view-mode-button"
-                  type="button"
-                  aria-pressed="false"
-                  aria-label="Comfortable view: two columns"
-                  title="Comfortable view: two columns"
-                >
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <rect x="3" y="3" width="8" height="8" rx="2" />
-                    <rect x="13" y="3" width="8" height="8" rx="2" />
-                    <rect x="3" y="13" width="8" height="8" rx="2" />
-                    <rect x="13" y="13" width="8" height="8" rx="2" />
-                  </svg>
-                </button>
-                <button
-                  id="compact-view-btn"
-                  class="view-mode-button"
-                  type="button"
-                  aria-pressed="false"
-                  aria-label="Compact view: four columns"
-                  title="Compact view: four columns"
-                >
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <rect x="3" y="3" width="4.8" height="4.8" rx="1.2" />
-                    <rect x="9.6" y="3" width="4.8" height="4.8" rx="1.2" />
-                    <rect x="16.2" y="3" width="4.8" height="4.8" rx="1.2" />
-                    <rect x="3" y="9.6" width="4.8" height="4.8" rx="1.2" />
-                    <rect x="9.6" y="9.6" width="4.8" height="4.8" rx="1.2" />
-                    <rect x="16.2" y="9.6" width="4.8" height="4.8" rx="1.2" />
-                    <rect x="3" y="16.2" width="4.8" height="4.8" rx="1.2" />
-                    <rect x="9.6" y="16.2" width="4.8" height="4.8" rx="1.2" />
-                    <rect x="16.2" y="16.2" width="4.8" height="4.8" rx="1.2" />
-                  </svg>
-                </button>
+                <div class="view-mode-choice">
+                  <button
+                    id="focus-view-btn"
+                    class="view-mode-button"
+                    type="button"
+                    aria-pressed="true"
+                    aria-label="Focus view: one column"
+                    aria-describedby="focus-view-tooltip"
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <rect x="3" y="3" width="18" height="8" rx="2" />
+                      <rect x="3" y="13" width="18" height="8" rx="2" />
+                    </svg>
+                  </button>
+                  <span id="focus-view-tooltip" class="shortcut-tooltip" role="tooltip">
+                    <span>Focus view</span>
+                  </span>
+                </div>
+                <div class="view-mode-choice">
+                  <button
+                    id="comfortable-view-btn"
+                    class="view-mode-button"
+                    type="button"
+                    aria-pressed="false"
+                    aria-label="Comfortable view: two columns"
+                    aria-describedby="comfortable-view-tooltip"
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <rect x="3" y="3" width="8" height="8" rx="2" />
+                      <rect x="13" y="3" width="8" height="8" rx="2" />
+                      <rect x="3" y="13" width="8" height="8" rx="2" />
+                      <rect x="13" y="13" width="8" height="8" rx="2" />
+                    </svg>
+                  </button>
+                  <span id="comfortable-view-tooltip" class="shortcut-tooltip" role="tooltip">
+                    <span>Comfortable view</span>
+                  </span>
+                </div>
+                <div class="view-mode-choice">
+                  <button
+                    id="compact-view-btn"
+                    class="view-mode-button"
+                    type="button"
+                    aria-pressed="false"
+                    aria-label="Compact view: four columns"
+                    aria-describedby="compact-view-tooltip"
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <rect x="3" y="3" width="4.8" height="4.8" rx="1.2" />
+                      <rect x="9.6" y="3" width="4.8" height="4.8" rx="1.2" />
+                      <rect x="16.2" y="3" width="4.8" height="4.8" rx="1.2" />
+                      <rect x="3" y="9.6" width="4.8" height="4.8" rx="1.2" />
+                      <rect x="9.6" y="9.6" width="4.8" height="4.8" rx="1.2" />
+                      <rect x="16.2" y="9.6" width="4.8" height="4.8" rx="1.2" />
+                      <rect x="3" y="16.2" width="4.8" height="4.8" rx="1.2" />
+                      <rect x="9.6" y="16.2" width="4.8" height="4.8" rx="1.2" />
+                      <rect x="16.2" y="16.2" width="4.8" height="4.8" rx="1.2" />
+                    </svg>
+                  </button>
+                  <span id="compact-view-tooltip" class="shortcut-tooltip" role="tooltip">
+                    <span>Compact view</span>
+                  </span>
+                </div>
               </div>
             </div>
           </div>
@@ -478,39 +509,39 @@
             </div>
             <div class="note-formatting-toolbar" role="toolbar" aria-label="Markdown formatting">
               <div class="note-formatting-tool">
-                <button class="note-formatting-tool__button note-formatting-tool__button--heading" type="button" data-note-formatting="heading" aria-label="Toggle heading" title="Heading"><span aria-hidden="true">H</span></button>
+                <button class="note-formatting-tool__button note-formatting-tool__button--heading" type="button" data-note-formatting="heading" aria-label="Toggle heading"><span aria-hidden="true">H</span></button>
                 <span class="note-formatting-tool__tooltip" role="tooltip">Heading</span>
               </div>
               <div class="note-formatting-tool">
-                <button class="note-formatting-tool__button note-formatting-tool__button--bold" type="button" data-note-formatting="bold" aria-label="Toggle bold" title="Bold"><span aria-hidden="true">B</span></button>
+                <button class="note-formatting-tool__button note-formatting-tool__button--bold" type="button" data-note-formatting="bold" aria-label="Toggle bold"><span aria-hidden="true">B</span></button>
                 <span class="note-formatting-tool__tooltip" role="tooltip">Bold</span>
               </div>
               <div class="note-formatting-tool">
-                <button class="note-formatting-tool__button note-formatting-tool__button--italic" type="button" data-note-formatting="italic" aria-label="Toggle italic" title="Italic"><span aria-hidden="true">I</span></button>
+                <button class="note-formatting-tool__button note-formatting-tool__button--italic" type="button" data-note-formatting="italic" aria-label="Toggle italic"><span aria-hidden="true">I</span></button>
                 <span class="note-formatting-tool__tooltip" role="tooltip">Italic</span>
               </div>
               <div class="note-formatting-tool">
-                <button class="note-formatting-tool__button note-formatting-tool__button--strike" type="button" data-note-formatting="strikethrough" aria-label="Toggle strikethrough" title="Strikethrough"><span aria-hidden="true">S</span></button>
+                <button class="note-formatting-tool__button note-formatting-tool__button--strike" type="button" data-note-formatting="strikethrough" aria-label="Toggle strikethrough"><span aria-hidden="true">S</span></button>
                 <span class="note-formatting-tool__tooltip" role="tooltip">Strikethrough</span>
               </div>
               <div class="note-formatting-tool">
-                <button class="note-formatting-tool__button" type="button" data-note-formatting="inline-code" aria-label="Toggle inline code" title="Inline code"><span aria-hidden="true">&lt;/&gt;</span></button>
+                <button class="note-formatting-tool__button" type="button" data-note-formatting="inline-code" aria-label="Toggle inline code"><span aria-hidden="true">&lt;/&gt;</span></button>
                 <span class="note-formatting-tool__tooltip" role="tooltip">Inline code</span>
               </div>
               <div class="note-formatting-tool">
-                <button class="note-formatting-tool__button" type="button" data-note-formatting="code-block" aria-label="Insert code block" title="Code block"><span aria-hidden="true">{ }</span></button>
+                <button class="note-formatting-tool__button" type="button" data-note-formatting="code-block" aria-label="Insert code block"><span aria-hidden="true">{ }</span></button>
                 <span class="note-formatting-tool__tooltip" role="tooltip">Code block</span>
               </div>
               <div class="note-formatting-tool">
-                <button class="note-formatting-tool__button" type="button" data-note-formatting="bullet-list" aria-label="Toggle bullet list" title="Bullet list"><span aria-hidden="true">•≡</span></button>
+                <button class="note-formatting-tool__button" type="button" data-note-formatting="bullet-list" aria-label="Toggle bullet list"><span aria-hidden="true">•≡</span></button>
                 <span class="note-formatting-tool__tooltip" role="tooltip">Bullet list</span>
               </div>
               <div class="note-formatting-tool">
-                <button class="note-formatting-tool__button" type="button" data-note-formatting="ordered-list" aria-label="Toggle numbered list" title="Numbered list"><span aria-hidden="true">1≡</span></button>
+                <button class="note-formatting-tool__button" type="button" data-note-formatting="ordered-list" aria-label="Toggle numbered list"><span aria-hidden="true">1≡</span></button>
                 <span class="note-formatting-tool__tooltip" role="tooltip">Numbered list</span>
               </div>
               <div class="note-formatting-tool">
-                <button class="note-formatting-tool__button" type="button" data-note-formatting="task-list" aria-label="Toggle task list" title="Task list">
+                <button class="note-formatting-tool__button" type="button" data-note-formatting="task-list" aria-label="Toggle task list">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <rect x="4" y="4" width="16" height="16" rx="2.2" />
                     <path d="m7.8 12.1 2.65 2.65 5.75-6.1" />
@@ -519,7 +550,7 @@
                 <span class="note-formatting-tool__tooltip" role="tooltip">Task list</span>
               </div>
               <div class="note-formatting-tool">
-                <button class="note-formatting-tool__button" type="button" data-note-formatting="table" aria-label="Insert table" title="Table">
+                <button class="note-formatting-tool__button" type="button" data-note-formatting="table" aria-label="Insert table">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <rect x="3.75" y="4.25" width="16.5" height="15.5" rx="1.8" />
                     <path d="M4.25 9.5h15.5M9.25 4.75v14.5M14.75 4.75v14.5" />
@@ -528,16 +559,17 @@
                 <span class="note-formatting-tool__tooltip" role="tooltip">Table</span>
               </div>
               <div class="note-formatting-tool">
-                <button class="note-formatting-tool__button" type="button" data-note-formatting="alert" aria-label="Insert note alert" title="Alert">
+                <button class="note-formatting-tool__button" type="button" data-note-formatting="alert" aria-label="Insert note alert">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <path d="m12 3.7 8.35 15.6H3.65L12 3.7Z" />
-                    <path d="M12 9v4.6M12 16.55h.01" />
+                    <rect x="3" y="3" width="18" height="18" rx="2" />
+                    <circle cx="12" cy="8" r="1.5" />
+                    <path d="M12 11.5v5" />
                   </svg>
                 </button>
                 <span class="note-formatting-tool__tooltip" role="tooltip">Alert</span>
               </div>
               <div class="note-formatting-tool">
-                <button class="note-formatting-tool__button" type="button" data-note-formatting="footnote" aria-label="Insert footnote" title="Footnote">
+                <button class="note-formatting-tool__button" type="button" data-note-formatting="footnote" aria-label="Insert footnote">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <path d="M5 3.75h9l5 5V20.25H5z" />
                     <path d="M14 3.75v5h5M10.1 13.35l1.45-1.2v5.1" />

@@ -67,6 +67,7 @@
     toolbar: document.querySelector(".toolbar"),
     themeToggle: document.querySelector("#theme-toggle"),
     themeToggleLabel: document.querySelector("#theme-toggle-label"),
+    themeToggleTooltipText: document.querySelector("#theme-toggle-tooltip-text"),
     organize: document.querySelector("#organize-btn"),
     export: document.querySelector("#export-btn"),
     import: document.querySelector("#import-btn"),
@@ -243,24 +244,28 @@
     elements.themeToggle.setAttribute("aria-pressed", String(theme === "dark"));
 
     const themeLabels = {
-      light: "Classic",
+      light: "Light",
       warm: "Warm",
       dark: "Dark",
     };
     const nextThemeNames = {
-      light: "Warm Light",
+      light: "Warm",
       warm: "Dark",
-      dark: "Classic Light",
+      dark: "Light",
     };
 
     const nextTheme = getNextTheme(theme);
-    const label = themeLabels[theme] || "Classic";
+    const label = themeLabels[theme] || "Light";
+    const nextLabel = nextThemeNames[theme] || "Warm";
     elements.themeToggle.setAttribute(
       "aria-label",
-      `Current theme: ${label}. Switch to ${nextThemeNames[theme]} theme`,
+      `Current theme: ${label}. Switch to ${nextLabel} theme`,
     );
-    elements.themeToggle.title = `Theme: ${label} (click for ${nextThemeNames[theme]})`;
+    elements.themeToggle.removeAttribute("title");
     elements.themeToggleLabel.textContent = label;
+    if (elements.themeToggleTooltipText) {
+      elements.themeToggleTooltipText.textContent = `Theme: ${label} (switch to ${nextLabel})`;
+    }
 
     const themeColorMeta = document.querySelector('meta[name="theme-color"]');
     if (themeColorMeta) {
@@ -3932,6 +3937,49 @@
       ) {
         event.preventDefault();
         elements.search.focus();
+        return;
+      }
+
+      const matchesThemeShortcut =
+        event.key.toLowerCase() === "t" &&
+        !event.metaKey &&
+        !event.ctrlKey &&
+        !event.altKey &&
+        !event.shiftKey &&
+        !event.repeat &&
+        !event.isComposing;
+
+      if (
+        matchesThemeShortcut &&
+        !editingText &&
+        !activeModalDialog() &&
+        (!isDetailWorkspaceOpen() || isQuickViewOpen())
+      ) {
+        event.preventDefault();
+        setTheme(getNextTheme(ui.theme));
+        return;
+      }
+
+      const matchesSettingsShortcut =
+        event.key.toLowerCase() === "s" &&
+        !event.metaKey &&
+        !event.ctrlKey &&
+        !event.altKey &&
+        !event.shiftKey &&
+        !event.repeat &&
+        !event.isComposing;
+
+      if (matchesSettingsShortcut && !editingText) {
+        if (elements.organizeDialog.open) {
+          event.preventDefault();
+          closeOrganize();
+          return;
+        }
+        if (!activeModalDialog() && !isDetailWorkspaceOpen()) {
+          event.preventDefault();
+          openOrganize();
+          return;
+        }
       }
     });
   }

@@ -87,15 +87,19 @@ html:not([data-theme]) .sidebar-toggle-btn:hover {
 html[data-theme="warm"] .brand strong,
 html:not([data-theme]) .brand strong {
   font-family: var(--font-display);
-  font-size: 1.18rem;
   letter-spacing: -0.015em;
   color: #261e18;
 }
 
 html[data-theme="warm"] .brand small,
+html:not([data-theme]) .brand small {
+  color: #8c7766;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
 html[data-theme="warm"] .filter-heading,
 html[data-theme="warm"] .filter-section-title h2,
-html:not([data-theme]) .brand small,
 html:not([data-theme]) .filter-heading,
 html:not([data-theme]) .filter-section-title h2 {
   color: #8c7766;
@@ -195,7 +199,6 @@ html:not([data-theme]) .tag-filter-option.is-active .filter-count {
 html[data-theme="warm"] .topbar h1,
 html:not([data-theme]) .topbar h1 {
   font-family: var(--font-display);
-  font-size: 2.15rem;
   font-weight: 700;
   letter-spacing: -0.025em;
   color: #261e18;
@@ -221,19 +224,12 @@ html:not([data-theme]) .notes-panel {
   background: #faf6f0;
   border: 1px solid #e5dacb;
   border-radius: 1rem;
-  padding: clamp(1.15rem, 2.4vw, 1.55rem);
   box-shadow: 0 4px 24px -2px rgba(65, 45, 25, 0.05), 0 2px 8px -1px rgba(65, 45, 25, 0.03);
-}
-
-html[data-theme="warm"] .notes-panel__heading,
-html:not([data-theme]) .notes-panel__heading {
-  margin-bottom: 1.25rem;
 }
 
 html[data-theme="warm"] .notes-panel__heading h2,
 html:not([data-theme]) .notes-panel__heading h2 {
   font-family: var(--font-display);
-  font-size: 1.55rem;
   font-weight: 700;
   letter-spacing: -0.02em;
   color: #261e18;
@@ -286,9 +282,7 @@ html[data-theme="warm"] .search-shortcut,
 html:not([data-theme]) .search-shortcut {
   background: #ebe1d2;
   border-color: #d8ccbd;
-  border-radius: 5px;
   color: #5e4d41;
-  padding: 0.1rem 0.35rem;
 }
 
 html[data-theme="warm"] .search-shortcut kbd,
@@ -298,7 +292,6 @@ html:not([data-theme]) .search-shortcut kbd {
   box-shadow: none !important;
   color: #261e18 !important;
   font-weight: 700;
-  padding: 0;
 }
 
 html[data-theme="warm"] .sort-field select,
@@ -308,33 +301,30 @@ html:not([data-theme]) .sort-field select {
   color: #261e18;
 }
 
-/* Segmented View Mode Control (No cold borders, clean pill) */
+/* Segmented View Mode Control */
 html[data-theme="warm"] .view-mode-control__choices,
 html:not([data-theme]) .view-mode-control__choices {
-  background: #ebe1d2;
-  border: 1px solid #d8ccbd;
-  border-radius: 8px;
-  padding: 2px;
-  gap: 2px;
+  background: #fdfbf7;
+  border-color: #d8ccbd;
 }
 
 html[data-theme="warm"] .view-mode-button,
 html:not([data-theme]) .view-mode-button {
-  border-radius: 6px;
-  border: 0 !important;
   color: #8c7766;
   background: transparent;
   transition: all var(--interaction-duration) var(--interaction-easing);
 }
 
+html[data-theme="warm"] .view-mode-choice + .view-mode-choice .view-mode-button,
+html:not([data-theme]) .view-mode-choice + .view-mode-choice .view-mode-button,
 html[data-theme="warm"] .view-mode-button + .view-mode-button,
 html:not([data-theme]) .view-mode-button + .view-mode-button {
-  border-left: 0 !important;
+  border-left-color: #e5dacb;
 }
 
 html[data-theme="warm"] .view-mode-button:hover:not(.is-active),
 html:not([data-theme]) .view-mode-button:hover:not(.is-active) {
-  background: rgba(253, 251, 247, 0.6);
+  background: #f5efe6;
   color: #261e18;
 }
 
@@ -342,9 +332,8 @@ html[data-theme="warm"] .view-mode-button.is-active,
 html[data-theme="warm"] .view-mode-button[aria-pressed="true"],
 html:not([data-theme]) .view-mode-button.is-active,
 html:not([data-theme]) .view-mode-button[aria-pressed="true"] {
-  background: #fdfbf7 !important;
+  background: #ebe1d2 !important;
   color: #261e18 !important;
-  box-shadow: 0 1px 3px rgba(65, 45, 25, 0.12);
 }
 
 html[data-theme="warm"] .results-meta,
@@ -400,17 +389,15 @@ html:not([data-theme]) .note-card:hover {
 
 html[data-theme="warm"] .note-card--pinned,
 html:not([data-theme]) .note-card--pinned {
-  border-left: 3.5px solid var(--primary-accent) !important;
+  border-color: var(--primary-accent);
   background: linear-gradient(135deg, #fdf6ec 0%, #fdfbf7 42%);
 }
 
 html[data-theme="warm"] .note-card__title,
 html:not([data-theme]) .note-card__title {
   font-family: var(--font-display);
-  font-size: 1.16rem;
   font-weight: 700;
   letter-spacing: -0.015em;
-  line-height: 1.35;
   color: #261e18;
   transition: color var(--interaction-duration) ease;
 }
@@ -423,8 +410,6 @@ html:not([data-theme]) .note-card:hover .note-card__title {
 html[data-theme="warm"] .note-card__preview,
 html:not([data-theme]) .note-card__preview {
   color: #5e4d41;
-  font-size: 0.84375rem;
-  line-height: 1.58;
 }
 
 html[data-theme="warm"] .note-card__date,
@@ -636,7 +621,6 @@ html:not([data-theme]) textarea::placeholder {
 html[data-theme="warm"] .field--title input,
 html:not([data-theme]) .field--title input {
   font-family: var(--font-display);
-  font-size: 1.55rem;
   font-weight: 700;
   letter-spacing: -0.02em;
   color: #261e18;
@@ -668,8 +652,6 @@ html:not([data-theme]) #note-content {
   border-color: #d8ccbd;
   color: #261e18;
   font-family: var(--font-mono);
-  font-size: 0.94rem;
-  line-height: 1.7;
 }
 
 html[data-theme="warm"] #note-content:focus,
@@ -686,10 +668,8 @@ html:not([data-theme]) .dialog-footer {
 html[data-theme="warm"] .quick-view-document-header h1,
 html:not([data-theme]) .quick-view-document-header h1 {
   font-family: var(--font-display);
-  font-size: 2.2rem;
   font-weight: 700;
   letter-spacing: -0.025em;
-  line-height: 1.25;
   color: #261e18;
 }
 
@@ -698,7 +678,6 @@ html[data-theme="warm"] .note-content-preview,
 html:not([data-theme]) .quick-view-content,
 html:not([data-theme]) .note-content-preview {
   color: #261e18;
-  line-height: 1.78;
 }
 
 html[data-theme="warm"] .quick-view-content h1,
@@ -722,11 +701,9 @@ html[data-theme="warm"] .quick-view-content blockquote,
 html[data-theme="warm"] .note-content-preview blockquote,
 html:not([data-theme]) .quick-view-content blockquote,
 html:not([data-theme]) .note-content-preview blockquote {
-  border-left: 3.5px solid var(--primary-accent);
+  border-left-color: var(--primary-accent);
   background: #faf3e6;
-  border-radius: 0 7px 7px 0;
   color: #3d2f24;
-  padding: 0.75rem 1.15rem;
   font-style: italic;
 }
 
@@ -737,9 +714,7 @@ html:not([data-theme]) .note-content-preview code:not(pre code) {
   font-family: var(--font-mono);
   background: #f7ede0;
   color: #88430a;
-  border: 1px solid #edd5bc;
-  padding: 0.16em 0.38em;
-  border-radius: 4px;
+  border-color: #edd5bc;
 }
 
 /* --------------------------------------------------------------------------
@@ -866,10 +841,7 @@ html[data-theme="warm"] .quick-view-content hr,
 html[data-theme="warm"] .note-content-preview hr,
 html:not([data-theme]) .quick-view-content hr,
 html:not([data-theme]) .note-content-preview hr {
-  border: 0;
-  height: 1px;
-  background: linear-gradient(to right, transparent, #d8ccbd, transparent);
-  margin: 1.75rem 0;
+  border-top-color: #d8ccbd;
 }
 
 html[data-theme="warm"] .quick-view-content table,
@@ -986,6 +958,14 @@ html:not([data-theme]) .type-dot--slate   { background: #5e5146; }
 /* --------------------------------------------------------------------------
    Keyboard Shortcuts & Tooltips (<kbd>)
    -------------------------------------------------------------------------- */
+html[data-theme="warm"] .shortcut-tooltip,
+html:not([data-theme]) .shortcut-tooltip {
+  background: #fdfbf7;
+  border-color: #d8ccbd;
+  color: #5e4d41;
+  box-shadow: 0 0.65rem 1.6rem rgba(65, 45, 25, 0.12);
+}
+
 html[data-theme="warm"] kbd,
 html[data-theme="warm"] .shortcut-tooltip kbd,
 html:not([data-theme]) kbd,
@@ -1047,24 +1027,15 @@ html:not([data-theme]) .toast__action:focus-visible {
    -------------------------------------------------------------------------- */
 html[data-theme="warm"] .note-dialog .tag-picker,
 html:not([data-theme]) .note-dialog .tag-picker {
-  border: 0 !important;
-  background: transparent !important;
-  box-shadow: none !important;
-  padding: 0 !important;
+  border-color: transparent;
+  background: transparent;
 }
 
 html[data-theme="warm"] .tag-add-button,
 html:not([data-theme]) .tag-add-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 1.55rem;
-  height: 1.55rem;
   background: #ebe1d2;
-  border: 1px solid #d8ccbd;
-  border-radius: 999px;
+  border-color: #d8ccbd;
   color: #4a3c31;
-  font-size: 0.95rem;
   font-weight: 600;
   transition: all var(--interaction-duration) var(--interaction-easing);
 }

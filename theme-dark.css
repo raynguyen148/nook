@@ -376,6 +376,7 @@ html[data-theme="dark"] .view-mode-control__choices {
 
 
 
+html[data-theme="dark"] .view-mode-choice + .view-mode-choice .view-mode-button,
 html[data-theme="dark"] .view-mode-button + .view-mode-button {
   border-color: #334155;
 }
