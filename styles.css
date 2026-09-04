@@ -1394,11 +1394,13 @@ select::-ms-expand {
 
 
 .view-mode-button svg {
-  width: 1rem;
-  height: 1rem;
+  width: 1.05rem;
+  height: 1.05rem;
   fill: none;
   stroke: currentColor;
-  stroke-width: 1.45;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 
