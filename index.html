@@ -28,10 +28,20 @@
     </script>
     <title>Nook</title>
     <link rel="icon" href="favicon.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="styles.css" />
-    <link rel="stylesheet" href="theme-classic.css" />
-    <link rel="stylesheet" href="theme-warm.css" />
-    <link rel="stylesheet" href="theme-dark.css" />
+    <link rel="stylesheet" href="css/base.css" />
+    <link rel="stylesheet" href="css/note-components.css" />
+    <link rel="stylesheet" href="css/markdown.css" />
+    <link rel="stylesheet" href="css/dialogs.css" />
+    <link rel="stylesheet" href="css/management.css" />
+    <link rel="stylesheet" href="css/responsive.css" />
+    <link rel="stylesheet" href="css/interactions.css" />
+    <link rel="stylesheet" href="css/library.css" />
+    <link rel="stylesheet" href="css/organize.css" />
+    <link rel="stylesheet" href="css/note-detail.css" />
+    <link rel="stylesheet" href="css/accessibility.css" />
+    <link rel="stylesheet" href="css/themes/classic.css" />
+    <link rel="stylesheet" href="css/themes/warm.css" />
+    <link rel="stylesheet" href="css/themes/dark.css" />
   </head>
   <body>
     <main class="app-shell" aria-label="Nook" aria-busy="true" inert>
@@ -892,8 +902,12 @@
     </noscript>
 
     <!-- The storage module performs a one-time legacy migration when needed. -->
-    <script src="storage.js"></script>
-    <script src="markdown.js"></script>
-    <script src="app.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/markdown.js"></script>
+    <script src="js/app/core.js"></script>
+    <script src="js/app/library.js"></script>
+    <script src="js/app/editor.js"></script>
+    <script src="js/app/organize.js"></script>
+    <script src="js/app/events.js"></script>
   </body>
 </html>

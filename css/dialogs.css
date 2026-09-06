@@ -1,0 +1,432 @@
+/* ==========================================================================
+   Nook - Dialog Actions and Editor Help
+   Confirmation layout, save state, footer actions, shortcuts, and Markdown help.
+   ========================================================================== */
+
+.confirmation-dialog {
+  width: min(calc(100% - 2rem), 30rem);
+  grid-template-rows: auto minmax(0, 1fr) auto;
+}
+
+
+
+.confirmation-dialog[open] {
+  display: grid;
+}
+
+
+
+.confirmation-dialog__header {
+  align-items: center;
+}
+
+
+
+.confirmation-dialog__body {
+  display: grid;
+  align-content: start;
+  gap: 0.55rem;
+  padding: 1.2rem 1.45rem 1.35rem;
+}
+
+
+
+.confirmation-dialog__body p {
+  margin: 0;
+  color: #556176;
+  font-size: 0.88rem;
+  font-weight: 450;
+  line-height: 1.58;
+  overflow-wrap: anywhere;
+}
+
+
+
+.confirmation-dialog__footer {
+  justify-content: flex-end;
+}
+
+
+
+.confirmation-dialog__confirm {
+  min-width: 7.25rem;
+}
+
+
+
+.dialog-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 1rem 1.45rem;
+  border-top: 1px solid #edf0f4;
+}
+
+
+
+.dialog-footer__actions {
+  display: flex;
+  margin-left: auto;
+  gap: 0.65rem;
+}
+
+
+
+.dialog-footer__help {
+  display: flex;
+  align-items: center;
+  gap: 0.15rem;
+}
+
+
+
+.dialog-footer__stats {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin-left: 0.85rem;
+  margin-right: auto;
+  color: #64748b;
+  font-size: 0.78rem;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+
+
+.note-save-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.32rem;
+  font-size: 0.76rem;
+  font-weight: 550;
+  transition: all 180ms ease;
+}
+
+
+
+.note-save-status__icon {
+  width: 0.85rem;
+  height: 0.85rem;
+  flex: none;
+}
+
+
+
+.note-save-status.is-saved {
+  color: #059669;
+}
+
+
+
+.note-save-status.is-new {
+  color: #64748b;
+}
+
+
+
+.note-save-status.is-saving {
+  color: #4f46e5;
+}
+
+
+
+.note-save-status.is-saving .note-save-status__icon {
+  animation: note-save-spinner 800ms linear infinite;
+}
+
+
+
+@keyframes note-save-spinner {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+
+.note-save-status.is-dirty {
+  color: #d97706;
+}
+
+
+
+.note-save-status.is-error {
+  color: #dc2626;
+}
+
+
+
+.quick-view-footer__left-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+
+
+.quick-view-export-group {
+  display: flex;
+  gap: 0.5rem;
+}
+
+
+
+.quick-save-note-button {
+  min-width: 7.25rem;
+  padding-inline: 0.85rem;
+  border: 1px solid var(--primary-accent-border);
+  color: var(--primary-accent-text);
+  background: var(--primary-accent-soft);
+}
+
+
+
+.quick-save-note-button:hover:not(:disabled) {
+  border-color: var(--primary-accent-text);
+  color: var(--primary-accent-hover);
+  background: var(--primary-accent-soft-hover);
+}
+
+
+
+.note-save-shortcut {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  margin: 0;
+}
+
+
+
+.note-save-shortcut__trigger {
+  display: inline-grid;
+  width: 1.95rem;
+  min-width: 1.95rem;
+  height: 1.95rem;
+  place-items: center;
+  border: 1px solid transparent;
+  border-radius: 0.44rem;
+  padding: 0;
+  color: #7a8495;
+  background: transparent;
+  cursor: help;
+}
+
+
+
+.note-save-shortcut__trigger:hover {
+  color: #596579;
+  background: #f5f6f9;
+}
+
+
+
+.note-save-shortcut__trigger svg {
+  width: 1.25rem;
+  height: auto;
+}
+
+
+
+.note-save-shortcut__tooltip {
+  position: absolute;
+  z-index: 2;
+  /*
+   * The shortcut icon sits beside the delete action on desktop. Anchoring the
+   * tooltip's right edge here makes it expand into the dialog's left edge,
+   * where native dialog overflow clips its contents. Open it toward the free
+   * space in the footer instead.
+   */
+  left: 0;
+  bottom: calc(100% + 0.55rem);
+  display: grid;
+  width: max-content;
+  max-width: min(18rem, calc(100vw - 2rem));
+  gap: 0.44rem;
+  border: 1px solid #dfe3ea;
+  border-radius: 0.58rem;
+  padding: 0.64rem 0.7rem;
+  color: #556176;
+  background: #fff;
+  box-shadow: 0 0.65rem 1.6rem rgb(36 46 66 / 14%);
+  font-size: 0.72rem;
+  line-height: 1.3;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(0.2rem);
+  transition:
+    opacity 140ms ease,
+    transform 140ms ease;
+  transition-delay: 0s;
+}
+
+
+
+.note-save-shortcut:hover .note-save-shortcut__tooltip,
+.note-save-shortcut:focus-within .note-save-shortcut__tooltip {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+  transition-delay: 0.5s;
+}
+
+
+
+.note-save-shortcut__tooltip p {
+  margin: 0 0 0.08rem;
+  color: #7a8495;
+  font-size: 0.66rem;
+  font-weight: 750;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+
+
+.note-save-shortcut__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+
+
+.note-save-shortcut__keys {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.36rem;
+}
+
+
+
+.note-save-shortcut kbd {
+  min-width: 1.3rem;
+  border: 1px solid #d9dee7;
+  border-bottom-color: #cbd2dc;
+  border-radius: 0.28rem;
+  padding: 0.12rem 0.4rem;
+  color: #596579;
+  background: #fff;
+  box-shadow: 0 1px 0 rgb(55 66 86 / 8%);
+  font: inherit;
+  font-weight: 650;
+  text-align: center;
+}
+
+
+
+.note-markdown-help {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  margin: 0;
+}
+
+
+
+.note-markdown-help__trigger {
+  display: inline-grid;
+  width: 1.95rem;
+  min-width: 1.95rem;
+  height: 1.95rem;
+  place-items: center;
+  border: 1px solid transparent;
+  border-radius: 0.44rem;
+  padding: 0;
+  color: #7a8495;
+  background: transparent;
+  cursor: help;
+}
+
+
+
+.note-markdown-help__trigger:hover,
+.note-markdown-help__trigger:focus-visible {
+  outline: none;
+  color: #596579;
+  background: #f5f6f9;
+}
+
+
+
+.note-markdown-help__trigger svg {
+  width: 1.16rem;
+  height: 1.16rem;
+}
+
+
+
+.note-markdown-help__tooltip {
+  position: absolute;
+  z-index: 2;
+  bottom: calc(100% + 0.55rem);
+  left: 0;
+  display: grid;
+  width: max-content;
+  max-width: min(23rem, calc(100vw - 2rem));
+  gap: 0.38rem;
+  border: 1px solid #dfe3ea;
+  border-radius: 0.58rem;
+  padding: 0.64rem 0.7rem;
+  color: #556176;
+  background: #fff;
+  box-shadow: 0 0.65rem 1.6rem rgb(36 46 66 / 14%);
+  font-size: 0.72rem;
+  line-height: 1.3;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(0.2rem);
+  transition:
+    opacity 140ms ease,
+    transform 140ms ease;
+  transition-delay: 0s;
+}
+
+
+
+.note-markdown-help:hover .note-markdown-help__tooltip,
+.note-markdown-help:focus-within .note-markdown-help__tooltip {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+  transition-delay: 0.5s;
+}
+
+
+
+.note-markdown-help__tooltip p {
+  margin: 0 0 0.08rem;
+  color: #7a8495;
+  font-size: 0.66rem;
+  font-weight: 750;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+
+
+.note-markdown-help__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.2rem;
+  white-space: nowrap;
+}
+
+
+
+.note-markdown-help__row code {
+  border-radius: 0.25rem;
+  padding: 0.11rem 0.28rem;
+  border: 1px solid var(--primary-accent-border);
+  color: var(--primary-accent-text);
+  background: var(--primary-accent-soft);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.86em;
+}

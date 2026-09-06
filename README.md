@@ -245,10 +245,10 @@ of `noteTypes`, and the legacy library shape containing `interviewQuestions` and
 | File | Responsibility |
 | --- | --- |
 | [`index.html`](index.html) | Semantic page structure, accessible controls, detail workspace, and native dialogs |
-| [`styles.css`](styles.css) | Layout, responsive behavior, themes, component states, and accessibility styling |
-| [`storage.js`](storage.js) | IndexedDB setup, validation, migration, CRUD, Trash lifecycle, and backup import/export |
-| [`markdown.js`](markdown.js) | Safe dependency-free Markdown parser and DOM renderer |
-| [`app.js`](app.js) | UI state, filtering, rendering, detail workspace, editor behavior, shortcuts, and storage calls |
+| [`css/`](css) | Ordered style layers for foundations, shared components, responsive rules, library, settings, note detail, accessibility, and themes |
+| [`js/storage.js`](js/storage.js) | IndexedDB setup, validation, migration, CRUD, Trash lifecycle, and backup import/export |
+| [`js/markdown.js`](js/markdown.js) | Safe dependency-free Markdown parser and DOM renderer |
+| [`js/app/`](js/app) | UI modules split by responsibility: shared state, library, editor, settings/import-export, and event/bootstrap wiring |
 | [`favicon.svg`](favicon.svg) | Local Nook application icon used by the browser tab |
 | [`docs/sample-data/nook-demo-library.json`](docs/sample-data/nook-demo-library.json) | Reusable fictional import/export fixture for demos and screenshot QA |
 | [`LICENSE`](LICENSE) | Unlicense / public-domain dedication |
@@ -256,12 +256,19 @@ of `noteTypes`, and the legacy library shape containing `interviewQuestions` and
 The entry point loads scripts in this order:
 
 ```text
-storage.js → markdown.js → app.js
+js/storage.js → js/markdown.js → js/app/core.js → js/app/library.js
+              → js/app/editor.js → js/app/organize.js → js/app/events.js
 ```
 
-`storage.js` exposes the frozen `PersonalNotesStorage` API and `markdown.js`
-exposes the frozen `NookMarkdown` API. The UI uses these interfaces instead of
-accessing IndexedDB directly.
+`js/storage.js` exposes the frozen `PersonalNotesStorage` API and
+`js/markdown.js` exposes the frozen `NookMarkdown` API. The application modules
+share a temporary internal registry while loading; `events.js` removes it before
+bootstrap. The UI continues to use the storage API instead of accessing
+IndexedDB directly.
+
+Stylesheets are also order-dependent. `index.html` loads the structural layers
+first, then the three theme files. Keep that order when moving selectors so the
+existing cascade remains unchanged.
 
 ## Development and validation
 
@@ -269,9 +276,9 @@ There is no `package.json`, bundler, framework, test runner, or remote runtime
 dependency. Useful static checks are:
 
 ```bash
-node --check storage.js
-node --check markdown.js
-node --check app.js
+node --check js/storage.js
+node --check js/markdown.js
+for file in js/app/*.js; do node --check "$file"; done
 git diff --check
 ```
 

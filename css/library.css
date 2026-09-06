@@ -1,0 +1,514 @@
+/* ==========================================================================
+   Nook - Library Surface
+   Final sidebar, topbar, toolbar, filter, and note-card presentation.
+   ========================================================================== */
+
+/* Workspace polish: establish one quiet visual hierarchy across the library,
+ * editor, and reading surfaces without changing any note data or interaction
+ * contracts. */
+::selection {
+  color: #6b4700;
+  background: #fae4a4;
+}
+
+
+
+.sidebar {
+  border-color: #e2e8f0;
+  background: #ffffff;
+}
+
+
+
+.brand {
+  padding-block: 0.18rem;
+}
+
+
+
+.storage-status {
+  margin-top: 1.05rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.55rem;
+  background: rgb(248 250 252 / 80%);
+}
+
+
+
+.space-navigation {
+  margin-bottom: 1.25rem;
+  padding-bottom: 1.2rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+
+
+.sidebar.is-trash-view .space-navigation {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+
+
+.space-link,
+.sidebar-filter {
+  border: 1px solid transparent;
+}
+
+
+
+.space-link:hover,
+.sidebar-filter:hover {
+  border-color: #cbd5e1;
+}
+
+
+
+.workspace {
+  max-width: 1600px;
+}
+
+
+
+.topbar {
+  align-items: center;
+}
+
+
+
+.topbar-actions {
+  align-items: center;
+  gap: 0.58rem;
+}
+
+
+
+.topbar-actions .theme-toggle {
+  min-width: 2.5rem;
+}
+
+
+
+.notes-panel {
+  border-color: #e2e8f0;
+  border-radius: 1.1rem;
+  background: #ffffff;
+  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05), 0 2px 6px -1px rgba(15, 23, 42, 0.03);
+}
+
+
+
+.notes-panel__heading {
+  margin-bottom: 1.05rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+
+
+.notes-count {
+  padding: 0.33rem 0.58rem;
+  color: #334155;
+  background: #f1f5f9;
+}
+
+
+
+.toolbar {
+  align-items: center;
+  padding: 0.52rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.82rem;
+  background: #f8fafc;
+}
+
+
+
+.search-field input,
+.sort-field select,
+.view-mode-control__choices {
+  background-color: #ffffff;
+}
+
+
+
+.view-mode-control__choices {
+  border-radius: 0.52rem;
+}
+
+
+
+.results-meta {
+  margin-top: 1rem;
+}
+
+
+
+.note-card {
+  border-radius: 0.875rem;
+  padding: 1rem 1.02rem 0.9rem;
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.05), 0 1px 2px -1px rgb(0 0 0 / 0.05);
+  transition:
+    border var(--interaction-duration) var(--interaction-easing),
+    box-shadow var(--interaction-duration) var(--interaction-easing),
+    transform var(--interaction-duration) var(--interaction-easing);
+}
+
+
+
+.note-card:hover,
+.note-card:focus-within {
+  box-shadow: 0 10px 25px -5px rgb(15 23 42 / 0.08), 0 8px 10px -6px rgb(15 23 42 / 0.05);
+  transform: translateY(-2px);
+}
+
+
+
+.note-card__title {
+  font-size: 0.98rem;
+}
+
+
+
+.note-card__preview {
+  color: #334155;
+  line-height: 1.6;
+}
+
+
+
+.note-card__actions {
+  border-radius: 0.58rem;
+}
+
+
+
+.note-card__action {
+  min-height: 1.9rem;
+}
+
+
+
+.app-dialog {
+  border-color: rgb(214 220 230 / 96%);
+  border-radius: 1.1rem;
+  box-shadow: 0 28px 80px rgb(23 30 56 / 26%);
+}
+
+
+
+.dialog-header {
+  padding-top: 1.45rem;
+  background: linear-gradient(180deg, #fff, #fdfdfe);
+}
+
+
+
+.dialog-footer {
+  background: #fcfcfd;
+}
+
+
+
+.quick-view-content-card,
+.note-content-preview {
+  border-radius: 0.76rem;
+}
+
+
+
+.organize-tabs {
+  gap: 0.45rem;
+  background: #fcfcfd;
+}
+
+
+
+.management-row {
+  border-radius: 0.76rem;
+}
+
+
+
+@media (hover: hover) and (min-width: 621px) {
+  .note-card__actions {
+    opacity: 0.8;
+    transition: opacity var(--interaction-duration) var(--interaction-easing);
+  }
+
+  .note-card:hover .note-card__actions,
+  .note-card:focus-within .note-card__actions {
+    opacity: 1;
+  }
+}
+
+
+
+@media (max-width: 620px) {
+  .note-detail-workspace {
+    width: 100%;
+    margin: 0;
+  }
+
+  .note-detail-surface,
+  .note-detail-surface.note-dialog,
+  .note-detail-surface.quick-view-dialog {
+    min-height: 100dvh;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .note-detail-surface.note-dialog form {
+    min-height: 100dvh;
+  }
+
+  .storage-status {
+    padding-inline: 0.45rem;
+  }
+
+  .space-navigation {
+    margin-bottom: 1rem;
+    padding-bottom: 0.95rem;
+  }
+
+  .topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    width: 100%;
+  }
+
+  #theme-toggle,
+  #organize-btn,
+  #export-btn,
+  #import-btn {
+    width: 2.25rem;
+    min-width: 2.25rem;
+    height: 2.25rem;
+    min-height: 2.25rem;
+    padding: 0;
+    justify-content: center;
+    border-radius: 0.52rem;
+    flex: none;
+  }
+
+  .topbar-actions .button-label {
+    display: none;
+  }
+
+  #empty-trash-btn {
+    flex: 0 0 auto;
+    margin-left: auto;
+    min-width: 0;
+    min-height: 2.25rem;
+    padding: 0.35rem 0.85rem;
+    font-size: 0.82rem;
+    border-radius: 0.52rem;
+  }
+
+  #new-note-btn {
+    flex: 0 0 auto;
+    margin-left: auto;
+    min-width: 0;
+    min-height: 2.25rem;
+    padding: 0.35rem 0.9rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    border-radius: 0.52rem;
+    gap: 0.35rem;
+  }
+
+  #new-note-shortcut {
+    flex: 0 0 auto;
+    margin-left: auto;
+  }
+
+  .space-link {
+    min-height: 2.1rem;
+  }
+
+  .text-button {
+    min-height: 1.85rem;
+    padding-inline: 0.45rem;
+  }
+
+
+  .app-dialog,
+  .organize-dialog,
+  .note-dialog.is-split {
+    width: 100vw;
+    border-radius: 0;
+  }
+
+  .dialog-body {
+    overflow-x: hidden;
+  }
+
+  .dialog-header > .icon-button {
+    width: 2.75rem;
+    height: 2.75rem;
+    flex: none;
+  }
+
+  .note-dialog .dialog-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+  }
+
+  .note-dialog .note-save-shortcut__tooltip,
+  .note-dialog .note-markdown-help__tooltip {
+    right: 0;
+    left: auto;
+  }
+
+  .notes-panel {
+    border-radius: 0.95rem;
+  }
+
+  .toolbar {
+    gap: 0.58rem;
+    padding: 0.44rem;
+  }
+
+  .notes-panel__heading {
+    padding-bottom: 0.85rem;
+  }
+
+  .note-card:hover,
+  .note-card:focus-within {
+    transform: none;
+  }
+}
+
+
+
+/* Keep the existing controls together when their natural header position has
+ * scrolled away, without duplicating actions or their keyboard behavior. */
+.topbar-actions.is-pinned {
+  position: fixed;
+  z-index: 90;
+  top: 0.75rem;
+  right: var(--pinned-controls-right, clamp(1rem, 3.5vw, 3.5rem));
+  flex-wrap: nowrap;
+  border: 1px solid #dfe3eb;
+  border-radius: 0.86rem;
+  padding: 0.42rem;
+  background: rgb(255 255 255 / 94%);
+  box-shadow: 0 12px 28px rgb(23 30 56 / 14%);
+  animation: topbar-actions-pin-in 220ms cubic-bezier(0.2, 0.72, 0.2, 1);
+}
+
+
+
+.topbar-actions.is-pinned,
+.toolbar.is-pinned {
+  transition:
+    opacity var(--interaction-duration) var(--interaction-easing),
+    transform var(--interaction-duration) var(--interaction-easing);
+}
+
+
+
+.topbar-actions.is-pinned.is-unpinning,
+.toolbar.is-pinned.is-unpinning {
+  animation: none;
+  opacity: 0;
+  transform: translateY(-0.45rem);
+}
+
+
+
+@keyframes topbar-actions-pin-in {
+  from {
+    opacity: 0;
+    transform: translateY(-0.75rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+
+.notes-panel.is-toolbar-pinned .notes-panel__heading {
+  margin-bottom: calc(1.25rem + var(--pinned-toolbar-height));
+}
+
+
+
+.toolbar.is-pinned {
+  position: fixed;
+  z-index: 89;
+  top: 0.75rem;
+  right: calc(var(--pinned-controls-right, clamp(1rem, 3.5vw, 3.5rem)) + var(--pinned-actions-width) + 0.75rem);
+  left: var(--pinned-toolbar-left);
+  grid-template-columns: minmax(0, 1fr) auto;
+  min-width: 0;
+  padding: 0.42rem;
+  border-radius: 0.86rem;
+  background: rgb(248 250 252 / 96%);
+  box-shadow: 0 12px 28px rgb(23 30 56 / 14%);
+}
+
+
+
+.toolbar.is-pinned .view-mode-control {
+  display: none;
+}
+
+
+
+@media (max-width: 620px) {
+  .topbar.is-actions-pinned {
+    padding-bottom: calc(var(--pinned-actions-height) + 1rem);
+  }
+
+  .topbar-actions.is-pinned {
+    right: 0.75rem;
+    left: 0.75rem;
+    width: auto;
+  }
+
+  .toolbar.is-pinned {
+    top: calc(0.75rem + var(--pinned-actions-height) + 0.45rem);
+    right: 0.75rem;
+    left: 0.75rem;
+    grid-template-columns: minmax(0, 1fr) auto;
+    width: auto;
+  }
+}
+
+
+
+@media (min-width: 621px) and (max-width: 1450px) {
+  .topbar-actions.is-pinned #theme-toggle,
+  .topbar-actions.is-pinned #organize-btn,
+  .topbar-actions.is-pinned #export-btn,
+  .topbar-actions.is-pinned #import-btn,
+  .topbar-actions.is-pinned #empty-trash-btn,
+  .topbar-actions.is-pinned #new-note-btn {
+    width: 2.35rem;
+    min-width: 2.35rem;
+    justify-content: center;
+    gap: 0;
+  }
+
+  .topbar-actions.is-pinned .button-label,
+  .topbar-actions.is-pinned #new-note-btn > span:last-child {
+    display: none;
+  }
+
+  .toolbar.is-pinned {
+    top: 0.75rem;
+    right: calc(var(--pinned-controls-right, clamp(1rem, 3.5vw, 3.5rem)) + var(--pinned-actions-width) + 0.75rem);
+  }
+}
+
+

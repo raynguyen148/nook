@@ -1,0 +1,199 @@
+/* ==========================================================================
+   Nook - Accessibility Overrides
+   Focus treatment, forced colors, and final theme-icon visibility defaults.
+   ========================================================================== */
+
+/* Keep the shared keyboard ring on actual controls only (buttons, interactive links, tabs).
+ * Layout containers, dialogs, and reading/editing surfaces must remain clean and borderless. */
+:where(
+  button,
+  a[href],
+  summary,
+  [role="button"],
+  [role="tab"],
+  [role="option"]
+):focus-visible {
+  outline: 2px solid var(--focus-color);
+  outline-offset: 2px;
+}
+
+
+
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+
+
+/* Native fields keep the same primary edge without adding a competing glow. */
+.search-field input:focus,
+.sort-field select:focus,
+.field input:focus,
+.field select:focus,
+.field textarea:focus,
+.create-row input:focus,
+.create-row select:focus,
+.management-row input:focus,
+.management-row select:focus,
+.management-search input:focus,
+.note-type-picker__trigger:focus-visible,
+.color-picker__trigger:focus-visible {
+  border-color: var(--focus-color);
+  box-shadow: none;
+}
+
+
+
+.search-field input:focus-visible,
+.sort-field select:focus-visible,
+.field input:focus-visible,
+.field select:focus-visible,
+.create-row input:focus-visible,
+.create-row select:focus-visible,
+.management-row input:focus-visible,
+.management-row select:focus-visible,
+.management-search input:focus-visible {
+  outline: none !important;
+  outline-offset: 0 !important;
+}
+
+
+
+/* A card is an indirect focus surface. When one of its controls receives
+ * keyboard focus, the control itself supplies the focus cue; the card must
+ * keep its resting appearance rather than drawing a second container ring. */
+.note-card:focus-within:not(:hover) {
+  border-color: #e2e8f0;
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.05), 0 1px 2px -1px rgb(0 0 0 / 0.05);
+  transform: none;
+}
+
+
+
+.note-card--pinned:focus-within:not(:hover) {
+  border-color: var(--pinned-card-border);
+}
+
+
+
+/* Controls rely on the shared outline rather than a second colored fill. */
+.view-mode-button:focus-visible,
+.note-card__pin-toggle:focus-visible,
+.note-markdown-help__trigger:focus-visible,
+.color-picker__option:focus-visible,
+.note-type-picker__option:focus-visible {
+  box-shadow: none;
+}
+
+
+
+.note-card__pin-toggle:focus-visible,
+.note-markdown-help__trigger:focus-visible {
+  background: transparent;
+}
+
+
+
+.view-mode-button:focus-visible:not(.is-active),
+.color-picker__option:focus-visible:not([aria-selected="true"]),
+.note-type-picker__option:focus-visible:not([aria-selected="true"]) {
+  background: transparent;
+}
+
+
+
+/* The tag picker itself is the visible focus surface, not its inner input. */
+.tag-picker__input-row input:focus-visible {
+  outline: 0 !important;
+}
+
+
+
+.tag-filter-option:has(input:focus-visible),
+.tag-filter-option:focus-within {
+  outline: 2px solid var(--focus-color);
+  outline-offset: 2px;
+}
+
+
+
+/* Document writing and reading surfaces must remain completely seamless and borderless when focused. */
+.note-detail-surface .quick-view-content:focus,
+.note-detail-surface .quick-view-content:focus-visible,
+.note-dialog .field--title input:focus,
+.note-dialog .field--title input:focus-visible,
+.note-dialog #note-content:focus,
+.note-dialog #note-content:focus-visible,
+.note-dialog .note-content-preview:focus,
+.note-dialog .note-content-preview:focus-visible,
+.quick-view-document-header h1:focus,
+.quick-view-document-header h1:focus-visible {
+  outline: none !important;
+  outline-offset: 0 !important;
+  box-shadow: none !important;
+}
+
+
+
+/* Layout containers, modal dialogs, and navigation anchors receive programmatic focus
+ * but must NEVER draw visual focus rings. */
+.notes-list[tabindex]:focus,
+.notes-list[tabindex]:focus-visible,
+.note-detail-surface[tabindex]:focus,
+.note-detail-surface[tabindex]:focus-visible,
+.note-dialog:focus,
+.note-dialog:focus-visible,
+.quick-view-dialog:focus,
+.quick-view-dialog:focus-visible,
+.confirmation-dialog:focus,
+.confirmation-dialog:focus-visible,
+.organize-dialog:focus,
+.organize-dialog:focus-visible,
+.detail-preview-panel:focus,
+.detail-preview-panel:focus-visible,
+.quick-view-body:focus,
+.quick-view-body:focus-visible,
+.dialog-body:focus,
+.dialog-body:focus-visible,
+.workspace:focus,
+.workspace:focus-visible {
+  outline: none !important;
+  outline-offset: 0 !important;
+  box-shadow: none !important;
+}
+
+
+
+@media (forced-colors: active) {
+  :where(
+    button,
+    a[href],
+    summary,
+    [role="button"],
+    [role="tab"],
+    [role="option"]
+  ):focus-visible {
+    outline-color: Highlight !important;
+  }
+}
+
+
+
+/* ==========================================================================
+   Theme Switcher Tri-State Icons Display
+   ========================================================================== */
+.theme-toggle__icon--sun,
+.theme-toggle__icon--warm,
+.theme-toggle__icon--moon {
+  display: none;
+}
+
+
+
+
+/* All theme icons hidden by default until activated by theme stylesheet */
+.theme-toggle__icon--sun,
+.theme-toggle__icon--warm,
+.theme-toggle__icon--moon {
+  display: none;
+}

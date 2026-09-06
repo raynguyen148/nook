@@ -9,7 +9,8 @@ Nook is a private personal note app. It runs entirely offline in the browser:
 - Import/export: local JSON backup files; no server or external API.
 - Note content: stored as raw Markdown text and rendered in Quick View.
 - Organization: notes belong to one note type and can have multiple tags.
-- Current entry point: `index.html` loads `storage.js`, `markdown.js`, then `app.js`.
+- Current entry point: `index.html` loads the ordered files under `css/`, then
+  `js/storage.js`, `js/markdown.js`, and the five modules under `js/app/`.
 
 There is currently no `package.json`, bundler, framework, test runner, or remote
 runtime dependency. Keep the app openable as a static local website.
@@ -23,7 +24,7 @@ runtime dependency. Keep the app openable as a static local website.
 - Keep the existing note model and backup compatibility. Schema changes require
   an explicit IndexedDB migration and a review of import/export behavior.
 - Use the existing `PersonalNotesStorage` API from the UI. Do not access
-  IndexedDB directly from `app.js` for normal feature work.
+  IndexedDB directly from `js/app/` for normal feature work.
 - Keep changes focused. Do not bundle unrelated redesigns, framework adoption,
   or dependency installation into a feature change.
 
@@ -31,15 +32,23 @@ runtime dependency. Keep the app openable as a static local website.
 
 - `index.html`: semantic page structure, native `<dialog>` markup, accessible
   labels, buttons, and script loading order.
-- `styles.css`: all visual styling, responsive layout, component states, and
-  reduced-motion/forced-colors handling.
-- `storage.js`: IndexedDB setup, validation, normalization, legacy migration,
+- `css/`: ordered style layers. Foundations and shared components load first;
+  focused library, settings, note-detail, accessibility, and theme layers load
+  afterward. Preserve the order in `index.html` when moving rules.
+- `js/storage.js`: IndexedDB setup, validation, normalization, legacy migration,
   note/type/tag CRUD, backup export, and backup import. It exposes the frozen
   `globalThis.PersonalNotesStorage` API.
-- `markdown.js`: dependency-free, safe Markdown-to-DOM renderer. It exposes
+- `js/markdown.js`: dependency-free, safe Markdown-to-DOM renderer. It exposes
   the frozen `globalThis.NookMarkdown` API.
-- `app.js`: UI state, rendering, event binding, dialogs, filtering, note
-  editing, keyboard shortcuts, and calls to storage/Markdown services.
+- `js/app/core.js`: shared constants, cached DOM references, application state,
+  preferences, filtering primitives, toast/confirmation helpers, and module registry.
+- `js/app/library.js`: sidebar, note cards, pagination, Quick View, clipboard,
+  pin, restore, and Trash rendering/actions.
+- `js/app/editor.js`: note editor, tag/type pickers, Markdown modes/formatting,
+  autosave, dirty-draft safety, and note save/delete behavior.
+- `js/app/organize.js`: type/tag management, library refresh/render orchestration,
+  import/export, and per-note downloads.
+- `js/app/events.js`: event registration, startup arrangement, and bootstrap.
 - `favicon.svg`: local app icon.
 
 ## Data and storage conventions
@@ -50,7 +59,7 @@ The storage layer owns the data contract. Current records include:
 - Type: `id`, `name`, `normalizedName`, `color`, `isFallback`, timestamps.
 - Tag: `id`, `name`, `normalizedName`, timestamps.
 
-Current limits and invariants are defined in `storage.js`, including title,
+Current limits and invariants are defined in `js/storage.js`, including title,
 name, content, and import-record limits. Reuse its normalization and validation
 helpers instead of duplicating them in the UI.
 
@@ -66,8 +75,12 @@ Do not silently reset the database, delete user data, or change backup format.
 
 ## JavaScript conventions
 
-- Use strict-mode IIFEs for the two main scripts; avoid adding globals except
-  the existing `PersonalNotesStorage` and `NookMarkdown` namespaces.
+- Use strict-mode IIFEs for runtime scripts; avoid adding globals except the
+  existing `PersonalNotesStorage` and `NookMarkdown` namespaces.
+- Application modules communicate through the temporary
+  `Symbol.for("nook.app.modules")` registry created by `core.js`. Keep cross-module
+  calls late-bound, preserve script order, and let `events.js` remove the registry
+  before bootstrap.
 - Prefer `const`/`let`, early returns, small named functions, and the existing
   `elements`, `library`, and `ui` state objects.
 - Cache DOM references in the `elements` object. Put event registration in
@@ -139,8 +152,9 @@ Do not silently reset the database, delete user data, or change backup format.
 
 ## CSS and visual conventions
 
-- Keep styles in `styles.css`; avoid inline styles except for existing measured
-  runtime values such as Quick View height.
+- Keep styles in the appropriate file under `css/`; avoid inline styles except
+  for existing measured runtime values such as Quick View height. Moving a rule
+  between files must preserve its position in the ordered cascade.
 - Use the existing BEM-like naming pattern: `.block`, `.block__element`, and
   `.block--modifier`. Use `.is-hidden` for state visibility and preserve
   existing state classes such as `.is-active`.
@@ -157,7 +171,8 @@ Do not silently reset the database, delete user data, or change backup format.
 
 Separate static checks from runtime checks and report them separately:
 
-- Static JavaScript syntax: `node --check app.js` and `node --check markdown.js`.
+- Static JavaScript syntax: `node --check js/storage.js`,
+  `node --check js/markdown.js`, and `node --check` for every `js/app/*.js` file.
 - Patch whitespace: `git diff --check`.
 - Runtime: serve only on localhost when needed, open the app in a browser, and
   test the affected flow with no console errors.
