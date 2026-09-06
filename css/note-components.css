@@ -557,7 +557,6 @@ select::-ms-expand {
     border 170ms ease,
     box-shadow 170ms ease,
     transform 170ms ease;
-  transform-origin: top left;
 }
 
 
@@ -1628,6 +1627,5 @@ select::-ms-expand {
   color: #64748b;
   font-size: 0.72rem;
 }
-
 
 

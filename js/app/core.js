@@ -21,6 +21,8 @@
   const THEMES = ["light", "warm", "dark"];
   const SIDEBAR_COLLAPSED_STORAGE_KEY = "nook:sidebar-collapsed";
   const VIEW_MODE_STORAGE_KEY = "nook:notes-view-mode";
+  const VIEW_MODE_ANIMATION_DURATION = 180;
+  const VIEW_MODE_ANIMATION_EASING = "cubic-bezier(0.22, 1, 0.36, 1)";
   const FILTER_STORAGE_KEY = "nook:active-filters";
   const DRAFT_RECOVERY_STORAGE_KEY = "nook:note-editor-draft";
   const BACKUP_HEALTH_STORAGE_KEY = "nook:backup-health";
@@ -47,6 +49,7 @@
     timeStyle: "short",
   });
   let libraryChannel = null;
+  let viewModeListAnimation = null;
 
   const elements = {
     workspace: document.querySelector(".workspace"),
@@ -745,8 +748,10 @@
     if (!["focus", "comfortable", "compact"].includes(mode)) return;
     if (mode === ui.viewMode) return;
 
-    const cards = [...elements.notesList.querySelectorAll(".note-card")];
-    const before = new Map(cards.map((card) => [card, card.getBoundingClientRect()]));
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    viewModeListAnimation?.cancel();
+    viewModeListAnimation = null;
+
     ui.viewMode = mode;
     syncViewModeUI();
 
@@ -756,27 +761,27 @@
       // The layout still works when browser privacy settings block localStorage.
     }
 
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (reduceMotion) return;
 
-    window.requestAnimationFrame(() => {
-      cards.forEach((card) => {
-        const previous = before.get(card);
-        const next = card.getBoundingClientRect();
-        if (!previous || (!next.width && !next.height)) return;
-        const deltaX = previous.left - next.left;
-        const deltaY = previous.top - next.top;
-        const scaleX = previous.width / next.width;
-        const scaleY = previous.height / next.height;
-        if (!deltaX && !deltaY && scaleX === 1 && scaleY === 1) return;
-        card.animate(
-          [
-            { transform: `translate(${deltaX}px, ${deltaY}px) scale(${scaleX}, ${scaleY})`, opacity: 0.86 },
-            { transform: "translate(0, 0) scale(1, 1)", opacity: 1 },
-          ],
-          { duration: 260, easing: "cubic-bezier(0.2, 0.72, 0.2, 1)" },
-        );
-      });
-    });
+    // Large column-count changes make card-level FLIP motion overlap and scale
+    // text. Let the grid reflow once, then settle the final layout as one layer.
+    const animation = elements.notesList.animate(
+      [
+        { translate: "0 4px", opacity: 0.68 },
+        { translate: "none", opacity: 1 },
+      ],
+      {
+        duration: VIEW_MODE_ANIMATION_DURATION,
+        easing: VIEW_MODE_ANIMATION_EASING,
+      },
+    );
+    viewModeListAnimation = animation;
+
+    const clearAnimation = () => {
+      if (viewModeListAnimation === animation) viewModeListAnimation = null;
+    };
+    animation.addEventListener("finish", clearAnimation, { once: true });
+    animation.addEventListener("cancel", clearAnimation, { once: true });
   }
 
   function createElement(tagName, options = {}) {
