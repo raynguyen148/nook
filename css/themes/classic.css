@@ -22,6 +22,20 @@ html[data-theme="light"] {
   --pinned-marker-background: #f9efd5;
   --pinned-marker-border: #e6d2a2;
   --pinned-marker-color: #805600;
+  --note-card-surface: #ffffff;
+  --note-card-border: #e2e8f0;
+  --note-card-title: #0f172a;
+  --note-card-title-letter-spacing: -0.016em;
+  --note-card-preview: #334155;
+  --note-card-muted: #64748b;
+  --note-card-actions-border: #e2e8f0;
+  --note-card-actions-surface: #f8fafc;
+  --note-card-action: #475467;
+  --note-card-action-hover: var(--primary-accent-text);
+  --note-card-action-hover-surface: var(--primary-accent-soft);
+  --note-card-action-danger: #dc2626;
+  --note-card-action-danger-surface: #fef2f2;
+  --note-card-action-disabled: #cbd5e1;
   --primary-button-text: #ffffff;
   --focus-color: var(--primary-accent);
   --focus-radius: 0.7rem;
@@ -96,11 +110,6 @@ html[data-theme="light"] .topbar h1 {
   color: #0f172a;
 }
 
-html[data-theme="light"] .note-card {
-  background: #ffffff;
-  border-color: #e2e8f0;
-}
-
 html[data-theme="light"] .note-card--pinned {
   border-color: var(--pinned-card-border);
   border-top-width: 1px;
@@ -118,11 +127,6 @@ html[data-theme="light"] .note-card--pinned:focus-within:not(:hover) {
   html[data-theme="light"] .note-card--pinned.is-hover {
     border-color: var(--pinned-card-border-hover);
   }
-}
-
-html[data-theme="light"] .note-card__title {
-  font-family: var(--font-display);
-  color: #0f172a;
 }
 
 html[data-theme="light"] .note-card:hover .note-card__title {

@@ -222,10 +222,15 @@ textarea:focus-visible {
 
 
 
-.note-card__title:hover,
+.note-card__title:hover {
+  color: var(--primary-accent-text);
+}
+
+
+
 .note-card__action:hover:not(:disabled),
 .note-card__action:focus-visible {
-  color: var(--primary-accent-text);
+  color: var(--note-card-action-hover, var(--primary-accent-text));
 }
 
 
@@ -235,7 +240,7 @@ textarea:focus-visible {
   position: relative;
   z-index: 1;
   outline: none;
-  background: var(--primary-accent-soft);
+  background: var(--note-card-action-hover-surface, var(--primary-accent-soft));
   box-shadow: none;
 }
 
@@ -246,8 +251,8 @@ textarea:focus-visible {
   position: relative;
   z-index: 1;
   outline: none;
-  color: #dc2626;
-  background: #fef2f2;
+  color: var(--note-card-action-danger, #dc2626);
+  background: var(--note-card-action-danger-surface, #fef2f2);
   box-shadow: none;
 }
 

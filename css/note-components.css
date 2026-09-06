@@ -554,10 +554,10 @@ select::-ms-expand {
   position: relative;
   height: 100%;
   gap: 0.78rem;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--note-card-border, #e2e8f0);
   border-radius: 1rem;
   padding: 0.95rem 1rem 0.85rem;
-  background: #fff;
+  background: var(--note-card-surface, #fff);
   box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.05), 0 1px 2px -1px rgb(0 0 0 / 0.05);
   transition:
     border-color var(--motion-duration-short) var(--motion-ease-out),
@@ -831,7 +831,7 @@ select::-ms-expand {
 
 .note-card__date {
   overflow: hidden;
-  color: #64748b;
+  color: var(--note-card-muted, #64748b);
   font-size: 0.72rem;
   font-weight: 500;
   text-overflow: ellipsis;
@@ -844,11 +844,12 @@ select::-ms-expand {
   max-width: 100%;
   border: 0;
   padding: 0;
-  color: #0f172a;
+  color: var(--note-card-title, #0f172a);
   background: transparent;
+  font-family: var(--font-display);
   font-size: 0.98rem;
   font-weight: 700;
-  letter-spacing: -0.016em;
+  letter-spacing: var(--note-card-title-letter-spacing, -0.016em);
   line-height: 1.35;
   text-align: left;
 }
@@ -865,7 +866,7 @@ select::-ms-expand {
   display: -webkit-box;
   margin: 0.46rem 0 0;
   overflow: hidden;
-  color: #334155;
+  color: var(--note-card-preview, #334155);
   font-size: 0.85rem;
   line-height: 1.6;
   -webkit-box-orient: vertical;
@@ -957,9 +958,9 @@ select::-ms-expand {
   flex: none;
   overflow: hidden;
   gap: 0;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--note-card-actions-border, #e2e8f0);
   border-radius: 0.52rem;
-  background: #f8fafc;
+  background: var(--note-card-actions-surface, #f8fafc);
 }
 
 
@@ -971,7 +972,7 @@ select::-ms-expand {
   place-items: center;
   border: 0;
   padding: 0.3rem;
-  color: #475467;
+  color: var(--note-card-action, #475467);
   background: transparent;
 }
 
@@ -986,29 +987,29 @@ select::-ms-expand {
 
 
 .note-card__action + .note-card__action {
-  border-left: 1px solid #e2e8f0;
+  border-left: 1px solid var(--note-card-actions-border, #e2e8f0);
 }
 
 
 
 .note-card__action:hover:not(:disabled),
 .note-card__action:focus-visible {
-  color: #4338ca;
-  background: #eef2ff;
+  color: var(--note-card-action-hover, #4338ca);
+  background: var(--note-card-action-hover-surface, #eef2ff);
 }
 
 
 
 .note-card__action--danger:hover:not(:disabled),
 .note-card__action--danger:focus-visible {
-  color: #dc2626;
-  background: #fef2f2;
+  color: var(--note-card-action-danger, #dc2626);
+  background: var(--note-card-action-danger-surface, #fef2f2);
 }
 
 
 
 .note-card__action:disabled {
-  color: #cbd5e1;
+  color: var(--note-card-action-disabled, #cbd5e1);
 }
 
 

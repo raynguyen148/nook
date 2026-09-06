@@ -5,7 +5,16 @@
   // dependency order. This keeps Nook file:// compatible without making the
   // feature-script order in index.html part of the runtime contract.
   const APP_MODULES_KEY = Symbol.for("nook.app.modules");
-  const MODULE_ORDER = Object.freeze(["core", "library", "editor", "organize", "events"]);
+  const MODULE_ORDER = Object.freeze([
+    "core",
+    "preferences",
+    "feedback",
+    "library",
+    "editor",
+    "organize",
+    "sync",
+    "events",
+  ]);
   const installers = new Map();
   const app = {
     api: Object.create(null),

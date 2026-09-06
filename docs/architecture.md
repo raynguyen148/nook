@@ -12,13 +12,16 @@ other files register named installers and can appear in any order in
 them in this explicit dependency order:
 
 ```text
-core → library → editor → organize → events
+core → preferences → feedback → library → editor → organize → sync → events
 ```
 
-- `core` creates shared state, cached DOM references, constants, and primitives.
+- `core` creates shared state, cached DOM references, constants, filters, and pure helpers.
+- `preferences` owns theme, layout, sidebar, responsive controls, and UI preference persistence.
+- `feedback` owns toast behavior and confirmation-dialog focus management.
 - `library` owns navigation, cards, Quick View, pagination, and Trash actions.
 - `editor` owns note editing, pickers, validation, autosave, and draft safety.
 - `organize` owns type/tag management, library refresh, import, and export.
+- `sync` owns same-origin tab notifications and guarded external refreshes.
 - `events` binds handlers and starts the application after every API is ready.
 
 The runtime rejects unknown and duplicate module names. If a required script is
@@ -54,6 +57,10 @@ Use these ownership rules:
 - `accessibility.css`: focus, reduced-motion, and forced-colors behavior.
 - `themes/*.css`: theme tokens first; selector overrides only when a token
   cannot express the difference.
+
+Note-card surfaces, text, metadata, and action colors use semantic theme tokens.
+Theme selectors remain for genuine structural or interaction differences such
+as Warm card elevation and Dark hover behavior.
 
 Before adding an override, search for the existing selector and edit its owner
 when possible. Avoid raising specificity or adding `!important` as a default

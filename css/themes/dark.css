@@ -38,6 +38,20 @@ html[data-theme="dark"] {
   --pinned-marker-background: #3b3018;
   --pinned-marker-border: #705a2a;
   --pinned-marker-color: #e7bd52;
+  --note-card-surface: #252526;
+  --note-card-border: #2e2e2e;
+  --note-card-title: #e8e8e8;
+  --note-card-title-letter-spacing: -0.015em;
+  --note-card-preview: #cccccc;
+  --note-card-muted: #858585;
+  --note-card-actions-border: #2e2e2e;
+  --note-card-actions-surface: #1e1e1e;
+  --note-card-action: #858585;
+  --note-card-action-hover: var(--primary-accent-text);
+  --note-card-action-hover-surface: var(--primary-accent-soft);
+  --note-card-action-danger: #fca5a5;
+  --note-card-action-danger-surface: rgba(239, 68, 68, 0.15);
+  --note-card-action-disabled: #555555;
   --primary-button-text: #181818;
   --focus-color: var(--primary-accent);
   --focus-radius: 0.5rem;
@@ -236,7 +250,6 @@ html[data-theme="dark"] h1,
 html[data-theme="dark"] h2,
 html[data-theme="dark"] .topbar h1,
 html[data-theme="dark"] .notes-panel__heading h2,
-html[data-theme="dark"] .note-card__title,
 html[data-theme="dark"] .quick-view-content h1,
 html[data-theme="dark"] .quick-view-content h2,
 html[data-theme="dark"] .quick-view-content h3,
@@ -479,8 +492,6 @@ html[data-theme="dark"] .active-filter-clear-all {
    Cards & Note List (Antigravity Surfaces #252526)
    -------------------------------------------------------------------------- */
 html[data-theme="dark"] .note-card {
-  border-color: #2e2e2e;
-  background: #252526;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
   transition:
     transform var(--interaction-duration) var(--interaction-easing),
@@ -524,7 +535,6 @@ html[data-theme="dark"] .note-card.is-detail-source {
   box-shadow: 0 0 0 3px var(--primary-accent-focus), 0 6px 18px rgba(0, 0, 0, 0.3);
 }
 
-html[data-theme="dark"] .note-card__date,
 html[data-theme="dark"] .more-tags,
 html[data-theme="dark"] .untagged {
   color: #858585;
@@ -532,10 +542,6 @@ html[data-theme="dark"] .untagged {
 
 html[data-theme="dark"] .note-card__title:hover {
   color: var(--primary-accent-hover);
-}
-
-html[data-theme="dark"] .note-card__preview {
-  color: #cccccc;
 }
 
 html[data-theme="dark"] .search-highlight {
@@ -571,36 +577,8 @@ html[data-theme="dark"] .tag-suggestion--create {
   background: rgba(196, 136, 40, 0.12);
 }
 
-html[data-theme="dark"] .note-card__actions {
-  border-color: #2e2e2e;
-  background: #1e1e1e;
-}
-
 html[data-theme="dark"] .note-card__action {
-  color: #858585;
   transition: color var(--interaction-duration) var(--motion-ease-out), background-color var(--interaction-duration) var(--motion-ease-out), transform var(--motion-duration-micro) var(--motion-ease-out);
-}
-
-html[data-theme="dark"] .note-card__action + .note-card__action {
-  border-color: #2e2e2e;
-}
-
-html[data-theme="dark"] .note-card__action:hover:not(:disabled),
-html[data-theme="dark"] .note-card__action:focus-visible {
-  color: var(--primary-accent-text);
-  background: var(--primary-accent-soft);
-  outline: none;
-}
-
-html[data-theme="dark"] .note-card__action--danger:hover:not(:disabled),
-html[data-theme="dark"] .note-card__action--danger:focus-visible {
-  color: #fca5a5;
-  background: rgba(239, 68, 68, 0.15);
-  outline: none;
-}
-
-html[data-theme="dark"] .note-card__action:disabled {
-  color: #555555;
 }
 
 html[data-theme="dark"] .note-card__pin-toggle {

@@ -32,6 +32,17 @@ html:not([data-theme]) {
   --pinned-marker-background: #f0dfcd;
   --pinned-marker-border: #d7b089;
   --pinned-marker-color: #7c3906;
+  --note-card-surface: #fdfbf7;
+  --note-card-border: #e5dacb;
+  --note-card-title: #261e18;
+  --note-card-title-letter-spacing: -0.015em;
+  --note-card-preview: #5e4d41;
+  --note-card-muted: #8c7766;
+  --note-card-action: #8c7766;
+  --note-card-action-hover: #261e18;
+  --note-card-action-hover-surface: #f0e6d6;
+  --note-card-action-danger: #a83232;
+  --note-card-action-danger-surface: #fbf0ee;
   --primary-button-text: #ffffff;
   --focus-color: var(--primary-accent);
   --focus-radius: 0.5rem;
@@ -393,8 +404,6 @@ html:not([data-theme]) .active-filter-clear-all {
    -------------------------------------------------------------------------- */
 html[data-theme="warm"] .note-card,
 html:not([data-theme]) .note-card {
-  background: #fdfbf7;
-  border-color: #e5dacb;
   border-radius: 1rem;
   box-shadow: 0 1px 3px rgba(65, 45, 25, 0.04), 0 3px 8px rgba(65, 45, 25, 0.02);
   transition:
@@ -430,26 +439,13 @@ html:not([data-theme]) .note-card--pinned {
 
 html[data-theme="warm"] .note-card__title,
 html:not([data-theme]) .note-card__title {
-  font-family: var(--font-display);
   font-weight: 700;
-  letter-spacing: -0.015em;
-  color: #261e18;
   transition: color var(--interaction-duration) var(--motion-ease-out);
 }
 
 html[data-theme="warm"] .note-card:hover .note-card__title,
 html:not([data-theme]) .note-card:hover .note-card__title {
   color: var(--primary-accent);
-}
-
-html[data-theme="warm"] .note-card__preview,
-html:not([data-theme]) .note-card__preview {
-  color: #5e4d41;
-}
-
-html[data-theme="warm"] .note-card__date,
-html:not([data-theme]) .note-card__date {
-  color: #8c7766;
 }
 
 html[data-theme="warm"] .note-card__footer,
@@ -556,27 +552,6 @@ html:not([data-theme]) .button-danger:hover:not(:disabled) {
   background: #a83232;
   color: #ffffff;
   border-color: #a83232;
-}
-
-html[data-theme="warm"] .note-card__action,
-html:not([data-theme]) .note-card__action {
-  color: #8c7766;
-}
-
-html[data-theme="warm"] .note-card__action:hover:not(:disabled),
-html[data-theme="warm"] .note-card__action:focus-visible,
-html:not([data-theme]) .note-card__action:hover:not(:disabled),
-html:not([data-theme]) .note-card__action:focus-visible {
-  color: #261e18;
-  background: #f0e6d6;
-}
-
-html[data-theme="warm"] .note-card__action--danger:hover:not(:disabled),
-html[data-theme="warm"] .note-card__action--danger:focus-visible,
-html:not([data-theme]) .note-card__action--danger:hover:not(:disabled),
-html:not([data-theme]) .note-card__action--danger:focus-visible {
-  color: #a83232;
-  background: #fbf0ee;
 }
 
 /* --------------------------------------------------------------------------

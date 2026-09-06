@@ -250,7 +250,7 @@ of `noteTypes`, and the legacy library shape containing `interviewQuestions` and
 | [`js/storage.js`](js/storage.js) | IndexedDB setup, validation, migration, CRUD, Trash lifecycle, and backup import/export |
 | [`js/markdown.js`](js/markdown.js) | Safe dependency-free Markdown parser and DOM renderer |
 | [`js/app/runtime.js`](js/app/runtime.js) | Registers application modules and initializes them in an explicit dependency order |
-| [`js/app/`](js/app) | UI modules split by responsibility: shared state, library, editor, settings/import-export, and event/bootstrap wiring |
+| [`js/app/`](js/app) | UI modules split by responsibility: shared state, preferences, feedback, library, editor, settings/import-export, tab sync, and event/bootstrap wiring |
 | [`docs/architecture.md`](docs/architecture.md) | Module boundaries, CSS ownership, extension rules, and structural validation |
 | [`favicon.svg`](favicon.svg) | Local Nook application icon used by the browser tab |
 | [`docs/sample-data/nook-demo-library.json`](docs/sample-data/nook-demo-library.json) | Reusable fictional import/export fixture for demos and screenshot QA |
@@ -266,7 +266,7 @@ js/storage.js → js/markdown.js → js/app/runtime.js → feature registrations
 `js/storage.js` exposes the frozen `PersonalNotesStorage` API and
 `js/markdown.js` exposes the frozen `NookMarkdown` API. The application modules
 register installers in any script-tag order. `runtime.js` initializes them as
-`core → library → editor → organize → events`, reports missing or duplicate
+`core → preferences → feedback → library → editor → organize → sync → events`, reports missing or duplicate
 modules, and `events.js` removes the temporary registry before bootstrap. The UI
 continues to use the storage API instead of accessing IndexedDB directly.
 

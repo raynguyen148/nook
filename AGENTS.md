@@ -9,8 +9,8 @@ Nook is a private personal note app. It runs entirely offline in the browser:
 - Import/export: local JSON backup files; no server or external API.
 - Note content: stored as raw Markdown text and rendered in Quick View.
 - Organization: notes belong to one note type and can have multiple tags.
-- Current entry point: `index.html` loads the ordered files under `css/`, then
-  `js/storage.js`, `js/markdown.js`, and the five modules under `js/app/`.
+- Current entry point: `index.html` loads the CSS manifest, then
+  `js/storage.js`, `js/markdown.js`, and the registered modules under `js/app/`.
 
 There is currently no `package.json`, bundler, framework, test runner, or remote
 runtime dependency. Keep the app openable as a static local website.
@@ -40,14 +40,19 @@ runtime dependency. Keep the app openable as a static local website.
   `globalThis.PersonalNotesStorage` API.
 - `js/markdown.js`: dependency-free, safe Markdown-to-DOM renderer. It exposes
   the frozen `globalThis.NookMarkdown` API.
+- `js/app/runtime.js`: module registration and explicit installer dependency order.
 - `js/app/core.js`: shared constants, cached DOM references, application state,
-  preferences, filtering primitives, toast/confirmation helpers, and module registry.
+  filtering primitives, local draft/backup state, and pure UI helpers.
+- `js/app/preferences.js`: theme, layout, sidebar, responsive control state, and
+  UI preference persistence.
+- `js/app/feedback.js`: toast behavior and confirmation-dialog focus management.
 - `js/app/library.js`: sidebar, note cards, pagination, Quick View, clipboard,
   pin, restore, and Trash rendering/actions.
 - `js/app/editor.js`: note editor, tag/type pickers, Markdown modes/formatting,
   autosave, dirty-draft safety, and note save/delete behavior.
 - `js/app/organize.js`: type/tag management, library refresh/render orchestration,
   import/export, and per-note downloads.
+- `js/app/sync.js`: same-origin tab notifications and guarded external refreshes.
 - `js/app/events.js`: event registration, startup arrangement, and bootstrap.
 - `favicon.svg`: local app icon.
 
@@ -77,8 +82,8 @@ Do not silently reset the database, delete user data, or change backup format.
 
 - Use strict-mode IIFEs for runtime scripts; avoid adding globals except the
   existing `PersonalNotesStorage` and `NookMarkdown` namespaces.
-- Application modules communicate through the temporary
-  `Symbol.for("nook.app.modules")` registry created by `core.js`. Keep cross-module
+- Application modules register through the temporary
+  `Symbol.for("nook.app.modules")` registry created by `runtime.js`. Keep cross-module
   calls late-bound, preserve script order, and let `events.js` remove the registry
   before bootstrap.
 - Prefer `const`/`let`, early returns, small named functions, and the existing

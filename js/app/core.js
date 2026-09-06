@@ -1,7 +1,7 @@
 globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
   "use strict";
 
-  // Shared application state, preferences, filters, and UI primitives.
+  // Shared application state, cached DOM references, filters, and pure helpers.
   const { api } = app;
   const storage = globalThis.PersonalNotesStorage;
   const PAGE_SIZE = 30;
@@ -26,7 +26,6 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
   const DRAFT_RECOVERY_STORAGE_KEY = "nook:note-editor-draft";
   const BACKUP_HEALTH_STORAGE_KEY = "nook:backup-health";
   const SORT_STORAGE_KEY = "nook:notes-sort";
-  const LIBRARY_CHANNEL_NAME = "nook:library";
   const DRAFT_RECOVERY_VERSION = 1;
   const BACKUP_REMINDER_AGE_MS = 10 * 24 * 60 * 60 * 1000;
   const SORT_VALUES = [
@@ -47,11 +46,6 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
     dateStyle: "medium",
     timeStyle: "short",
   });
-  let libraryChannel = null;
-  let viewModeListAnimation = null;
-  let uiViewTransition = null;
-  let sidebarCollapseStartTimer = 0;
-  let sidebarCollapseRevealTimer = 0;
 
   const elements = {
     workspace: document.querySelector(".workspace"),
@@ -241,14 +235,15 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
     topbarActionsUnpinTimer: 0,
   };
 
-  // Cross-module calls stay late-bound so each classic script can remain an
-  // isolated strict-mode IIFE while preserving direct file:// usage.
-  const isNoteEditorOpen = (...args) => api.isNoteEditorOpen(...args);
+  // Cross-module calls stay late-bound so installers can expose cohesive APIs
+  // while preserving direct file:// usage.
   const getNoteEditorDraftData = (...args) => api.getNoteEditorDraftData(...args);
   const hasUnsavedNoteChanges = (...args) => api.hasUnsavedNoteChanges(...args);
+  const isNoteEditorOpen = (...args) => api.isNoteEditorOpen(...args);
+  const persistFilters = (...args) => api.persistFilters(...args);
+  const persistSort = (...args) => api.persistSort(...args);
   const renderLibrary = (...args) => api.renderLibrary(...args);
   const renderSearchResults = (...args) => api.renderSearchResults(...args);
-  const refreshLibrary = (...args) => api.refreshLibrary(...args);
 
   function getStoredTheme() {
     try {
@@ -259,308 +254,12 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
     }
   }
 
-  function getNextTheme(currentTheme) {
-    const currentIndex = THEMES.indexOf(currentTheme);
-    const nextIndex = (currentIndex + 1) % THEMES.length;
-    return THEMES[nextIndex];
-  }
-
-  function prefersReducedMotion() {
-    return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  }
-
-  function runUiViewTransition(kind, update) {
-    if (prefersReducedMotion() || typeof document.startViewTransition !== "function") {
-      update();
-      return null;
-    }
-
-    uiViewTransition?.skipTransition?.();
-    document.documentElement.dataset.uiTransition = kind;
-
-    let transition;
-    try {
-      transition = document.startViewTransition(update);
-    } catch {
-      delete document.documentElement.dataset.uiTransition;
-      update();
-      return null;
-    }
-
-    uiViewTransition = transition;
-    transition.finished.catch(() => {}).finally(() => {
-      if (uiViewTransition !== transition) return;
-      uiViewTransition = null;
-      delete document.documentElement.dataset.uiTransition;
-    });
-    return transition;
-  }
-
-  function syncThemeUI() {
-    const theme = ui.theme;
-    document.documentElement.dataset.theme = theme;
-    elements.themeToggle.setAttribute("aria-pressed", String(theme === "dark"));
-
-    const themeLabels = {
-      light: "Light",
-      warm: "Warm",
-      dark: "Dark",
-    };
-    const nextThemeNames = {
-      light: "Warm",
-      warm: "Dark",
-      dark: "Light",
-    };
-
-    const nextTheme = getNextTheme(theme);
-    const label = themeLabels[theme] || "Light";
-    const nextLabel = nextThemeNames[theme] || "Warm";
-    elements.themeToggle.setAttribute(
-      "aria-label",
-      `Current theme: ${label}. Switch to ${nextLabel} theme`,
-    );
-    elements.themeToggle.removeAttribute("title");
-    elements.themeToggleLabel.textContent = label;
-    if (elements.themeToggleTooltipText) {
-      elements.themeToggleTooltipText.textContent = `Theme: ${label} (switch to ${nextLabel})`;
-    }
-
-    const themeColorMeta = document.querySelector('meta[name="theme-color"]');
-    if (themeColorMeta) {
-      themeColorMeta.content = theme === "dark" ? "#0b0f19" : (theme === "warm" ? "#a35616" : "#9e6b02");
-    }
-  }
-
-  function setTheme(theme, { animate = true, persist = true } = {}) {
-    if (!THEMES.includes(theme) || theme === ui.theme) return;
-    ui.theme = theme;
-    const applyTheme = () => {
-      syncThemeUI();
-      if (!persist) return;
-      try {
-        window.localStorage.setItem(THEME_STORAGE_KEY, theme);
-      } catch {
-        // The theme still works for this session when browser privacy settings block localStorage.
-      }
-    };
-    if (animate) runUiViewTransition("theme", applyTheme);
-    else applyTheme();
-  }
-
   function getStoredSidebarCollapsed() {
     try {
       return window.localStorage.getItem(SIDEBAR_COLLAPSED_STORAGE_KEY) === "true";
     } catch {
       return false;
     }
-  }
-
-  function syncSidebarUI() {
-    const isCollapsed = ui.sidebarCollapsed;
-    document.documentElement.dataset.sidebarCollapsed = String(isCollapsed);
-    elements.appShell.classList.toggle("is-sidebar-collapsed", isCollapsed);
-    if (elements.sidebarToggle) {
-      const shortcutModifier = usesMacKeyboardShortcuts() ? "⌘\\" : "Ctrl+\\";
-      const actionLabel = isCollapsed ? "Expand sidebar" : "Collapse sidebar";
-      elements.sidebarToggle.setAttribute("aria-expanded", String(!isCollapsed));
-      elements.sidebarToggle.setAttribute("aria-label", actionLabel);
-      elements.sidebarToggle.title = `${actionLabel} (${shortcutModifier})`;
-    }
-  }
-
-  function persistSidebarCollapsedState(collapsed) {
-    try {
-      window.localStorage.setItem(SIDEBAR_COLLAPSED_STORAGE_KEY, String(collapsed));
-    } catch {
-      // The sidebar state still works for this session when browser privacy settings block localStorage.
-    }
-  }
-
-  function clearSidebarCollapseChoreography() {
-    if (sidebarCollapseStartTimer) {
-      window.clearTimeout(sidebarCollapseStartTimer);
-      sidebarCollapseStartTimer = 0;
-    }
-    if (sidebarCollapseRevealTimer) {
-      window.clearTimeout(sidebarCollapseRevealTimer);
-      sidebarCollapseRevealTimer = 0;
-    }
-    elements.appShell.classList.remove("is-sidebar-collapsing");
-  }
-
-  function canStageSidebarCollapse() {
-    return !prefersReducedMotion() && window.matchMedia("(min-width: 821px)").matches;
-  }
-
-  function toggleSidebar(collapsed = !ui.sidebarCollapsed) {
-    const isCollapseInFlight = Boolean(sidebarCollapseStartTimer || sidebarCollapseRevealTimer);
-    if (ui.sidebarCollapsed === collapsed && !isCollapseInFlight) return;
-
-    if (collapsed) {
-      uiViewTransition?.skipTransition?.();
-      delete document.documentElement.dataset.uiTransition;
-      ui.sidebarCollapsed = true;
-
-      if (!canStageSidebarCollapse()) {
-        syncSidebarUI();
-        persistSidebarCollapsedState(true);
-        return;
-      }
-
-      clearSidebarCollapseChoreography();
-      elements.appShell.classList.add("is-sidebar-collapsing");
-      sidebarCollapseStartTimer = window.setTimeout(() => {
-        sidebarCollapseStartTimer = 0;
-        syncSidebarUI();
-        persistSidebarCollapsedState(true);
-        sidebarCollapseRevealTimer = window.setTimeout(() => {
-          sidebarCollapseRevealTimer = 0;
-          elements.appShell.classList.remove("is-sidebar-collapsing");
-        }, MOTION.short);
-      }, MOTION.micro);
-      return;
-    }
-
-    clearSidebarCollapseChoreography();
-    ui.sidebarCollapsed = collapsed;
-    if (isCollapseInFlight) {
-      syncSidebarUI();
-      persistSidebarCollapsedState(false);
-      return;
-    }
-
-    runUiViewTransition("sidebar-expand", () => {
-      syncSidebarUI();
-      persistSidebarCollapsedState(false);
-    });
-  }
-
-  function measureTopbarActionsPinBounds() {
-    if (ui.topbarActionsPinned) return;
-    const actionBounds = elements.topbarActions.getBoundingClientRect();
-    const toolbarBounds = elements.toolbar.getBoundingClientRect();
-    const isMobileLayout = window.matchMedia("(max-width: 620px)").matches;
-    ui.topbarActionsPinStart = window.scrollY + actionBounds.top;
-    ui.topbarActionsPinEnd = window.scrollY + (isMobileLayout ? toolbarBounds.bottom : actionBounds.bottom);
-    ui.toolbarPinStart = window.scrollY + toolbarBounds.top;
-    ui.toolbarPinEnd = window.scrollY + toolbarBounds.bottom;
-  }
-
-  function finishTopbarActionsUnpin() {
-    ui.topbarActionsUnpinTimer = 0;
-    ui.topbarActionsPinned = false;
-    elements.topbar.classList.remove("is-actions-pinned");
-    elements.topbarActions.classList.remove("is-pinned", "is-unpinning");
-    elements.appShell.style.removeProperty("--pinned-actions-height");
-    elements.appShell.style.removeProperty("--pinned-actions-width");
-    elements.appShell.style.removeProperty("--pinned-toolbar-left");
-    elements.appShell.style.removeProperty("--pinned-controls-right");
-  }
-
-  function setToolbarPinned(pinned) {
-    if (pinned === ui.toolbarPinned) return;
-    ui.toolbarPinned = pinned;
-    elements.notesPanel.classList.toggle("is-toolbar-pinned", pinned);
-    elements.toolbar.classList.toggle("is-pinned", pinned);
-    elements.toolbar.classList.remove("is-unpinning");
-
-    if (pinned) {
-      const toolbarBounds = elements.toolbar.getBoundingClientRect();
-      elements.notesPanel.style.setProperty("--pinned-toolbar-height", `${toolbarBounds.height}px`);
-      syncPinnedTopbarControlMetrics();
-      return;
-    }
-
-    elements.notesPanel.style.removeProperty("--pinned-toolbar-height");
-  }
-
-  function setTopbarActionsPinned(pinned) {
-    if (pinned && ui.topbarActionsUnpinTimer) {
-      window.clearTimeout(ui.topbarActionsUnpinTimer);
-      ui.topbarActionsUnpinTimer = 0;
-      elements.topbarActions.classList.remove("is-unpinning");
-      elements.toolbar.classList.remove("is-unpinning");
-      return;
-    }
-    if (!pinned && ui.topbarActionsUnpinTimer) return;
-    if (pinned === ui.topbarActionsPinned) return;
-
-    if (pinned) {
-      const actionBounds = elements.topbarActions.getBoundingClientRect();
-      elements.appShell.style.setProperty("--pinned-actions-height", `${actionBounds.height}px`);
-      ui.topbarActionsPinned = true;
-      elements.topbar.classList.add("is-actions-pinned");
-      elements.topbarActions.classList.add("is-pinned");
-      syncPinnedTopbarControlMetrics();
-      if (window.matchMedia("(max-width: 620px)").matches) setToolbarPinned(true);
-      return;
-    }
-
-    setToolbarPinned(false);
-
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      finishTopbarActionsUnpin();
-      return;
-    }
-
-    elements.topbarActions.classList.add("is-unpinning");
-    elements.toolbar.classList.add("is-unpinning");
-    ui.topbarActionsUnpinTimer = window.setTimeout(finishTopbarActionsUnpin, MOTION.short);
-  }
-
-  function syncPinnedTopbarControlMetrics() {
-    if (!ui.topbarActionsPinned) return;
-    const actionBounds = elements.topbarActions.getBoundingClientRect();
-    const topbarBounds = elements.topbar.getBoundingClientRect();
-    elements.appShell.style.setProperty("--pinned-actions-height", `${actionBounds.height}px`);
-    elements.appShell.style.setProperty("--pinned-actions-width", `${actionBounds.width}px`);
-    elements.appShell.style.setProperty("--pinned-toolbar-left", `${topbarBounds.left}px`);
-    elements.appShell.style.setProperty("--pinned-controls-right", `${document.documentElement.clientWidth - topbarBounds.right}px`);
-  }
-
-  function updateTopbarActionsPinning() {
-    const scrollTop = window.scrollY;
-
-    if (!ui.topbarActionsPinned) {
-      measureTopbarActionsPinBounds();
-      if (scrollTop <= ui.topbarActionsPinEnd) return;
-      setTopbarActionsPinned(true);
-    }
-
-    if (!ui.toolbarPinned && scrollTop > ui.toolbarPinEnd) setToolbarPinned(true);
-    if (ui.toolbarPinned && scrollTop <= ui.toolbarPinStart) setToolbarPinned(false);
-    if (scrollTop <= ui.topbarActionsPinStart) setTopbarActionsPinned(false);
-  }
-
-  function scheduleTopbarActionsPinning() {
-    if (ui.topbarActionsPinFrame) return;
-    ui.topbarActionsPinFrame = window.requestAnimationFrame(() => {
-      ui.topbarActionsPinFrame = 0;
-      updateTopbarActionsPinning();
-    });
-  }
-
-
-
-  function activeRegularFilterCount() {
-    return Number(ui.typeId !== "all") + ui.tagIds.size + Number(ui.todayOnly) + Number(ui.updatedTodayOnly);
-  }
-
-  function syncMobileFilterToggle() {
-    const activeCount = activeRegularFilterCount();
-    elements.mobileFilterCount.textContent = String(activeCount);
-    elements.mobileFilterCount.classList.toggle("is-empty", activeCount === 0);
-    elements.mobileFilterToggle.classList.toggle("has-active-filters", activeCount > 0);
-    elements.mobileFilterToggle.setAttribute(
-      "aria-label",
-      activeCount ? `Filters, ${pluralize(activeCount, "active filter")}` : "Filters",
-    );
-  }
-
-  function toggleMobileFilters() {
-    const willExpand = elements.regularFilterControls.classList.contains("is-mobile-collapsed");
-    elements.regularFilterControls.classList.toggle("is-mobile-collapsed", !willExpand);
-    elements.mobileFilterToggle.setAttribute("aria-expanded", String(willExpand));
   }
 
   function getStoredViewMode() {
@@ -578,18 +277,6 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
       return SORT_VALUES.includes(storedSort) ? storedSort : "created-desc";
     } catch {
       return "created-desc";
-    }
-  }
-
-  function persistSort() {
-    try {
-      if (ui.sort === "created-desc") {
-        window.localStorage.removeItem(SORT_STORAGE_KEY);
-        return;
-      }
-      window.localStorage.setItem(SORT_STORAGE_KEY, ui.sort);
-    } catch {
-      // Sorting still works for this session when browser privacy settings block localStorage.
     }
   }
 
@@ -627,33 +314,6 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
         updatedTodayOnly: false,
         trashOnly: false,
       };
-    }
-  }
-
-  function persistFilters() {
-    try {
-      if (
-        ui.typeId === "all" &&
-        ui.tagIds.size === 0 &&
-        !ui.todayOnly &&
-        !ui.updatedTodayOnly &&
-        !ui.trashOnly
-      ) {
-        window.localStorage.removeItem(FILTER_STORAGE_KEY);
-        return;
-      }
-      window.localStorage.setItem(
-        FILTER_STORAGE_KEY,
-        JSON.stringify({
-          typeId: ui.typeId,
-          tagIds: [...ui.tagIds],
-          todayOnly: ui.todayOnly,
-          updatedTodayOnly: ui.updatedTodayOnly,
-          trashOnly: ui.trashOnly,
-        }),
-      );
-    } catch {
-      // Filtering still works when browser privacy settings block localStorage.
     }
   }
 
@@ -827,61 +487,6 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
     elements.noteSaveShortcutHelp.textContent = `Press 1 for the Markdown editor, 2 for split preview, and 3 for Preview. Bold, italic, and link shortcuts format selected note content. Quick save keeps this note open: ${modifierName}, Shift, and S. Save note and close: ${modifierName} and Enter.`;
   }
 
-  function syncViewModeUI() {
-    const viewButtons = [
-      ["focus", elements.focusView],
-      ["comfortable", elements.comfortableView],
-      ["compact", elements.compactView],
-    ];
-    elements.notesList.classList.remove("notes-list--focus", "notes-list--comfortable", "notes-list--compact");
-    elements.notesList.classList.add(`notes-list--${ui.viewMode}`);
-    viewButtons.forEach(([mode, button]) => {
-      const isActive = mode === ui.viewMode;
-      button.classList.toggle("is-active", isActive);
-      button.setAttribute("aria-pressed", String(isActive));
-    });
-  }
-
-  function setViewMode(mode) {
-    if (!["focus", "comfortable", "compact"].includes(mode)) return;
-    if (mode === ui.viewMode) return;
-
-    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    viewModeListAnimation?.cancel();
-    viewModeListAnimation = null;
-
-    ui.viewMode = mode;
-    syncViewModeUI();
-
-    try {
-      window.localStorage.setItem(VIEW_MODE_STORAGE_KEY, mode);
-    } catch {
-      // The layout still works when browser privacy settings block localStorage.
-    }
-
-    if (reduceMotion) return;
-
-    // Large column-count changes make card-level FLIP motion overlap and scale
-    // text. Let the grid reflow once, then settle the final layout as one layer.
-    const animation = elements.notesList.animate(
-      [
-        { translate: "0 4px", opacity: 0.68 },
-        { translate: "none", opacity: 1 },
-      ],
-      {
-        duration: VIEW_MODE_ANIMATION_DURATION,
-        easing: VIEW_MODE_ANIMATION_EASING,
-      },
-    );
-    viewModeListAnimation = animation;
-
-    const clearAnimation = () => {
-      if (viewModeListAnimation === animation) viewModeListAnimation = null;
-    };
-    animation.addEventListener("finish", clearAnimation, { once: true });
-    animation.addEventListener("cancel", clearAnimation, { once: true });
-  }
-
   function createElement(tagName, options = {}) {
     const element = document.createElement(tagName);
     if (options.className) element.className = options.className;
@@ -1028,117 +633,6 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
   function formatFullDate(value) {
     const date = new Date(value);
     return Number.isNaN(date.getTime()) ? "unknown date" : fullDateFormatter.format(date);
-  }
-
-  function activeModalDialog() {
-    return [elements.confirmationDialog, elements.organizeDialog].find((dialog) => dialog.open) || null;
-  }
-
-  function notifyLibraryMutation() {
-    libraryChannel?.postMessage({ type: "library-mutated" });
-  }
-
-  function refreshFromAnotherTab() {
-    if (isNoteEditorOpen() && hasUnsavedNoteChanges()) {
-      ui.externalRefreshPending = true;
-      showToast("The library changed in another tab. Save or close this note to refresh.", "error");
-      return;
-    }
-    refreshLibrary({ external: true }).catch((error) => showError(error, "We could not refresh the local library."));
-  }
-
-  function setupLibrarySync() {
-    if (typeof BroadcastChannel !== "function") return;
-    libraryChannel = new BroadcastChannel(LIBRARY_CHANNEL_NAME);
-    libraryChannel.addEventListener("message", (event) => {
-      if (event.data?.type === "library-mutated") refreshFromAnotherTab();
-    });
-    document.addEventListener("visibilitychange", () => {
-      if (!document.hidden) refreshFromAnotherTab();
-    });
-    window.addEventListener("focus", refreshFromAnotherTab);
-    window.addEventListener("pagehide", () => libraryChannel?.close(), { once: true });
-  }
-
-  function syncToastHost() {
-    // Toast feedback is anchored to the viewport. Opening or closing a dialog
-    // must not move an already-visible message into that dialog's layout.
-    if (elements.toast.parentElement !== document.body) document.body.append(elements.toast);
-    if (!elements.toast.classList.contains("is-visible") || !("showPopover" in elements.toast)) return;
-
-    // A modal dialog is also in the browser top layer. Re-opening this manual
-    // popover raises the toast above that dialog without changing its DOM host.
-    if (elements.toast.matches(":popover-open")) elements.toast.hidePopover();
-    elements.toast.showPopover();
-  }
-
-  function showToast(message, tone = "success", action = null) {
-    window.clearTimeout(ui.toastTimer);
-    window.clearTimeout(ui.toastPopoverTimer);
-    ui.toastAction = action;
-    elements.toastMessage.textContent = message;
-    elements.toast.dataset.tone = tone;
-    elements.toastAction.textContent = action?.label || "";
-    elements.toastAction.classList.toggle("is-hidden", !action);
-    elements.toast.classList.add("is-visible");
-    syncToastHost();
-    ui.toastTimer = window.setTimeout(() => {
-      dismissToast();
-    }, 3600);
-  }
-
-  function dismissToast() {
-    window.clearTimeout(ui.toastTimer);
-    window.clearTimeout(ui.toastPopoverTimer);
-    ui.toastAction = null;
-    elements.toastAction.classList.add("is-hidden");
-    elements.toast.classList.remove("is-visible");
-    if (!("hidePopover" in elements.toast)) return;
-    ui.toastPopoverTimer = window.setTimeout(() => {
-      if (!elements.toast.classList.contains("is-visible") && elements.toast.matches(":popover-open")) {
-        elements.toast.hidePopover();
-      }
-    }, 200);
-  }
-
-  function requestConfirmation({ title, description, confirmLabel, cancelLabel, tone = "danger", initialFocus = "cancel" }) {
-    if (elements.confirmationDialog.open || ui.pendingConfirmation) return Promise.resolve(false);
-
-    const invoker = document.activeElement instanceof HTMLElement ? document.activeElement : null;
-    elements.confirmationTitle.textContent = title;
-    elements.confirmationDescription.textContent = description;
-    elements.confirmAction.textContent = confirmLabel;
-    elements.cancelConfirmation.textContent = cancelLabel;
-    elements.confirmAction.classList.toggle("button-danger", tone === "danger");
-    elements.confirmAction.classList.toggle("button-primary", tone === "primary");
-    elements.confirmationDialog.returnValue = "";
-
-    return new Promise((resolve) => {
-      ui.pendingConfirmation = { resolve, invoker };
-      elements.confirmationDialog.showModal();
-      syncToastHost();
-      window.requestAnimationFrame(() => (initialFocus === "confirm" ? elements.confirmAction : elements.cancelConfirmation).focus());
-    });
-  }
-
-  function closeConfirmation(confirmed = false) {
-    if (elements.confirmationDialog.open) elements.confirmationDialog.close(confirmed ? "confirmed" : "cancelled");
-  }
-
-  function finishConfirmationClose() {
-    const pending = ui.pendingConfirmation;
-    const confirmed = elements.confirmationDialog.returnValue === "confirmed";
-    ui.pendingConfirmation = null;
-    if (!pending) return;
-    pending.resolve(confirmed);
-    if (!confirmed && pending.invoker instanceof HTMLElement && pending.invoker.isConnected && !pending.invoker.disabled) {
-      window.requestAnimationFrame(() => pending.invoker.focus());
-    }
-  }
-
-  function showError(error, fallback = "Something went wrong. Please try again.") {
-    const message = error instanceof Error && error.message ? error.message : fallback;
-    showToast(message, "error");
   }
 
   function resetToFirstPage() {
@@ -1307,36 +801,23 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
       PAGE_SIZE,
       NOTE_AUTO_SAVE_DELAY,
       MOTION,
+      FILTER_STORAGE_KEY,
+      SIDEBAR_COLLAPSED_STORAGE_KEY,
+      SORT_STORAGE_KEY,
       THEME_STORAGE_KEY,
       THEMES,
+      VIEW_MODE_ANIMATION_DURATION,
+      VIEW_MODE_ANIMATION_EASING,
+      VIEW_MODE_STORAGE_KEY,
     }),
   });
 
   Object.assign(api, {
     getStoredTheme,
-    getNextTheme,
-    prefersReducedMotion,
-    runUiViewTransition,
-    syncThemeUI,
-    setTheme,
     getStoredSidebarCollapsed,
-    syncSidebarUI,
-    toggleSidebar,
-    measureTopbarActionsPinBounds,
-    finishTopbarActionsUnpin,
-    setToolbarPinned,
-    setTopbarActionsPinned,
-    syncPinnedTopbarControlMetrics,
-    updateTopbarActionsPinning,
-    scheduleTopbarActionsPinning,
-    activeRegularFilterCount,
-    syncMobileFilterToggle,
-    toggleMobileFilters,
     getStoredViewMode,
     getStoredSort,
-    persistSort,
     getStoredFilters,
-    persistFilters,
     nowIso,
     isValidTimestamp,
     clearStoredNoteDraft,
@@ -1354,8 +835,6 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
     usesMacKeyboardShortcuts,
     syncSearchShortcutHint,
     syncNoteSaveShortcutHint,
-    syncViewModeUI,
-    setViewMode,
     createElement,
     normalizedSearchQuery,
     appendHighlightedText,
@@ -1369,17 +848,6 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
     formatShortDate,
     getNoteCardDateInfo,
     formatFullDate,
-    activeModalDialog,
-    notifyLibraryMutation,
-    refreshFromAnotherTab,
-    setupLibrarySync,
-    syncToastHost,
-    showToast,
-    dismissToast,
-    requestConfirmation,
-    closeConfirmation,
-    finishConfirmationClose,
-    showError,
     resetToFirstPage,
     clearSearchRenderTimer,
     scheduleSearchRender,
