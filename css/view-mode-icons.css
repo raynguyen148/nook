@@ -1,0 +1,18 @@
+/* Hallmark · component: layout-view icon set · genre: modern-minimal · theme: Nook themes
+ * states: inherited from the existing segmented control
+ * contrast: currentColor follows each theme's verified control tokens
+ * pre-emit critique: P5 H5 E5 S5 R5 V5
+ */
+
+/* Finder supplies the semantic cue; Nook keeps its own thin, rounded drawing
+ * language so these icons remain consistent with the rest of the interface. */
+.view-mode-button .view-mode-icon {
+  width: 1.125rem;
+  height: 1.125rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.45;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  shape-rendering: geometricPrecision;
+}

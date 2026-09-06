@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Nook layout icons — states preview</title>
+    <link rel="stylesheet" href="../css/base.css" />
+    <link rel="stylesheet" href="../css/note-components.css" />
+    <link rel="stylesheet" href="../css/view-mode-icons.css" />
+    <link rel="stylesheet" href="../css/interactions.css" />
+    <link rel="stylesheet" href="../css/accessibility.css" />
+    <link rel="stylesheet" href="../css/themes/classic.css" />
+    <link rel="stylesheet" href="../css/themes/warm.css" />
+    <link rel="stylesheet" href="../css/themes/dark.css" />
+    <style>
+      /* Hallmark · component preview: layout-view icon set · genre: modern-minimal · theme: Nook themes
+       * states: default · hover · focus · active · disabled · loading · error · success
+       * contrast: inherited from production theme tokens
+       * pre-emit critique: P5 H5 E5 S5 R5 V5
+       */
+
+      html,
+      body {
+        min-width: 0;
+        overflow-x: clip;
+      }
+
+      .preview-page {
+        width: min(100%, 46rem);
+        margin-inline: auto;
+        padding: 2rem 1rem 3rem;
+      }
+
+      .preview-header {
+        display: grid;
+        gap: 1rem;
+        margin-bottom: 2rem;
+      }
+
+      .preview-header h1,
+      .preview-header p {
+        margin: 0;
+      }
+
+      .preview-header h1 {
+        font-family: var(--font-display);
+        font-size: 1.5rem;
+        line-height: 1.2;
+      }
+
+      .preview-header p {
+        max-width: 58ch;
+        line-height: 1.6;
+      }
+
+      .preview-themes {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+
+      .preview-themes .button {
+        white-space: nowrap;
+      }
+
+      .preview-states {
+        display: grid;
+      }
+
+      .preview-row {
+        display: grid;
+        gap: 0.75rem;
+        align-items: center;
+        padding-block: 1rem;
+        border-top: 1px solid var(--primary-accent-border);
+      }
+
+      .preview-label {
+        font-size: 0.8rem;
+        font-weight: 700;
+      }
+
+      .preview-control {
+        justify-self: start;
+      }
+
+      .view-mode-button.is-hover {
+        color: var(--primary-accent-text);
+        background: var(--primary-accent-soft);
+      }
+
+      .view-mode-button.is-focus {
+        position: relative;
+        z-index: 1;
+        outline: 2px solid var(--focus-color);
+        outline-offset: 2px;
+      }
+
+      .view-mode-button.is-pressed {
+        transform: translateY(1px);
+      }
+
+      .view-mode-button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .view-mode-button[data-state="loading"] {
+        position: relative;
+        cursor: progress;
+      }
+
+      .view-mode-button[data-state="loading"] .view-mode-icon {
+        opacity: 0;
+      }
+
+      .view-mode-button[data-state="loading"]::after {
+        position: absolute;
+        width: 0.75rem;
+        height: 0.75rem;
+        border: 1.5px solid currentColor;
+        border-right-color: transparent;
+        border-radius: 50%;
+        content: "";
+        animation: preview-layout-spin var(--motion-duration-long) linear infinite;
+      }
+
+      .view-mode-button[data-state="error"] {
+        color: var(--toast-error-text);
+        background: var(--toast-error-surface);
+      }
+
+      .view-mode-button[data-state="success"] {
+        color: var(--toast-status-icon);
+        background: var(--toast-status-surface);
+      }
+
+      @keyframes preview-layout-spin {
+        to {
+          transform: rotate(1turn);
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .view-mode-button[data-state="loading"]::after {
+          animation-duration: 1.2s;
+        }
+      }
+
+      @media (min-width: 36rem) {
+        .preview-row {
+          grid-template-columns: 7rem minmax(0, 1fr);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <svg width="0" height="0" aria-hidden="true">
+      <symbol id="preview-focus" viewBox="0 0 24 24">
+        <path d="M4.5 6.75h15M4.5 12h15M4.5 17.25h15" />
+      </symbol>
+      <symbol id="preview-comfortable" viewBox="0 0 24 24">
+        <rect x="3.75" y="4" width="7" height="16" rx="1.6" />
+        <rect x="13.25" y="4" width="7" height="16" rx="1.6" />
+      </symbol>
+      <symbol id="preview-compact" viewBox="0 0 24 24">
+        <rect x="4" y="4" width="6.25" height="6.25" rx="1.35" />
+        <rect x="13.75" y="4" width="6.25" height="6.25" rx="1.35" />
+        <rect x="4" y="13.75" width="6.25" height="6.25" rx="1.35" />
+        <rect x="13.75" y="13.75" width="6.25" height="6.25" rx="1.35" />
+      </symbol>
+    </svg>
+
+    <main class="preview-page">
+      <header class="preview-header">
+        <h1>Layout icons — eight states</h1>
+        <p>Finder-inspired semantics, redrawn with Nook’s thin stroke and rounded geometry.</p>
+        <div class="preview-themes" role="group" aria-label="Preview theme">
+          <button class="button button-secondary" type="button" data-preview-theme="light" aria-pressed="true">Light</button>
+          <button class="button button-secondary" type="button" data-preview-theme="warm" aria-pressed="false">Warm</button>
+          <button class="button button-secondary" type="button" data-preview-theme="dark" aria-pressed="false">Dark</button>
+        </div>
+      </header>
+
+      <section class="preview-states" aria-label="Layout control states">
+        <div class="preview-row">
+          <span class="preview-label">Default</span>
+          <div class="view-mode-control__choices preview-control" role="group" aria-label="Default layout control">
+            <button class="view-mode-button" type="button" aria-label="Focus view"><svg class="view-mode-icon" aria-hidden="true"><use href="#preview-focus" /></svg></button>
+            <button class="view-mode-button" type="button" aria-label="Comfortable view"><svg class="view-mode-icon" aria-hidden="true"><use href="#preview-comfortable" /></svg></button>
+            <button class="view-mode-button" type="button" aria-label="Compact view"><svg class="view-mode-icon" aria-hidden="true"><use href="#preview-compact" /></svg></button>
+          </div>
+        </div>
+
+        <div class="preview-row">
+          <span class="preview-label">Hover</span>
+          <div class="view-mode-control__choices preview-control" role="group" aria-label="Hovered layout control">
+            <button class="view-mode-button is-hover" type="button" aria-label="Focus view, hovered"><svg class="view-mode-icon" aria-hidden="true"><use href="#preview-focus" /></svg></button>
+            <button class="view-mode-button" type="button" aria-label="Comfortable view"><svg class="view-mode-icon" aria-hidden="true"><use href="#preview-comfortable" /></svg></button>
+            <button class="view-mode-button" type="button" aria-label="Compact view"><svg class="view-mode-icon" aria-hidden="true"><use href="#preview-compact" /></svg></button>
+          </div>
+        </div>
+
+        <div class="preview-row">
+          <span class="preview-label">Focus</span>
+          <div class="view-mode-control__choices preview-control" role="group" aria-label="Focused layout control">
+            <button class="view-mode-button" type="button" aria-label="Focus view"><svg class="view-mode-icon" aria-hidden="true"><use href="#preview-focus" /></svg></button>
+            <button class="view-mode-button is-focus" type="button" aria-label="Comfortable view, focused"><svg class="view-mode-icon" aria-hidden="true"><use href="#preview-comfortable" /></svg></button>
+            <button class="view-mode-button" type="button" aria-label="Compact view"><svg class="view-mode-icon" aria-hidden="true"><use href="#preview-compact" /></svg></button>
+          </div>
+        </div>
+
+        <div class="preview-row">
+          <span class="preview-label">Active</span>
+          <div class="view-mode-control__choices preview-control" role="group" aria-label="Pressed layout control">
+            <button class="view-mode-button" type="button" aria-label="Focus view"><svg class="view-mode-icon" aria-hidden="true"><use href="#preview-focus" /></svg></button>
+            <button class="view-mode-button" type="button" aria-label="Comfortable view"><svg class="view-mode-icon" aria-hidden="true"><use href="#preview-comfortable" /></svg></button>
+            <button class="view-mode-button is-pressed" type="button" aria-label="Compact view, pressed"><svg class="view-mode-icon" aria-hidden="true"><use href="#preview-compact" /></svg></button>
+          </div>
+        </div>
+
+        <div class="preview-row">
+          <span class="preview-label">Disabled</span>
+          <div class="view-mode-control__choices preview-control" role="group" aria-label="Disabled layout control">
+            <button class="view-mode-button" type="button" aria-label="Focus view" disabled><svg class="view-mode-icon" aria-hidden="true"><use href="#preview-focus" /></svg></button>
+            <button class="view-mode-button" type="button" aria-label="Comfortable view" disabled><svg class="view-mode-icon" aria-hidden="true"><use href="#preview-comfortable" /></svg></button>
+            <button class="view-mode-button" type="button" aria-label="Compact view" disabled><svg class="view-mode-icon" aria-hidden="true"><use href="#preview-compact" /></svg></button>
+          </div>
+        </div>
+
+        <div class="preview-row">
+          <span class="preview-label">Loading</span>
+          <div class="view-mode-control__choices preview-control" role="group" aria-label="Loading layout control">
+            <button class="view-mode-button" type="button" aria-label="Focus view"><svg class="view-mode-icon" aria-hidden="true"><use href="#preview-focus" /></svg></button>
+            <button class="view-mode-button" type="button" data-state="loading" aria-label="Comfortable view, loading" aria-busy="true"><svg class="view-mode-icon" aria-hidden="true"><use href="#preview-comfortable" /></svg></button>
+            <button class="view-mode-button" type="button" aria-label="Compact view"><svg class="view-mode-icon" aria-hidden="true"><use href="#preview-compact" /></svg></button>
+          </div>
+        </div>
+
+        <div class="preview-row">
+          <span class="preview-label">Error</span>
+          <div class="view-mode-control__choices preview-control" role="group" aria-label="Error layout control">
+            <button class="view-mode-button" type="button" data-state="error" aria-label="Focus view, error"><svg class="view-mode-icon" aria-hidden="true"><use href="#preview-focus" /></svg></button>
+            <button class="view-mode-button" type="button" aria-label="Comfortable view"><svg class="view-mode-icon" aria-hidden="true"><use href="#preview-comfortable" /></svg></button>
+            <button class="view-mode-button" type="button" aria-label="Compact view"><svg class="view-mode-icon" aria-hidden="true"><use href="#preview-compact" /></svg></button>
+          </div>
+        </div>
+
+        <div class="preview-row">
+          <span class="preview-label">Success</span>
+          <div class="view-mode-control__choices preview-control" role="group" aria-label="Successful layout control">
+            <button class="view-mode-button" type="button" aria-label="Focus view"><svg class="view-mode-icon" aria-hidden="true"><use href="#preview-focus" /></svg></button>
+            <button class="view-mode-button" type="button" aria-label="Comfortable view"><svg class="view-mode-icon" aria-hidden="true"><use href="#preview-comfortable" /></svg></button>
+            <button class="view-mode-button" type="button" data-state="success" aria-label="Compact view, selected" aria-pressed="true"><svg class="view-mode-icon" aria-hidden="true"><use href="#preview-compact" /></svg></button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      (() => {
+        "use strict";
+
+        const themeButtons = [...document.querySelectorAll("[data-preview-theme]")];
+        themeButtons.forEach((button) => {
+          button.addEventListener("click", () => {
+            document.documentElement.dataset.theme = button.dataset.previewTheme;
+            themeButtons.forEach((candidate) => {
+              candidate.setAttribute("aria-pressed", String(candidate === button));
+            });
+          });
+        });
+      })();
+    </script>
+  </body>
+</html>

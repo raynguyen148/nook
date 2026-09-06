@@ -379,10 +379,11 @@ select::-ms-expand {
   padding: 0;
   color: #768197;
   background: transparent;
+  cursor: pointer;
   transition:
-    color 170ms ease,
-    background 170ms ease,
-    box-shadow 170ms ease;
+    color var(--interaction-duration) var(--interaction-easing),
+    background-color var(--interaction-duration) var(--interaction-easing),
+    transform var(--motion-duration-micro) var(--motion-ease-out);
 }
 
 
@@ -554,7 +555,7 @@ select::-ms-expand {
   height: 100%;
   gap: 0.78rem;
   border: 1px solid #e2e8f0;
-  border-radius: 0.875rem;
+  border-radius: 1rem;
   padding: 0.95rem 1rem 0.85rem;
   background: #fff;
   box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.05), 0 1px 2px -1px rgb(0 0 0 / 0.05);
@@ -566,9 +567,17 @@ select::-ms-expand {
 
 
 
+/* Hallmark · component: pinned note card · genre: modern-minimal · theme: Nook themes
+ * states: default · hover · focus · active · disabled · loading · error · success
+ * contrast: pin marker uses theme-specific foreground and surface tokens
+ * audience: familiar Nook users · use: quick scan without visual dominance
+ * tone: restrained utilitarian · pre-emit critique: P5 H5 E5 S5 R5 V4
+ */
 .note-card--pinned {
   border-color: var(--pinned-card-border);
-  border-top-width: 2px;
+  border-top-width: 1px;
+  background-color: var(--pinned-card-surface);
+  box-shadow: var(--pinned-card-shadow);
 }
 
 
@@ -1053,7 +1062,86 @@ select::-ms-expand {
 
 
 .note-card--pinned .note-card__pin-toggle {
-  color: var(--primary-accent-text);
+  border-color: var(--pinned-marker-border);
+  color: var(--pinned-marker-color);
+  background: var(--pinned-marker-background);
+}
+
+
+
+.note-card--pinned .note-card__pin-toggle:hover:not(:disabled),
+.note-card--pinned .note-card__pin-toggle:focus-visible,
+.note-card--pinned .note-card__pin-toggle.is-focus {
+  border-color: var(--pinned-card-border-hover);
+  color: var(--pinned-marker-color);
+  background: var(--primary-accent-soft-hover);
+}
+
+
+
+.note-card--pinned .note-card__pin-toggle:active,
+.note-card--pinned .note-card__pin-toggle.is-active {
+  transform: translateY(1px);
+}
+
+
+
+.note-card--pinned[aria-disabled="true"] {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+
+
+.note-card--pinned[data-state="loading"] .note-card__pin-toggle {
+  cursor: progress;
+}
+
+
+
+.note-card--pinned[data-state="loading"] .note-card__pin-toggle svg {
+  opacity: 0;
+}
+
+
+
+.note-card--pinned[data-state="loading"] .note-card__pin-toggle::after {
+  position: absolute;
+  width: 0.72rem;
+  height: 0.72rem;
+  border: 1.5px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  content: "";
+  animation: pinned-card-status-spin var(--motion-duration-long) linear infinite;
+}
+
+
+
+html .note-card.note-card--pinned[data-state="error"] {
+  border-color: var(--toast-error-border);
+}
+
+
+
+html .note-card.note-card--pinned[data-state="error"] .note-card__pin-toggle {
+  border-color: var(--toast-error-border);
+  color: var(--toast-error-status-icon);
+  background: var(--toast-error-status-surface);
+}
+
+
+
+html .note-card.note-card--pinned[data-state="success"] {
+  border-color: var(--pinned-card-border);
+}
+
+
+
+@keyframes pinned-card-status-spin {
+  to {
+    transform: rotate(1turn);
+  }
 }
 
 

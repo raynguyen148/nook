@@ -31,9 +31,13 @@ html[data-theme="dark"] {
   --primary-accent-border: rgba(196, 136, 40, 0.3);
   --primary-accent-focus: rgba(196, 136, 40, 0.25);
   --primary-accent-shadow: rgba(0, 0, 0, 0.3);
-  --pinned-card-border: #c48828;
-  --pinned-card-shadow: rgba(196, 136, 40, 0.14);
-  --pinned-marker-background: rgba(196, 136, 40, 0.14);
+  --pinned-card-border: #705a2a;
+  --pinned-card-border-hover: #9a7435;
+  --pinned-card-surface: #29271f;
+  --pinned-card-shadow: 0 1px 2px rgb(0 0 0 / 28%);
+  --pinned-marker-background: #3b3018;
+  --pinned-marker-border: #705a2a;
+  --pinned-marker-color: #e7bd52;
   --primary-button-text: #181818;
   --focus-color: var(--primary-accent);
   --focus-radius: 0.5rem;
@@ -497,14 +501,22 @@ html[data-theme="dark"] .note-card:focus-within:not(:hover) {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
-html[data-theme="dark"] .note-card--pinned,
-html[data-theme="dark"] .note-card--pinned:hover,
-html[data-theme="dark"] .note-card--pinned:focus-within {
+html[data-theme="dark"] .note-card--pinned {
   border-color: var(--pinned-card-border);
+  background: var(--pinned-card-surface);
+  box-shadow: var(--pinned-card-shadow);
+  transform: none;
 }
 
 html[data-theme="dark"] .note-card--pinned:focus-within:not(:hover) {
   border-color: var(--pinned-card-border);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  html[data-theme="dark"] .note-card--pinned:hover,
+  html[data-theme="dark"] .note-card--pinned.is-hover {
+    border-color: var(--pinned-card-border-hover);
+  }
 }
 
 html[data-theme="dark"] .note-card.is-detail-source {
@@ -593,6 +605,12 @@ html[data-theme="dark"] .note-card__action:disabled {
 
 html[data-theme="dark"] .note-card__pin-toggle {
   color: #858585;
+}
+
+html[data-theme="dark"] .note-card--pinned .note-card__pin-toggle {
+  border-color: var(--pinned-marker-border);
+  color: var(--pinned-marker-color);
+  background: var(--pinned-marker-background);
 }
 
 /* --------------------------------------------------------------------------

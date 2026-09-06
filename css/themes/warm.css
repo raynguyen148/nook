@@ -25,9 +25,13 @@ html:not([data-theme]) {
   --primary-accent-border: #edd5bc;
   --primary-accent-focus: rgba(163, 86, 22, 0.24);
   --primary-accent-shadow: rgba(163, 86, 22, 0.18);
-  --pinned-card-border: #a35616;
-  --pinned-card-shadow: rgba(163, 86, 22, 0.14);
-  --pinned-marker-background: #fcf4e8;
+  --pinned-card-border: #d7b794;
+  --pinned-card-border-hover: #bd7336;
+  --pinned-card-surface: #fcf8f1;
+  --pinned-card-shadow: 0 1px 2px rgba(65, 45, 25, 0.05);
+  --pinned-marker-background: #f5e9db;
+  --pinned-marker-border: #dfc5a8;
+  --pinned-marker-color: #88430a;
   --primary-button-text: #ffffff;
   --focus-color: var(--primary-accent);
   --focus-radius: 0.5rem;
@@ -329,7 +333,10 @@ html[data-theme="warm"] .view-mode-button,
 html:not([data-theme]) .view-mode-button {
   color: #8c7766;
   background: transparent;
-  transition: all var(--interaction-duration) var(--interaction-easing);
+  transition:
+    color var(--interaction-duration) var(--interaction-easing),
+    background-color var(--interaction-duration) var(--interaction-easing),
+    transform var(--motion-duration-micro) var(--motion-ease-out);
 }
 
 html[data-theme="warm"] .view-mode-choice + .view-mode-choice .view-mode-button,
@@ -388,7 +395,7 @@ html[data-theme="warm"] .note-card,
 html:not([data-theme]) .note-card {
   background: #fdfbf7;
   border-color: #e5dacb;
-  border-radius: 10px;
+  border-radius: 1rem;
   box-shadow: 0 1px 3px rgba(65, 45, 25, 0.04), 0 3px 8px rgba(65, 45, 25, 0.02);
   transition:
     transform var(--interaction-duration) var(--interaction-easing),
@@ -406,8 +413,19 @@ html:not([data-theme]) .note-card:hover {
 
 html[data-theme="warm"] .note-card--pinned,
 html:not([data-theme]) .note-card--pinned {
-  border-color: var(--primary-accent);
-  background: linear-gradient(135deg, #fdf6ec 0%, #fdfbf7 42%);
+  border-color: var(--pinned-card-border);
+  background: var(--pinned-card-surface);
+  box-shadow: var(--pinned-card-shadow);
+  transform: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  html[data-theme="warm"] .note-card--pinned:hover,
+  html[data-theme="warm"] .note-card--pinned.is-hover,
+  html:not([data-theme]) .note-card--pinned:hover,
+  html:not([data-theme]) .note-card--pinned.is-hover {
+    border-color: var(--pinned-card-border-hover);
+  }
 }
 
 html[data-theme="warm"] .note-card__title,

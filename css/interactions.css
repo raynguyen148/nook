@@ -41,9 +41,13 @@
   --primary-accent-border: #f2d184;
   --primary-accent-focus: rgb(158 107 2 / 24%);
   --primary-accent-shadow: rgb(158 107 2 / 20%);
-  --pinned-card-border: #c48805;
-  --pinned-card-shadow: rgb(196 136 5 / 15%);
-  --pinned-marker-background: #fdf5db;
+  --pinned-card-border: #d8c391;
+  --pinned-card-border-hover: #c4932e;
+  --pinned-card-surface: #fffdf8;
+  --pinned-card-shadow: 0 1px 2px rgb(15 23 42 / 5%);
+  --pinned-marker-background: #f9efd5;
+  --pinned-marker-border: #e6d2a2;
+  --pinned-marker-color: #805600;
   --primary-button-text: #fff;
   --focus-color: var(--primary-accent);
   --focus-radius: 0.7rem;
@@ -214,12 +218,6 @@ textarea:focus-visible {
 .note-card:hover,
 .note-card:focus-within {
   border-color: var(--primary-accent-border);
-}
-
-
-
-.note-card--pinned:hover,
-.note-card--pinned:focus-within {
 }
 
 
