@@ -101,7 +101,11 @@
   gap: 0.32rem;
   font-size: 0.76rem;
   font-weight: 550;
-  transition: all 180ms ease;
+  transition:
+    color var(--motion-duration-short) var(--motion-ease-out),
+    background-color var(--motion-duration-short) var(--motion-ease-out),
+    border-color var(--motion-duration-short) var(--motion-ease-out),
+    opacity var(--motion-duration-micro) var(--motion-ease-out);
 }
 
 
@@ -260,19 +264,27 @@
   pointer-events: none;
   transform: translateY(0.2rem);
   transition:
-    opacity 140ms ease,
-    transform 140ms ease;
+    opacity var(--motion-duration-short) var(--motion-ease-out),
+    transform var(--motion-duration-short) var(--motion-ease-out);
   transition-delay: 0s;
 }
 
 
 
-.note-save-shortcut:hover .note-save-shortcut__tooltip,
+.note-save-shortcut:hover .note-save-shortcut__tooltip {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+  transition-delay: 800ms;
+}
+
+
+
 .note-save-shortcut:focus-within .note-save-shortcut__tooltip {
   opacity: 1;
   pointer-events: auto;
   transform: translateY(0);
-  transition-delay: 0.5s;
+  transition-delay: 0ms;
 }
 
 
@@ -383,19 +395,27 @@
   pointer-events: none;
   transform: translateY(0.2rem);
   transition:
-    opacity 140ms ease,
-    transform 140ms ease;
+    opacity var(--motion-duration-short) var(--motion-ease-out),
+    transform var(--motion-duration-short) var(--motion-ease-out);
   transition-delay: 0s;
 }
 
 
 
-.note-markdown-help:hover .note-markdown-help__tooltip,
+.note-markdown-help:hover .note-markdown-help__tooltip {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+  transition-delay: 800ms;
+}
+
+
+
 .note-markdown-help:focus-within .note-markdown-help__tooltip {
   opacity: 1;
   pointer-events: auto;
   transform: translateY(0);
-  transition-delay: 0.5s;
+  transition-delay: 0ms;
 }
 
 

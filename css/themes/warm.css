@@ -157,7 +157,7 @@ html:not([data-theme]) .tag-filter-option {
   border: 1px solid #e5dacb;
   color: #5e4d41;
   border-radius: 5px;
-  transition: all var(--interaction-duration) var(--interaction-easing);
+  transition: color var(--interaction-duration) var(--interaction-easing), background-color var(--interaction-duration) var(--interaction-easing), border-color var(--interaction-duration) var(--interaction-easing);
 }
 
 html[data-theme="warm"] .tag-filter-option .filter-count,
@@ -377,7 +377,7 @@ html:not([data-theme]) .note-card {
     transform var(--interaction-duration) var(--interaction-easing),
     box-shadow var(--interaction-duration) var(--interaction-easing),
     border-color var(--interaction-duration) var(--interaction-easing),
-    background-color var(--interaction-duration) ease;
+    background-color var(--interaction-duration) var(--interaction-easing);
 }
 
 html[data-theme="warm"] .note-card:hover,
@@ -399,7 +399,7 @@ html:not([data-theme]) .note-card__title {
   font-weight: 700;
   letter-spacing: -0.015em;
   color: #261e18;
-  transition: color var(--interaction-duration) ease;
+  transition: color var(--interaction-duration) var(--motion-ease-out);
 }
 
 html[data-theme="warm"] .note-card:hover .note-card__title,
@@ -485,7 +485,7 @@ html:not([data-theme]) .button-primary {
   border-radius: 6px;
   font-weight: 600;
   box-shadow: 0 2px 6px rgba(163, 86, 22, 0.22);
-  transition: all var(--interaction-duration) var(--interaction-easing);
+  transition: color var(--interaction-duration) var(--interaction-easing), background-color var(--interaction-duration) var(--interaction-easing), border-color var(--interaction-duration) var(--interaction-easing), box-shadow var(--interaction-duration) var(--interaction-easing), transform var(--motion-duration-micro) var(--motion-ease-out);
 }
 
 html[data-theme="warm"] .button-primary:hover:not(:disabled),
@@ -1037,7 +1037,7 @@ html:not([data-theme]) .tag-add-button {
   border-color: #d8ccbd;
   color: #4a3c31;
   font-weight: 600;
-  transition: all var(--interaction-duration) var(--interaction-easing);
+  transition: color var(--interaction-duration) var(--interaction-easing), background-color var(--interaction-duration) var(--interaction-easing), border-color var(--interaction-duration) var(--interaction-easing), transform var(--motion-duration-micro) var(--motion-ease-out);
 }
 
 html[data-theme="warm"] .tag-add-button:hover:not(:disabled),

@@ -76,7 +76,7 @@ html[data-theme="dark"] .sidebar-toggle-btn {
   border-color: #2e2e2e;
   color: #858585;
   background: #1f1f1f;
-  transition: all var(--interaction-duration) var(--interaction-easing);
+  transition: color var(--interaction-duration) var(--interaction-easing), background-color var(--interaction-duration) var(--interaction-easing), border-color var(--interaction-duration) var(--interaction-easing), opacity var(--interaction-duration) var(--interaction-easing);
 }
 
 html[data-theme="dark"] .sidebar-toggle-btn:hover {
@@ -104,7 +104,7 @@ html[data-theme="dark"] .storage-status {
 
 html[data-theme="dark"] .text-button {
   color: var(--primary-accent);
-  transition: color var(--interaction-duration) ease;
+  transition: color var(--interaction-duration) var(--motion-ease-out);
 }
 
 html[data-theme="dark"] .text-button:hover:not(:disabled) {
@@ -114,7 +114,7 @@ html[data-theme="dark"] .text-button:hover:not(:disabled) {
 html[data-theme="dark"] .sidebar-filter,
 html[data-theme="dark"] .space-link {
   color: #cccccc;
-  transition: all var(--interaction-duration) var(--interaction-easing);
+  transition: color var(--interaction-duration) var(--interaction-easing), background-color var(--interaction-duration) var(--interaction-easing), border-color var(--interaction-duration) var(--interaction-easing);
 }
 
 html[data-theme="dark"] .sidebar-filter:hover,
@@ -163,7 +163,7 @@ html[data-theme="dark"] .tag-filter-option {
   border-color: #2e2e2e;
   color: #cccccc;
   background: #1e1e1e;
-  transition: all var(--interaction-duration) var(--interaction-easing);
+  transition: color var(--interaction-duration) var(--interaction-easing), background-color var(--interaction-duration) var(--interaction-easing), border-color var(--interaction-duration) var(--interaction-easing);
 }
 
 html[data-theme="dark"] .tag-filter-option:hover {
@@ -236,7 +236,7 @@ html[data-theme="dark"] .button-secondary {
   color: #cccccc;
   background: #252526;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-  transition: all var(--interaction-duration) var(--interaction-easing);
+  transition: color var(--interaction-duration) var(--interaction-easing), background-color var(--interaction-duration) var(--interaction-easing), border-color var(--interaction-duration) var(--interaction-easing), box-shadow var(--interaction-duration) var(--interaction-easing), transform var(--motion-duration-micro) var(--motion-ease-out);
 }
 
 html[data-theme="dark"] .button-secondary:hover:not(:disabled) {
@@ -253,7 +253,7 @@ html[data-theme="dark"] .button-primary {
   box-shadow: 0 1px 6px rgba(196, 136, 40, 0.25);
   font-weight: 700;
   letter-spacing: -0.01em;
-  transition: all var(--interaction-duration) var(--interaction-easing);
+  transition: color var(--interaction-duration) var(--interaction-easing), background-color var(--interaction-duration) var(--interaction-easing), border-color var(--interaction-duration) var(--interaction-easing), box-shadow var(--interaction-duration) var(--interaction-easing), transform var(--motion-duration-micro) var(--motion-ease-out);
 }
 
 html[data-theme="dark"] .button-primary:hover:not(:disabled) {
@@ -267,7 +267,7 @@ html[data-theme="dark"] .button-danger {
   border-color: rgba(248, 113, 113, 0.3);
   color: #fca5a5;
   background: rgba(239, 68, 68, 0.1);
-  transition: all var(--interaction-duration) var(--interaction-easing);
+  transition: color var(--interaction-duration) var(--interaction-easing), background-color var(--interaction-duration) var(--interaction-easing), border-color var(--interaction-duration) var(--interaction-easing), box-shadow var(--interaction-duration) var(--interaction-easing), transform var(--motion-duration-micro) var(--motion-ease-out);
 }
 
 html[data-theme="dark"] .button-danger:hover:not(:disabled) {
@@ -279,7 +279,7 @@ html[data-theme="dark"] .button-danger:hover:not(:disabled) {
 
 html[data-theme="dark"] .icon-button {
   color: #858585;
-  transition: all var(--interaction-duration) var(--interaction-easing);
+  transition: color var(--interaction-duration) var(--interaction-easing), background-color var(--interaction-duration) var(--interaction-easing), transform var(--motion-duration-micro) var(--motion-ease-out);
 }
 
 html[data-theme="dark"] .icon-button:hover {
@@ -341,7 +341,7 @@ html[data-theme="dark"] .management-search input {
   color: #cccccc;
   background-color: #1e1e1e;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
-  transition: border-color var(--interaction-duration) ease, box-shadow var(--interaction-duration) ease;
+  transition: border-color var(--interaction-duration) var(--motion-ease-out), box-shadow var(--interaction-duration) var(--motion-ease-out);
 }
 
 html[data-theme="dark"] .search-field input:focus,
@@ -393,7 +393,6 @@ html[data-theme="dark"] .search-shortcut kbd {
 html[data-theme="dark"] .clear-search {
   color: #cccccc;
   background: #333333;
-  transition: all var(--interaction-duration) ease;
 }
 
 html[data-theme="dark"] .clear-search:hover {
@@ -466,7 +465,7 @@ html[data-theme="dark"] .note-card {
     transform var(--interaction-duration) var(--interaction-easing),
     box-shadow var(--interaction-duration) var(--interaction-easing),
     border-color var(--interaction-duration) var(--interaction-easing),
-    background-color var(--interaction-duration) ease;
+    background-color var(--interaction-duration) var(--interaction-easing);
 }
 
 html[data-theme="dark"] .note-card:hover,
@@ -526,7 +525,7 @@ html[data-theme="dark"] .note-detail-surface .quick-view-tag {
   border-color: #383838;
   color: #cccccc;
   background: #1e1e1e;
-  transition: all var(--interaction-duration) var(--interaction-easing);
+  transition: color var(--interaction-duration) var(--interaction-easing), background-color var(--interaction-duration) var(--interaction-easing), border-color var(--interaction-duration) var(--interaction-easing);
 }
 
 html[data-theme="dark"] .tag-chip:hover,
@@ -550,7 +549,7 @@ html[data-theme="dark"] .note-card__actions {
 
 html[data-theme="dark"] .note-card__action {
   color: #858585;
-  transition: all var(--interaction-duration) ease;
+  transition: color var(--interaction-duration) var(--motion-ease-out), background-color var(--interaction-duration) var(--motion-ease-out), transform var(--motion-duration-micro) var(--motion-ease-out);
 }
 
 html[data-theme="dark"] .note-card__action + .note-card__action {
@@ -661,7 +660,7 @@ html[data-theme="dark"] .pagination-button {
   border-color: #383838;
   color: #858585;
   background: transparent;
-  transition: all var(--interaction-duration) var(--interaction-easing);
+  transition: color var(--interaction-duration) var(--interaction-easing), background-color var(--interaction-duration) var(--interaction-easing), border-color var(--interaction-duration) var(--interaction-easing), transform var(--motion-duration-micro) var(--motion-ease-out);
 }
 
 html[data-theme="dark"] .pagination-button:hover:not(:disabled) {
@@ -775,7 +774,7 @@ html[data-theme="dark"] .note-editor-modes {
 
 html[data-theme="dark"] .note-editor-mode__button {
   color: #858585;
-  transition: all var(--interaction-duration) ease;
+  transition: color var(--interaction-duration) var(--motion-ease-out), background-color var(--interaction-duration) var(--motion-ease-out), border-color var(--interaction-duration) var(--motion-ease-out);
 }
 
 html[data-theme="dark"] .note-editor-mode__button:hover:not(:disabled),
@@ -792,7 +791,7 @@ html[data-theme="dark"] .note-formatting-toolbar {
 
 html[data-theme="dark"] .note-formatting-tool__button {
   color: #858585;
-  transition: all var(--interaction-duration) ease;
+  transition: color var(--interaction-duration) var(--motion-ease-out), background-color var(--interaction-duration) var(--motion-ease-out), border-color var(--interaction-duration) var(--motion-ease-out), transform var(--motion-duration-micro) var(--motion-ease-out);
 }
 
 html[data-theme="dark"] .note-formatting-tool__button:hover {
@@ -842,7 +841,7 @@ html[data-theme="dark"] .tag-add-button {
   border-color: #383838;
   color: #858585;
   background: #1e1e1e;
-  transition: all var(--interaction-duration) ease;
+  transition: color var(--interaction-duration) var(--motion-ease-out), background-color var(--interaction-duration) var(--motion-ease-out), border-color var(--interaction-duration) var(--motion-ease-out), transform var(--motion-duration-micro) var(--motion-ease-out);
 }
 
 html[data-theme="dark"] .tag-add-button:hover:not(:disabled) {
@@ -907,7 +906,7 @@ html[data-theme="dark"] .note-type-picker__menu {
 html[data-theme="dark"] .color-picker__option,
 html[data-theme="dark"] .note-type-picker__option {
   color: #cccccc;
-  transition: all var(--interaction-duration) ease;
+  transition: color var(--interaction-duration) var(--motion-ease-out), background-color var(--interaction-duration) var(--motion-ease-out);
 }
 
 html[data-theme="dark"] .color-picker__option:hover,
@@ -968,7 +967,7 @@ html[data-theme="dark"] .note-save-shortcut__trigger,
 html[data-theme="dark"] .note-markdown-help__trigger {
   color: #858585;
   background: transparent;
-  transition: all var(--interaction-duration) ease;
+  transition: color var(--interaction-duration) var(--motion-ease-out), background-color var(--interaction-duration) var(--motion-ease-out), border-color var(--interaction-duration) var(--motion-ease-out), transform var(--motion-duration-micro) var(--motion-ease-out);
 }
 
 html[data-theme="dark"] .note-detail-surface .dialog-footer__preview-actions .icon-button:hover:not(:disabled),
@@ -990,7 +989,7 @@ html[data-theme="dark"] .quick-save-note-button {
   border-color: var(--primary-accent-border);
   color: var(--primary-accent-text);
   background: var(--primary-accent-soft);
-  transition: all var(--interaction-duration) ease;
+  transition: color var(--interaction-duration) var(--motion-ease-out), background-color var(--interaction-duration) var(--motion-ease-out), border-color var(--interaction-duration) var(--motion-ease-out), transform var(--motion-duration-micro) var(--motion-ease-out);
 }
 
 html[data-theme="dark"] .quick-save-note-button:hover:not(:disabled) {
@@ -1019,7 +1018,7 @@ html[data-theme="dark"] .quick-view-export-button {
   border-color: #383838;
   color: #cccccc;
   background: #252526;
-  transition: all var(--interaction-duration) ease;
+  transition: color var(--interaction-duration) var(--motion-ease-out), background-color var(--interaction-duration) var(--motion-ease-out), border-color var(--interaction-duration) var(--motion-ease-out), transform var(--motion-duration-micro) var(--motion-ease-out);
 }
 
 html[data-theme="dark"] .quick-view-export-group {
@@ -1036,7 +1035,7 @@ html[data-theme="dark"] .quick-view-export-button:hover:not(:disabled) {
 html[data-theme="dark"] .quick-view-content a {
   color: var(--primary-accent);
   text-decoration-color: rgba(196, 136, 40, 0.35);
-  transition: color var(--interaction-duration) ease, text-decoration-color var(--interaction-duration) ease;
+  transition: color var(--interaction-duration) var(--motion-ease-out), text-decoration-color var(--interaction-duration) var(--motion-ease-out);
 }
 
 html[data-theme="dark"] .quick-view-content a:hover {
@@ -1084,7 +1083,7 @@ html[data-theme="dark"] .note-content-preview .markdown-code-copy-btn {
   border-color: #383838;
   color: #858585;
   background: #252526;
-  transition: all var(--interaction-duration) ease;
+  transition: color var(--interaction-duration) var(--motion-ease-out), background-color var(--interaction-duration) var(--motion-ease-out), border-color var(--interaction-duration) var(--motion-ease-out), transform var(--motion-duration-micro) var(--motion-ease-out);
 }
 
 html[data-theme="dark"] .quick-view-content .markdown-code-copy-btn:hover,
@@ -1302,7 +1301,7 @@ html[data-theme="dark"] .organize-tabs {
 
 html[data-theme="dark"] .organize-tab {
   color: #858585;
-  transition: all var(--interaction-duration) ease;
+  transition: color var(--interaction-duration) var(--motion-ease-out), background-color var(--interaction-duration) var(--motion-ease-out), border-color var(--interaction-duration) var(--motion-ease-out);
 }
 
 html[data-theme="dark"] .organize-tab:hover {

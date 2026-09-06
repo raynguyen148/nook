@@ -4,7 +4,10 @@
   // Library navigation, cards, pagination, Quick View, and Trash actions.
   const app = globalThis[Symbol.for("nook.app.modules")];
   const { api, storage, elements, library, ui, constants } = app;
-  const { PAGE_SIZE } = constants;
+  const { PAGE_SIZE, MOTION } = constants;
+  let noteDetailAnimation = null;
+  let noteDetailTransitionSequence = 0;
+  let notesContentAnimation = null;
 
   const syncMobileFilterToggle = (...args) => api.syncMobileFilterToggle(...args);
   const persistFilters = (...args) => api.persistFilters(...args);
@@ -217,7 +220,7 @@
           ui.typeId = "all";
           persistFilters();
           resetToFirstPage();
-          renderLibrary();
+          renderLibrary({ motion: "filter" });
         }, ["type", `type-${safeTypeColor(type)}`], `Filter by ${type.name}`),
       );
     }
@@ -227,7 +230,7 @@
           ui.todayOnly = false;
           persistFilters();
           resetToFirstPage();
-          renderLibrary();
+          renderLibrary({ motion: "filter" });
         }, [], "Filter by Created Today"),
       );
     }
@@ -237,7 +240,7 @@
           ui.updatedTodayOnly = false;
           persistFilters();
           resetToFirstPage();
-          renderLibrary();
+          renderLibrary({ motion: "filter" });
         }, [], "Filter by Updated Today"),
       );
     }
@@ -247,7 +250,7 @@
           ui.tagIds.delete(tag.id);
           persistFilters();
           resetToFirstPage();
-          renderLibrary();
+          renderLibrary({ motion: "filter" });
         }, "tag", `Filter by ${tagLabel(tag)}`),
       );
     });
@@ -321,7 +324,7 @@
   }
 
   function isDetailWorkspaceOpen() {
-    return !elements.noteDetailWorkspace.classList.contains("is-hidden");
+    return !ui.detailClosing && !elements.noteDetailWorkspace.classList.contains("is-hidden");
   }
 
   function isQuickViewOpen() {
@@ -332,56 +335,49 @@
     return isDetailWorkspaceOpen() && !elements.noteDialog.classList.contains("is-hidden");
   }
 
-  function animateCardIntoDetail(invoker, surface) {
-    const sourceCard = invoker instanceof HTMLElement ? invoker.closest(".note-card") : null;
-    if (!sourceCard || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  function cancelNoteDetailAnimation() {
+    noteDetailTransitionSequence += 1;
+    noteDetailAnimation?.cancel();
+    noteDetailAnimation = null;
+    ui.detailClosing = false;
+    elements.noteDetailWorkspace.inert = false;
+  }
 
-    const origin = sourceCard.getBoundingClientRect();
-    if (!origin.width || !origin.height) return;
-    const clone = sourceCard.cloneNode(true);
-    clone.classList.add("note-detail-transition-card");
-    clone.setAttribute("aria-hidden", "true");
-    Object.assign(clone.style, {
-      top: `${origin.top}px`,
-      left: `${origin.left}px`,
-      width: `${origin.width}px`,
-      height: `${origin.height}px`,
-    });
-    document.body.append(clone);
-
-    window.requestAnimationFrame(() => {
-      const destination = surface.getBoundingClientRect();
-      if (!destination.width || !destination.height) {
-        clone.remove();
-        return;
-      }
-      const animation = clone.animate(
-        [
-          { transform: "translate(0, 0) scale(1)", opacity: 1 },
-          {
-            transform: `translate(${destination.left - origin.left}px, ${destination.top - origin.top}px) scale(${destination.width / origin.width}, ${Math.min(destination.height / origin.height, 4)})`,
-            opacity: 0.16,
-          },
-        ],
-        { duration: 280, easing: "cubic-bezier(0.2, 0.72, 0.2, 1)", fill: "forwards" },
-      );
-      animation.finished.catch(() => {}).finally(() => clone.remove());
+  function animateNoteDetailIn() {
+    cancelNoteDetailAnimation();
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const animation = elements.noteDetailWorkspace.animate(
+      reducedMotion
+        ? [{ opacity: 0 }, { opacity: 1 }]
+        : [
+            { opacity: 0, transform: "translateY(6px) scale(0.992)" },
+            { opacity: 1, transform: "translateY(0) scale(1)" },
+          ],
+      {
+        duration: reducedMotion ? MOTION.micro : MOTION.medium,
+        easing: MOTION.easeOut,
+      },
+    );
+    noteDetailAnimation = animation;
+    animation.finished.catch(() => {}).finally(() => {
+      if (noteDetailAnimation === animation) noteDetailAnimation = null;
     });
   }
 
   function openNoteDetail(surface, invoker = null) {
-    if (!isDetailWorkspaceOpen()) {
+    const opensWorkspace = !isDetailWorkspaceOpen();
+    if (opensWorkspace) {
       ui.detailScrollTop = window.scrollY;
       ui.viewInvoker = invoker instanceof HTMLElement ? invoker : null;
       ui.detailSourceCard?.classList.remove("is-detail-source");
       ui.detailSourceCard = ui.viewInvoker?.closest(".note-card") || null;
       ui.detailSourceCard?.classList.add("is-detail-source");
-      animateCardIntoDetail(invoker, surface);
       elements.workspace.classList.add("is-note-detail-open");
       elements.noteDetailWorkspace.classList.remove("is-hidden");
       window.scrollTo(0, 0);
     }
     surface.classList.remove("is-hidden");
+    if (opensWorkspace) animateNoteDetailIn();
     window.requestAnimationFrame(() => {
       const scrollSurface = ui.noteEditorMode === "preview"
         ? surface.querySelector(".quick-view-content-card")
@@ -396,16 +392,45 @@
 
   function closeNoteDetail({ restoreFocus = true, invoker = ui.viewInvoker } = {}) {
     resetCopyButtonFeedback(elements.copyNoteContent);
-    elements.noteDialog.classList.add("is-hidden");
-    elements.quickViewDialog.classList.add("is-hidden");
-    elements.noteDetailWorkspace.classList.add("is-hidden");
-    elements.workspace.classList.remove("is-note-detail-open");
-    ui.detailSourceCard?.classList.remove("is-detail-source");
-    ui.detailSourceCard = null;
-    window.requestAnimationFrame(() => {
-      window.scrollTo(0, ui.detailScrollTop);
-      if (restoreFocus) focusQuickViewFallback(invoker);
-    });
+    const transitionSequence = ++noteDetailTransitionSequence;
+    noteDetailAnimation?.cancel();
+    ui.detailClosing = true;
+    elements.noteDetailWorkspace.inert = true;
+
+    const finishClose = () => {
+      if (transitionSequence !== noteDetailTransitionSequence) return;
+      closeAnimation.cancel();
+      if (noteDetailAnimation === closeAnimation) noteDetailAnimation = null;
+      ui.detailClosing = false;
+      elements.noteDetailWorkspace.inert = false;
+      elements.noteDialog.classList.add("is-hidden");
+      elements.quickViewDialog.classList.add("is-hidden");
+      elements.noteDetailWorkspace.classList.add("is-hidden");
+      elements.workspace.classList.remove("is-note-detail-open");
+      ui.detailSourceCard?.classList.remove("is-detail-source");
+      ui.detailSourceCard = null;
+      window.requestAnimationFrame(() => {
+        window.scrollTo(0, ui.detailScrollTop);
+        if (restoreFocus) focusQuickViewFallback(invoker);
+      });
+    };
+
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const closeAnimation = elements.noteDetailWorkspace.animate(
+      reducedMotion
+        ? [{ opacity: 1 }, { opacity: 0 }]
+        : [
+            { opacity: 1, transform: "translateY(0) scale(1)" },
+            { opacity: 0, transform: "translateY(4px) scale(0.995)" },
+          ],
+      {
+        duration: reducedMotion ? MOTION.micro : MOTION.short,
+        easing: MOTION.easeIn,
+        fill: "forwards",
+      },
+    );
+    noteDetailAnimation = closeAnimation;
+    closeAnimation.finished.catch(() => {}).finally(finishClose);
   }
 
   function syncQuickViewHeight() {
@@ -869,6 +894,30 @@
     return items;
   }
 
+  function animateNotesContent(motion) {
+    if (!motion || motion === "none") return;
+    notesContentAnimation?.cancel();
+
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const offset = motion === "page-next" ? 8 : motion === "page-previous" ? -8 : 4;
+    const animation = elements.notesList.animate(
+      reducedMotion
+        ? [{ opacity: 0.82 }, { opacity: 1 }]
+        : [
+            { opacity: 0.72, transform: `translate(${offset}px, ${motion.startsWith("page-") ? 0 : 3}px)` },
+            { opacity: 1, transform: "translate(0, 0)" },
+          ],
+      {
+        duration: reducedMotion ? MOTION.micro : MOTION.short,
+        easing: MOTION.easeOut,
+      },
+    );
+    notesContentAnimation = animation;
+    animation.finished.catch(() => {}).finally(() => {
+      if (notesContentAnimation === animation) notesContentAnimation = null;
+    });
+  }
+
   function renderPagination(totalPages) {
     elements.pagination.replaceChildren();
     elements.pagination.classList.toggle("is-hidden", totalPages <= 1);
@@ -882,7 +931,7 @@
     });
     previous.addEventListener("click", () => {
       ui.page -= 1;
-      renderNotes();
+      renderNotes({ motion: "page-previous" });
     });
     elements.pagination.append(previous);
 
@@ -899,8 +948,9 @@
         attributes: page === ui.page ? { "aria-current": "page" } : {},
       });
       button.addEventListener("click", () => {
+        const previousPage = ui.page;
         ui.page = page;
-        renderNotes();
+        renderNotes({ motion: page > previousPage ? "page-next" : "page-previous" });
       });
       elements.pagination.append(button);
     });
@@ -913,12 +963,12 @@
     });
     next.addEventListener("click", () => {
       ui.page += 1;
-      renderNotes();
+      renderNotes({ motion: "page-next" });
     });
     elements.pagination.append(next);
   }
 
-  function renderNotes() {
+  function renderNotes({ motion = "none" } = {}) {
     syncViewModeUI();
     elements.sort.value = ui.sort;
     const matchingNotes = getVisibleNotes();
@@ -950,6 +1000,7 @@
     if (!pageNotes.length) {
       renderEmptyState(notesInActiveCollection().length > 0);
       renderPagination(0);
+      animateNotesContent(motion);
       return;
     }
 
@@ -957,6 +1008,7 @@
     pageNotes.forEach((note) => fragment.append(createNoteCard(note)));
     elements.notesList.replaceChildren(fragment);
     renderPagination(totalPages);
+    animateNotesContent(motion);
   }
 
   Object.assign(api, {
@@ -973,7 +1025,6 @@
     isDetailWorkspaceOpen,
     isQuickViewOpen,
     isNoteEditorOpen,
-    animateCardIntoDetail,
     openNoteDetail,
     closeNoteDetail,
     syncQuickViewHeight,
@@ -995,6 +1046,7 @@
     createNoteCardActionIcon,
     createNoteCard,
     renderEmptyState,
+    animateNotesContent,
     paginationItems,
     renderPagination,
     renderNotes,

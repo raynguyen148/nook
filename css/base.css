@@ -1,6 +1,9 @@
 /* ==========================================================================
    Nook - Foundations and Library Shell
    Tokens, resets, sidebar, topbar, controls, toolbar, and base note cards.
+   Hallmark - offline utility; smooth, gentle, subtle; indigo anchor;
+   preserved sidebar-and-library structural fingerprint.
+   Pre-emit critique: P5 H5 E5 S5 R5 V4.
    ========================================================================== */
 
 :root {
@@ -15,6 +18,13 @@
   --font-mono:
     ui-monospace, "SF Mono", SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
     "Courier New", monospace;
+  --motion-duration-micro: 120ms;
+  --motion-duration-short: 180ms;
+  --motion-duration-medium: 260ms;
+  --motion-duration-long: 360ms;
+  --motion-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --motion-ease-in: cubic-bezier(0.7, 0, 0.84, 0);
+  --motion-ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
   color-scheme: light;
   font-family: var(--font-sans);
   color: #0f172a;
@@ -42,6 +52,97 @@ body {
   min-height: 100vh;
   margin: 0;
   background: #f8fafc;
+}
+
+
+
+/* Theme changes use a restrained document crossfade. Sidebar changes animate
+ * stable snapshots so its live descendants can reflow without visual jitter. */
+html[data-ui-transition="sidebar"] .sidebar {
+  view-transition-name: nook-sidebar;
+  transition: none;
+}
+
+
+
+html[data-ui-transition="sidebar"] .workspace {
+  view-transition-name: nook-workspace;
+}
+
+
+
+html[data-ui-transition="sidebar"] .app-shell {
+  transition: none;
+}
+
+
+
+html[data-ui-transition="theme"]::view-transition-old(root),
+html[data-ui-transition="theme"]::view-transition-new(root),
+html[data-ui-transition="sidebar"]::view-transition-old(root),
+html[data-ui-transition="sidebar"]::view-transition-new(root),
+html[data-ui-transition="sidebar"]::view-transition-old(nook-sidebar),
+html[data-ui-transition="sidebar"]::view-transition-new(nook-sidebar),
+html[data-ui-transition="sidebar"]::view-transition-old(nook-workspace),
+html[data-ui-transition="sidebar"]::view-transition-new(nook-workspace) {
+  mix-blend-mode: normal;
+}
+
+
+
+html[data-ui-transition="theme"]::view-transition-old(root) {
+  animation: nook-motion-fade-out var(--motion-duration-short) var(--motion-ease-in) both;
+}
+
+
+
+html[data-ui-transition="theme"]::view-transition-new(root) {
+  animation: nook-motion-fade-in var(--motion-duration-medium) var(--motion-ease-out) both;
+}
+
+
+
+html[data-ui-transition="sidebar"]::view-transition-old(root),
+html[data-ui-transition="sidebar"]::view-transition-new(root) {
+  animation: none;
+}
+
+
+
+html[data-ui-transition="sidebar"]::view-transition-group(nook-sidebar),
+html[data-ui-transition="sidebar"]::view-transition-group(nook-workspace) {
+  animation-duration: var(--motion-duration-long);
+  animation-timing-function: var(--motion-ease-in-out);
+}
+
+
+
+html[data-ui-transition="sidebar"]::view-transition-old(nook-sidebar),
+html[data-ui-transition="sidebar"]::view-transition-old(nook-workspace) {
+  animation: nook-motion-fade-out var(--motion-duration-micro) var(--motion-ease-in) both;
+}
+
+
+
+html[data-ui-transition="sidebar"]::view-transition-new(nook-sidebar),
+html[data-ui-transition="sidebar"]::view-transition-new(nook-workspace) {
+  animation: nook-motion-fade-in var(--motion-duration-medium) var(--motion-ease-out) 80ms both;
+}
+
+
+
+@keyframes nook-motion-fade-out {
+  to {
+    opacity: 0;
+  }
+}
+
+
+
+@keyframes nook-motion-fade-in {
+  from {
+    opacity: 0;
+  }
 }
 
 
@@ -106,7 +207,7 @@ select:focus-visible {
   grid-template-columns: 276px minmax(0, 1fr);
   min-height: 100vh;
   min-height: 100dvh;
-  transition: grid-template-columns 220ms cubic-bezier(0.4, 0, 0.2, 1);
+  transition: grid-template-columns var(--motion-duration-medium) var(--motion-ease-in-out);
 }
 
 
@@ -129,12 +230,9 @@ select:focus-visible {
   background: #ffffff;
   box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05), 0 2px 6px -1px rgba(15, 23, 42, 0.03);
   transition:
-    width 220ms cubic-bezier(0.4, 0, 0.2, 1),
-    padding 220ms cubic-bezier(0.4, 0, 0.2, 1),
-    margin 220ms cubic-bezier(0.4, 0, 0.2, 1),
-    background-color 160ms ease,
-    border-color 160ms ease,
-    box-shadow 160ms ease;
+    background-color var(--motion-duration-short) var(--motion-ease-out),
+    border-color var(--motion-duration-short) var(--motion-ease-out),
+    box-shadow var(--motion-duration-short) var(--motion-ease-out);
 }
 
 
@@ -179,10 +277,10 @@ select:focus-visible {
   background: #f8fafc;
   opacity: 0;
   transition:
-    color 160ms ease,
-    background-color 160ms ease,
-    border-color 160ms ease,
-    opacity 160ms ease;
+    color var(--motion-duration-short) var(--motion-ease-out),
+    background-color var(--motion-duration-short) var(--motion-ease-out),
+    border-color var(--motion-duration-short) var(--motion-ease-out),
+    opacity var(--motion-duration-short) var(--motion-ease-out);
 }
 
 
@@ -205,7 +303,7 @@ select:focus-visible {
 .sidebar-toggle-btn__icon {
   width: 0.75rem;
   height: 0.75rem;
-  transition: transform 220ms cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform var(--motion-duration-medium) var(--motion-ease-in-out);
 }
 
 
@@ -390,8 +488,8 @@ select:focus-visible {
   text-align: left;
   font-size: 0.82rem;
   transition:
-    color 160ms ease,
-    background 160ms ease;
+    color var(--motion-duration-short) var(--motion-ease-out),
+    background-color var(--motion-duration-short) var(--motion-ease-out);
 }
 
 
@@ -445,9 +543,9 @@ select:focus-visible {
   text-align: left;
   font-size: 0.82rem;
   transition:
-    color 160ms ease,
-    background 160ms ease,
-    transform 160ms ease;
+    color var(--motion-duration-short) var(--motion-ease-out),
+    background-color var(--motion-duration-short) var(--motion-ease-out),
+    transform var(--motion-duration-micro) var(--motion-ease-out);
 }
 
 
@@ -670,10 +768,10 @@ select:focus-visible {
   font-weight: 600;
   line-height: 1.2;
   transition:
-    color 140ms ease,
-    border-color 140ms ease,
-    background-color 140ms ease,
-    box-shadow 140ms ease;
+    color var(--motion-duration-short) var(--motion-ease-out),
+    border-color var(--motion-duration-short) var(--motion-ease-out),
+    background-color var(--motion-duration-short) var(--motion-ease-out),
+    box-shadow var(--motion-duration-short) var(--motion-ease-out);
 }
 
 
@@ -906,17 +1004,25 @@ h2 {
   font-weight: 720;
   line-height: 1.2;
   transition:
-    color 160ms ease,
-    background 160ms ease,
-    border 160ms ease,
-    box-shadow 160ms ease,
-    transform 160ms ease;
+    color var(--motion-duration-short) var(--motion-ease-out),
+    background-color var(--motion-duration-short) var(--motion-ease-out),
+    border-color var(--motion-duration-short) var(--motion-ease-out),
+    box-shadow var(--motion-duration-short) var(--motion-ease-out),
+    transform var(--motion-duration-micro) var(--motion-ease-out);
 }
 
 
 
 .button:hover:not(:disabled) {
   transform: translateY(-1px);
+}
+
+
+
+.button:active:not(:disabled) {
+  transform: translateY(0) scale(0.985);
+  transition-duration: var(--motion-duration-micro);
+  transition-timing-function: var(--motion-ease-in);
 }
 
 
@@ -1029,5 +1135,3 @@ h2 {
   gap: 1rem;
   margin-bottom: 1.25rem;
 }
-
-

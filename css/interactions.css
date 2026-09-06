@@ -47,8 +47,8 @@
   --primary-button-text: #fff;
   --focus-color: var(--primary-accent);
   --focus-radius: 0.7rem;
-  --interaction-duration: 160ms;
-  --interaction-easing: cubic-bezier(0.2, 0, 0, 1);
+  --interaction-duration: var(--motion-duration-short);
+  --interaction-easing: var(--motion-ease-out);
 }
 
 
@@ -678,7 +678,9 @@ textarea:focus-visible {
   opacity: 0;
   pointer-events: none;
   transform: translateY(-0.2rem);
-  transition: opacity var(--interaction-duration) var(--interaction-easing), transform var(--interaction-duration) var(--interaction-easing);
+  transition:
+    opacity var(--motion-duration-short) var(--motion-ease-out),
+    transform var(--motion-duration-short) var(--motion-ease-out);
   transition-delay: 0s;
 }
 
@@ -707,12 +709,19 @@ textarea:focus-visible {
 
 
 .shortcut-button:hover .shortcut-tooltip,
+.note-editor-mode:hover .shortcut-tooltip {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 800ms;
+}
+
+
+
 .shortcut-button > button:focus-visible + .shortcut-tooltip,
-.note-editor-mode:hover .shortcut-tooltip,
 .note-editor-mode__button:focus-visible + .shortcut-tooltip {
   opacity: 1;
   transform: translateY(0);
-  transition-delay: 0.5s;
+  transition-delay: 0ms;
 }
 
 
@@ -724,10 +733,11 @@ textarea:focus-visible {
 }
 
 .view-mode-choice:hover .shortcut-tooltip,
-.view-mode-choice > button:focus-visible + .shortcut-tooltip {
+.view-mode-choice:first-child:hover .shortcut-tooltip,
+.view-mode-choice:last-child:hover .shortcut-tooltip {
   opacity: 1;
   transform: translate(-50%, 0);
-  transition-delay: 0.5s;
+  transition-delay: 800ms;
 }
 
 .view-mode-choice:first-child .shortcut-tooltip {
@@ -737,10 +747,10 @@ textarea:focus-visible {
 }
 
 .view-mode-choice:first-child:hover .shortcut-tooltip,
-.view-mode-choice:first-child > button:focus-visible + .shortcut-tooltip {
+.view-mode-choice:last-child:hover .shortcut-tooltip {
   opacity: 1;
   transform: translateY(0);
-  transition-delay: 0.5s;
+  transition-delay: 800ms;
 }
 
 .view-mode-choice:last-child .shortcut-tooltip {
@@ -749,11 +759,22 @@ textarea:focus-visible {
   transform: translateY(-0.2rem);
 }
 
-.view-mode-choice:last-child:hover .shortcut-tooltip,
-.view-mode-choice:last-child > button:focus-visible + .shortcut-tooltip {
+.view-mode-choice > button:focus-visible + .shortcut-tooltip {
   opacity: 1;
+  transition-delay: 0ms;
+}
+
+
+
+.view-mode-choice:not(:first-child):not(:last-child) > button:focus-visible + .shortcut-tooltip {
+  transform: translate(-50%, 0);
+}
+
+
+
+.view-mode-choice:first-child > button:focus-visible + .shortcut-tooltip,
+.view-mode-choice:last-child > button:focus-visible + .shortcut-tooltip {
   transform: translateY(0);
-  transition-delay: 0.5s;
 }
 
 
@@ -860,17 +881,26 @@ textarea:focus-visible {
   opacity: 0;
   pointer-events: none;
   transform: translate(-50%, -0.18rem);
-  transition: opacity var(--interaction-duration) var(--interaction-easing), transform var(--interaction-duration) var(--interaction-easing);
+  transition:
+    opacity var(--motion-duration-short) var(--motion-ease-out),
+    transform var(--motion-duration-short) var(--motion-ease-out);
   transition-delay: 0s;
 }
 
 
 
-.note-formatting-tool:hover .note-formatting-tool__tooltip,
+.note-formatting-tool:hover .note-formatting-tool__tooltip {
+  opacity: 1;
+  transform: translate(-50%, 0);
+  transition-delay: 800ms;
+}
+
+
+
 .note-formatting-tool__button:focus-visible + .note-formatting-tool__tooltip {
   opacity: 1;
   transform: translate(-50%, 0);
-  transition-delay: 0.5s;
+  transition-delay: 0ms;
 }
 
 

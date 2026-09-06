@@ -337,10 +337,25 @@
 
   #regular-filter-controls {
     margin-top: 0.75rem;
+    opacity: 1;
+    transform: translateY(0);
+    transition:
+      opacity var(--motion-duration-short) var(--motion-ease-out),
+      transform var(--motion-duration-short) var(--motion-ease-out),
+      display var(--motion-duration-short) allow-discrete;
   }
 
   #regular-filter-controls.is-mobile-collapsed {
     display: none;
+    opacity: 0;
+    transform: translateY(-0.3rem);
+  }
+
+  @starting-style {
+    #regular-filter-controls:not(.is-mobile-collapsed) {
+      opacity: 0;
+      transform: translateY(-0.3rem);
+    }
   }
 
   .filter-navigation {
@@ -716,5 +731,4 @@
   }
 
 }
-
 

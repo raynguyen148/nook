@@ -3,9 +3,11 @@
 
   // Type/tag management, render orchestration, and import/export workflows.
   const app = globalThis[Symbol.for("nook.app.modules")];
-  const { api, storage, elements, library, ui, shared } = app;
+  const { api, storage, elements, library, ui, constants, shared } = app;
+  const { MOTION } = constants;
   const { openColorPickers } = shared;
   const colorPickerInstances = new WeakMap();
+  const managementAnimations = new WeakMap();
 
   const persistFilters = (...args) => api.persistFilters(...args);
   const recordBackupExport = (...args) => api.recordBackupExport(...args);
@@ -39,6 +41,7 @@
   const syncNoteEditorControls = (...args) => api.syncNoteEditorControls(...args);
 
   function setManagementTab(tab) {
+    const changed = ui.managementTab !== tab;
     ui.managementTab = tab;
     const typesActive = tab === "types";
     elements.typesTab.classList.toggle("is-active", typesActive);
@@ -49,6 +52,22 @@
     elements.tagsTab.tabIndex = typesActive ? -1 : 0;
     elements.typesPanel.classList.toggle("is-hidden", !typesActive);
     elements.tagsPanel.classList.toggle("is-hidden", typesActive);
+    if (changed && elements.organizeDialog.open) {
+      animateManagementSurface(typesActive ? elements.typesPanel : elements.tagsPanel);
+    }
+  }
+
+  function animateManagementSurface(surface) {
+    managementAnimations.get(surface)?.cancel();
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const animation = surface.animate(
+      [{ opacity: reducedMotion ? 0.82 : 0.62 }, { opacity: 1 }],
+      { duration: reducedMotion ? MOTION.micro : MOTION.short, easing: MOTION.easeOut },
+    );
+    managementAnimations.set(surface, animation);
+    animation.finished.catch(() => {}).finally(() => {
+      if (managementAnimations.get(surface) === animation) managementAnimations.delete(surface);
+    });
   }
 
   function syncManagementControls() {
@@ -255,7 +274,7 @@
     return pickerState;
   }
 
-  function renderTypeManagement() {
+  function renderTypeManagement({ animate = false } = {}) {
     const usageCounts = new Map();
     library.notes.forEach((note) => usageCounts.set(note.typeId, (usageCounts.get(note.typeId) || 0) + 1));
     elements.typesList.replaceChildren();
@@ -265,6 +284,7 @@
       elements.typesList.append(
         createElement("p", { className: "management-empty", text: query ? `No note types match “${query}”.` : "No note types yet." }),
       );
+      if (animate) animateManagementSurface(elements.typesList);
       return;
     }
 
@@ -357,9 +377,10 @@
       fragment.append(row);
     });
     elements.typesList.append(fragment);
+    if (animate) animateManagementSurface(elements.typesList);
   }
 
-  function renderTagManagement() {
+  function renderTagManagement({ animate = false } = {}) {
     const usageCounts = new Map();
     library.notes.forEach((note) =>
       note.tagIds.forEach((tagId) => usageCounts.set(tagId, (usageCounts.get(tagId) || 0) + 1)),
@@ -374,6 +395,7 @@
           text: query ? `No tags match “${query}”.` : "No tags yet. Add one here or while editing a note.",
         }),
       );
+      if (animate) animateManagementSurface(elements.tagsList);
       return;
     }
     const fragment = document.createDocumentFragment();
@@ -454,6 +476,7 @@
       fragment.append(row);
     });
     elements.tagsList.append(fragment);
+    if (animate) animateManagementSurface(elements.tagsList);
   }
 
   function renderManagement() {
@@ -463,12 +486,12 @@
     setManagementTab(ui.managementTab);
   }
 
-  function renderLibrary() {
+  function renderLibrary({ motion = "none" } = {}) {
     clearSearchRenderTimer();
     ensureUiReferencesAreValid();
     renderSidebar();
     renderActiveFilters();
-    renderNotes();
+    renderNotes({ motion });
     renderManagement();
     if (isNoteEditorOpen()) {
       renderNoteTypeOptions(elements.noteType.value);
@@ -485,7 +508,7 @@
 
   function renderSearchResults() {
     renderActiveFilters();
-    renderNotes();
+    renderNotes({ motion: "search" });
     syncClearFiltersState();
   }
 

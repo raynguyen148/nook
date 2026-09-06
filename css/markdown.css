@@ -326,7 +326,7 @@
   font-size: 0.72rem;
   font-weight: 600;
   cursor: pointer;
-  transition: color 150ms ease, background-color 150ms ease, border-color 150ms ease;
+  transition: color var(--motion-duration-short) var(--motion-ease-out), background-color var(--motion-duration-short) var(--motion-ease-out), border-color var(--motion-duration-short) var(--motion-ease-out), transform var(--motion-duration-micro) var(--motion-ease-out);
 }
 
 
@@ -876,5 +876,4 @@
   color: #64748b;
   font-size: 0.72rem;
 }
-
 

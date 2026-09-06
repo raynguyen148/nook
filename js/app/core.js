@@ -23,6 +23,15 @@
   const VIEW_MODE_STORAGE_KEY = "nook:notes-view-mode";
   const VIEW_MODE_ANIMATION_DURATION = 180;
   const VIEW_MODE_ANIMATION_EASING = "cubic-bezier(0.22, 1, 0.36, 1)";
+  const MOTION = Object.freeze({
+    micro: 120,
+    short: 180,
+    medium: 260,
+    long: 360,
+    easeOut: "cubic-bezier(0.16, 1, 0.3, 1)",
+    easeIn: "cubic-bezier(0.7, 0, 0.84, 0)",
+    easeInOut: "cubic-bezier(0.65, 0, 0.35, 1)",
+  });
   const FILTER_STORAGE_KEY = "nook:active-filters";
   const DRAFT_RECOVERY_STORAGE_KEY = "nook:note-editor-draft";
   const BACKUP_HEALTH_STORAGE_KEY = "nook:backup-health";
@@ -50,6 +59,7 @@
   });
   let libraryChannel = null;
   let viewModeListAnimation = null;
+  let uiViewTransition = null;
 
   const elements = {
     workspace: document.querySelector(".workspace"),
@@ -213,6 +223,7 @@
     viewInvoker: null,
     detailSourceCard: null,
     detailScrollTop: 0,
+    detailClosing: false,
     copyInFlight: false,
     restoreViewFocus: true,
     afterQuickViewClose: null,
@@ -259,6 +270,37 @@
     return THEMES[nextIndex];
   }
 
+  function prefersReducedMotion() {
+    return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  }
+
+  function runUiViewTransition(kind, update) {
+    if (prefersReducedMotion() || typeof document.startViewTransition !== "function") {
+      update();
+      return null;
+    }
+
+    uiViewTransition?.skipTransition?.();
+    document.documentElement.dataset.uiTransition = kind;
+
+    let transition;
+    try {
+      transition = document.startViewTransition(update);
+    } catch {
+      delete document.documentElement.dataset.uiTransition;
+      update();
+      return null;
+    }
+
+    uiViewTransition = transition;
+    transition.finished.catch(() => {}).finally(() => {
+      if (uiViewTransition !== transition) return;
+      uiViewTransition = null;
+      delete document.documentElement.dataset.uiTransition;
+    });
+    return transition;
+  }
+
   function syncThemeUI() {
     const theme = ui.theme;
     document.documentElement.dataset.theme = theme;
@@ -294,15 +336,20 @@
     }
   }
 
-  function setTheme(theme) {
+  function setTheme(theme, { animate = true, persist = true } = {}) {
     if (!THEMES.includes(theme) || theme === ui.theme) return;
     ui.theme = theme;
-    syncThemeUI();
-    try {
-      window.localStorage.setItem(THEME_STORAGE_KEY, theme);
-    } catch {
-      // The theme still works for this session when browser privacy settings block localStorage.
-    }
+    const applyTheme = () => {
+      syncThemeUI();
+      if (!persist) return;
+      try {
+        window.localStorage.setItem(THEME_STORAGE_KEY, theme);
+      } catch {
+        // The theme still works for this session when browser privacy settings block localStorage.
+      }
+    };
+    if (animate) runUiViewTransition("theme", applyTheme);
+    else applyTheme();
   }
 
   function getStoredSidebarCollapsed() {
@@ -329,12 +376,14 @@
   function toggleSidebar(collapsed = !ui.sidebarCollapsed) {
     if (ui.sidebarCollapsed === collapsed) return;
     ui.sidebarCollapsed = collapsed;
-    syncSidebarUI();
-    try {
-      window.localStorage.setItem(SIDEBAR_COLLAPSED_STORAGE_KEY, String(collapsed));
-    } catch {
-      // The sidebar state still works for this session when browser privacy settings block localStorage.
-    }
+    runUiViewTransition("sidebar", () => {
+      syncSidebarUI();
+      try {
+        window.localStorage.setItem(SIDEBAR_COLLAPSED_STORAGE_KEY, String(collapsed));
+      } catch {
+        // The sidebar state still works for this session when browser privacy settings block localStorage.
+      }
+    });
   }
 
   function measureTopbarActionsPinBounds() {
@@ -407,7 +456,7 @@
 
     elements.topbarActions.classList.add("is-unpinning");
     elements.toolbar.classList.add("is-unpinning");
-    ui.topbarActionsUnpinTimer = window.setTimeout(finishTopbarActionsUnpin, 160);
+    ui.topbarActionsUnpinTimer = window.setTimeout(finishTopbarActionsUnpin, MOTION.short);
   }
 
   function syncPinnedTopbarControlMetrics() {
@@ -1053,7 +1102,7 @@
     ui.typeId = ui.typeId === typeId ? "all" : typeId;
     persistFilters();
     resetToFirstPage();
-    renderLibrary();
+    renderLibrary({ motion: "filter" });
   }
 
   function toggleTagFilter(tagId) {
@@ -1061,21 +1110,21 @@
     else ui.tagIds.add(tagId);
     persistFilters();
     resetToFirstPage();
-    renderLibrary();
+    renderLibrary({ motion: "filter" });
   }
 
   function toggleTodayFilter() {
     ui.todayOnly = !ui.todayOnly;
     persistFilters();
     resetToFirstPage();
-    renderLibrary();
+    renderLibrary({ motion: "filter" });
   }
 
   function toggleUpdatedTodayFilter() {
     ui.updatedTodayOnly = !ui.updatedTodayOnly;
     persistFilters();
     resetToFirstPage();
-    renderLibrary();
+    renderLibrary({ motion: "filter" });
   }
 
   function isDeletedNote(note) {
@@ -1101,7 +1150,7 @@
     ui.trashOnly = false;
     persistFilters();
     resetToFirstPage();
-    renderLibrary();
+    renderLibrary({ motion: "filter" });
   }
 
   function showTrashSpace() {
@@ -1109,7 +1158,7 @@
     ui.trashOnly = true;
     persistFilters();
     resetToFirstPage();
-    renderLibrary();
+    renderLibrary({ motion: "filter" });
   }
 
   function clearFilters({ preserveSort = true } = {}) {
@@ -1122,7 +1171,7 @@
     elements.search.value = "";
     elements.sort.value = ui.sort;
     resetToFirstPage();
-    renderLibrary();
+    renderLibrary({ motion: "filter" });
   }
 
   function ensureUiReferencesAreValid() {
@@ -1196,6 +1245,7 @@
     constants: Object.freeze({
       PAGE_SIZE,
       NOTE_AUTO_SAVE_DELAY,
+      MOTION,
       THEME_STORAGE_KEY,
       THEMES,
     }),
@@ -1204,6 +1254,8 @@
   Object.assign(api, {
     getStoredTheme,
     getNextTheme,
+    prefersReducedMotion,
+    runUiViewTransition,
     syncThemeUI,
     setTheme,
     getStoredSidebarCollapsed,

@@ -4,9 +4,10 @@
   // Note editor lifecycle, pickers, Markdown modes, autosave, and draft safety.
   const app = globalThis[Symbol.for("nook.app.modules")];
   const { api, storage, elements, library, ui, constants, shared } = app;
-  const { NOTE_AUTO_SAVE_DELAY } = constants;
+  const { NOTE_AUTO_SAVE_DELAY, MOTION } = constants;
   const { openColorPickers } = shared;
   let noteTypePicker = shared.noteTypePicker;
+  let noteEditorModeAnimation = null;
 
   const clearStoredNoteDraft = (...args) => api.clearStoredNoteDraft(...args);
   const getStoredNoteDraft = (...args) => api.getStoredNoteDraft(...args);
@@ -297,6 +298,7 @@
 
   function setNoteEditorMode(mode) {
     if (!["edit", "split", "preview"].includes(mode)) return;
+    const previousMode = ui.noteEditorMode;
     resetCopyButtonFeedback(elements.copyNoteContent);
     ui.noteEditorMode = mode;
     elements.noteDialogTitle.textContent = mode === "preview"
@@ -315,6 +317,20 @@
     if (mode === "preview") renderQuickView();
     else renderNoteEditorPreview();
     scheduleNoteEditorHeight();
+    if (previousMode !== mode && isNoteEditorOpen()) {
+      noteEditorModeAnimation?.cancel();
+      const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const animation = elements.noteDialog.querySelector(".dialog-body")?.animate(
+        [{ opacity: reducedMotion ? 0.82 : 0.64 }, { opacity: 1 }],
+        { duration: reducedMotion ? MOTION.micro : MOTION.short, easing: MOTION.easeOut },
+      );
+      if (animation) {
+        noteEditorModeAnimation = animation;
+        animation.finished.catch(() => {}).finally(() => {
+          if (noteEditorModeAnimation === animation) noteEditorModeAnimation = null;
+        });
+      }
+    }
   }
 
   function syncNoteEditorHeight() {
@@ -729,19 +745,20 @@
   function closeNoteEditor({ discardStoredDraft = false } = {}) {
     clearNoteAutoSave();
     if (discardStoredDraft) clearStoredNoteDraft();
-    setNoteEditorMode("edit");
     ui.noteEditorSession += 1;
     ui.pendingTagCreation = null;
     ui.noteSaveInFlight = false;
     ui.noteAutoSaveInFlight = false;
     ui.noteCloseAfterSaveRequested = false;
     setTagInputExpanded(false);
-    elements.noteDialog.classList.add("is-hidden");
     elements.noteContentEditor.style.removeProperty("height");
     ui.editingNoteId = "";
     ui.selectedNoteTagIds.clear();
     ui.noteEditorSnapshot = null;
     closeNoteDetail();
+    // Keep the currently visible surface intact for the exit animation. The
+    // next editor open re-syncs the DOM classes before it becomes visible.
+    ui.noteEditorMode = "edit";
     ui.viewInvoker = null;
     if (ui.externalRefreshPending) {
       ui.externalRefreshPending = false;

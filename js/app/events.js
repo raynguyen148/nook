@@ -116,8 +116,7 @@
     });
     window.addEventListener("storage", (event) => {
       if (event.key === THEME_STORAGE_KEY && THEMES.includes(event.newValue) && event.newValue !== ui.theme) {
-        ui.theme = event.newValue;
-        syncThemeUI();
+        setTheme(event.newValue, { persist: false });
       }
     });
     elements.themeToggle.addEventListener("click", () => setTheme(getNextTheme(ui.theme)));
@@ -129,6 +128,7 @@
     elements.search.addEventListener("input", () => {
       ui.query = elements.search.value;
       resetToFirstPage();
+      elements.notesList.setAttribute("aria-busy", "true");
       scheduleSearchRender();
     });
     elements.clearSearch.addEventListener("click", () => {
@@ -143,7 +143,7 @@
       ui.sort = elements.sort.value;
       persistSort();
       resetToFirstPage();
-      renderNotes();
+      renderNotes({ motion: "sort" });
     });
     elements.focusView.addEventListener("click", () => setViewMode("focus"));
     elements.comfortableView.addEventListener("click", () => setViewMode("comfortable"));
@@ -256,12 +256,12 @@
     elements.typesManagementSearch.addEventListener("input", () => {
       ui.managementQueries.types = elements.typesManagementSearch.value;
       if (ui.managementEditing?.kind === "types") ui.managementEditing = null;
-      renderTypeManagement();
+      renderTypeManagement({ animate: true });
     });
     elements.tagsManagementSearch.addEventListener("input", () => {
       ui.managementQueries.tags = elements.tagsManagementSearch.value;
       if (ui.managementEditing?.kind === "tags") ui.managementEditing = null;
-      renderTagManagement();
+      renderTagManagement({ animate: true });
     });
     elements.newTypeForm.addEventListener("submit", addNewType);
     elements.newTagForm.addEventListener("submit", addNewTag);

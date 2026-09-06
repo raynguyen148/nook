@@ -14,7 +14,6 @@
 .note-detail-workspace {
   width: min(100%, 1280px);
   margin: 0 auto;
-  animation: note-detail-enter 220ms cubic-bezier(0.2, 0, 0, 1) both;
 }
 
 
@@ -83,30 +82,6 @@
 
 
 
-.note-detail-transition-card {
-  position: fixed;
-  z-index: 20;
-  margin: 0;
-  pointer-events: none;
-  transform-origin: top left;
-}
-
-
-
-@keyframes note-detail-enter {
-  from {
-    opacity: 0;
-    transform: translateY(1rem) scale(0.985);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-
-
 .notes-count {
   border: 1px solid #cbd5e1;
   border-radius: 999px;
@@ -166,8 +141,8 @@
   background: #fff;
   box-shadow: 0 1px 2px rgb(0 0 0 / 4%);
   transition:
-    border 150ms ease,
-    box-shadow 150ms ease;
+    border-color var(--motion-duration-short) var(--motion-ease-out),
+    box-shadow var(--motion-duration-short) var(--motion-ease-out);
 }
 
 
@@ -253,6 +228,18 @@ select::-ms-expand {
   letter-spacing: -0.02em;
   transform: translateY(-50%);
   pointer-events: none;
+  opacity: 1;
+  transition:
+    opacity var(--motion-duration-short) var(--motion-ease-out),
+    transform var(--motion-duration-short) var(--motion-ease-out);
+}
+
+
+
+.search-shortcut.is-hidden {
+  display: inline-flex !important;
+  opacity: 0;
+  transform: translateY(-50%) scale(0.92);
 }
 
 
@@ -285,7 +272,25 @@ select::-ms-expand {
   padding: 0;
   color: #6f7a8e;
   background: #f1f3f7;
+  opacity: 1;
   transform: translateY(-50%);
+  transition:
+    color var(--motion-duration-short) var(--motion-ease-out),
+    background-color var(--motion-duration-short) var(--motion-ease-out),
+    opacity var(--motion-duration-short) var(--motion-ease-out),
+    transform var(--motion-duration-short) var(--motion-ease-out),
+    visibility 0s linear 0s;
+}
+
+
+
+.clear-search.is-hidden {
+  display: grid !important;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-50%) scale(0.86);
+  visibility: hidden;
+  transition-delay: 0s, 0s, 0s, 0s, var(--motion-duration-short);
 }
 
 
@@ -554,9 +559,9 @@ select::-ms-expand {
   background: #fff;
   box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.05), 0 1px 2px -1px rgb(0 0 0 / 0.05);
   transition:
-    border 170ms ease,
-    box-shadow 170ms ease,
-    transform 170ms ease;
+    border-color var(--motion-duration-short) var(--motion-ease-out),
+    box-shadow var(--motion-duration-short) var(--motion-ease-out),
+    transform var(--motion-duration-short) var(--motion-ease-out);
 }
 
 
@@ -1073,8 +1078,9 @@ select::-ms-expand {
   font-size: 1.45rem;
   line-height: 1;
   transition:
-    color 150ms ease,
-    background 150ms ease;
+    color var(--motion-duration-short) var(--motion-ease-out),
+    background-color var(--motion-duration-short) var(--motion-ease-out),
+    transform var(--motion-duration-micro) var(--motion-ease-out);
 }
 
 
@@ -1259,6 +1265,13 @@ select::-ms-expand {
   color: #263143;
   background: #fff;
   box-shadow: 0 24px 70px rgb(23 30 56 / 22%);
+  opacity: 0;
+  transform: translateY(0.35rem) scale(0.985);
+  transition:
+    opacity var(--motion-duration-short) var(--motion-ease-in),
+    transform var(--motion-duration-short) var(--motion-ease-in),
+    display var(--motion-duration-short) allow-discrete,
+    overlay var(--motion-duration-short) allow-discrete;
 }
 
 
@@ -1266,6 +1279,41 @@ select::-ms-expand {
 .app-dialog::backdrop {
   background: rgb(27 35 58 / 35%);
   backdrop-filter: blur(2px);
+  opacity: 0;
+  transition:
+    opacity var(--motion-duration-short) var(--motion-ease-in),
+    display var(--motion-duration-short) allow-discrete,
+    overlay var(--motion-duration-short) allow-discrete;
+}
+
+
+
+.app-dialog[open] {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  transition-duration: var(--motion-duration-medium);
+  transition-timing-function: var(--motion-ease-out);
+}
+
+
+
+.app-dialog[open]::backdrop {
+  opacity: 1;
+  transition-duration: var(--motion-duration-medium);
+  transition-timing-function: var(--motion-ease-out);
+}
+
+
+
+@starting-style {
+  .app-dialog[open] {
+    opacity: 0;
+    transform: translateY(0.35rem) scale(0.985);
+  }
+
+  .app-dialog[open]::backdrop {
+    opacity: 0;
+  }
 }
 
 
@@ -1406,8 +1454,8 @@ select::-ms-expand {
   background: #fff;
   box-shadow: 0 1px 1px rgb(25 35 55 / 2%);
   transition:
-    border 150ms ease,
-    box-shadow 150ms ease;
+    border-color var(--motion-duration-short) var(--motion-ease-out),
+    box-shadow var(--motion-duration-short) var(--motion-ease-out);
 }
 
 
@@ -1548,9 +1596,10 @@ select::-ms-expand {
   font-weight: 500;
   line-height: 1;
   transition:
-    color 140ms ease,
-    border-color 140ms ease,
-    background 140ms ease;
+    color var(--motion-duration-short) var(--motion-ease-out),
+    border-color var(--motion-duration-short) var(--motion-ease-out),
+    background-color var(--motion-duration-short) var(--motion-ease-out),
+    transform var(--motion-duration-micro) var(--motion-ease-out);
 }
 
 
@@ -1627,5 +1676,3 @@ select::-ms-expand {
   color: #64748b;
   font-size: 0.72rem;
 }
-
-
