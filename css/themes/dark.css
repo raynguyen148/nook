@@ -39,6 +39,23 @@ html[data-theme="dark"] {
   --focus-radius: 0.5rem;
   --interaction-duration: 180ms;
   --interaction-easing: cubic-bezier(0.16, 1, 0.3, 1);
+  --toast-surface: #26251f;
+  --toast-border: #484434;
+  --toast-text: #f2ead6;
+  --toast-status-surface: #403a29;
+  --toast-status-icon: #e5c173;
+  --toast-action: #f0cf8a;
+  --toast-action-hover: #fff0c8;
+  --toast-focus: #f0cf8a;
+  --toast-shadow: 0 10px 24px rgb(0 0 0 / 38%);
+  --toast-error-surface: #2b2020;
+  --toast-error-border: #5f3e3c;
+  --toast-error-text: #f3d6d2;
+  --toast-error-status-surface: #432a2a;
+  --toast-error-status-icon: #f0a5a0;
+  --toast-error-action: #f3c2bc;
+  --toast-error-action-hover: #ffe1da;
+  --toast-error-focus: #f3c2bc;
 
   /* Fallback for uncolored type chips */
   --detail-type-chip-border: #383838;
@@ -1420,14 +1437,6 @@ html[data-theme="dark"] .mobile-filter-toggle__count.is-empty {
 /* --------------------------------------------------------------------------
    Toast Notifications & System Errors
    -------------------------------------------------------------------------- */
-html[data-theme="dark"] .toast {
-  border-color: rgba(52, 211, 153, 0.3);
-  color: #a7f3d0;
-  background: #1b2620;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-}
-
-html[data-theme="dark"] .toast[data-tone="error"],
 html[data-theme="dark"] .startup-error {
   border-color: rgba(248, 113, 113, 0.3);
   color: #fecaca;

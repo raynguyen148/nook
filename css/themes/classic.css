@@ -23,6 +23,23 @@ html[data-theme="light"] {
   --focus-radius: 0.7rem;
   --interaction-duration: 160ms;
   --interaction-easing: cubic-bezier(0.2, 0, 0, 1);
+  --toast-surface: #fffaf0;
+  --toast-border: #e6d6aa;
+  --toast-text: #4e3a10;
+  --toast-status-surface: #f3e3b5;
+  --toast-status-icon: #705108;
+  --toast-action: #785400;
+  --toast-action-hover: #533900;
+  --toast-focus: #9e6b02;
+  --toast-shadow: 0 12px 30px rgb(96 72 20 / 15%);
+  --toast-error-surface: #fff7f7;
+  --toast-error-border: #eccbd0;
+  --toast-error-text: #7c2636;
+  --toast-error-status-surface: #f8dde1;
+  --toast-error-status-icon: #9b2f43;
+  --toast-error-action: #8c2035;
+  --toast-error-action-hover: #681526;
+  --toast-error-focus: #a32e43;
 }
 
 html[data-theme="light"] {

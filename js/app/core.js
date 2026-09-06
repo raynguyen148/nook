@@ -236,6 +236,7 @@
     managementCreateKind: "",
     managementEditing: null,
     toastTimer: 0,
+    toastPopoverTimer: 0,
     toastAction: null,
     searchRenderTimer: 0,
     topbarActionsPinned: false,
@@ -1068,22 +1069,27 @@
   }
 
   function syncToastHost() {
-    // A modal <dialog> and its backdrop live in the browser's top layer, above
-    // regular page content. Keep the status message inside the active dialog so
-    // it remains visible above the backdrop instead of being dimmed behind it.
-    const host = activeModalDialog() || document.body;
-    if (elements.toast.parentElement !== host) host.append(elements.toast);
+    // Toast feedback is anchored to the viewport. Opening or closing a dialog
+    // must not move an already-visible message into that dialog's layout.
+    if (elements.toast.parentElement !== document.body) document.body.append(elements.toast);
+    if (!elements.toast.classList.contains("is-visible") || !("showPopover" in elements.toast)) return;
+
+    // A modal dialog is also in the browser top layer. Re-opening this manual
+    // popover raises the toast above that dialog without changing its DOM host.
+    if (elements.toast.matches(":popover-open")) elements.toast.hidePopover();
+    elements.toast.showPopover();
   }
 
   function showToast(message, tone = "success", action = null) {
     window.clearTimeout(ui.toastTimer);
-    syncToastHost();
+    window.clearTimeout(ui.toastPopoverTimer);
     ui.toastAction = action;
     elements.toastMessage.textContent = message;
     elements.toast.dataset.tone = tone;
     elements.toastAction.textContent = action?.label || "";
     elements.toastAction.classList.toggle("is-hidden", !action);
     elements.toast.classList.add("is-visible");
+    syncToastHost();
     ui.toastTimer = window.setTimeout(() => {
       dismissToast();
     }, 3600);
@@ -1091,9 +1097,16 @@
 
   function dismissToast() {
     window.clearTimeout(ui.toastTimer);
+    window.clearTimeout(ui.toastPopoverTimer);
     ui.toastAction = null;
     elements.toastAction.classList.add("is-hidden");
     elements.toast.classList.remove("is-visible");
+    if (!("hidePopover" in elements.toast)) return;
+    ui.toastPopoverTimer = window.setTimeout(() => {
+      if (!elements.toast.classList.contains("is-visible") && elements.toast.matches(":popover-open")) {
+        elements.toast.hidePopover();
+      }
+    }, 200);
   }
 
   function requestConfirmation({ title, description, confirmLabel, cancelLabel, tone = "danger", initialFocus = "cancel" }) {

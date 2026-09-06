@@ -886,7 +886,15 @@
     </dialog>
 
     <input id="import-input" type="file" accept="application/json,.json" hidden />
-    <div id="toast" class="toast" role="status" aria-live="polite" aria-atomic="true">
+    <div id="toast" class="toast" popover="manual" role="status" aria-live="polite" aria-atomic="true">
+      <span class="toast__indicator" aria-hidden="true">
+        <svg class="toast__indicator-icon toast__indicator-icon--success" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="m7.5 12 3 3 6-6" />
+        </svg>
+        <svg class="toast__indicator-icon toast__indicator-icon--error" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 7.5v5M12 16.5h.01" />
+        </svg>
+      </span>
       <span id="toast-message"></span>
       <button id="toast-action" class="toast__action is-hidden" type="button"></button>
     </div>

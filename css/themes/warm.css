@@ -33,6 +33,23 @@ html:not([data-theme]) {
   --focus-radius: 0.5rem;
   --interaction-duration: 180ms;
   --interaction-easing: cubic-bezier(0.16, 1, 0.3, 1);
+  --toast-surface: #261e18;
+  --toast-border: #4a3b2c;
+  --toast-text: #fdfbf7;
+  --toast-status-surface: #3c3025;
+  --toast-status-icon: #edd5bc;
+  --toast-action: #edd5bc;
+  --toast-action-hover: #ffffff;
+  --toast-focus: #f2c48e;
+  --toast-shadow: 0 8px 24px rgb(40 25 15 / 22%);
+  --toast-error-surface: #261e18;
+  --toast-error-border: #734745;
+  --toast-error-text: #fdfbf7;
+  --toast-error-status-surface: #4a2b2a;
+  --toast-error-status-icon: #f3c0b7;
+  --toast-error-action: #f1b7ad;
+  --toast-error-action-hover: #fff1ec;
+  --toast-error-focus: #f3b8ae;
 
   /* Fallback for uncolored type chips */
   --detail-type-chip-border: #d8ccbd;
@@ -997,29 +1014,6 @@ html:not([data-theme]) .empty-state h3 {
 html[data-theme="warm"] .empty-state p,
 html:not([data-theme]) .empty-state p {
   color: #5e4d41;
-}
-
-/* --------------------------------------------------------------------------
-   Toast Notifications (Warm Charred Walnut)
-   -------------------------------------------------------------------------- */
-html[data-theme="warm"] .toast,
-html:not([data-theme]) .toast {
-  background: #261e18;
-  color: #fdfbf7;
-  border: 1px solid #4a3b2c;
-  box-shadow: 0 8px 24px rgba(40, 25, 15, 0.22);
-}
-
-html[data-theme="warm"] .toast__action,
-html:not([data-theme]) .toast__action {
-  color: #edd5bc;
-}
-
-html[data-theme="warm"] .toast__action:hover,
-html[data-theme="warm"] .toast__action:focus-visible,
-html:not([data-theme]) .toast__action:hover,
-html:not([data-theme]) .toast__action:focus-visible {
-  color: #ffffff;
 }
 
 /* --------------------------------------------------------------------------

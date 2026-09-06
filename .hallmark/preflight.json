@@ -1,0 +1,8 @@
+{
+  "date": "2026-09-06",
+  "fontStack": "Inter, system-ui, and the Warm theme's local serif fallbacks",
+  "palette": "Three existing theme palettes defined in CSS custom properties",
+  "motion": "motion-cut; CSS transition tokens only",
+  "spacing": "existing rem-based component spacing",
+  "framework": "vanilla HTML, CSS, and JavaScript"
+}

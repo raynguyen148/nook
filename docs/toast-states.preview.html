@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Nook toast states preview</title>
+    <link rel="stylesheet" href="../css/base.css" />
+    <link rel="stylesheet" href="../css/management.css" />
+    <link rel="stylesheet" href="../css/responsive.css" />
+    <link rel="stylesheet" href="../css/themes/classic.css" />
+    <link rel="stylesheet" href="../css/themes/warm.css" />
+    <link rel="stylesheet" href="../css/themes/dark.css" />
+    <style>
+      /* Hallmark · component preview: toast · states: all eight */
+      .toast-preview__sprite {
+        position: absolute;
+        width: 0;
+        height: 0;
+        overflow: clip;
+      }
+
+      .toast-preview {
+        width: min(100% - 2rem, 42rem);
+        margin: 0 auto;
+        padding: 3rem 0;
+      }
+
+      .toast-preview__heading {
+        margin: 0;
+        color: inherit;
+        font-family: var(--font-display);
+        font-size: 1.5rem;
+      }
+
+      .toast-preview__intro {
+        margin: 0.5rem 0 1.5rem;
+        color: inherit;
+        opacity: 0.72;
+      }
+
+      .toast-preview__themes {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin: 0 0 2rem;
+        padding: 0;
+        border: 0;
+      }
+
+      .toast-preview__themes legend {
+        width: 100%;
+        margin-bottom: 0.5rem;
+        font-weight: 700;
+      }
+
+      .toast-preview__theme {
+        min-height: 2.75rem;
+        border: 1px solid var(--primary-accent-border);
+        border-radius: var(--focus-radius);
+        padding: 0.5rem 0.75rem;
+        color: inherit;
+        background: transparent;
+        font: inherit;
+        font-weight: 700;
+        white-space: nowrap;
+        cursor: pointer;
+      }
+
+      .toast-preview__theme[aria-pressed="true"] {
+        color: var(--primary-button-text);
+        background: var(--primary-accent);
+      }
+
+      .toast-preview__theme:focus-visible {
+        outline: 2px solid var(--focus-color);
+        outline-offset: 2px;
+      }
+
+      .toast-preview__grid {
+        display: grid;
+        gap: 1.25rem;
+      }
+
+      .toast-preview__row {
+        display: grid;
+        gap: 0.5rem;
+      }
+
+      .toast-preview__label {
+        font-size: 0.78rem;
+        font-weight: 800;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+
+      .toast-preview .toast {
+        position: relative;
+        z-index: auto;
+        right: auto;
+        bottom: auto;
+        width: 100%;
+        max-width: 29rem;
+        opacity: 1;
+        pointer-events: auto;
+        transform: none;
+        visibility: visible;
+      }
+
+      @media (max-width: 28rem) {
+        .toast-preview {
+          width: min(100% - 1.5rem, 42rem);
+          padding: 1.5rem 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <svg class="toast-preview__sprite" aria-hidden="true" focusable="false">
+      <symbol id="toast-indicator-success" viewBox="0 0 24 24"><path d="m7.5 12 3 3 6-6" /></symbol>
+      <symbol id="toast-indicator-error" viewBox="0 0 24 24"><path d="M12 7.5v5M12 16.5h.01" /></symbol>
+    </svg>
+    <template id="toast-indicator-template">
+      <span class="toast__indicator" aria-hidden="true">
+        <svg class="toast__indicator-icon toast__indicator-icon--success"><use href="#toast-indicator-success" /></svg>
+        <svg class="toast__indicator-icon toast__indicator-icon--error"><use href="#toast-indicator-error" /></svg>
+      </span>
+    </template>
+    <main class="toast-preview" aria-labelledby="toast-preview-title">
+      <h1 id="toast-preview-title" class="toast-preview__heading">Toast states</h1>
+      <p class="toast-preview__intro">Internal QA preview — select a theme, then inspect each visible state.</p>
+
+      <fieldset class="toast-preview__themes">
+        <legend>Theme</legend>
+        <button class="toast-preview__theme" type="button" data-preview-theme="light" aria-pressed="true">Light</button>
+        <button class="toast-preview__theme" type="button" data-preview-theme="warm" aria-pressed="false">Warm</button>
+        <button class="toast-preview__theme" type="button" data-preview-theme="dark" aria-pressed="false">Dark</button>
+      </fieldset>
+
+      <section class="toast-preview__grid" aria-label="Toast state examples">
+        <div class="toast-preview__row">
+          <span class="toast-preview__label">Default</span>
+          <div class="toast"><span class="toast__message">Note saved.</span></div>
+        </div>
+        <div class="toast-preview__row">
+          <span class="toast-preview__label">Hover</span>
+          <div class="toast"><span class="toast__message">Note moved to Trash.</span><button class="toast__action is-hover" type="button">Undo</button></div>
+        </div>
+        <div class="toast-preview__row">
+          <span class="toast-preview__label">Focus</span>
+          <div class="toast"><span class="toast__message">Note moved to Trash.</span><button class="toast__action is-focus" type="button">Undo</button></div>
+        </div>
+        <div class="toast-preview__row">
+          <span class="toast-preview__label">Active</span>
+          <div class="toast"><span class="toast__message">Note moved to Trash.</span><button class="toast__action is-active" type="button">Undo</button></div>
+        </div>
+        <div class="toast-preview__row">
+          <span class="toast-preview__label">Disabled</span>
+          <div class="toast"><span class="toast__message">Undo is no longer available.</span><button class="toast__action" type="button" disabled>Undo</button></div>
+        </div>
+        <div class="toast-preview__row">
+          <span class="toast-preview__label">Loading</span>
+          <div class="toast" data-tone="loading"><span class="toast__message">Exporting local backup.</span></div>
+        </div>
+        <div class="toast-preview__row">
+          <span class="toast-preview__label">Error</span>
+          <div class="toast" data-tone="error"><span class="toast__message">We could not import that backup.</span></div>
+        </div>
+        <div class="toast-preview__row">
+          <span class="toast-preview__label">Success</span>
+          <div class="toast" data-tone="success"><span class="toast__message">Backup exported with 12 notes.</span></div>
+        </div>
+      </section>
+    </main>
+    <script>
+      (() => {
+        const buttons = [...document.querySelectorAll("[data-preview-theme]")];
+        const indicatorTemplate = document.querySelector("#toast-indicator-template");
+        document.querySelectorAll(".toast").forEach((toast) => {
+          toast.prepend(indicatorTemplate.content.cloneNode(true));
+        });
+        buttons.forEach((button) => {
+          button.addEventListener("click", () => {
+            document.documentElement.dataset.theme = button.dataset.previewTheme;
+            buttons.forEach((item) => item.setAttribute("aria-pressed", String(item === button)));
+          });
+        });
+      })();
+    </script>
+  </body>
+</html>
