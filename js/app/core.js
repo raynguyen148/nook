@@ -60,6 +60,8 @@
   let libraryChannel = null;
   let viewModeListAnimation = null;
   let uiViewTransition = null;
+  let sidebarCollapseStartTimer = 0;
+  let sidebarCollapseRevealTimer = 0;
 
   const elements = {
     workspace: document.querySelector(".workspace"),
@@ -373,16 +375,70 @@
     }
   }
 
+  function persistSidebarCollapsedState(collapsed) {
+    try {
+      window.localStorage.setItem(SIDEBAR_COLLAPSED_STORAGE_KEY, String(collapsed));
+    } catch {
+      // The sidebar state still works for this session when browser privacy settings block localStorage.
+    }
+  }
+
+  function clearSidebarCollapseChoreography() {
+    if (sidebarCollapseStartTimer) {
+      window.clearTimeout(sidebarCollapseStartTimer);
+      sidebarCollapseStartTimer = 0;
+    }
+    if (sidebarCollapseRevealTimer) {
+      window.clearTimeout(sidebarCollapseRevealTimer);
+      sidebarCollapseRevealTimer = 0;
+    }
+    elements.appShell.classList.remove("is-sidebar-collapsing");
+  }
+
+  function canStageSidebarCollapse() {
+    return !prefersReducedMotion() && window.matchMedia("(min-width: 821px)").matches;
+  }
+
   function toggleSidebar(collapsed = !ui.sidebarCollapsed) {
-    if (ui.sidebarCollapsed === collapsed) return;
-    ui.sidebarCollapsed = collapsed;
-    runUiViewTransition("sidebar", () => {
-      syncSidebarUI();
-      try {
-        window.localStorage.setItem(SIDEBAR_COLLAPSED_STORAGE_KEY, String(collapsed));
-      } catch {
-        // The sidebar state still works for this session when browser privacy settings block localStorage.
+    const isCollapseInFlight = Boolean(sidebarCollapseStartTimer || sidebarCollapseRevealTimer);
+    if (ui.sidebarCollapsed === collapsed && !isCollapseInFlight) return;
+
+    if (collapsed) {
+      uiViewTransition?.skipTransition?.();
+      delete document.documentElement.dataset.uiTransition;
+      ui.sidebarCollapsed = true;
+
+      if (!canStageSidebarCollapse()) {
+        syncSidebarUI();
+        persistSidebarCollapsedState(true);
+        return;
       }
+
+      clearSidebarCollapseChoreography();
+      elements.appShell.classList.add("is-sidebar-collapsing");
+      sidebarCollapseStartTimer = window.setTimeout(() => {
+        sidebarCollapseStartTimer = 0;
+        syncSidebarUI();
+        persistSidebarCollapsedState(true);
+        sidebarCollapseRevealTimer = window.setTimeout(() => {
+          sidebarCollapseRevealTimer = 0;
+          elements.appShell.classList.remove("is-sidebar-collapsing");
+        }, MOTION.short);
+      }, MOTION.micro);
+      return;
+    }
+
+    clearSidebarCollapseChoreography();
+    ui.sidebarCollapsed = collapsed;
+    if (isCollapseInFlight) {
+      syncSidebarUI();
+      persistSidebarCollapsedState(false);
+      return;
+    }
+
+    runUiViewTransition("sidebar-expand", () => {
+      syncSidebarUI();
+      persistSidebarCollapsedState(false);
     });
   }
 
