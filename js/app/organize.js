@@ -1,8 +1,7 @@
-(() => {
+globalThis[Symbol.for("nook.app.modules")].register("organize", (app) => {
   "use strict";
 
   // Type/tag management, render orchestration, and import/export workflows.
-  const app = globalThis[Symbol.for("nook.app.modules")];
   const { api, storage, elements, library, ui, constants, shared } = app;
   const { MOTION } = constants;
   const { openColorPickers } = shared;
@@ -711,4 +710,4 @@
     exportLibrary,
     importLibrary,
   });
-})();
+});

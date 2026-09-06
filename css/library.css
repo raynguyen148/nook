@@ -146,13 +146,7 @@
 
 
 .note-card {
-  border-radius: 1rem;
   padding: 1rem 1.02rem 0.9rem;
-  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.05), 0 1px 2px -1px rgb(0 0 0 / 0.05);
-  transition:
-    border-color var(--interaction-duration) var(--interaction-easing),
-    box-shadow var(--interaction-duration) var(--interaction-easing),
-    transform var(--interaction-duration) var(--interaction-easing);
 }
 
 
@@ -162,19 +156,6 @@
 .note-card.is-hover {
   box-shadow: 0 10px 25px -5px rgb(15 23 42 / 0.08), 0 8px 10px -6px rgb(15 23 42 / 0.05);
   transform: translateY(-2px);
-}
-
-
-
-.note-card__title {
-  font-size: 0.98rem;
-}
-
-
-
-.note-card__preview {
-  color: #334155;
-  line-height: 1.6;
 }
 
 

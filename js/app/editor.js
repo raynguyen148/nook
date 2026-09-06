@@ -1,8 +1,7 @@
-(() => {
+globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
   "use strict";
 
   // Note editor lifecycle, pickers, Markdown modes, autosave, and draft safety.
-  const app = globalThis[Symbol.for("nook.app.modules")];
   const { api, storage, elements, library, ui, constants, shared } = app;
   const { NOTE_AUTO_SAVE_DELAY, MOTION } = constants;
   const { openColorPickers } = shared;
@@ -1100,4 +1099,4 @@
     saveNote,
     deleteNoteWithConfirmation,
   });
-})();
+});

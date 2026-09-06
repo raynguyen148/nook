@@ -1,17 +1,7 @@
-(() => {
+globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
   "use strict";
 
   // Shared application state, preferences, filters, and UI primitives.
-  const APP_MODULES_KEY = Symbol.for("nook.app.modules");
-  const app = {
-    api: Object.create(null),
-    shared: {
-      noteTypePicker: null,
-      openColorPickers: new Set(),
-    },
-  };
-  globalThis[APP_MODULES_KEY] = app;
-
   const { api } = app;
   const storage = globalThis.PersonalNotesStorage;
   const PAGE_SIZE = 30;
@@ -1408,4 +1398,4 @@
     syncClearFiltersState,
     getVisibleNotes,
   });
-})();
+});

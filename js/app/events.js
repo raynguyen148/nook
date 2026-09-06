@@ -1,9 +1,8 @@
-(() => {
+globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
   "use strict";
 
   // Event registration and the final application bootstrap.
   const APP_MODULES_KEY = Symbol.for("nook.app.modules");
-  const app = globalThis[APP_MODULES_KEY];
   const { api, storage, elements, library, ui, constants, shared } = app;
   const { THEME_STORAGE_KEY, THEMES } = constants;
   const { openColorPickers } = shared;
@@ -520,4 +519,4 @@
   Object.freeze(api);
   delete globalThis[APP_MODULES_KEY];
   bootstrap();
-})();
+});

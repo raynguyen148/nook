@@ -245,30 +245,35 @@ of `noteTypes`, and the legacy library shape containing `interviewQuestions` and
 | File | Responsibility |
 | --- | --- |
 | [`index.html`](index.html) | Semantic page structure, accessible controls, detail workspace, and native dialogs |
-| [`css/`](css) | Ordered style layers for foundations, shared components, responsive rules, library, settings, note detail, accessibility, and themes |
+| [`css/app.css`](css/app.css) | Single cascade manifest for foundations, components, features, accessibility, and themes |
+| [`css/`](css) | Stylesheets organized by component, feature, responsive, accessibility, and theme ownership |
 | [`js/storage.js`](js/storage.js) | IndexedDB setup, validation, migration, CRUD, Trash lifecycle, and backup import/export |
 | [`js/markdown.js`](js/markdown.js) | Safe dependency-free Markdown parser and DOM renderer |
+| [`js/app/runtime.js`](js/app/runtime.js) | Registers application modules and initializes them in an explicit dependency order |
 | [`js/app/`](js/app) | UI modules split by responsibility: shared state, library, editor, settings/import-export, and event/bootstrap wiring |
+| [`docs/architecture.md`](docs/architecture.md) | Module boundaries, CSS ownership, extension rules, and structural validation |
 | [`favicon.svg`](favicon.svg) | Local Nook application icon used by the browser tab |
 | [`docs/sample-data/nook-demo-library.json`](docs/sample-data/nook-demo-library.json) | Reusable fictional import/export fixture for demos and screenshot QA |
 | [`LICENSE`](LICENSE) | Unlicense / public-domain dedication |
 
-The entry point loads scripts in this order:
+The storage and Markdown namespaces load first, followed by the application
+runtime and the feature scripts:
 
 ```text
-js/storage.js → js/markdown.js → js/app/core.js → js/app/library.js
-              → js/app/editor.js → js/app/organize.js → js/app/events.js
+js/storage.js → js/markdown.js → js/app/runtime.js → feature registrations
 ```
 
 `js/storage.js` exposes the frozen `PersonalNotesStorage` API and
 `js/markdown.js` exposes the frozen `NookMarkdown` API. The application modules
-share a temporary internal registry while loading; `events.js` removes it before
-bootstrap. The UI continues to use the storage API instead of accessing
-IndexedDB directly.
+register installers in any script-tag order. `runtime.js` initializes them as
+`core → library → editor → organize → events`, reports missing or duplicate
+modules, and `events.js` removes the temporary registry before bootstrap. The UI
+continues to use the storage API instead of accessing IndexedDB directly.
 
-Stylesheets are also order-dependent. `index.html` loads the structural layers
-first, then the three theme files. Keep that order when moving selectors so the
-existing cascade remains unchanged.
+`index.html` links only `css/app.css`. That manifest makes the existing cascade
+order explicit in one place; selectors remain in their owning stylesheet. See
+[`docs/architecture.md`](docs/architecture.md) before adding a module, moving a
+selector, or introducing a cross-layer override.
 
 ## Development and validation
 

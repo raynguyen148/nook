@@ -1,8 +1,7 @@
-(() => {
+globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
   "use strict";
 
   // Library navigation, cards, pagination, Quick View, and Trash actions.
-  const app = globalThis[Symbol.for("nook.app.modules")];
   const { api, storage, elements, library, ui, constants } = app;
   const { PAGE_SIZE, MOTION } = constants;
   let noteDetailAnimation = null;
@@ -1051,4 +1050,4 @@
     renderPagination,
     renderNotes,
   });
-})();
+});
