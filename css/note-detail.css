@@ -305,6 +305,7 @@
 
 .note-dialog .field--title {
   display: block;
+  position: relative;
 }
 
 
@@ -341,6 +342,28 @@
 
 
 
+.note-dialog .field-error {
+  position: absolute;
+  z-index: 2;
+  inset-block-start: calc(100% + 0.08rem);
+  inset-inline-start: 0;
+  color: var(--toast-error-action, #8c2035);
+  font-size: 0.72rem;
+  font-weight: 600;
+  line-height: 0.9rem;
+  pointer-events: none;
+  white-space: nowrap;
+  visibility: hidden;
+}
+
+
+
+.note-dialog .field-error.is-visible {
+  visibility: visible;
+}
+
+
+
 .note-dialog .editor-grid {
   grid-template-columns: max-content minmax(0, 1fr);
   align-items: center;
@@ -369,6 +392,7 @@
 
 
 .note-dialog .editor-grid .field {
+  position: relative;
   gap: 0;
 }
 
@@ -1029,6 +1053,12 @@
   .note-dialog .editor-grid {
     grid-template-columns: 1fr;
     gap: 0.35rem;
+  }
+
+  .note-dialog #note-type-error {
+    inset-block-start: 50%;
+    inset-inline: auto 0;
+    transform: translateY(-50%);
   }
 
   .note-dialog .tag-editor-field {

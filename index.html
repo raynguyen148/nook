@@ -420,13 +420,15 @@
           <input id="note-id" type="hidden" />
           <label class="field field--title" for="note-title">
             <span class="sr-only">Title <em aria-hidden="true">*</em></span>
-            <input id="note-title" type="text" maxlength="160" required placeholder="Give this note a clear title" />
+            <input id="note-title" type="text" maxlength="160" required placeholder="Give this note a clear title" aria-describedby="note-title-error" />
+            <span id="note-title-error" class="field-error" aria-live="polite" aria-atomic="true"></span>
           </label>
 
           <div class="editor-grid">
             <label class="field" for="note-type">
               <span class="sr-only">Note type <em aria-hidden="true">*</em></span>
-              <select id="note-type" required></select>
+              <select id="note-type" required aria-describedby="note-type-error"></select>
+              <span id="note-type-error" class="field-error" aria-live="polite" aria-atomic="true"></span>
             </label>
             <div class="field tag-editor-field">
               <span id="note-tags-label" class="sr-only">Tags</span>

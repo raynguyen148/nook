@@ -62,6 +62,7 @@
     setNoteEditorMode,
     scheduleNoteEditorHeight,
     scheduleNoteAutoSave,
+    revalidateNoteEditorField,
     applyNoteFormattingShortcut,
     applyNoteFormatting,
     openNoteEditor,
@@ -150,6 +151,7 @@
     elements.compactView.addEventListener("click", () => setViewMode("compact"));
     elements.noteForm.addEventListener("submit", saveNote);
     elements.noteTitle.addEventListener("input", () => {
+      revalidateNoteEditorField("title");
       if (ui.noteEditorMode === "preview") renderQuickView();
       scheduleNoteAutoSave();
     });
@@ -172,7 +174,10 @@
     elements.noteContentPreview.addEventListener("scroll", () => {
       syncNoteEditorScroll(elements.noteContentPreview, elements.noteContent);
     });
-    elements.noteType.addEventListener("change", scheduleNoteAutoSave);
+    elements.noteType.addEventListener("change", () => {
+      revalidateNoteEditorField("type");
+      scheduleNoteAutoSave();
+    });
     elements.noteEditorModeButtons.forEach((button) => {
       button.addEventListener("click", () => {
         if (!ui.noteSaveInFlight) setNoteEditorMode(button.dataset.noteEditorMode);

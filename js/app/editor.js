@@ -104,6 +104,7 @@
       type: "button",
       attributes: {
         "aria-label": "Note type",
+        "aria-describedby": "note-type-error",
         "aria-haspopup": "listbox",
         "aria-expanded": "false",
       },
@@ -346,6 +347,87 @@
 
   function noteSubmitButton() {
     return elements.noteForm.querySelector('[type="submit"]');
+  }
+
+  function noteEditorValidationTarget(fieldName) {
+    if (fieldName === "title") {
+      return {
+        control: elements.noteTitle,
+        error: elements.noteTitleError,
+      };
+    }
+    if (fieldName === "type") {
+      return {
+        control: noteTypePicker?.trigger || elements.noteType,
+        error: elements.noteTypeError,
+      };
+    }
+    return null;
+  }
+
+  function setNoteEditorFieldError(fieldName, message = "") {
+    const target = noteEditorValidationTarget(fieldName);
+    if (!target) return;
+    const hasError = Boolean(message);
+    target.error.textContent = message;
+    target.error.classList.toggle("is-visible", hasError);
+    if (hasError) target.control.setAttribute("aria-invalid", "true");
+    else target.control.removeAttribute("aria-invalid");
+  }
+
+  function noteEditorFieldError(fieldName) {
+    if (fieldName === "title") {
+      return elements.noteTitle.value.trim() ? "" : "Enter a title.";
+    }
+    if (fieldName === "type") {
+      const typeExists = library.types.some(({ id }) => id === elements.noteType.value);
+      return typeExists ? "" : "Choose a note type.";
+    }
+    return "";
+  }
+
+  function revalidateNoteEditorField(fieldName) {
+    const target = noteEditorValidationTarget(fieldName);
+    if (!target?.error.classList.contains("is-visible")) return;
+    setNoteEditorFieldError(fieldName, noteEditorFieldError(fieldName));
+  }
+
+  function clearNoteEditorValidation() {
+    setNoteEditorFieldError("title");
+    setNoteEditorFieldError("type");
+  }
+
+  function validateNoteEditor({ focusFirst = true } = {}) {
+    const fields = ["title", "type"];
+    let firstInvalidTarget = null;
+    fields.forEach((fieldName) => {
+      const message = noteEditorFieldError(fieldName);
+      setNoteEditorFieldError(fieldName, message);
+      if (!firstInvalidTarget && message) {
+        firstInvalidTarget = noteEditorValidationTarget(fieldName)?.control || null;
+      }
+    });
+    if (!firstInvalidTarget) return true;
+    if (focusFirst) {
+      if (ui.noteEditorMode === "preview") setNoteEditorMode("edit");
+      firstInvalidTarget.focus();
+    }
+    return false;
+  }
+
+  function handleNoteSaveFieldError(error, { focus = true } = {}) {
+    const message = error instanceof Error ? error.message : "";
+    let fieldName = "";
+    if (message.startsWith("Note title ")) fieldName = "title";
+    if (message === "Choose a valid note type." || message.startsWith("Note type ")) fieldName = "type";
+    if (!fieldName) return false;
+    const inlineMessage = fieldName === "title" ? "Shorten the title." : "Choose a note type.";
+    setNoteEditorFieldError(fieldName, noteEditorFieldError(fieldName) || inlineMessage);
+    if (focus) {
+      if (ui.noteEditorMode === "preview") setNoteEditorMode("edit");
+      noteEditorValidationTarget(fieldName)?.control.focus();
+    }
+    return true;
   }
 
   function getNoteEditorDraftData() {
@@ -680,6 +762,7 @@
     ui.editingNoteId = note?.id || "";
     ui.selectedNoteTagIds = new Set(note?.tagIds || []);
     elements.noteForm.reset();
+    clearNoteEditorValidation();
     setTagInputExpanded(false);
     elements.noteId.value = note?.id || "";
     elements.noteTitle.value = note?.title || "";
@@ -867,6 +950,9 @@
       return;
     }
     if (isAutoSave && !elements.noteTitle.value.trim()) return;
+    if (!validateNoteEditor({ focusFirst: !isAutoSave })) {
+      return;
+    }
     const session = ui.noteEditorSession;
     const pendingTagCreation = ui.pendingTagCreation;
     if (pendingTagCreation?.session === session) {
@@ -909,7 +995,9 @@
       if (isCurrentNoteEditorSession(session)) {
         ui.noteCloseAfterSaveRequested = false;
         setNoteSaveStatus("error");
-        showError(error, "We could not save this note.");
+        if (!handleNoteSaveFieldError(error, { focus: !isAutoSave })) {
+          showError(error, "We could not save this note.");
+        }
       }
     } finally {
       if (isCurrentNoteEditorSession(session)) {
@@ -979,6 +1067,9 @@
     syncNoteEditorHeight,
     scheduleNoteEditorHeight,
     noteSubmitButton,
+    revalidateNoteEditorField,
+    clearNoteEditorValidation,
+    validateNoteEditor,
     getNoteEditorDraftData,
     getNoteEditorDraft,
     createNoteEditorDraft,
