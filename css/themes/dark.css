@@ -1452,6 +1452,6 @@ html[data-theme="dark"] .theme-toggle__icon--moon {
 }
 
 html[data-theme="dark"] .theme-toggle__icon--sun,
-html[data-theme="dark"] .theme-toggle__icon--warm {
+html[data-theme="dark"] .theme-toggle__icon--coffee {
   display: none !important;
 }

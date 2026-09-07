@@ -69,7 +69,7 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
   function resolveAutoTheme(now = new Date()) {
     // Keep this local-time schedule aligned with the pre-paint script in index.html.
     const hour = now.getHours();
-    if (hour >= 18 && hour < 21) return "warm";
+    if (hour >= 18 && hour < 21) return "coffee";
     if (hour >= 21 || hour < 5) return "dark";
     return "light";
   }
@@ -102,7 +102,9 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
 
     const themeLabels = {
       light: "Light",
-      warm: "Warm",
+      coffee: "Coffee",
+      forest: "Forest",
+      "midnight-blue": "Midnight Blue",
       dark: "Dark",
       auto: "Auto",
     };
@@ -118,13 +120,20 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
     elements.themeToggleLabel.textContent = label;
     if (elements.themeToggleTooltipText) {
       elements.themeToggleTooltipText.textContent = mode === "auto"
-        ? `Auto · local time (switch to ${nextLabel})\n• Light 05:00–18:00\n• Warm 18:00–21:00\n• Dark 21:00–05:00`
+        ? `Auto · local time (switch to ${nextLabel})\n• Light 05:00–18:00\n• Coffee 18:00–21:00\n• Dark 21:00–05:00`
         : `Theme: ${label} (switch to ${nextLabel})`;
     }
 
     const themeColorMeta = document.querySelector('meta[name="theme-color"]');
     if (themeColorMeta) {
-      themeColorMeta.content = theme === "dark" ? "#0b0f19" : (theme === "warm" ? "#a35616" : "#9e6b02");
+      const themeColors = {
+        light: "#9e6b02",
+        coffee: "#a35616",
+        forest: "#2f6b4f",
+        "midnight-blue": "#18263f",
+        dark: "#0b0f19",
+      };
+      themeColorMeta.content = themeColors[theme] || themeColors.light;
     }
     scheduleAutoTheme();
   }

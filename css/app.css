@@ -22,5 +22,7 @@
 
 /* Theme overrides intentionally remain last. */
 @import url("./themes/classic.css");
-@import url("./themes/warm.css");
+@import url("./themes/coffee.css");
+@import url("./themes/forest.css");
+@import url("./themes/midnight-blue.css");
 @import url("./themes/dark.css");

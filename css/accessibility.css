@@ -183,7 +183,9 @@
    Theme Switcher Tri-State Icons Display
    ========================================================================== */
 .theme-toggle__icon--sun,
-.theme-toggle__icon--warm,
+.theme-toggle__icon--coffee,
+.theme-toggle__icon--forest,
+.theme-toggle__icon--midnight-blue,
 .theme-toggle__icon--moon {
   display: none;
 }
@@ -193,7 +195,9 @@
 
 /* All theme icons hidden by default until activated by theme stylesheet */
 .theme-toggle__icon--sun,
-.theme-toggle__icon--warm,
+.theme-toggle__icon--coffee,
+.theme-toggle__icon--forest,
+.theme-toggle__icon--midnight-blue,
 .theme-toggle__icon--moon {
   display: none;
 }

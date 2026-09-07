@@ -8,7 +8,7 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
   const NOTE_AUTO_SAVE_DELAY = 1500;
   const SEARCH_RENDER_DELAY = 150;
   const THEME_STORAGE_KEY = "nook:theme";
-  const THEMES = ["light", "warm", "dark", "auto"];
+  const THEMES = ["light", "coffee", "forest", "midnight-blue", "dark", "auto"];
   const SIDEBAR_COLLAPSED_STORAGE_KEY = "nook:sidebar-collapsed";
   const VIEW_MODE_STORAGE_KEY = "nook:notes-view-mode";
   const VIEW_MODE_ANIMATION_DURATION = 180;
@@ -247,7 +247,8 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
 
   function getStoredTheme() {
     try {
-      const theme = window.localStorage.getItem(THEME_STORAGE_KEY);
+      const storedTheme = window.localStorage.getItem(THEME_STORAGE_KEY);
+      const theme = storedTheme === "warm" ? "coffee" : storedTheme;
       return THEMES.includes(theme) ? theme : "light";
     } catch {
       return "light";

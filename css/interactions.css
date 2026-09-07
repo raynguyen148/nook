@@ -24,7 +24,9 @@
 
 
 .theme-toggle__icon--sun,
-.theme-toggle__icon--warm,
+.theme-toggle__icon--coffee,
+.theme-toggle__icon--forest,
+.theme-toggle__icon--midnight-blue,
 .theme-toggle__icon--moon,
 .theme-toggle__icon--auto {
   display: none;

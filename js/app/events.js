@@ -117,8 +117,9 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
       if (message) showToast(message, tone);
     });
     window.addEventListener("storage", (event) => {
-      if (event.key === THEME_STORAGE_KEY && THEMES.includes(event.newValue) && event.newValue !== ui.theme) {
-        setTheme(event.newValue, { persist: false });
+      const theme = event.newValue === "warm" ? "coffee" : event.newValue;
+      if (event.key === THEME_STORAGE_KEY && THEMES.includes(theme) && theme !== ui.theme) {
+        setTheme(theme, { persist: false });
       }
     });
     elements.themeToggle.addEventListener("click", () => setTheme(getNextTheme(ui.theme)));

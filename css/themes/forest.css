@@ -1,0 +1,591 @@
+/* ==========================================================================
+   Nook - Theme: Forest (Quiet Evergreen)
+   A calm, paper-like light palette inspired by shaded woodland paths.
+   The theme is deliberately CSS-only: no remote fonts, images, or assets.
+   ========================================================================== */
+
+html[data-theme="forest"] {
+  color-scheme: light;
+  background: #f3f7f1;
+  color: #1e2d24;
+
+  /* Evergreen anchor: reserved for actions, selected states, and emphasis. */
+  --primary-accent: #2f6b4f;
+  --primary-accent-hover: #24513c;
+  --primary-accent-text: #24513c;
+  --primary-accent-soft: #e3f0e7;
+  --primary-accent-soft-hover: #d5e8db;
+  --primary-accent-border: #b8d5c1;
+  --primary-accent-focus: rgb(47 107 79 / 28%);
+  --primary-accent-shadow: rgb(47 107 79 / 18%);
+
+  --pinned-card-border: #9bbd9d;
+  --pinned-card-border-hover: #5e936d;
+  --pinned-card-surface: #f1f7e9;
+  --pinned-card-shadow: 0 1px 2px rgb(38 78 49 / 8%);
+  --pinned-marker-background: #e4efd9;
+  --pinned-marker-border: #b6d09f;
+  --pinned-marker-color: #35633e;
+
+  --note-card-surface: #ffffff;
+  --note-card-border: #d6e2d8;
+  --note-card-title: #1e2d24;
+  --note-card-title-letter-spacing: -0.015em;
+  --note-card-preview: #40594b;
+  --note-card-muted: #708478;
+  --note-card-actions-border: #d6e2d8;
+  --note-card-actions-surface: #f3f7f1;
+  --note-card-action: #5a7062;
+  --note-card-action-hover: var(--primary-accent-text);
+  --note-card-action-hover-surface: var(--primary-accent-soft);
+  --note-card-action-danger: #b13d43;
+  --note-card-action-danger-surface: #fff1f1;
+  --note-card-action-disabled: #b9c9bd;
+
+  --primary-button-text: #ffffff;
+  --focus-color: var(--primary-accent);
+  --focus-radius: 0.65rem;
+  --interaction-duration: 180ms;
+  --interaction-easing: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --toast-surface: #1f3b2b;
+  --toast-border: #3d654d;
+  --toast-text: #f2f8f2;
+  --toast-status-surface: #2d543d;
+  --toast-status-icon: #b9dfc2;
+  --toast-action: #c9e7ce;
+  --toast-action-hover: #ffffff;
+  --toast-focus: #d1eed5;
+  --toast-shadow: 0 10px 28px rgb(30 65 42 / 20%);
+  --toast-error-surface: #4b292d;
+  --toast-error-border: #854b51;
+  --toast-error-text: #fff3f2;
+  --toast-error-status-surface: #693b40;
+  --toast-error-status-icon: #f5b7b3;
+  --toast-error-action: #ffd0cb;
+  --toast-error-action-hover: #ffffff;
+  --toast-error-focus: #ffd5d0;
+
+  --detail-type-chip-border: #c6d8cb;
+  --detail-type-chip-color: #345844;
+  --detail-type-chip-background: #f1f7f2;
+  --select-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='m4 6 4 4 4-4' stroke='%235b7565' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
+html[data-theme="forest"] body {
+  background: #f3f7f1;
+  color: #1e2d24;
+  font-family: var(--font-sans);
+}
+
+html[data-theme="forest"] ::selection {
+  background: #cfe4d5;
+  color: #173524;
+}
+
+html[data-theme="forest"] * {
+  scrollbar-color: #b9d0be transparent;
+}
+
+/* --------------------------------------------------------------------------
+   Sidebar and navigation
+   -------------------------------------------------------------------------- */
+html[data-theme="forest"] .sidebar {
+  border-color: #d6e2d8;
+  background: #eaf2e9;
+  box-shadow: 0 4px 24px -2px rgb(37 76 49 / 7%);
+}
+
+html[data-theme="forest"] .sidebar-toggle-btn {
+  border-color: #cbdccc;
+  color: #6d8575;
+  background: #f3f7f1;
+}
+
+html[data-theme="forest"] .sidebar-toggle-btn:hover {
+  border-color: #a9c5ad;
+  color: #1e2d24;
+  background: #e0ece1;
+}
+
+html[data-theme="forest"] .brand strong,
+html[data-theme="forest"] .topbar h1,
+html[data-theme="forest"] .notes-panel__heading h2,
+html[data-theme="forest"] .quick-view-document-header h1 {
+  color: #1e2d24;
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+}
+
+html[data-theme="forest"] .brand small,
+html[data-theme="forest"] .filter-heading,
+html[data-theme="forest"] .filter-section-title h2,
+html[data-theme="forest"] .subtitle,
+html[data-theme="forest"] .results-meta {
+  color: #617669;
+}
+
+html[data-theme="forest"] .eyebrow {
+  color: var(--primary-accent);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+html[data-theme="forest"] .storage-status {
+  border-color: #cbdccc;
+  color: #496252;
+  background: #e1ece1;
+}
+
+html[data-theme="forest"] .text-button,
+html[data-theme="forest"] .active-filter-clear-all {
+  color: var(--primary-accent);
+}
+
+html[data-theme="forest"] .text-button:hover:not(:disabled),
+html[data-theme="forest"] .active-filter-clear-all:hover {
+  color: var(--primary-accent-hover);
+}
+
+html[data-theme="forest"] .space-link,
+html[data-theme="forest"] .sidebar-filter {
+  color: #40594b;
+}
+
+html[data-theme="forest"] .space-link:hover,
+html[data-theme="forest"] .sidebar-filter:hover {
+  color: #1e2d24;
+  background: #dfece1;
+}
+
+html[data-theme="forest"] .space-link.is-active,
+html[data-theme="forest"] .sidebar-filter.is-active {
+  border-color: var(--primary-accent-border);
+  color: var(--primary-accent-text);
+  background: var(--primary-accent-soft);
+}
+
+html[data-theme="forest"] .space-link.is-active .filter-count,
+html[data-theme="forest"] .sidebar-filter.is-active .filter-count,
+html[data-theme="forest"] .filter-count {
+  color: #688070;
+}
+
+html[data-theme="forest"] .tag-filter-option {
+  border-color: #d0dfd2;
+  color: #496252;
+  background: #f0f6ef;
+}
+
+html[data-theme="forest"] .tag-filter-option:hover {
+  border-color: #adc8b2;
+  color: #1e2d24;
+  background: #e2eee3;
+}
+
+html[data-theme="forest"] .tag-filter-option:has(input:checked),
+html[data-theme="forest"] .tag-filter-option.is-active {
+  border-color: var(--primary-accent-border);
+  color: var(--primary-accent-text);
+  background: var(--primary-accent-soft);
+}
+
+html[data-theme="forest"] .tag-filter-option .filter-count {
+  color: #789080;
+}
+
+/* --------------------------------------------------------------------------
+   Library controls, cards, and actions
+   -------------------------------------------------------------------------- */
+html[data-theme="forest"] .notes-panel {
+  border-color: #d6e2d8;
+  background: #f8fbf7;
+  box-shadow: 0 4px 24px -2px rgb(37 76 49 / 5%);
+}
+
+html[data-theme="forest"] .notes-count {
+  border-color: #cbdccc;
+  color: #496252;
+  background: #e4eee4;
+}
+
+html[data-theme="forest"] .toolbar,
+html[data-theme="forest"] .view-mode-control__choices {
+  border-color: #d0dfd2;
+  background: #edf5ed;
+  box-shadow: 0 1px 2px rgb(37 76 49 / 4%);
+}
+
+html[data-theme="forest"] .toolbar.is-pinned {
+  border-color: #cbdccc;
+  background: rgb(248 251 247 / 96%);
+  box-shadow: 0 10px 26px rgb(37 76 49 / 10%);
+  backdrop-filter: blur(8px);
+}
+
+html[data-theme="forest"] input[type="text"],
+html[data-theme="forest"] input[type="search"],
+html[data-theme="forest"] select,
+html[data-theme="forest"] textarea,
+html[data-theme="forest"] .search-field input,
+html[data-theme="forest"] .sort-field select {
+  border-color: #cbdccc;
+  color: #1e2d24;
+  background-color: #ffffff;
+}
+
+html[data-theme="forest"] input::placeholder,
+html[data-theme="forest"] textarea::placeholder,
+html[data-theme="forest"] .search-field input::placeholder {
+  color: #809488;
+}
+
+html[data-theme="forest"] input:focus,
+html[data-theme="forest"] select:focus,
+html[data-theme="forest"] textarea:focus,
+html[data-theme="forest"] .tag-picker:focus-within,
+html[data-theme="forest"] .note-type-picker__trigger:focus-visible,
+html[data-theme="forest"] .color-picker__trigger:focus-visible {
+  border-color: var(--primary-accent);
+  box-shadow: 0 0 0 3px var(--primary-accent-focus);
+}
+
+html[data-theme="forest"] .search-shortcut,
+html[data-theme="forest"] .notes-count,
+html[data-theme="forest"] .organize-tab__count,
+html[data-theme="forest"] .usage-count {
+  border-color: #cbdccc;
+  color: #496252;
+  background: #e4eee4;
+}
+
+html[data-theme="forest"] .search-shortcut kbd {
+  color: #294a36 !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="forest"] .view-mode-button {
+  color: #688070;
+  background: transparent;
+}
+
+html[data-theme="forest"] .view-mode-button:hover:not(.is-active),
+html[data-theme="forest"] .view-mode-button.is-active,
+html[data-theme="forest"] .view-mode-button[aria-pressed="true"] {
+  color: #1e2d24;
+  background: #dfece1 !important;
+}
+
+html[data-theme="forest"] .view-mode-choice + .view-mode-choice .view-mode-button,
+html[data-theme="forest"] .view-mode-button + .view-mode-button {
+  border-left-color: #d6e2d8;
+}
+
+html[data-theme="forest"] .active-filter-pill {
+  border-color: var(--primary-accent-border);
+  color: var(--primary-accent-text);
+  background: var(--primary-accent-soft);
+}
+
+html[data-theme="forest"] .active-filter-pill__clear {
+  color: var(--primary-accent-text);
+}
+
+html[data-theme="forest"] .active-filter-pill__clear:hover {
+  background: var(--primary-accent-soft-hover);
+}
+
+html[data-theme="forest"] .note-card {
+  border-color: var(--note-card-border);
+  background: var(--note-card-surface);
+  box-shadow: 0 1px 3px rgb(37 76 49 / 5%), 0 3px 8px rgb(37 76 49 / 3%);
+  transition: transform var(--interaction-duration) var(--interaction-easing), box-shadow var(--interaction-duration) var(--interaction-easing), border-color var(--interaction-duration) var(--interaction-easing);
+}
+
+html[data-theme="forest"] .note-card:hover,
+html[data-theme="forest"] .note-card:focus-within {
+  border-color: #a9c8ae;
+  box-shadow: 0 6px 18px rgb(37 76 49 / 9%);
+}
+
+html[data-theme="forest"] .note-card--pinned {
+  border-color: var(--pinned-card-border);
+  background: var(--pinned-card-surface);
+  box-shadow: var(--pinned-card-shadow);
+}
+
+html[data-theme="forest"] .note-card--pinned:hover,
+html[data-theme="forest"] .note-card--pinned.is-hover {
+  border-color: var(--pinned-card-border-hover);
+}
+
+html[data-theme="forest"] .note-card:hover .note-card__title {
+  color: var(--primary-accent);
+}
+
+html[data-theme="forest"] .tag-chip,
+html[data-theme="forest"] .note-tag-chip,
+html[data-theme="forest"] .selected-tag,
+html[data-theme="forest"] .quick-view-tag {
+  border-color: #cbdccc;
+  color: #496252;
+  background: #f0f6ef;
+}
+
+/* Keep the footer visually continuous with both regular and pinned cards. */
+html[data-theme="forest"] .note-card__footer {
+  background: transparent;
+}
+
+html[data-theme="forest"] .tag-chip:hover,
+html[data-theme="forest"] .tag-chip.is-selected,
+html[data-theme="forest"] .selected-tag:hover {
+  border-color: #9fbea5;
+  color: #1e2d24;
+  background: #e1eee2;
+}
+
+html[data-theme="forest"] .note-card--pinned .note-card__pin-toggle {
+  border-color: var(--pinned-marker-border);
+  color: var(--pinned-marker-color);
+  background: var(--pinned-marker-background);
+}
+
+html[data-theme="forest"] .pagination-button {
+  border-color: #cbdccc;
+  color: #5d7566;
+  background: transparent;
+}
+
+html[data-theme="forest"] .pagination-button:hover:not(:disabled),
+html[data-theme="forest"] .pagination-button.is-active {
+  border-color: var(--primary-accent-border);
+  color: var(--primary-accent-text);
+  background: var(--primary-accent-soft);
+}
+
+html[data-theme="forest"] .pagination-button:disabled,
+html[data-theme="forest"] .pagination-ellipsis {
+  color: #9caf9f;
+}
+
+html[data-theme="forest"] .button-primary {
+  border-color: var(--primary-accent);
+  color: var(--primary-button-text);
+  background: var(--primary-accent);
+  box-shadow: 0 2px 6px rgb(47 107 79 / 18%);
+}
+
+html[data-theme="forest"] .button-primary:hover:not(:disabled) {
+  border-color: var(--primary-accent-hover);
+  background: var(--primary-accent-hover);
+}
+
+html[data-theme="forest"] .button-secondary {
+  border-color: #cbdccc;
+  color: #40594b;
+  background: #f0f6ef;
+}
+
+html[data-theme="forest"] .button-secondary:hover:not(:disabled) {
+  border-color: #a9c5ad;
+  color: #1e2d24;
+  background: #e0ece1;
+}
+
+html[data-theme="forest"] .button-danger {
+  border-color: #e5bfc0;
+  color: #9a3038;
+  background: #fff3f2;
+}
+
+html[data-theme="forest"] .button-danger:hover:not(:disabled) {
+  border-color: #d58e92;
+  color: #7e242b;
+  background: #ffe7e5;
+}
+
+/* --------------------------------------------------------------------------
+   Detail view, Markdown, dialogs, and management surfaces
+   -------------------------------------------------------------------------- */
+html[data-theme="forest"] .note-detail-surface,
+html[data-theme="forest"] .quick-view-content,
+html[data-theme="forest"] .note-content-preview {
+  color: #2e4637;
+  background: #f8fbf7;
+}
+
+/* The title field sits directly on the editor surface, not on a white input card. */
+html[data-theme="forest"] #note-title {
+  background-color: #f8fbf7;
+}
+
+html[data-theme="forest"] .detail-commandbar,
+html[data-theme="forest"] .note-formatting-toolbar,
+html[data-theme="forest"] .dialog-footer,
+html[data-theme="forest"] .organize-tabs {
+  border-color: #d0dfd2;
+  background: #edf5ed;
+}
+
+html[data-theme="forest"] .detail-commandbar__state,
+html[data-theme="forest"] .detail-commandbar__info .note-save-status.is-saved,
+html[data-theme="forest"] .detail-commandbar__info .note-save-status.is-new {
+  color: #39734f;
+}
+
+html[data-theme="forest"] .detail-commandbar__info .note-save-status.is-dirty {
+  color: #9a671d;
+}
+
+html[data-theme="forest"] .detail-commandbar__info .note-save-status.is-error {
+  color: #a2383e;
+}
+
+html[data-theme="forest"] .quick-view-content h1,
+html[data-theme="forest"] .quick-view-content h2,
+html[data-theme="forest"] .quick-view-content h3,
+html[data-theme="forest"] .note-content-preview h1,
+html[data-theme="forest"] .note-content-preview h2,
+html[data-theme="forest"] .note-content-preview h3 {
+  color: #1e2d24;
+}
+
+html[data-theme="forest"] .quick-view-content blockquote,
+html[data-theme="forest"] .note-content-preview blockquote {
+  border-left-color: #9fbea5;
+  color: #496252;
+}
+
+html[data-theme="forest"] .quick-view-content code:not(pre code),
+html[data-theme="forest"] .note-content-preview code:not(pre code) {
+  border: 1px solid #cbdccc;
+  color: #2f6b4f;
+  background: #e9f2ea;
+}
+
+html[data-theme="forest"] .quick-view-content pre,
+html[data-theme="forest"] .note-content-preview pre {
+  border: 1px solid #c2d5c5;
+  background: #e6efe7;
+}
+
+html[data-theme="forest"] .quick-view-content pre code,
+html[data-theme="forest"] .note-content-preview pre code {
+  color: #284a35;
+}
+
+html[data-theme="forest"] .quick-view-content hr,
+html[data-theme="forest"] .note-content-preview hr,
+html[data-theme="forest"] .quick-view-content th,
+html[data-theme="forest"] .note-content-preview th,
+html[data-theme="forest"] .quick-view-content td,
+html[data-theme="forest"] .note-content-preview td {
+  border-color: #cbdccc;
+}
+
+html[data-theme="forest"] .quick-view-content th,
+html[data-theme="forest"] .note-content-preview th,
+html[data-theme="forest"] .quick-view-content tr:nth-child(even),
+html[data-theme="forest"] .note-content-preview tr:nth-child(even) {
+  background: #edf5ed;
+}
+
+html[data-theme="forest"] .quick-view-content .markdown-task-item > input,
+html[data-theme="forest"] .note-content-preview .markdown-task-item > input {
+  accent-color: var(--primary-accent);
+}
+
+html[data-theme="forest"] .app-dialog,
+html[data-theme="forest"] .note-type-picker__menu,
+html[data-theme="forest"] .management-list {
+  border-color: #cbdccc;
+  color: #1e2d24;
+  background: #f8fbf7;
+  box-shadow: 0 12px 36px rgb(37 76 49 / 13%);
+}
+
+html[data-theme="forest"] .app-dialog::backdrop {
+  background: rgb(26 53 35 / 38%);
+  backdrop-filter: blur(3px);
+}
+
+html[data-theme="forest"] .dialog-header,
+html[data-theme="forest"] .management-row {
+  border-color: #d6e2d8;
+}
+
+html[data-theme="forest"] .dialog-header h2,
+html[data-theme="forest"] .management-row__name,
+html[data-theme="forest"] .empty-state h3 {
+  color: #1e2d24;
+}
+
+html[data-theme="forest"] .organize-tab {
+  color: #607669;
+}
+
+html[data-theme="forest"] .organize-tab:hover,
+html[data-theme="forest"] .organize-tab.is-active {
+  color: var(--primary-accent-text);
+}
+
+html[data-theme="forest"] .organize-tab.is-active {
+  border-bottom-color: var(--primary-accent);
+}
+
+html[data-theme="forest"] .management-row:hover,
+html[data-theme="forest"] .note-type-picker__option:hover,
+html[data-theme="forest"] .note-type-picker__option[aria-selected="true"] {
+  background: #e8f1e8;
+}
+
+html[data-theme="forest"] .management-row__default,
+html[data-theme="forest"] .empty-state,
+html[data-theme="forest"] .mobile-filter-toggle {
+  border-color: #cbdccc;
+  color: #5d7566;
+  background: #edf5ed;
+}
+
+html[data-theme="forest"] .shortcut-tooltip,
+html[data-theme="forest"] .note-save-shortcut__tooltip,
+html[data-theme="forest"] .note-markdown-help__tooltip {
+  border-color: #c2d5c5;
+  color: #2e4637;
+  background: #f2f8f2;
+  box-shadow: 0 6px 20px rgb(37 76 49 / 14%);
+}
+
+html[data-theme="forest"] .shortcut-tooltip kbd,
+html[data-theme="forest"] .note-save-shortcut kbd {
+  border-color: #bfd3c2;
+  border-bottom-color: #a9c5ad;
+  color: #294a36;
+  background: #e1eee2;
+}
+
+html[data-theme="forest"] .empty-state__icon {
+  color: var(--primary-accent);
+  background: var(--primary-accent-soft);
+}
+
+html[data-theme="forest"] .startup-error {
+  border-color: #e0b5b7;
+  color: #8e2d35;
+  background: #fff1f1;
+}
+
+/* Forest has a dedicated local glyph supplied by the theme switcher markup. */
+html[data-theme="forest"] .theme-toggle__icon--forest {
+  display: inline-flex !important;
+}
+
+html[data-theme="forest"] .theme-toggle__icon--sun,
+html[data-theme="forest"] .theme-toggle__icon--coffee,
+html[data-theme="forest"] .theme-toggle__icon--moon,
+html[data-theme="forest"] .theme-toggle__icon--auto {
+  display: none !important;
+}
