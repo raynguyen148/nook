@@ -18,7 +18,6 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
   let uiViewTransition = null;
   let sidebarCollapseStartTimer = 0;
   let sidebarCollapseRevealTimer = 0;
-  let autoThemeTimer = 0;
 
   // These core utilities are resolved only when an interaction occurs, after
   // every installer has completed.
@@ -66,33 +65,28 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
     return transition;
   }
 
-  function resolveAutoTheme(now = new Date()) {
-    // Keep this local-time schedule aligned with the pre-paint script in index.html.
-    const hour = now.getHours();
-    if (hour >= 18 && hour < 21) return "coffee";
-    if (hour >= 21 || hour < 5) return "dark";
-    return "light";
+  const systemThemeQuery = window.matchMedia("(prefers-color-scheme: dark)");
+
+  function resolveAutoTheme() {
+    return systemThemeQuery.matches ? "dark" : "light";
   }
 
   function clearAutoThemeTimer() {
-    window.clearTimeout(autoThemeTimer);
-    autoThemeTimer = 0;
+    // No-op for backward compatibility with events.js
   }
 
   function scheduleAutoTheme() {
-    clearAutoThemeTimer();
-    if (ui.theme !== "auto" || document.hidden) return;
-    // Check at the next minute boundary, including after a device-clock change.
-    autoThemeTimer = window.setTimeout(refreshAutoTheme, 60000 - (Date.now() % 60000));
+    // No-op for backward compatibility with events.js
   }
 
   function refreshAutoTheme() {
-    if (ui.theme === "auto" && !document.hidden && document.documentElement.dataset.theme !== resolveAutoTheme()) {
+    if (ui.theme === "auto" && document.documentElement.dataset.theme !== resolveAutoTheme()) {
       syncThemeUI();
-    } else {
-      scheduleAutoTheme();
     }
   }
+
+  // Automatically refresh when the system theme changes
+  systemThemeQuery.addEventListener("change", refreshAutoTheme);
 
   function syncThemeUI() {
     const mode = ui.theme;
@@ -104,7 +98,7 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
       light: "Light",
       coffee: "Coffee",
       forest: "Forest",
-      "midnight-blue": "Midnight Blue",
+      "midnight": "Midnight",
       dark: "Dark",
       auto: "Auto",
     };
@@ -114,13 +108,13 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
     const currentLabel = mode === "auto" ? `Auto (${themeLabels[theme]})` : label;
     elements.themeToggle.setAttribute(
       "aria-label",
-      `Current theme: ${currentLabel}. Switch to ${nextLabel} theme`,
+      `Current theme: ${currentLabel}. Switch to ${nextLabel}`,
     );
     elements.themeToggle.removeAttribute("title");
     elements.themeToggleLabel.textContent = label;
     if (elements.themeToggleTooltipText) {
       elements.themeToggleTooltipText.textContent = mode === "auto"
-        ? `Auto · local time (switch to ${nextLabel})\n• Light 05:00–18:00\n• Coffee 18:00–21:00\n• Dark 21:00–05:00`
+        ? `Auto · Follows system theme (switch to ${nextLabel})`
         : `Theme: ${label} (switch to ${nextLabel})`;
     }
 
@@ -130,12 +124,11 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
         light: "#9e6b02",
         coffee: "#a35616",
         forest: "#2f6b4f",
-        "midnight-blue": "#18263f",
+        "midnight": "#18263f",
         dark: "#0b0f19",
       };
       themeColorMeta.content = themeColors[theme] || themeColors.light;
     }
-    scheduleAutoTheme();
   }
 
   function setTheme(theme, { animate = true, persist = true } = {}) {

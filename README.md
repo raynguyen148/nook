@@ -132,13 +132,14 @@ The pin control is available on each active note card. In Trash, a note can be
 restored or permanently deleted. Moving a note to Trash is recoverable until it
 is permanently deleted or Trash is emptied.
 
-### Keyboard shortcuts
+### Themes
 
-The theme button (or `T`) cycles through Light → Warm → Dark → Auto. Auto uses
-your device's local time: Light from 05:00–18:00, Warm from 18:00–21:00, and
-Dark from 21:00–05:00. Hover over or keyboard-focus the button to see the
-schedule. Auto stays selected after reload and updates when you return to the
-tab; manually selected themes stay fixed.
+Nook has a light, clean interface by default. You can use the theme button (or `T`) to cycle between six
+modes: Light, Coffee, Forest, Midnight, Dark, and Auto. Auto matches
+your device's system color scheme preference (Light or Dark). Hover over or keyboard-focus the button to see the
+current and next theme. Auto stays selected after reload and updates when the system theme changes.
+
+### Keyboard shortcuts
 
 The modifier is `Command` on macOS and `Control` on Windows/Linux.
 

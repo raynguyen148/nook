@@ -12,13 +12,12 @@
       (() => {
         try {
           const stored = window.localStorage.getItem("nook:theme");
-          // Preserve the renamed Coffee preference for existing local installs.
-          const storedTheme = stored === "warm" ? "coffee" : stored;
-          const mode = ["light", "coffee", "forest", "midnight-blue", "dark", "auto"].includes(storedTheme) ? storedTheme : "light";
+          // Preserve the renamed preferences for existing local installs.
+          const storedTheme = stored === "warm" ? "coffee" : stored === "midnight-blue" ? "midnight" : stored;
+          const mode = ["light", "coffee", "forest", "midnight", "dark", "auto"].includes(storedTheme) ? storedTheme : "light";
           // Keep Auto aligned with resolveAutoTheme() in js/app/preferences.js.
-          const hour = new Date().getHours();
           const theme = mode === "auto"
-            ? (hour >= 18 && hour < 21 ? "coffee" : (hour >= 21 || hour < 5 ? "dark" : "light"))
+            ? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")
             : mode;
           document.documentElement.dataset.theme = theme;
           document.documentElement.dataset.themeMode = mode;
@@ -28,7 +27,7 @@
               light: "#9e6b02",
               coffee: "#a35616",
               forest: "#2f6b4f",
-              "midnight-blue": "#18263f",
+              "midnight": "#18263f",
               dark: "#0b0f19",
             };
             meta.content = themeColors[theme] || themeColors.light;
@@ -233,7 +232,7 @@
                     <path d="M4.5 20c3.4-4.1 7.4-6.7 12-8.2" />
                   </svg>
                 </span>
-                <span class="theme-toggle__icon theme-toggle__icon--midnight-blue" aria-hidden="true">
+                <span class="theme-toggle__icon theme-toggle__icon--midnight" aria-hidden="true">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M19.8 15.2A8.7 8.7 0 0 1 8.8 4.2 8.7 8.7 0 1 0 19.8 15.2Z" />
                     <path d="m17.8 4.1.4.8.8.4-.8.4-.4.8-.4-.8-.8-.4.8-.4Z" />

@@ -117,7 +117,7 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
       if (message) showToast(message, tone);
     });
     window.addEventListener("storage", (event) => {
-      const theme = event.newValue === "warm" ? "coffee" : event.newValue;
+      const theme = event.newValue === "warm" ? "coffee" : event.newValue === "midnight-blue" ? "midnight" : event.newValue;
       if (event.key === THEME_STORAGE_KEY && THEMES.includes(theme) && theme !== ui.theme) {
         setTheme(theme, { persist: false });
       }
