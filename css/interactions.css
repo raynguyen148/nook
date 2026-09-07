@@ -25,10 +25,19 @@
 
 .theme-toggle__icon--sun,
 .theme-toggle__icon--warm,
-.theme-toggle__icon--moon {
+.theme-toggle__icon--moon,
+.theme-toggle__icon--auto {
   display: none;
 }
 
+/* Override the theme-specific icon rules while retaining the active palette. */
+html[data-theme-mode="auto"] .theme-toggle .theme-toggle__icon {
+  display: none !important;
+}
+
+html[data-theme-mode="auto"] .theme-toggle .theme-toggle__icon--auto {
+  display: inline-flex !important;
+}
 
 
 /* Primary accent: golden yellow-brown, symbolizing classic notebook & stationery warmth. */
@@ -693,6 +702,20 @@ textarea:focus-visible {
   white-space: nowrap;
 }
 
+#theme-toggle-tooltip-text {
+  white-space: pre-line;
+}
+
+#theme-toggle-shortcut-tooltip kbd {
+  flex: none;
+}
+
+@media (max-width: 820px) {
+  #theme-toggle-shortcut-tooltip {
+    right: auto;
+    left: 0;
+  }
+}
 
 
 .shortcut-tooltip kbd {

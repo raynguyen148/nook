@@ -12,8 +12,14 @@
       (() => {
         try {
           const stored = window.localStorage.getItem("nook:theme");
-          const theme = stored && ["light", "warm", "dark"].includes(stored) ? stored : "light";
+          const mode = ["light", "warm", "dark", "auto"].includes(stored) ? stored : "light";
+          // Keep Auto aligned with resolveAutoTheme() in js/app/preferences.js.
+          const hour = new Date().getHours();
+          const theme = mode === "auto"
+            ? (hour >= 18 && hour < 21 ? "warm" : (hour >= 21 || hour < 5 ? "dark" : "light"))
+            : mode;
           document.documentElement.dataset.theme = theme;
+          document.documentElement.dataset.themeMode = mode;
           const meta = document.querySelector('meta[name="theme-color"]');
           if (meta) {
             meta.content = theme === "dark" ? "#0b0f19" : (theme === "warm" ? "#a35616" : "#9e6b02");
@@ -193,7 +199,6 @@
                 id="theme-toggle"
                 class="button button-secondary theme-toggle"
                 type="button"
-                aria-pressed="false"
                 aria-label="Current theme: Light. Switch to Warm theme"
                 aria-describedby="theme-toggle-shortcut-tooltip"
                 aria-keyshortcuts="T"
@@ -216,6 +221,12 @@
                 <span class="theme-toggle__icon theme-toggle__icon--moon" aria-hidden="true">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M20.4 15.1A8.7 8.7 0 0 1 8.9 3.6 8.7 8.7 0 1 0 20.4 15.1Z" />
+                  </svg>
+                </span>
+                <span class="theme-toggle__icon theme-toggle__icon--auto" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="8.5" />
+                    <path d="M12 7v5l3 2" />
                   </svg>
                 </span>
                 <span id="theme-toggle-label" class="button-label">Light</span>

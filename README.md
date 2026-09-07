@@ -19,7 +19,7 @@ practice, and personal ideas in one calm, searchable local library.
 - Copy the raw Markdown source or export the current note as `.md` or `.txt`.
 - Export and import a complete JSON backup. The local backup-health indicator reminds you when an export is missing or old.
 - Manage note types and tags from Settings → Organize Notes.
-- Switch between light and dark themes, Focus, Comfortable, and Compact layouts, or collapse the sidebar into an icon rail.
+- Choose Light, Warm, Dark, or Auto theme, switch between Focus, Comfortable, and Compact layouts, or collapse the sidebar into an icon rail.
 - Recover an unfinished local editor draft after an interrupted session.
 - Keep multiple open tabs in sync when the browser supports `BroadcastChannel`.
 - Use `C` for quick capture plus platform-aware editor shortcuts for formatting, saving, and switching editor modes.
@@ -133,6 +133,12 @@ restored or permanently deleted. Moving a note to Trash is recoverable until it
 is permanently deleted or Trash is emptied.
 
 ### Keyboard shortcuts
+
+The theme button (or `T`) cycles through Light → Warm → Dark → Auto. Auto uses
+your device's local time: Light from 05:00–18:00, Warm from 18:00–21:00, and
+Dark from 21:00–05:00. Hover over or keyboard-focus the button to see the
+schedule. Auto stays selected after reload and updates when you return to the
+tab; manually selected themes stay fixed.
 
 The modifier is `Command` on macOS and `Control` on Windows/Linux.
 

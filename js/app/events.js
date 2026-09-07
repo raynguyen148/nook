@@ -9,6 +9,8 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
   const {
     getNextTheme,
     syncThemeUI,
+    clearAutoThemeTimer,
+    refreshAutoTheme,
     setTheme,
     syncSidebarUI,
     toggleSidebar,
@@ -120,6 +122,10 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
       }
     });
     elements.themeToggle.addEventListener("click", () => setTheme(getNextTheme(ui.theme)));
+    document.addEventListener("visibilitychange", refreshAutoTheme);
+    window.addEventListener("focus", refreshAutoTheme);
+    window.addEventListener("pageshow", refreshAutoTheme);
+    window.addEventListener("pagehide", clearAutoThemeTimer);
     elements.organize.addEventListener("click", () => openOrganize());
     elements.export.addEventListener("click", () => exportLibrary());
     elements.import.addEventListener("click", () => elements.importInput.click());
