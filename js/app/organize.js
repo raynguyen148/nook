@@ -7,6 +7,8 @@ globalThis[Symbol.for("nook.app.modules")].register("organize", (app) => {
   const { openColorPickers } = shared;
   const colorPickerInstances = new WeakMap();
   const managementAnimations = new WeakMap();
+  let refreshSequence = 0;
+  let appliedRefreshSequence = 0;
 
   const persistFilters = (...args) => api.persistFilters(...args);
   const recordBackupExport = (...args) => api.recordBackupExport(...args);
@@ -491,7 +493,7 @@ globalThis[Symbol.for("nook.app.modules")].register("organize", (app) => {
     renderSidebar();
     renderActiveFilters();
     renderNotes({ motion });
-    renderManagement();
+    if (elements.organizeDialog.open) renderManagement();
     if (isNoteEditorOpen()) {
       renderNoteTypeOptions(elements.noteType.value);
       renderSelectedNoteTags();
@@ -512,20 +514,36 @@ globalThis[Symbol.for("nook.app.modules")].register("organize", (app) => {
   }
 
   async function refreshLibrary({ broadcast = false, external = false } = {}) {
+    // Broadcast the committed mutation even if this refresh is superseded.
+    if (broadcast) notifyLibraryMutation();
     if (external && isNoteEditorOpen() && hasUnsavedNoteChanges()) {
       ui.externalRefreshPending = true;
       showToast("The library changed in another tab. Save or close this note to refresh.", "error");
       return;
     }
+    const sequence = ++refreshSequence;
     const snapshot = await storage.getSnapshot();
+    if (sequence < appliedRefreshSequence) return;
+    // The user may have started typing while IndexedDB was being read.
+    if (external && isNoteEditorOpen() && hasUnsavedNoteChanges()) {
+      ui.externalRefreshPending = true;
+      showToast("The library changed in another tab. Save or close this note to refresh.", "error");
+      return;
+    }
+    appliedRefreshSequence = sequence;
+    const previousNotes = new Map(library.notes.map((note) => [note.id, note]));
+    const searchIndex = new Map(snapshot.notes.map((note) => {
+      const previous = previousNotes.get(note.id);
+      const unchanged = previous?.title === note.title && previous?.content === note.content;
+      return [note.id, unchanged && library.searchIndex.has(note.id)
+        ? library.searchIndex.get(note.id)
+        : `${note.title}\n${note.content}`.toLocaleLowerCase()];
+    }));
     library.notes = snapshot.notes;
     library.types = snapshot.types;
     library.tags = snapshot.tags;
-    library.searchIndex = new Map(
-      snapshot.notes.map((note) => [note.id, `${note.title}\n${note.content}`.toLocaleLowerCase()]),
-    );
+    library.searchIndex = searchIndex;
     renderLibrary();
-    if (broadcast) notifyLibraryMutation();
   }
 
   function openOrganize(tab = "types") {

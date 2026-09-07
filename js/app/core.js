@@ -753,6 +753,7 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
   function getVisibleNotes() {
     const normalizedQuery = normalizedSearchQuery();
     const selectedTagIds = [...ui.tagIds];
+    const timestamps = new Map();
     const today = new Date();
     const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime();
     const tomorrowStart = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1).getTime();
@@ -764,6 +765,7 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
       if (ui.todayOnly && (Number.isNaN(createdAt) || createdAt < todayStart || createdAt >= tomorrowStart)) return false;
       const updatedAt = Date.parse(note.updatedAt);
       if (ui.updatedTodayOnly && (Number.isNaN(updatedAt) || updatedAt < todayStart || updatedAt >= tomorrowStart)) return false;
+      timestamps.set(note, { createdAt, updatedAt });
       if (!normalizedQuery) return true;
       const searchableText =
         library.searchIndex.get(note.id) || `${note.title}\n${note.content}`.toLocaleLowerCase();
@@ -772,21 +774,23 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
 
     return notes.sort((left, right) => {
       if (left.isPinned !== right.isPinned) return left.isPinned ? -1 : 1;
+      const leftTime = timestamps.get(left);
+      const rightTime = timestamps.get(right);
       if (ui.sort === "title-asc" || ui.sort === "title-desc") {
         const direction = ui.sort === "title-asc" ? 1 : -1;
         const titleComparison = collator.compare(left.title, right.title);
         if (titleComparison) return titleComparison * direction;
       } else if (ui.sort === "updated-asc" || ui.sort === "updated-desc") {
         const direction = ui.sort === "updated-asc" ? 1 : -1;
-        const updatedComparison = Date.parse(left.updatedAt) - Date.parse(right.updatedAt);
+        const updatedComparison = leftTime.updatedAt - rightTime.updatedAt;
         if (!Number.isNaN(updatedComparison) && updatedComparison) return updatedComparison * direction;
       } else {
         const direction = ui.sort === "created-asc" ? 1 : -1;
-        const dateComparison = Date.parse(left.createdAt) - Date.parse(right.createdAt);
+        const dateComparison = leftTime.createdAt - rightTime.createdAt;
         if (!Number.isNaN(dateComparison) && dateComparison) return dateComparison * direction;
       }
 
-      const timestampComparison = Date.parse(right.createdAt) - Date.parse(left.createdAt);
+      const timestampComparison = rightTime.createdAt - leftTime.createdAt;
       if (!Number.isNaN(timestampComparison) && timestampComparison) return timestampComparison;
       return collator.compare(left.id, right.id);
     });
