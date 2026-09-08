@@ -402,6 +402,7 @@ html[data-theme="dark"] .color-picker__trigger:focus-visible {
 html[data-theme="dark"] .search-icon,
 html[data-theme="dark"] .sort-field,
 html[data-theme="dark"] .view-mode-button,
+html[data-theme="dark"] .note-editor-mode__button,
 html[data-theme="dark"] .results-meta {
   color: #858585;
 }
@@ -438,7 +439,8 @@ html[data-theme="dark"] .clear-search:hover {
   background: #444444;
 }
 
-html[data-theme="dark"] .view-mode-control__choices {
+html[data-theme="dark"] .view-mode-control__choices,
+html[data-theme="dark"] .note-editor-modes {
   border-color: #383838;
   background: #1e1e1e;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
@@ -449,13 +451,15 @@ html[data-theme="dark"] .view-mode-button + .view-mode-button {
   border-color: #333333;
 }
 
-html[data-theme="dark"] .view-mode-button:hover {
+html[data-theme="dark"] .view-mode-button:hover,
+html[data-theme="dark"] .note-editor-mode__button:hover:not(:disabled) {
   color: var(--primary-accent-text);
   background: var(--primary-accent-soft);
 }
 
 html[data-theme="dark"] .view-mode-button.is-active,
-html[data-theme="dark"] .view-mode-button[aria-pressed="true"] {
+html[data-theme="dark"] .view-mode-button[aria-pressed="true"],
+html[data-theme="dark"] .note-editor-mode__button[aria-pressed="true"] {
   color: var(--primary-accent-text);
   background: var(--primary-accent-soft);
 }
@@ -791,12 +795,11 @@ html[data-theme="dark"] .note-editor-modes {
 
 html[data-theme="dark"] .note-editor-mode__button {
   color: #858585;
-  transition: color var(--interaction-duration) var(--motion-ease-out), background-color var(--interaction-duration) var(--motion-ease-out), border-color var(--interaction-duration) var(--motion-ease-out);
+  transition: color var(--interaction-duration) var(--motion-ease-out), background-color var(--interaction-duration) var(--motion-ease-out), box-shadow var(--interaction-duration) var(--motion-ease-out), transform var(--motion-duration-micro) var(--motion-ease-out);
 }
 
 html[data-theme="dark"] .note-editor-mode__button:hover:not(:disabled),
 html[data-theme="dark"] .note-editor-mode__button[aria-pressed="true"] {
-  border-color: var(--primary-accent-border);
   color: var(--primary-accent-text);
   background: var(--primary-accent-soft);
 }

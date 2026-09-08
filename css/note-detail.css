@@ -209,7 +209,7 @@
 
 
 .note-editor-commandbar__actions .note-editor-modes {
-  gap: 0.18rem;
+  gap: 0.1rem;
 }
 
 
@@ -1136,7 +1136,7 @@
   }
 
   .note-editor-commandbar__actions .note-editor-modes {
-    gap: 0.18rem;
+    gap: 0.1rem;
   }
 
   .note-editor-commandbar__actions .quick-view-header__utilities {

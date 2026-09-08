@@ -389,13 +389,17 @@ html:not([data-theme]) .sort-field select {
 
 /* Segmented View Mode Control */
 html[data-theme="coffee"] .view-mode-control__choices,
-html:not([data-theme]) .view-mode-control__choices {
+html[data-theme="coffee"] .note-editor-modes,
+html:not([data-theme]) .view-mode-control__choices,
+html:not([data-theme]) .note-editor-modes {
   background: #fdfbf7;
   border-color: #d8ccbd;
 }
 
 html[data-theme="coffee"] .view-mode-button,
-html:not([data-theme]) .view-mode-button {
+html[data-theme="coffee"] .note-editor-mode__button,
+html:not([data-theme]) .view-mode-button,
+html:not([data-theme]) .note-editor-mode__button {
   color: #8c7766;
   background: transparent;
   transition:
@@ -412,15 +416,19 @@ html:not([data-theme]) .view-mode-button + .view-mode-button {
 }
 
 html[data-theme="coffee"] .view-mode-button:hover:not(.is-active),
-html:not([data-theme]) .view-mode-button:hover:not(.is-active) {
+html[data-theme="coffee"] .note-editor-mode__button:hover:not([aria-pressed="true"]),
+html:not([data-theme]) .view-mode-button:hover:not(.is-active),
+html:not([data-theme]) .note-editor-mode__button:hover:not([aria-pressed="true"]) {
   background: #f5efe6;
   color: #261e18;
 }
 
 html[data-theme="coffee"] .view-mode-button.is-active,
 html[data-theme="coffee"] .view-mode-button[aria-pressed="true"],
+html[data-theme="coffee"] .note-editor-mode__button[aria-pressed="true"],
 html:not([data-theme]) .view-mode-button.is-active,
-html:not([data-theme]) .view-mode-button[aria-pressed="true"] {
+html:not([data-theme]) .view-mode-button[aria-pressed="true"],
+html:not([data-theme]) .note-editor-mode__button[aria-pressed="true"] {
   background: #ebe1d2 !important;
   color: #261e18 !important;
 }

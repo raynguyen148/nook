@@ -249,6 +249,7 @@ html[data-theme="forest"] .notes-count {
 }
 
 html[data-theme="forest"] .toolbar,
+html[data-theme="forest"] .note-editor-modes,
 html[data-theme="forest"] .view-mode-control__choices {
   border-color: #d0dfd2;
   background: #edf5ed;
@@ -305,14 +306,17 @@ html[data-theme="forest"] .search-shortcut kbd {
   box-shadow: none !important;
 }
 
-html[data-theme="forest"] .view-mode-button {
+html[data-theme="forest"] .view-mode-button,
+html[data-theme="forest"] .note-editor-mode__button {
   color: #688070;
   background: transparent;
 }
 
 html[data-theme="forest"] .view-mode-button:hover:not(.is-active),
+html[data-theme="forest"] .note-editor-mode__button:hover:not([aria-pressed="true"]),
 html[data-theme="forest"] .view-mode-button.is-active,
-html[data-theme="forest"] .view-mode-button[aria-pressed="true"] {
+html[data-theme="forest"] .view-mode-button[aria-pressed="true"],
+html[data-theme="forest"] .note-editor-mode__button[aria-pressed="true"] {
   color: #1e2d24;
   background: #dfece1 !important;
 }

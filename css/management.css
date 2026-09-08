@@ -233,6 +233,31 @@
 
 
 
+/* Let the menu escape scroll clipping without letting the dialog header or
+ * the final management row paint square corners over their rounded surfaces. */
+.organize-dialog:has(.color-picker__menu:not([hidden])) > .dialog-header {
+  border-top-left-radius: 1.1rem;
+  border-top-right-radius: 1.1rem;
+}
+
+
+
+.management-list:has(.color-picker__menu:not([hidden])) > .management-row:last-child {
+  border-bottom-right-radius: 1rem;
+  border-bottom-left-radius: 1rem;
+}
+
+
+
+@media (max-width: 620px) {
+  .organize-dialog:has(.color-picker__menu:not([hidden])) > .dialog-header {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+  }
+}
+
+
+
 .color-picker__option {
   position: relative;
   display: flex;
