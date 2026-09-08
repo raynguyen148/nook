@@ -245,8 +245,10 @@
                 </span>
                 <span class="theme-toggle__icon theme-toggle__icon--auto" aria-hidden="true">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="8.5" />
-                    <path d="M12 7v5l3 2" />
+                    <rect x="3.2" y="3.7" width="17.6" height="12.8" rx="2.2" />
+                    <path d="M8.2 20.3h7.6M12 16.5v3.8" />
+                    <circle cx="12" cy="10.1" r="3.2" />
+                    <path d="M12 6.9a3.2 3.2 0 0 1 0 6.4Z" fill="currentColor" stroke="none" />
                   </svg>
                 </span>
                 <span id="theme-toggle-label" class="button-label">Light</span>
@@ -334,8 +336,8 @@
                 </svg>
               </button>
             </div>
-            <label class="sort-field" for="sort-select">
-              <span class="sr-only">Sort notes by</span>
+            <div class="sort-field">
+              <span id="sort-select-label" class="sr-only">Sort notes by</span>
               <select id="sort-select" aria-label="Sort notes by">
                 <option value="created-desc">Newest created</option>
                 <option value="created-asc">Oldest created</option>
@@ -344,7 +346,7 @@
                 <option value="title-asc">Title A–Z</option>
                 <option value="title-desc">Title Z–A</option>
               </select>
-            </label>
+            </div>
             <!-- Hallmark · component: layout-view icon set · Finder-inspired, Nook-drawn -->
             <div class="view-mode-control" role="group" aria-label="Note layout">
               <div class="view-mode-control__choices">
@@ -618,12 +620,15 @@
 
         <div class="dialog-footer">
           <div class="dialog-footer__tools">
-            <button id="delete-note-btn" class="icon-button note-delete-button is-hidden" type="button" aria-label="Move note to Trash" title="Move to Trash">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M4.5 7h15M9.5 10.5v6M14.5 10.5v6M9 4.5h6l.75 2.5h-7.5L9 4.5Z" />
-                <path d="M6.5 7 7.4 20h9.2l.9-13" />
-              </svg>
-            </button>
+            <span class="note-detail-action-tooltip">
+              <button id="delete-note-btn" class="icon-button note-delete-button is-hidden" type="button" aria-label="Move note to Trash" aria-describedby="delete-note-tooltip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M4.5 7h15M9.5 10.5v6M14.5 10.5v6M9 4.5h6l.75 2.5h-7.5L9 4.5Z" />
+                  <path d="M6.5 7 7.4 20h9.2l.9-13" />
+                </svg>
+              </button>
+              <span id="delete-note-tooltip" class="note-detail-action-tooltip__content" role="tooltip">Move to Trash</span>
+            </span>
             <div class="dialog-footer__help">
               <div class="note-save-shortcut">
               <button
@@ -737,46 +742,55 @@
         <button id="close-quick-view-btn" class="button button-secondary detail-back-button" type="button" aria-label="Return to all notes" title="All notes">← <span>All notes</span></button>
         <div id="note-preview-actions" class="dialog-footer__preview-actions">
           <div class="quick-view-header__utilities">
-            <button
-              id="copy-note-content-btn"
-              class="icon-button quick-view-copy-button"
-              type="button"
-              aria-label="Copy note content"
-              title="Copy content"
-            >
-              <svg class="copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <rect x="8.25" y="8.25" width="11.5" height="11.5" rx="2"></rect>
-                <path d="M15.75 8.25V6.5a2.25 2.25 0 0 0-2.25-2.25H6.5A2.25 2.25 0 0 0 4.25 6.5v7A2.25 2.25 0 0 0 6.5 15.75h1.75"></path>
-              </svg>
-              <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <polyline points="20 6 9 17 4 12"></polyline>
-              </svg>
-            </button>
+            <span class="note-detail-action-tooltip">
+              <button
+                id="copy-note-content-btn"
+                class="icon-button quick-view-copy-button"
+                type="button"
+                aria-label="Copy note content"
+                aria-describedby="copy-note-content-tooltip"
+              >
+                <svg class="copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <rect x="8.25" y="8.25" width="11.5" height="11.5" rx="2"></rect>
+                  <path d="M15.75 8.25V6.5a2.25 2.25 0 0 0-2.25-2.25H6.5A2.25 2.25 0 0 0 4.25 6.5v7A2.25 2.25 0 0 0 6.5 15.75h1.75"></path>
+                </svg>
+                <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </button>
+              <span id="copy-note-content-tooltip" class="note-detail-action-tooltip__content" role="tooltip">Copy content</span>
+            </span>
             <div class="quick-view-export-group" role="group" aria-label="Export note">
-              <button
-                id="export-note-markdown-btn"
-                class="icon-button quick-view-export-button"
-                type="button"
-                aria-label="Export note as Markdown"
-                title="Export .md"
-              >
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <path d="M6.5 3.75h7.2l4.3 4.3v12.2H6.5a2 2 0 0 1-2-2v-12.5a2 2 0 0 1 2-2Z"></path>
-                  <path d="M13.5 3.95v4.4h4.3M8 13.2l1.6-1.7 1.6 1.7 1.6-1.7 1.6 1.7M9.6 11.6v3.1M14.4 11.6v3.1"></path>
-                </svg>
-              </button>
-              <button
-                id="export-note-text-btn"
-                class="icon-button quick-view-export-button"
-                type="button"
-                aria-label="Export note as plain text"
-                title="Export .txt"
-              >
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <path d="M6.5 3.75h7.2l4.3 4.3v12.2H6.5a2 2 0 0 1-2-2v-12.5a2 2 0 0 1 2-2Z"></path>
-                  <path d="M13.5 3.95v4.4h4.3M8 12h7.5M8 15h7.5"></path>
-                </svg>
-              </button>
+              <span class="note-detail-action-tooltip">
+                <button
+                  id="export-note-markdown-btn"
+                  class="icon-button quick-view-export-button"
+                  type="button"
+                  aria-label="Export note as Markdown"
+                  aria-describedby="export-note-markdown-tooltip"
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M6.5 3.75h7.2l4.3 4.3v12.2H6.5a2 2 0 0 1-2-2v-12.5a2 2 0 0 1 2-2Z"></path>
+                    <path d="M13.5 3.95v4.4h4.3M8 13.2l1.6-1.7 1.6 1.7 1.6-1.7 1.6 1.7M9.6 11.6v3.1M14.4 11.6v3.1"></path>
+                  </svg>
+                </button>
+                <span id="export-note-markdown-tooltip" class="note-detail-action-tooltip__content" role="tooltip">Export .md</span>
+              </span>
+              <span class="note-detail-action-tooltip">
+                <button
+                  id="export-note-text-btn"
+                  class="icon-button quick-view-export-button"
+                  type="button"
+                  aria-label="Export note as plain text"
+                  aria-describedby="export-note-text-tooltip"
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M6.5 3.75h7.2l4.3 4.3v12.2H6.5a2 2 0 0 1-2-2v-12.5a2 2 0 0 1 2-2Z"></path>
+                    <path d="M13.5 3.95v4.4h4.3M8 12h7.5M8 15h7.5"></path>
+                  </svg>
+                </button>
+                <span id="export-note-text-tooltip" class="note-detail-action-tooltip__content" role="tooltip">Export .txt</span>
+              </span>
             </div>
           </div>
         </div>

@@ -23,6 +23,15 @@
 
 
 
+.theme-toggle {
+  min-height: var(--control-height);
+  border-radius: var(--control-radius);
+  padding-inline: 0.72rem;
+  font-weight: 620;
+}
+
+
+
 .theme-toggle__icon--sun,
 .theme-toggle__icon--coffee,
 .theme-toggle__icon--forest,
@@ -150,7 +159,7 @@ textarea:focus-visible {
   border-color: var(--primary-accent);
   color: var(--primary-button-text);
   background: var(--primary-accent);
-  box-shadow: 0 5px 12px var(--primary-accent-shadow);
+  box-shadow: 0 1px 2px var(--primary-accent-shadow);
 }
 
 
@@ -158,7 +167,47 @@ textarea:focus-visible {
 .button-primary:hover:not(:disabled) {
   border-color: var(--primary-accent-hover);
   background: var(--primary-accent-hover);
-  box-shadow: 0 7px 17px var(--primary-accent-shadow);
+  box-shadow: 0 3px 8px var(--primary-accent-shadow);
+}
+
+
+
+.button {
+  min-height: var(--control-height);
+  border-radius: var(--control-radius);
+  padding: 0.46rem 0.82rem;
+  font-size: 0.8rem;
+  font-weight: 650;
+}
+
+
+
+.button-compact {
+  min-height: 2.2rem;
+  padding: 0.36rem 0.62rem;
+  font-size: 0.75rem;
+}
+
+
+
+.search-field input,
+.sort-field select,
+.field input,
+.field select,
+.field textarea,
+.create-row input,
+.create-row select,
+.management-row input,
+.management-row select,
+.management-search input {
+  border-radius: var(--control-radius);
+}
+
+
+
+.note-type-picker__trigger,
+.color-picker__trigger {
+  border-radius: var(--control-radius);
 }
 
 
@@ -676,18 +725,18 @@ textarea:focus-visible {
   right: 0;
   display: flex;
   width: max-content;
-  max-width: min(22rem, 85vw);
+  max-width: min(22rem, calc(100vw - 1.5rem));
   align-items: center;
   justify-content: space-between;
   gap: 0.9rem;
-  border: 1px solid #dfe3ea;
-  border-radius: 0.58rem;
-  padding: 0.46rem 0.52rem;
+  border: 1px solid #e5e5e5;
+  border-radius: var(--control-radius);
+  padding: 0.54rem 0.72rem;
   color: #556176;
   background: #fff;
-  box-shadow: 0 0.65rem 1.6rem rgb(36 46 66 / 14%);
-  font-size: 0.72rem;
-  font-weight: 650;
+  box-shadow: 0 0.75rem 1.75rem rgb(15 23 42 / 10%), 0 0.15rem 0.45rem rgb(15 23 42 / 6%);
+  font-size: 0.75rem;
+  font-weight: 500;
   line-height: 1.25;
   opacity: 0;
   pointer-events: none;
@@ -701,7 +750,9 @@ textarea:focus-visible {
 
 
 .shortcut-tooltip > span {
-  white-space: nowrap;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  white-space: normal;
 }
 
 #theme-toggle-tooltip-text {
@@ -898,11 +949,11 @@ textarea:focus-visible {
   width: max-content;
   max-width: min(12rem, 70vw);
   border: 1px solid #d7dce6;
-  border-radius: 0.38rem;
-  padding: 0.28rem 0.42rem;
-  color: #f7f9fc;
-  background: #293548;
-  box-shadow: 0 8px 18px rgb(27 38 58 / 18%);
+  border-radius: var(--control-radius);
+  padding: 0.36rem 0.52rem;
+  color: #334155;
+  background: #fff;
+  box-shadow: 0 0.65rem 1.5rem rgb(27 38 58 / 12%), 0 0.15rem 0.45rem rgb(27 38 58 / 6%);
   font-size: 0.7rem;
   font-weight: 650;
   line-height: 1.2;
@@ -1064,3 +1115,147 @@ textarea:focus-visible {
 
 
 /* Theme toggle icon state is managed in the Tri-State Icons Display section below */
+
+
+
+/* Keep keyboard focus legible for compact controls whose base component rules
+ * intentionally clear the native outline. Document editing surfaces remain
+ * borderless through the more specific accessibility rules. */
+html body .search-field input:focus-visible,
+html body .sort-field select:focus-visible,
+html body .field input:focus-visible,
+html body .field select:focus-visible,
+html body .field textarea:focus-visible,
+html body .create-row input:focus-visible,
+html body .create-row select:focus-visible,
+html body .management-row input:focus-visible,
+html body .management-row select:focus-visible,
+html body .management-search input:focus-visible,
+html body .note-type-picker__trigger:focus-visible,
+html body .color-picker__trigger:focus-visible,
+html body .color-picker__option:focus-visible,
+html body .note-type-picker__option:focus-visible,
+html body .view-mode-button:focus-visible,
+html body .note-markdown-help__trigger:focus-visible {
+  outline: 2px solid var(--focus-color) !important;
+  outline-offset: 2px !important;
+}
+
+
+
+/* Compact form controls use the shared keyboard ring only. Their focused
+ * border and glow otherwise create a second visible outline. */
+html body .search-field input:focus-visible,
+html body .sort-field select:focus-visible,
+html body .management-row input:focus-visible,
+html body .management-search input:focus-visible {
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+
+
+
+/* Pointer focus should keep the resting control treatment. Chrome can match
+ * :focus-visible for native form controls after a click, so the app tracks
+ * Tab versus pointer modality explicitly for these controls. */
+html:not([data-input-modality="keyboard"]) body .search-field input:focus {
+  border-color: transparent !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+
+
+html:not([data-input-modality="keyboard"]) body .sort-field select:focus {
+  border-color: color-mix(in srgb, currentColor 18%, transparent) !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+
+
+html:not([data-input-modality="keyboard"]) body .management-search input:focus {
+  border-color: var(--management-search-resting-border) !important;
+  box-shadow: var(--management-search-resting-shadow) !important;
+  outline: none !important;
+}
+
+
+
+html:not([data-input-modality="keyboard"]) body .management-row input:focus {
+  border-color: var(--management-row-input-resting-border) !important;
+  box-shadow: var(--management-row-input-resting-shadow) !important;
+  outline: none !important;
+}
+
+
+
+html[data-input-modality="keyboard"] body .search-field input:focus,
+html[data-input-modality="keyboard"] body .sort-field select:focus,
+html[data-input-modality="keyboard"] body .management-row input:focus,
+html[data-input-modality="keyboard"] body .management-search input:focus {
+  border-color: transparent !important;
+  box-shadow: none !important;
+  outline: 2px solid var(--focus-color) !important;
+  outline-offset: 2px !important;
+}
+
+
+
+/* Tag chips keep their selected surface while using one focus ring instead
+ * of stacking the active border with the keyboard outline. Mouse clicks keep
+ * the resting/selected border and do not create a focus treatment. */
+html body .tag-filter-option:has(input:focus-visible) {
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+
+
+
+html body .tag-picker:focus-within {
+  outline: 2px solid var(--focus-color);
+  outline-offset: 2px;
+}
+
+
+
+/* The picker is the single focus surface while its input is active. Pointer
+ * activation must stay visually quiet; keyboard focus keeps the picker ring. */
+html body .note-dialog .tag-picker .tag-picker__input-row input:focus,
+html body .note-dialog .tag-picker .tag-picker__input-row input:focus-visible {
+  border-color: transparent !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+
+
+html:not([data-input-modality="keyboard"]) body .note-dialog .tag-picker:focus-within {
+  border-color: transparent !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+
+
+@media (forced-colors: active) {
+  html body .search-field input:focus-visible,
+  html body .sort-field select:focus-visible,
+  html body .field input:focus-visible,
+  html body .field select:focus-visible,
+  html body .field textarea:focus-visible,
+  html body .create-row input:focus-visible,
+  html body .create-row select:focus-visible,
+  html body .management-row input:focus-visible,
+  html body .management-row select:focus-visible,
+  html body .management-search input:focus-visible,
+  html body .note-type-picker__trigger:focus-visible,
+  html body .color-picker__trigger:focus-visible,
+  html body .color-picker__option:focus-visible,
+  html body .note-type-picker__option:focus-visible,
+  html body .view-mode-button:focus-visible,
+  html body .note-markdown-help__trigger:focus-visible,
+  html body .tag-picker:focus-within {
+    outline-color: Highlight !important;
+  }
+}

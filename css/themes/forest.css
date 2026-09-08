@@ -8,6 +8,10 @@ html[data-theme="forest"] {
   color-scheme: light;
   background: #f3f7f1;
   color: #1e2d24;
+  --management-search-resting-border: #cbdccc;
+  --management-search-resting-shadow: 0 1px 2px rgb(0 0 0 / 4%);
+  --management-row-input-resting-border: #cbdccc;
+  --management-row-input-resting-shadow: none;
 
   /* Evergreen anchor: reserved for actions, selected states, and emphasis. */
   --primary-accent: #2f6b4f;
@@ -171,6 +175,41 @@ html[data-theme="forest"] .filter-count {
   color: #688070;
 }
 
+/* Type filters retain a subdued, type-aware surface so their selected state
+ * reads at a glance without competing with Forest's leaf-green navigation. */
+html[data-theme="forest"] .sidebar-filter--type.is-active {
+  border-color: var(--filter-type-border);
+  color: var(--filter-type-text);
+  background: var(--filter-type-background);
+}
+
+html[data-theme="forest"] .sidebar-filter--type.is-active .filter-count {
+  color: inherit;
+}
+
+html[data-theme="forest"] .active-filter-pill--type {
+  border-color: var(--filter-type-border);
+  color: var(--filter-type-text);
+  background: var(--filter-type-background);
+}
+
+html[data-theme="forest"] .sidebar-filter--indigo, html[data-theme="forest"] .active-filter-pill--type-indigo { --filter-type-border: #cbd2e8; --filter-type-text: #3d5085; --filter-type-background: #eff1f8; }
+html[data-theme="forest"] .sidebar-filter--blue,   html[data-theme="forest"] .active-filter-pill--type-blue   { --filter-type-border: #c0d8e6; --filter-type-text: #326785; --filter-type-background: #edf5fa; }
+html[data-theme="forest"] .sidebar-filter--sky,    html[data-theme="forest"] .active-filter-pill--type-sky    { --filter-type-border: #c0dce4; --filter-type-text: #2c6d7b; --filter-type-background: #edf7f8; }
+html[data-theme="forest"] .sidebar-filter--cyan,   html[data-theme="forest"] .active-filter-pill--type-cyan   { --filter-type-border: #bddfde; --filter-type-text: #28727a; --filter-type-background: #eaf7f7; }
+html[data-theme="forest"] .sidebar-filter--teal,   html[data-theme="forest"] .active-filter-pill--type-teal   { --filter-type-border: #b9ded3; --filter-type-text: #246e60; --filter-type-background: #e9f6f1; }
+html[data-theme="forest"] .sidebar-filter--emerald,html[data-theme="forest"] .active-filter-pill--type-emerald{ --filter-type-border: #bcdfce; --filter-type-text: #287053; --filter-type-background: #e9f6ee; }
+html[data-theme="forest"] .sidebar-filter--green,  html[data-theme="forest"] .active-filter-pill--type-green  { --filter-type-border: #c2dfbb; --filter-type-text: #3a703d; --filter-type-background: #ecf7e9; }
+html[data-theme="forest"] .sidebar-filter--lime,   html[data-theme="forest"] .active-filter-pill--type-lime   { --filter-type-border: #d2dfaf; --filter-type-text: #627b20; --filter-type-background: #f4f8e8; }
+html[data-theme="forest"] .sidebar-filter--amber,  html[data-theme="forest"] .active-filter-pill--type-amber  { --filter-type-border: #e5d1a4; --filter-type-text: #815f18; --filter-type-background: #fff6e4; }
+html[data-theme="forest"] .sidebar-filter--orange, html[data-theme="forest"] .active-filter-pill--type-orange { --filter-type-border: #e9cbae; --filter-type-text: #8c531f; --filter-type-background: #fff2e8; }
+html[data-theme="forest"] .sidebar-filter--red,    html[data-theme="forest"] .active-filter-pill--type-red    { --filter-type-border: #e7c2c2; --filter-type-text: #913f43; --filter-type-background: #fff0ef; }
+html[data-theme="forest"] .sidebar-filter--rose,   html[data-theme="forest"] .active-filter-pill--type-rose   { --filter-type-border: #e9c4cf; --filter-type-text: #944256; --filter-type-background: #fff0f3; }
+html[data-theme="forest"] .sidebar-filter--pink,   html[data-theme="forest"] .active-filter-pill--type-pink   { --filter-type-border: #ebc7d9; --filter-type-text: #97486f; --filter-type-background: #fff0f7; }
+html[data-theme="forest"] .sidebar-filter--violet, html[data-theme="forest"] .active-filter-pill--type-violet { --filter-type-border: #d7c9e9; --filter-type-text: #694b95; --filter-type-background: #f5f0fb; }
+html[data-theme="forest"] .sidebar-filter--purple, html[data-theme="forest"] .active-filter-pill--type-purple { --filter-type-border: #dcc8e7; --filter-type-text: #74458b; --filter-type-background: #f9f0fa; }
+html[data-theme="forest"] .sidebar-filter--slate,  html[data-theme="forest"] .active-filter-pill--type-slate  { --filter-type-border: #d1dbe0; --filter-type-text: #566b74; --filter-type-background: #f1f5f5; }
+
 html[data-theme="forest"] .tag-filter-option {
   border-color: #d0dfd2;
   color: #496252;
@@ -295,6 +334,13 @@ html[data-theme="forest"] .active-filter-pill__clear {
 
 html[data-theme="forest"] .active-filter-pill__clear:hover {
   background: var(--primary-accent-soft-hover);
+}
+
+/* Keep type pills aligned with their selected sidebar filters. */
+html[data-theme="forest"] .active-filter-pill.active-filter-pill--type {
+  border-color: var(--filter-type-border);
+  color: var(--filter-type-text);
+  background: var(--filter-type-background);
 }
 
 html[data-theme="forest"] .note-card {
@@ -552,7 +598,8 @@ html[data-theme="forest"] .mobile-filter-toggle {
 
 html[data-theme="forest"] .shortcut-tooltip,
 html[data-theme="forest"] .note-save-shortcut__tooltip,
-html[data-theme="forest"] .note-markdown-help__tooltip {
+html[data-theme="forest"] .note-markdown-help__tooltip,
+html[data-theme="forest"] .note-detail-action-tooltip__content {
   border-color: #c2d5c5;
   color: #2e4637;
   background: #f2f8f2;

@@ -21,6 +21,10 @@ html[data-theme="midnight"] {
   color-scheme: dark;
   background: #0f1b2d;
   color: #c1d3e8;
+  --management-search-resting-border: #3d5a78;
+  --management-search-resting-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+  --management-row-input-resting-border: #3d5a78;
+  --management-row-input-resting-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
 
   /* Clear Sky Blue anchor (<5% surface ratio) */
   --primary-accent: #4aa8ed;
@@ -1322,8 +1326,10 @@ html[data-theme="midnight"] .organize-tab:hover {
 }
 
 html[data-theme="midnight"] .organize-tab.is-active {
-  border-bottom-color: var(--primary-accent);
+  border-bottom-color: transparent;
   color: var(--primary-accent-text);
+  background: #173653;
+  box-shadow: inset 0 0 0 1px var(--primary-accent-border), 0 1px 2px rgb(0 0 0 / 28%);
 }
 
 html[data-theme="midnight"] .organize-tab__count {
@@ -1333,7 +1339,7 @@ html[data-theme="midnight"] .organize-tab__count {
 
 html[data-theme="midnight"] .organize-tab.is-active .organize-tab__count {
   color: var(--primary-accent-text);
-  background: rgba(74, 168, 237, 0.18);
+  background: rgba(74, 168, 237, 0.28);
 }
 
 html[data-theme="midnight"] .management-list {
@@ -1381,7 +1387,8 @@ html[data-theme="midnight"] .usage-count {
    -------------------------------------------------------------------------- */
 html[data-theme="midnight"] .shortcut-tooltip,
 html[data-theme="midnight"] .note-save-shortcut__tooltip,
-html[data-theme="midnight"] .note-markdown-help__tooltip {
+html[data-theme="midnight"] .note-markdown-help__tooltip,
+html[data-theme="midnight"] .note-detail-action-tooltip__content {
   border-color: #3d5a78;
   color: #c1d3e8;
   background: #112038;

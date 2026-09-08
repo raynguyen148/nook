@@ -11,6 +11,10 @@
 
 html[data-theme="coffee"],
 html:not([data-theme]) {
+  --management-search-resting-border: #d8ccbd;
+  --management-search-resting-shadow: 0 1px 2px rgb(0 0 0 / 4%);
+  --management-row-input-resting-border: #d8ccbd;
+  --management-row-input-resting-shadow: none;
   /* Hallmark Craftsman Amber Anchor (<5% surface ratio) */
   --primary-accent: #a35616;
   --primary-accent-hover: #88430a;
@@ -174,6 +178,61 @@ html:not([data-theme]) .space-link.is-active .filter-count,
 html:not([data-theme]) .sidebar-filter.is-active .filter-count {
   color: var(--primary-accent-text);
 }
+
+/* Type filters keep their own quiet tint rather than inheriting the global
+ * Coffee accent. This mirrors Midnight's type-aware active state while
+ * preserving Coffee's warm, low-contrast paper palette. */
+html[data-theme="coffee"] .sidebar-filter--type.is-active,
+html:not([data-theme]) .sidebar-filter--type.is-active {
+  border-color: var(--filter-type-border);
+  color: var(--filter-type-text);
+  background: var(--filter-type-background);
+}
+
+html[data-theme="coffee"] .sidebar-filter--type.is-active .filter-count,
+html:not([data-theme]) .sidebar-filter--type.is-active .filter-count {
+  color: inherit;
+}
+
+html[data-theme="coffee"] .active-filter-pill--type,
+html:not([data-theme]) .active-filter-pill--type {
+  border-color: var(--filter-type-border);
+  color: var(--filter-type-text);
+  background: var(--filter-type-background);
+}
+
+html[data-theme="coffee"] .sidebar-filter--indigo, html[data-theme="coffee"] .active-filter-pill--type-indigo,
+html:not([data-theme]) .sidebar-filter--indigo, html:not([data-theme]) .active-filter-pill--type-indigo { --filter-type-border: #d4cdea; --filter-type-text: #5c4c91; --filter-type-background: #f4f1fb; }
+html[data-theme="coffee"] .sidebar-filter--blue, html[data-theme="coffee"] .active-filter-pill--type-blue,
+html:not([data-theme]) .sidebar-filter--blue, html:not([data-theme]) .active-filter-pill--type-blue { --filter-type-border: #c8d9e9; --filter-type-text: #35668a; --filter-type-background: #eff6fb; }
+html[data-theme="coffee"] .sidebar-filter--sky, html[data-theme="coffee"] .active-filter-pill--type-sky,
+html:not([data-theme]) .sidebar-filter--sky, html:not([data-theme]) .active-filter-pill--type-sky { --filter-type-border: #c3dde7; --filter-type-text: #2f7182; --filter-type-background: #eef7f9; }
+html[data-theme="coffee"] .sidebar-filter--cyan, html[data-theme="coffee"] .active-filter-pill--type-cyan,
+html:not([data-theme]) .sidebar-filter--cyan, html:not([data-theme]) .active-filter-pill--type-cyan { --filter-type-border: #c0e0df; --filter-type-text: #28747a; --filter-type-background: #edf8f7; }
+html[data-theme="coffee"] .sidebar-filter--teal, html[data-theme="coffee"] .active-filter-pill--type-teal,
+html:not([data-theme]) .sidebar-filter--teal, html:not([data-theme]) .active-filter-pill--type-teal { --filter-type-border: #bfdfd5; --filter-type-text: #276e61; --filter-type-background: #ecf7f2; }
+html[data-theme="coffee"] .sidebar-filter--emerald, html[data-theme="coffee"] .active-filter-pill--type-emerald,
+html:not([data-theme]) .sidebar-filter--emerald, html:not([data-theme]) .active-filter-pill--type-emerald { --filter-type-border: #c1e0d0; --filter-type-text: #2a7155; --filter-type-background: #edf7f0; }
+html[data-theme="coffee"] .sidebar-filter--green, html[data-theme="coffee"] .active-filter-pill--type-green,
+html:not([data-theme]) .sidebar-filter--green, html:not([data-theme]) .active-filter-pill--type-green { --filter-type-border: #c9dfc0; --filter-type-text: #42723b; --filter-type-background: #f0f7eb; }
+html[data-theme="coffee"] .sidebar-filter--lime, html[data-theme="coffee"] .active-filter-pill--type-lime,
+html:not([data-theme]) .sidebar-filter--lime, html:not([data-theme]) .active-filter-pill--type-lime { --filter-type-border: #d9e2b8; --filter-type-text: #667c26; --filter-type-background: #f6f9eb; }
+html[data-theme="coffee"] .sidebar-filter--amber, html[data-theme="coffee"] .active-filter-pill--type-amber,
+html:not([data-theme]) .sidebar-filter--amber, html:not([data-theme]) .active-filter-pill--type-amber { --filter-type-border: #ecd5a7; --filter-type-text: #885b17; --filter-type-background: #fff6e3; }
+html[data-theme="coffee"] .sidebar-filter--orange, html[data-theme="coffee"] .active-filter-pill--type-orange,
+html:not([data-theme]) .sidebar-filter--orange, html:not([data-theme]) .active-filter-pill--type-orange { --filter-type-border: #edcfb5; --filter-type-text: #92531e; --filter-type-background: #fff3e9; }
+html[data-theme="coffee"] .sidebar-filter--red, html[data-theme="coffee"] .active-filter-pill--type-red,
+html:not([data-theme]) .sidebar-filter--red, html:not([data-theme]) .active-filter-pill--type-red { --filter-type-border: #ecc7c6; --filter-type-text: #943f44; --filter-type-background: #fff1f0; }
+html[data-theme="coffee"] .sidebar-filter--rose, html[data-theme="coffee"] .active-filter-pill--type-rose,
+html:not([data-theme]) .sidebar-filter--rose, html:not([data-theme]) .active-filter-pill--type-rose { --filter-type-border: #edc8d1; --filter-type-text: #994459; --filter-type-background: #fff1f4; }
+html[data-theme="coffee"] .sidebar-filter--pink, html[data-theme="coffee"] .active-filter-pill--type-pink,
+html:not([data-theme]) .sidebar-filter--pink, html:not([data-theme]) .active-filter-pill--type-pink { --filter-type-border: #edcadb; --filter-type-text: #98476f; --filter-type-background: #fff1f7; }
+html[data-theme="coffee"] .sidebar-filter--violet, html[data-theme="coffee"] .active-filter-pill--type-violet,
+html:not([data-theme]) .sidebar-filter--violet, html:not([data-theme]) .active-filter-pill--type-violet { --filter-type-border: #dbceeb; --filter-type-text: #6a4c97; --filter-type-background: #f6f1fc; }
+html[data-theme="coffee"] .sidebar-filter--purple, html[data-theme="coffee"] .active-filter-pill--type-purple,
+html:not([data-theme]) .sidebar-filter--purple, html:not([data-theme]) .active-filter-pill--type-purple { --filter-type-border: #e0cae9; --filter-type-text: #76478d; --filter-type-background: #faf1fa; }
+html[data-theme="coffee"] .sidebar-filter--slate, html[data-theme="coffee"] .active-filter-pill--type-slate,
+html:not([data-theme]) .sidebar-filter--slate, html:not([data-theme]) .active-filter-pill--type-slate { --filter-type-border: #d8dce1; --filter-type-text: #606a76; --filter-type-background: #f4f6f7; }
 
 /* --------------------------------------------------------------------------
    Sidebar Tag Filters (Cohesive with Note Card .tag-chip style)
@@ -387,6 +446,14 @@ html:not([data-theme]) .active-filter-pill__clear {
 html[data-theme="coffee"] .active-filter-pill__clear:hover,
 html:not([data-theme]) .active-filter-pill__clear:hover {
   background: var(--primary-accent-soft-hover);
+}
+
+/* Keep type pills aligned with their selected sidebar filters. */
+html[data-theme="coffee"] .active-filter-pill.active-filter-pill--type,
+html:not([data-theme]) .active-filter-pill.active-filter-pill--type {
+  border-color: var(--filter-type-border);
+  color: var(--filter-type-text);
+  background: var(--filter-type-background);
 }
 
 html[data-theme="coffee"] .active-filter-clear-all,
@@ -964,7 +1031,9 @@ html:not([data-theme]) .type-dot--slate   { background: #5e5146; }
    Keyboard Shortcuts & Tooltips (<kbd>)
    -------------------------------------------------------------------------- */
 html[data-theme="coffee"] .shortcut-tooltip,
-html:not([data-theme]) .shortcut-tooltip {
+html[data-theme="coffee"] .note-detail-action-tooltip__content,
+html:not([data-theme]) .shortcut-tooltip,
+html:not([data-theme]) .note-detail-action-tooltip__content {
   background: #fdfbf7;
   border-color: #d8ccbd;
   color: #5e4d41;

@@ -7,7 +7,9 @@
    ========================================================================== */
 
 :root {
-  --control-height: 2.3125rem;
+  --control-height: 2.4rem;
+  --control-radius: 0.72rem;
+  --surface-radius: 1rem;
   --select-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='m4 6 4 4 4-4' stroke='%236d7890' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
   --font-sans:
     Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
@@ -247,7 +249,7 @@ select:focus-visible {
   overscroll-behavior: contain;
   padding: 1.15rem 0.85rem 1rem;
   border: 1px solid #e2e8f0;
-  border-radius: 1.1rem;
+  border-radius: var(--surface-radius);
   background: #ffffff;
   box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05), 0 2px 6px -1px rgba(15, 23, 42, 0.03);
   transition:
@@ -523,9 +525,9 @@ select:focus-visible {
 
 
 .space-link.is-active {
-  color: #805600;
-  background: #fdf5db;
-  font-weight: 730;
+  color: #0f172a;
+  background: #e2e8f0;
+  font-weight: 600;
 }
 
 
@@ -579,9 +581,9 @@ select:focus-visible {
 
 
 .sidebar-filter.is-active {
-  color: #805600;
-  background: #fdf5db;
-  font-weight: 730;
+  color: #0f172a;
+  background: #e2e8f0;
+  font-weight: 600;
 }
 
 
@@ -765,8 +767,8 @@ select:focus-visible {
   max-height: clamp(12rem, 30dvh, 22rem);
   overflow-y: auto;
   overscroll-behavior: contain;
-  padding-right: 0.15rem;
-  padding-bottom: 0.25rem;
+  padding: 0.2rem 0.4rem 0.35rem 0.2rem;
+  scrollbar-gutter: stable;
 }
 
 
@@ -891,7 +893,7 @@ select:focus-visible {
   width: min(100%, 1540px);
   min-width: 0;
   margin: 0 auto;
-  padding: 1.25rem clamp(1.25rem, 3.5vw, 3.5rem) 3rem;
+  padding: 1.5rem clamp(1.25rem, 3.5vw, 3.5rem) 3.25rem;
 }
 
 
@@ -900,8 +902,8 @@ select:focus-visible {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 1.5rem;
-  margin-bottom: clamp(1.55rem, 3.4vw, 2.7rem);
+  gap: 1.25rem;
+  margin-bottom: clamp(1.6rem, 3.1vw, 2.4rem);
 }
 
 
@@ -967,7 +969,7 @@ h2 {
   flex-wrap: wrap;
   justify-content: flex-end;
   align-items: center;
-  gap: 0.48rem;
+  gap: 0.45rem;
 }
 
 
@@ -1002,7 +1004,7 @@ h2 {
     justify-content: center;
     gap: 0;
     flex: none;
-    border-radius: 0.55rem;
+    border-radius: var(--control-radius);
   }
 
   .topbar-actions .button-label {
@@ -1017,12 +1019,13 @@ h2 {
   align-items: center;
   justify-content: center;
   min-height: 2.4rem;
-  gap: 0.42rem;
+  gap: 0.45rem;
   border: 1px solid transparent;
-  border-radius: 0.58rem;
-  padding: 0.5rem 0.76rem;
+  border-radius: var(--control-radius);
+  padding: 0.5rem 0.85rem;
   font-size: 0.82rem;
-  font-weight: 720;
+  font-weight: 650;
+  letter-spacing: -0.005em;
   line-height: 1.2;
   transition:
     color var(--motion-duration-short) var(--motion-ease-out),
@@ -1035,13 +1038,13 @@ h2 {
 
 
 .button:hover:not(:disabled) {
-  transform: translateY(-1px);
+  /* Keep the control anchored; hover changes only its surface treatment. */
 }
 
 
 
 .button:active:not(:disabled) {
-  transform: translateY(0) scale(0.985);
+  transform: scale(0.985);
   transition-duration: var(--motion-duration-micro);
   transition-timing-function: var(--motion-ease-in);
 }
@@ -1141,8 +1144,8 @@ h2 {
 
 .notes-panel {
   border: 1px solid #e2e8f0;
-  border-radius: 1rem;
-  padding: clamp(1rem, 2.4vw, 1.4rem);
+  border-radius: var(--surface-radius);
+  padding: clamp(1rem, 2.3vw, 1.35rem);
   background: #ffffff;
   box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05), 0 2px 6px -1px rgba(15, 23, 42, 0.03);
 }

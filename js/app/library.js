@@ -7,6 +7,15 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
   let noteDetailAnimation = null;
   let noteDetailTransitionSequence = 0;
   let notesContentAnimation = null;
+  let sortPicker = null;
+  const SORT_LABELS = Object.freeze({
+    "created-desc": "Newest created",
+    "created-asc": "Oldest created",
+    "updated-desc": "Newest updated",
+    "updated-asc": "Oldest updated",
+    "title-asc": "Title A–Z",
+    "title-desc": "Title Z–A",
+  });
 
   const syncMobileFilterToggle = (...args) => api.syncMobileFilterToggle(...args);
   const persistFilters = (...args) => api.persistFilters(...args);
@@ -39,6 +48,131 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
   const renderLibrary = (...args) => api.renderLibrary(...args);
   const renderSearchResults = (...args) => api.renderSearchResults(...args);
   const refreshLibrary = (...args) => api.refreshLibrary(...args);
+
+  function closeSortPicker({ focusTrigger = false } = {}) {
+    if (!sortPicker) return;
+    sortPicker.menu.hidden = true;
+    sortPicker.trigger.setAttribute("aria-expanded", "false");
+    if (focusTrigger) sortPicker.trigger.focus({ preventScroll: true });
+  }
+
+  function openSortPicker() {
+    if (!sortPicker) return;
+    sortPicker.menu.hidden = false;
+    sortPicker.trigger.setAttribute("aria-expanded", "true");
+    sortPicker.options.find((option) => option.dataset.sortValue === elements.sort.value)?.focus({ preventScroll: true });
+  }
+
+  function syncSortPicker() {
+    if (!sortPicker) return;
+    const selectedValue = SORT_LABELS[elements.sort.value] ? elements.sort.value : "created-desc";
+    const selectedLabel = SORT_LABELS[selectedValue];
+    sortPicker.label.textContent = selectedLabel;
+    sortPicker.options.forEach((option) => {
+      const selected = option.dataset.sortValue === selectedValue;
+      option.setAttribute("aria-selected", String(selected));
+      option.tabIndex = selected ? 0 : -1;
+    });
+  }
+
+  function setSortPickerValue(value) {
+    if (!sortPicker || !SORT_LABELS[value]) return;
+    elements.sort.value = value;
+    elements.sort.dispatchEvent(new Event("change", { bubbles: true }));
+    closeSortPicker({ focusTrigger: true });
+  }
+
+  function enhanceSortSelect() {
+    if (sortPicker) return sortPicker;
+    const field = elements.sort.closest(".sort-field");
+    if (!field) return null;
+
+    const trigger = createElement("button", {
+      className: "sort-field__trigger",
+      type: "button",
+      attributes: {
+        "aria-haspopup": "listbox",
+        "aria-expanded": "false",
+        "aria-controls": "sort-options-menu",
+        "aria-labelledby": "sort-select-label sort-picker-label",
+      },
+    });
+    const label = createElement("span", {
+      className: "sort-field__label",
+      attributes: { id: "sort-picker-label" },
+    });
+    trigger.append(label);
+
+    const menu = createElement("div", {
+      className: "sort-field__menu",
+      attributes: {
+        id: "sort-options-menu",
+        role: "listbox",
+        "aria-label": "Sort notes by",
+      },
+    });
+    menu.hidden = true;
+
+    const options = [...elements.sort.options].map((nativeOption) => createElement("button", {
+      className: "sort-field__option",
+      type: "button",
+      text: nativeOption.textContent,
+      dataset: { sortValue: nativeOption.value },
+      attributes: { role: "option", "aria-selected": "false" },
+    }));
+    menu.append(...options);
+
+    elements.sort.classList.add("sort-field__native");
+    elements.sort.tabIndex = -1;
+    elements.sort.setAttribute("aria-hidden", "true");
+    field.append(trigger, menu);
+    sortPicker = { field, trigger, label, menu, options };
+    syncSortPicker();
+
+    trigger.addEventListener("click", () => {
+      if (menu.hidden) openSortPicker();
+      else closeSortPicker();
+    });
+    trigger.addEventListener("keydown", (event) => {
+      if (!["ArrowDown", "ArrowUp", " ", "Enter"].includes(event.key)) return;
+      event.preventDefault();
+      if (menu.hidden) openSortPicker();
+    });
+    menu.addEventListener("click", (event) => {
+      const option = event.target.closest(".sort-field__option");
+      if (option) setSortPickerValue(option.dataset.sortValue);
+    });
+    menu.addEventListener("keydown", (event) => {
+      const currentIndex = sortPicker.options.indexOf(document.activeElement);
+      if (event.key === "Escape") {
+        event.preventDefault();
+        closeSortPicker({ focusTrigger: true });
+        return;
+      }
+      if (event.key === "Tab") {
+        closeSortPicker();
+        return;
+      }
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        document.activeElement?.click();
+        return;
+      }
+      let nextIndex = currentIndex;
+      if (event.key === "ArrowDown") nextIndex = (currentIndex + 1) % sortPicker.options.length;
+      else if (event.key === "ArrowUp") nextIndex = (currentIndex - 1 + sortPicker.options.length) % sortPicker.options.length;
+      else if (event.key === "Home") nextIndex = 0;
+      else if (event.key === "End") nextIndex = sortPicker.options.length - 1;
+      else return;
+      event.preventDefault();
+      sortPicker.options[nextIndex].focus();
+    });
+    elements.sort.addEventListener("change", syncSortPicker);
+    document.addEventListener("pointerdown", (event) => {
+      if (!sortPicker?.field.contains(event.target)) closeSortPicker();
+    });
+    return sortPicker;
+  }
 
   function makeTypeBadge(type, { isFilter = false } = {}) {
     const selected = ui.typeId === type.id;
@@ -478,6 +612,16 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
 
   const copyFeedbackTimers = new WeakMap();
 
+  function setCopyTooltip(button, text) {
+    if (!button || !text) return;
+    const customTooltip = button.closest(".note-detail-action-tooltip")?.querySelector('[role="tooltip"]');
+    if (customTooltip) {
+      customTooltip.textContent = text;
+      return;
+    }
+    button.setAttribute("title", text);
+  }
+
   function markButtonCopied(button, {
     copiedLabel,
     originalLabel,
@@ -491,14 +635,14 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
       clearTimeout(existingTimer);
     }
     button.classList.add("is-copied");
-    if (copiedTitle) button.setAttribute("title", copiedTitle);
+    setCopyTooltip(button, copiedTitle);
     if (copiedLabel) button.setAttribute("aria-label", copiedLabel);
 
     const timer = setTimeout(() => {
       copyFeedbackTimers.delete(button);
       if (!button.isConnected) return;
       button.classList.remove("is-copied");
-      if (originalTitle) button.setAttribute("title", originalTitle);
+      setCopyTooltip(button, originalTitle);
       if (originalLabel) button.setAttribute("aria-label", originalLabel);
     }, duration);
 
@@ -516,7 +660,7 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
       copyFeedbackTimers.delete(button);
     }
     button.classList.remove("is-copied");
-    if (originalTitle) button.setAttribute("title", originalTitle);
+    setCopyTooltip(button, originalTitle);
     if (originalLabel) button.setAttribute("aria-label", originalLabel);
   }
 
@@ -970,6 +1114,7 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
   function renderNotes({ motion = "none" } = {}) {
     syncViewModeUI();
     elements.sort.value = ui.sort;
+    syncSortPicker();
     const matchingNotes = getVisibleNotes();
     const totalPages = Math.max(1, Math.ceil(matchingNotes.length / PAGE_SIZE));
     ui.page = Math.min(ui.page, totalPages);
@@ -981,15 +1126,7 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
     elements.notesRange.textContent = matchingNotes.length
       ? `Showing ${start + 1}–${end} of ${matchingNotes.length}`
       : "No matching notes";
-    const sortLabels = {
-      "created-desc": "Newest created",
-      "created-asc": "Oldest created",
-      "updated-desc": "Newest updated",
-      "updated-asc": "Oldest updated",
-      "title-asc": "Title A–Z",
-      "title-desc": "Title Z–A",
-    };
-    elements.sortDescription.textContent = `Sorted: ${sortLabels[ui.sort]}`;
+    elements.sortDescription.textContent = `Sorted: ${SORT_LABELS[ui.sort]}`;
     const hasSearchQuery = Boolean(ui.query);
     elements.clearSearch.classList.toggle("is-hidden", !hasSearchQuery);
     elements.searchShortcut.classList.toggle("is-hidden", hasSearchQuery);
@@ -1046,6 +1183,8 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
     createNoteCard,
     renderEmptyState,
     animateNotesContent,
+    enhanceSortSelect,
+    syncSortPicker,
     paginationItems,
     renderPagination,
     renderNotes,

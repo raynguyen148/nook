@@ -4,6 +4,13 @@
    ========================================================================== */
 
 /* Organize notes / Settings modal: clean modern list with hover actions */
+:root {
+  --management-search-resting-border: #cbd5e1;
+  --management-search-resting-shadow: 0 1px 2px rgb(0 0 0 / 4%);
+  --management-row-input-resting-border: #cbd5e1;
+  --management-row-input-resting-shadow: none;
+}
+
 .organize-tab {
   display: inline-flex;
   align-items: center;
@@ -71,7 +78,7 @@
   padding: 0 0.75rem;
   color: #0f172a;
   background: #fff;
-  box-shadow: 0 1px 2px rgb(0 0 0 / 4%);
+  box-shadow: var(--management-search-resting-shadow);
   font: inherit;
   font-size: 0.82rem;
 }
@@ -251,5 +258,3 @@
     grid-column: 1;
   }
 }
-
-

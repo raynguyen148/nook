@@ -105,6 +105,18 @@ html[data-theme="light"] .storage-status {
   background: #f8fafc;
 }
 
+/* Keep the Light theme's All notes space aligned with its active date
+ * filters instead of inheriting the neutral navigation active surface. */
+html[data-theme="light"] #all-notes-space.is-active {
+  color: var(--primary-accent-text);
+  background: var(--primary-accent-soft);
+  font-weight: 600;
+}
+
+html[data-theme="light"] #all-notes-space.is-active .filter-count {
+  color: var(--primary-accent);
+}
+
 html[data-theme="light"] .topbar h1 {
   font-family: var(--font-display);
   color: #0f172a;

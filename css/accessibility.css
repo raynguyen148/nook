@@ -109,8 +109,7 @@
 
 
 
-.tag-filter-option:has(input:focus-visible),
-.tag-filter-option:focus-within {
+.tag-filter-option:has(input:focus-visible) {
   outline: 2px solid var(--focus-color);
   outline-offset: 2px;
 }
@@ -173,6 +172,14 @@
     [role="tab"],
     [role="option"]
   ):focus-visible {
+    outline-color: Highlight !important;
+  }
+
+  .tag-filter-option:has(input:focus-visible) {
+    outline-color: Highlight !important;
+  }
+
+  .note-dialog .tag-add-button:focus-visible {
     outline-color: Highlight !important;
   }
 }

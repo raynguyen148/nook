@@ -55,6 +55,7 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
     renderNotes,
     closeNoteTypePicker,
     enhanceNoteTypeSelect,
+    enhanceSortSelect,
     renderSelectedNoteTags,
     renderTagSuggestions,
     normalizeTagEditorInput,
@@ -277,12 +278,14 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
     elements.newTypeForm.addEventListener("submit", addNewType);
     elements.newTagForm.addEventListener("submit", addNewTag);
     document.addEventListener("pointerdown", (event) => {
+      document.documentElement.dataset.inputModality = "pointer";
       openColorPickers.forEach((picker) => {
         if (!picker.select.parentElement.contains(event.target)) closeColorPicker(picker);
       });
       if (shared.noteTypePicker && !shared.noteTypePicker.root.contains(event.target)) closeNoteTypePicker();
     });
     document.addEventListener("keydown", (event) => {
+      if (event.key === "Tab") document.documentElement.dataset.inputModality = "keyboard";
       if (event.key === "Escape" && !activeModalDialog() && isNoteEditorOpen()) {
         event.preventDefault();
         requestNoteEditorClose();
@@ -486,7 +489,8 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
     // Quick View actions/content into it without dropping any existing action.
     elements.noteEditorCommandActions.append(modes);
     const tools = elements.noteDialog.querySelector(".dialog-footer__tools") || elements.noteDialog.querySelector(".dialog-footer");
-    tools?.insertBefore(elements.notePreviewActions, elements.deleteNote.nextSibling);
+    const deleteAction = elements.deleteNote.closest(".note-detail-action-tooltip") || elements.deleteNote;
+    tools?.insertBefore(elements.notePreviewActions, deleteAction.nextSibling);
     elements.notePreviewPanel.append(elements.quickViewBody);
     elements.noteDialog.querySelector(".dialog-header")?.append(elements.closeQuickView);
     elements.quickViewDialog.remove();
@@ -502,6 +506,7 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
       const result = await storage.initialize();
       await refreshLibrary();
       enhanceNoteTypeSelect();
+      enhanceSortSelect();
       elements.newTypeColor.replaceChildren(createColorOptions(elements.newTypeColor.value));
       enhanceColorSelect(elements.newTypeColor);
       bindEvents();

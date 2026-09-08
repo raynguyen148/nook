@@ -520,6 +520,25 @@
 
 
 
+/* The add control owns the focus ring. Suppress the picker-level ring while
+ * it is focused so the compact circular button does not show two outlines. */
+.note-dialog .tag-picker:has(> .tag-add-button:focus) {
+  border-color: transparent;
+  box-shadow: none;
+  outline: none;
+}
+
+
+
+.note-dialog .tag-add-button:focus-visible {
+  border-color: transparent;
+  outline: 2px solid var(--focus-color);
+  outline-offset: 2px;
+  box-shadow: none;
+}
+
+
+
 /* The picker is the focus surface. Its text input stays visually seamless so
  * the generic field focus ring cannot overlap the picker-level ring. */
 .note-dialog .tag-picker .tag-picker__input-row input {
@@ -544,13 +563,19 @@
   top: calc(100% + 0.38rem);
   left: 0;
   width: max-content;
-  max-width: min(100%, 28rem);
-  gap: 0.3rem;
-  padding: 0.38rem;
+  max-width: min(28rem, calc(100vw - 2rem));
+  max-height: min(18rem, calc(100dvh - 2rem));
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.2rem;
+  overflow-y: auto;
+  padding: 0.42rem;
   border: 1px solid #e0e5ec;
-  border-radius: 0.68rem;
+  border-radius: 1rem;
   background: #ffffff;
   box-shadow: 0 10px 24px rgb(15 23 42 / 12%);
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
 }
 
 
@@ -568,12 +593,23 @@
 
 
 .note-dialog .tag-suggestion {
-  min-height: 1.48rem;
-  padding: 0.17rem 0.48rem;
-  border-radius: 999px;
-  font-size: 0.68rem;
+  min-height: 2.4rem;
+  padding: 0.5rem 0.64rem;
+  border: 0;
+  border-radius: 0.68rem;
+  font-size: 0.75rem;
   font-weight: 600;
   line-height: 1.2;
+  text-align: left;
+}
+
+
+
+@media (max-width: 620px) {
+  .note-dialog .tag-suggestions {
+    width: min(28rem, calc(100vw - 2rem));
+    max-width: none;
+  }
 }
 
 
@@ -723,6 +759,72 @@
   align-items: center;
   gap: 0.25rem;
   flex: none;
+}
+
+
+
+.note-detail-action-tooltip {
+  position: relative;
+  display: inline-flex;
+  flex: none;
+}
+
+
+
+.note-detail-action-tooltip__content {
+  position: absolute;
+  z-index: 4;
+  bottom: calc(100% + 0.55rem);
+  left: 50%;
+  width: max-content;
+  max-width: min(16rem, calc(100vw - 1.5rem));
+  border: 1px solid #dfe3ea;
+  border-radius: var(--control-radius);
+  padding: 0.54rem 0.72rem;
+  color: #556176;
+  background: #fff;
+  box-shadow: 0 0.75rem 1.75rem rgb(36 46 66 / 12%), 0 0.15rem 0.45rem rgb(36 46 66 / 6%);
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1.25;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, 0.2rem);
+  transition:
+    opacity var(--motion-duration-short) var(--motion-ease-out),
+    transform var(--motion-duration-short) var(--motion-ease-out);
+  transition-delay: 0s;
+  white-space: nowrap;
+}
+
+
+
+.note-detail-action-tooltip:first-child .note-detail-action-tooltip__content {
+  left: 0;
+  transform: translate(0, 0.2rem);
+}
+
+
+
+.note-detail-action-tooltip:hover .note-detail-action-tooltip__content {
+  opacity: 1;
+  transform: translate(-50%, 0);
+  transition-delay: 800ms;
+}
+
+
+
+.note-detail-action-tooltip:focus-within .note-detail-action-tooltip__content {
+  opacity: 1;
+  transform: translate(-50%, 0);
+  transition-delay: 0ms;
+}
+
+
+
+.note-detail-action-tooltip:first-child:hover .note-detail-action-tooltip__content,
+.note-detail-action-tooltip:first-child:focus-within .note-detail-action-tooltip__content {
+  transform: translate(0, 0);
 }
 
 

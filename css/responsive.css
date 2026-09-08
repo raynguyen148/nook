@@ -396,7 +396,8 @@
     flex-wrap: wrap;
     overflow: visible;
     gap: 0.28rem 0.32rem;
-    padding: 0.05rem 0;
+    padding: 0.18rem 0.2rem 0.25rem;
+    scrollbar-gutter: auto;
   }
 
   .tag-filter-option {
@@ -424,6 +425,7 @@
 
   html,
   body {
+    min-width: 0;
     max-width: 100%;
     overflow-x: clip;
   }
@@ -505,9 +507,17 @@
     width: 100%;
   }
 
-  .sort-field select {
+  .sort-field select,
+  .sort-field__trigger {
     width: 100%;
     min-width: 0;
+  }
+
+  .sort-field__menu {
+    left: 0;
+    right: auto;
+    width: 100%;
+    max-width: 100%;
   }
 
   .results-meta {
@@ -710,12 +720,32 @@
 
 @media (forced-colors: active) {
   .sort-field select,
+  .sort-field__trigger,
   .field select,
   .create-row select,
   .management-row select {
     appearance: auto;
     -webkit-appearance: auto;
     background-image: none;
+  }
+
+  .sort-field__trigger {
+    border-color: ButtonText;
+    color: ButtonText;
+    background-color: ButtonFace;
+  }
+
+  .sort-field__menu {
+    border-color: ButtonText;
+    color: CanvasText;
+    background: Canvas;
+  }
+
+  .sort-field__option:hover,
+  .sort-field__option:focus-visible,
+  .sort-field__option[aria-selected="true"] {
+    color: HighlightText;
+    background: Highlight;
   }
 
   .note-card__action:focus-visible {
@@ -731,4 +761,3 @@
   }
 
 }
-
