@@ -5,6 +5,7 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
   const { api, storage, elements, library, ui, constants, shared } = app;
   const { NOTE_AUTO_SAVE_DELAY, MOTION } = constants;
   const { openColorPickers } = shared;
+  const NOTE_EDITOR_SCROLL_MAP_MAX_ANCHORS = 320;
   let noteTypePicker = shared.noteTypePicker;
   let noteEditorModeAnimation = null;
 
@@ -258,38 +259,321 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
     );
   }
 
-  function getNoteEditorScrollProgress(element) {
-    const maxScrollTop = element.scrollHeight - element.clientHeight;
-    if (maxScrollTop <= 0) return 0;
-    return Math.min(1, Math.max(0, element.scrollTop / maxScrollTop));
+  function clampScrollPosition(position, maximum) {
+    return Math.min(Math.max(0, position), Math.max(0, maximum));
   }
 
-  function setNoteEditorScrollProgress(element, progress) {
-    const maxScrollTop = element.scrollHeight - element.clientHeight;
-    if (maxScrollTop <= 0) {
-      element.scrollTop = 0;
-      return;
+  function getNoteEditorMaximumScrollTop(element) {
+    return Math.max(0, element.scrollHeight - element.clientHeight);
+  }
+
+  function getNoteEditorLineStartOffsets(source) {
+    const offsets = [0];
+    for (let index = 0; index < source.length; index += 1) {
+      if (source.charCodeAt(index) === 10) offsets.push(index + 1);
     }
-    element.scrollTop = progress * maxScrollTop;
+    return offsets;
+  }
+
+  function createNoteEditorSourceMirror(source) {
+    const textarea = elements.noteContent;
+    const styles = window.getComputedStyle(textarea);
+    const mirror = document.createElement("div");
+    const horizontalPadding = Number.parseFloat(styles.paddingLeft) + Number.parseFloat(styles.paddingRight);
+    const textProperties = [
+      "fontFamily",
+      "fontSize",
+      "fontWeight",
+      "fontStyle",
+      "fontVariant",
+      "fontStretch",
+      "fontKerning",
+      "fontFeatureSettings",
+      "letterSpacing",
+      "wordSpacing",
+      "lineHeight",
+      "textTransform",
+      "textIndent",
+      "textAlign",
+      "direction",
+      "tabSize",
+    ];
+    mirror.setAttribute("aria-hidden", "true");
+    Object.assign(mirror.style, {
+      position: "fixed",
+      top: "0",
+      left: "-100000px",
+      visibility: "hidden",
+      pointerEvents: "none",
+      boxSizing: "content-box",
+      width: `${Math.max(1, textarea.clientWidth - horizontalPadding)}px`,
+      minHeight: "0",
+      margin: "0",
+      paddingTop: styles.paddingTop,
+      paddingRight: styles.paddingRight,
+      paddingBottom: styles.paddingBottom,
+      paddingLeft: styles.paddingLeft,
+      border: "0",
+      whiteSpace: "pre-wrap",
+      overflowWrap: "break-word",
+      wordBreak: styles.wordBreak === "normal" ? "break-word" : styles.wordBreak,
+      overflow: "visible",
+      contain: "layout style paint",
+    });
+    textProperties.forEach((property) => {
+      mirror.style[property] = styles[property];
+    });
+    const textNode = document.createTextNode(source || "\u200b");
+    mirror.append(textNode);
+    document.body.append(mirror);
+    return { mirror, textNode };
+  }
+
+  function getNoteEditorMirrorCaretTop(textNode, offset) {
+    const safeOffset = Math.min(Math.max(0, offset), textNode.length);
+    const range = document.createRange();
+    const getRangeTop = () => {
+      const rect = range.getBoundingClientRect();
+      return rect.height > 0 ? rect.top : null;
+    };
+    range.setStart(textNode, safeOffset);
+    range.collapse(true);
+    let top = getRangeTop();
+    if (top !== null) return top;
+    if (safeOffset < textNode.length) {
+      range.setEnd(textNode, safeOffset + 1);
+      top = getRangeTop();
+      if (top !== null) return top;
+    }
+    if (safeOffset > 0) {
+      range.setStart(textNode, safeOffset - 1);
+      range.setEnd(textNode, safeOffset);
+      top = getRangeTop();
+      if (top !== null) return top;
+    }
+    return 0;
+  }
+
+  function measureNoteEditorSourceLineOffsets(source, lineStarts, sourceLines, sourceMaximum) {
+    const { mirror, textNode } = createNoteEditorSourceMirror(source);
+    try {
+      const mirrorTop = mirror.getBoundingClientRect().top;
+      const origin = getNoteEditorMirrorCaretTop(textNode, 0) - mirrorTop;
+      const mirrorMaximum = Math.max(0, mirror.scrollHeight - elements.noteContent.clientHeight);
+      const scale = mirrorMaximum > 0 && sourceMaximum > 0 ? sourceMaximum / mirrorMaximum : 1;
+      const offsets = new Map();
+      sourceLines.forEach((line) => {
+        const characterOffset = lineStarts[line];
+        if (!Number.isInteger(characterOffset)) return;
+        const measuredOffset = getNoteEditorMirrorCaretTop(textNode, characterOffset) - mirrorTop - origin;
+        offsets.set(line, clampScrollPosition(measuredOffset * scale, sourceMaximum));
+      });
+      return offsets;
+    } finally {
+      mirror.remove();
+    }
+  }
+
+  function getPreviewContentOffset(element, maximum) {
+    const previewBounds = elements.noteContentPreview.getBoundingClientRect();
+    const elementBounds = element.getBoundingClientRect();
+    return clampScrollPosition(
+      elementBounds.top - previewBounds.top + elements.noteContentPreview.scrollTop,
+      maximum,
+    );
+  }
+
+  function createMonotonicScrollMap(points, fromKey, toKey, duplicateTarget = "min") {
+    const sorted = points
+      .map((point) => ({ from: point[fromKey], to: point[toKey] }))
+      .filter((point) => Number.isFinite(point.from) && Number.isFinite(point.to))
+      .sort((first, second) => first.from - second.from || first.to - second.to);
+    const map = [];
+    sorted.forEach((point) => {
+      const previous = map.at(-1);
+      if (!previous) {
+        map.push(point);
+        return;
+      }
+      if (point.from <= previous.from + 0.5) {
+        previous.to = duplicateTarget === "max"
+          ? Math.max(previous.to, point.to)
+          : Math.min(previous.to, point.to);
+        return;
+      }
+      map.push({ from: point.from, to: Math.max(previous.to, point.to) });
+    });
+    return map;
+  }
+
+  function sampleNoteEditorScrollAnchors(anchors) {
+    const uniqueAnchors = [];
+    const mappedSourceLines = new Set();
+    anchors.forEach((anchor) => {
+      if (mappedSourceLines.has(anchor.sourceLine)) return;
+      mappedSourceLines.add(anchor.sourceLine);
+      uniqueAnchors.push(anchor);
+    });
+    if (uniqueAnchors.length <= NOTE_EDITOR_SCROLL_MAP_MAX_ANCHORS) return uniqueAnchors;
+    return Array.from({ length: NOTE_EDITOR_SCROLL_MAP_MAX_ANCHORS }, (_, index) => {
+      const fraction = index / (NOTE_EDITOR_SCROLL_MAP_MAX_ANCHORS - 1);
+      return uniqueAnchors[Math.round((uniqueAnchors.length - 1) * fraction)];
+    });
+  }
+
+  function buildNoteEditorScrollMap() {
+    const source = elements.noteContent;
+    const preview = elements.noteContentPreview;
+    if (
+      ui.noteEditorMode !== "split" ||
+      preview.hidden ||
+      source.clientWidth <= 0 ||
+      preview.clientWidth <= 0
+    ) {
+      ui.noteScrollMap = null;
+      return null;
+    }
+
+    const sourceMaximum = getNoteEditorMaximumScrollTop(source);
+    const previewMaximum = getNoteEditorMaximumScrollTop(preview);
+    const lineStarts = getNoteEditorLineStartOffsets(source.value);
+    const renderedAnchors = [...preview.querySelectorAll("[data-markdown-source-start]")]
+      .filter((element) => !element.closest(".markdown-footnotes"))
+      .map((element) => ({
+        element,
+        sourceLine: Number.parseInt(element.dataset.markdownSourceStart, 10),
+      }))
+      .filter(({ sourceLine }) => Number.isInteger(sourceLine) && sourceLine >= 0 && sourceLine < lineStarts.length);
+    const anchors = sampleNoteEditorScrollAnchors(renderedAnchors);
+    const sourceLines = new Set(anchors.map(({ sourceLine }) => sourceLine));
+    const sourceOffsets = sourceLines.size
+      ? measureNoteEditorSourceLineOffsets(source.value, lineStarts, sourceLines, sourceMaximum)
+      : new Map();
+    const points = [{ source: 0, preview: 0 }];
+    anchors.forEach(({ element, sourceLine }) => {
+      const sourceOffset = sourceOffsets.get(sourceLine);
+      if (!Number.isFinite(sourceOffset) || sourceOffset <= 0.5 || sourceOffset >= sourceMaximum - 0.5) return;
+      points.push({
+        source: sourceOffset,
+        preview: getPreviewContentOffset(element, previewMaximum),
+      });
+    });
+    points.push({ source: sourceMaximum, preview: previewMaximum });
+
+    const sourceToPreview = createMonotonicScrollMap(points, "source", "preview");
+    const previewToSource = createMonotonicScrollMap(sourceToPreview, "to", "from", "max");
+    ui.noteScrollMap = {
+      sourceToPreview,
+      previewToSource,
+      sourceMaximum,
+      previewMaximum,
+      sourceClientWidth: source.clientWidth,
+      sourceClientHeight: source.clientHeight,
+      previewClientWidth: preview.clientWidth,
+      previewClientHeight: preview.clientHeight,
+    };
+    return ui.noteScrollMap;
+  }
+
+  function isNoteEditorScrollMapCurrent(scrollMap) {
+    if (!scrollMap) return false;
+    const source = elements.noteContent;
+    const preview = elements.noteContentPreview;
+    return (
+      scrollMap.sourceMaximum === getNoteEditorMaximumScrollTop(source) &&
+      scrollMap.previewMaximum === getNoteEditorMaximumScrollTop(preview) &&
+      scrollMap.sourceClientWidth === source.clientWidth &&
+      scrollMap.sourceClientHeight === source.clientHeight &&
+      scrollMap.previewClientWidth === preview.clientWidth &&
+      scrollMap.previewClientHeight === preview.clientHeight
+    );
+  }
+
+  function interpolateNoteEditorScrollMap(map, position) {
+    if (!map.length) return 0;
+    if (position <= map[0].from) return map[0].to;
+    const last = map.at(-1);
+    if (position >= last.from) return last.to;
+    let low = 0;
+    let high = map.length - 1;
+    while (low + 1 < high) {
+      const middle = Math.floor((low + high) / 2);
+      if (map[middle].from <= position) low = middle;
+      else high = middle;
+    }
+    const start = map[low];
+    const end = map[high];
+    const distance = end.from - start.from;
+    if (distance <= 0) return end.to;
+    return start.to + ((position - start.from) / distance) * (end.to - start.to);
+  }
+
+  function resetNoteEditorScrollSyncTarget() {
+    ui.noteScrollSyncTarget = null;
+    ui.noteScrollSyncTargetTop = 0;
+    ui.noteScrollSyncResetFrame = 0;
   }
 
   function syncNoteEditorScroll(source, target) {
-    if (ui.noteEditorMode !== "split" || ui.noteScrollSyncing) return;
-    ui.noteScrollSyncing = true;
-    setNoteEditorScrollProgress(target, getNoteEditorScrollProgress(source));
-    window.requestAnimationFrame(() => {
-      ui.noteScrollSyncing = false;
+    if (ui.noteEditorMode !== "split" || !source || !target) return;
+    if (source === ui.noteScrollSyncTarget) {
+      window.cancelAnimationFrame(ui.noteScrollSyncResetFrame);
+      if (Math.abs(source.scrollTop - ui.noteScrollSyncTargetTop) < 1) {
+        resetNoteEditorScrollSyncTarget();
+        return;
+      }
+      resetNoteEditorScrollSyncTarget();
+    }
+    const scrollMap = isNoteEditorScrollMapCurrent(ui.noteScrollMap)
+      ? ui.noteScrollMap
+      : buildNoteEditorScrollMap();
+    if (!scrollMap) return;
+    const map = source === elements.noteContent
+      ? scrollMap.sourceToPreview
+      : scrollMap.previewToSource;
+    const targetPosition = clampScrollPosition(
+      interpolateNoteEditorScrollMap(map, source.scrollTop),
+      getNoteEditorMaximumScrollTop(target),
+    );
+    if (Math.abs(target.scrollTop - targetPosition) < 0.5) return;
+    ui.noteScrollSyncTarget = target;
+    ui.noteScrollSyncTargetTop = targetPosition;
+    target.scrollTop = targetPosition;
+    window.cancelAnimationFrame(ui.noteScrollSyncResetFrame);
+    ui.noteScrollSyncResetFrame = window.requestAnimationFrame(() => {
+      resetNoteEditorScrollSyncTarget();
+    });
+  }
+
+  function scheduleNoteEditorScrollMap(source = elements.noteContent) {
+    if (ui.noteEditorMode !== "split") return;
+    window.cancelAnimationFrame(ui.noteScrollMapFrame);
+    ui.noteScrollMapFrame = window.requestAnimationFrame(() => {
+      ui.noteScrollMapFrame = 0;
+      if (buildNoteEditorScrollMap()) {
+        syncNoteEditorScroll(source, source === elements.noteContent ? elements.noteContentPreview : elements.noteContent);
+      }
     });
   }
 
   function renderNoteEditorPreview() {
     if (ui.noteEditorMode !== "split") return;
-    globalThis.NookMarkdown.renderInto(elements.noteContentPreview, elements.noteContent.value);
-    syncNoteEditorScroll(elements.noteContent, elements.noteContentPreview);
+    globalThis.NookMarkdown.renderInto(
+      elements.noteContentPreview,
+      elements.noteContent.value,
+      "No content yet.",
+      { sourceMap: true },
+    );
+    ui.noteScrollMap = null;
+    if (buildNoteEditorScrollMap()) {
+      syncNoteEditorScroll(elements.noteContent, elements.noteContentPreview);
+    }
+    scheduleNoteEditorScrollMap(elements.noteContent);
   }
 
   function scheduleNoteEditorPreview() {
     if (ui.noteEditorMode !== "split") return;
+    ui.noteScrollMap = null;
     window.cancelAnimationFrame(ui.noteEditorPreviewFrame);
     ui.noteEditorPreviewFrame = window.requestAnimationFrame(() => {
       renderNoteEditorPreview();
@@ -300,6 +584,13 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
     if (!["edit", "split", "preview"].includes(mode)) return;
     const previousMode = ui.noteEditorMode;
     resetCopyButtonFeedback(elements.copyNoteContent);
+    if (mode !== "split") {
+      ui.noteScrollMap = null;
+      window.cancelAnimationFrame(ui.noteScrollMapFrame);
+      ui.noteScrollMapFrame = 0;
+      window.cancelAnimationFrame(ui.noteScrollSyncResetFrame);
+      resetNoteEditorScrollSyncTarget();
+    }
     ui.noteEditorMode = mode;
     elements.noteDialogTitle.textContent = mode === "preview"
       ? "Preview note"
@@ -781,6 +1072,7 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
     syncNoteEditorControls();
     setNoteSaveStatus(note ? "saved" : "new");
     scheduleNoteEditorHeight({ allowShrink: true });
+    if (initialMode === "split") scheduleNoteEditorScrollMap(elements.noteContent);
     if (!preserveDetail && focusTitle && initialMode === "edit") {
       window.requestAnimationFrame(() => elements.noteTitle.focus());
     }
@@ -826,6 +1118,13 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
 
   function closeNoteEditor({ discardStoredDraft = false } = {}) {
     clearNoteAutoSave();
+    window.cancelAnimationFrame(ui.noteEditorPreviewFrame);
+    window.cancelAnimationFrame(ui.noteScrollMapFrame);
+    window.cancelAnimationFrame(ui.noteScrollSyncResetFrame);
+    ui.noteEditorPreviewFrame = 0;
+    ui.noteScrollMapFrame = 0;
+    ui.noteScrollMap = null;
+    resetNoteEditorScrollSyncTarget();
     if (discardStoredDraft) clearStoredNoteDraft();
     ui.noteEditorSession += 1;
     ui.pendingTagCreation = null;
@@ -1057,9 +1356,8 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
     renderTagSuggestions,
     normalizeTagEditorInput,
     renderNoteMetadata,
-    getNoteEditorScrollProgress,
-    setNoteEditorScrollProgress,
     syncNoteEditorScroll,
+    scheduleNoteEditorScrollMap,
     renderNoteEditorPreview,
     scheduleNoteEditorPreview,
     setNoteEditorMode,

@@ -120,6 +120,29 @@
     return String(source ?? "").replace(/\r\n?/g, "\n").split("\n");
   }
 
+  function withSourceLineNumbers(lines, sourceLineNumbers) {
+    Object.defineProperty(lines, "sourceLineNumbers", {
+      value: sourceLineNumbers,
+      configurable: true,
+    });
+    return lines;
+  }
+
+  function sourceLineAt(lines, index, context) {
+    if (index >= lines.length) return context?.sourceLineCount ?? index;
+    return lines.sourceLineNumbers?.[index] ?? index;
+  }
+
+  function sourceLineRange(lines, startIndex, endIndex, context) {
+    const sourceStart = sourceLineAt(lines, startIndex, context);
+    const sourceEnd = Math.max(sourceStart + 1, sourceLineAt(lines, endIndex, context));
+    return { sourceStart, sourceEnd };
+  }
+
+  function addSourceLineRange(block, lines, startIndex, endIndex, context) {
+    return Object.assign(block, sourceLineRange(lines, startIndex, endIndex, context));
+  }
+
   function countIndent(line) {
     const match = line.match(/^[ \t]*/);
     return (match?.[0] || "").replace(/\t/g, "    ").length;
@@ -1107,7 +1130,9 @@
     while (index < lines.length) {
       const marker = getListMarker(lines[index]);
       if (!marker || marker.indent !== first.indent || marker.ordered !== first.ordered) break;
+      const itemStartIndex = index;
       const itemLines = [marker.content];
+      const itemSourceLineNumbers = [sourceLineAt(lines, index, context)];
       const task = marker.content.match(/^\[([ xX])\][ \t]+(.*)$/);
       if (task) itemLines[0] = task[2];
       index += 1;
@@ -1119,6 +1144,7 @@
         if (nextMarker && nextMarker.indent < first.indent) break;
         if (!lines[index].trim()) {
           itemLines.push("");
+          itemSourceLineNumbers.push(sourceLineAt(lines, index, context));
           sawBlank = true;
           index += 1;
           continue;
@@ -1132,12 +1158,14 @@
         } else {
           itemLines.push(lines[index].trim());
         }
+        itemSourceLineNumbers.push(sourceLineAt(lines, index, context));
         index += 1;
       }
       items.push({
         checked: task ? task[1].toLocaleLowerCase() === "x" : null,
         spacedBefore: itemHasBlankBefore,
-        children: parseBlocks(itemLines, context),
+        ...sourceLineRange(lines, itemStartIndex, index, context),
+        children: parseBlocks(withSourceLineNumbers(itemLines, itemSourceLineNumbers), context),
       });
       itemHasBlankBefore = sawBlank;
     }
@@ -1212,14 +1240,22 @@
     const header = splitTableRow(lines[index]);
     if (header.length < 2 || alignments.length < 2) return null;
     const rows = [];
+    const rowSourceLines = [sourceLineAt(lines, index)];
     let nextIndex = index + 2;
     while (nextIndex < lines.length && lines[nextIndex].trim() && hasUnescapedPipe(lines[nextIndex])) {
       rows.push(splitTableRow(lines[nextIndex]));
+      rowSourceLines.push(sourceLineAt(lines, nextIndex));
       nextIndex += 1;
     }
     const normalizeRow = (row) => row.slice(0, header.length).concat(Array(Math.max(0, header.length - row.length)).fill(""));
     return {
-      block: { type: "table", alignments: alignments.slice(0, header.length), header: normalizeRow(header), rows: rows.map(normalizeRow) },
+      block: {
+        type: "table",
+        alignments: alignments.slice(0, header.length),
+        header: normalizeRow(header),
+        rows: rows.map(normalizeRow),
+        rowSourceLines,
+      },
       nextIndex,
     };
   }
@@ -1236,36 +1272,49 @@
 
   function extractDefinitions(lines, context) {
     const result = [];
+    const sourceLineNumbers = [];
+    const keepLine = (line, sourceLine) => {
+      result.push(line);
+      sourceLineNumbers.push(sourceLine);
+    };
     let fenceMarker = "";
     for (let index = 0; index < lines.length; index += 1) {
       const line = lines[index];
       const fence = line.match(/^\s*(`{3,}|~{3,})\s*/);
       if (fenceMarker) {
         if (line.match(new RegExp(`^\\s*${fenceMarker[0]}{${fenceMarker.length},}\\s*$`))) fenceMarker = "";
-        result.push(line);
+        keepLine(line, index);
         continue;
       }
       if (fence) {
         fenceMarker = fence[1];
-        result.push(line);
+        keepLine(line, index);
         continue;
       }
       const footnote = line.match(/^\s{0,3}\[\^([^\]]+)\]:[ \t]*(.*)$/);
       if (footnote) {
+        const sourceStart = index;
         const body = [footnote[2]];
+        const bodySourceLineNumbers = [index];
         index += 1;
         while (index < lines.length) {
           if (/^ {4}/.test(lines[index])) {
             body.push(lines[index].slice(4));
+            bodySourceLineNumbers.push(index);
             index += 1;
           } else if (!lines[index].trim() && /^ {4}/.test(lines[index + 1] || "")) {
             body.push("");
+            bodySourceLineNumbers.push(index);
             index += 1;
           } else {
             break;
           }
         }
-        context.footnotes.set(normalizeReferenceLabel(footnote[1]), body);
+        context.footnotes.set(normalizeReferenceLabel(footnote[1]), {
+          lines: withSourceLineNumbers(body, bodySourceLineNumbers),
+          sourceStart,
+          sourceEnd: Math.max(sourceStart + 1, index),
+        });
         index -= 1;
         continue;
       }
@@ -1274,9 +1323,9 @@
         context.references.set(reference.label, { url: reference.url, title: reference.title });
         continue;
       }
-      result.push(line);
+      keepLine(line, index);
     }
-    return result;
+    return withSourceLineNumbers(result, sourceLineNumbers);
   }
 
   function isThematicBreak(line) {
@@ -1312,6 +1361,9 @@
 
   function parseBlocks(lines, context) {
     const blocks = [];
+    const pushBlock = (block, startIndex, endIndex) => {
+      blocks.push(addSourceLineRange(block, lines, startIndex, endIndex, context));
+    };
     let index = 0;
     while (index < lines.length) {
       const line = lines[index];
@@ -1319,6 +1371,7 @@
         index += 1;
         continue;
       }
+      const blockStart = index;
 
       const fence = line.match(/^\s*(`{3,}|~{3,})\s*([^ ]*)\s*$/);
       if (fence) {
@@ -1331,7 +1384,7 @@
           index += 1;
         }
         if (index < lines.length) index += 1;
-        blocks.push({ type: "code", language: fence[2], lines: codeLines });
+        pushBlock({ type: "code", language: fence[2], lines: codeLines }, blockStart, index);
         continue;
       }
 
@@ -1343,23 +1396,31 @@
           index += 1;
         }
         if (index < lines.length) index += 1;
-        blocks.push({ type: "math", lines: mathLines });
+        pushBlock({ type: "math", lines: mathLines }, blockStart, index);
         continue;
       }
 
       if (isDetailsStart(line)) {
         const body = [];
+        const bodySourceLineNumbers = [];
         let end = index + 1;
         while (end < lines.length && !/^\s{0,3}<\/details>\s*$/i.test(lines[end])) {
           body.push(lines[end]);
+          bodySourceLineNumbers.push(sourceLineAt(lines, end, context));
           end += 1;
         }
         if (end < lines.length) {
           let summary = "Details";
           if (/^\s*<summary>[\s\S]*<\/summary>\s*$/i.test(body[0] || "")) {
             summary = body.shift().replace(/^\s*<summary>/i, "").replace(/<\/summary>\s*$/i, "");
+            bodySourceLineNumbers.shift();
           }
-          blocks.push({ type: "details", open: /\sopen(?:\s|>)/i.test(line), summary, children: parseBlocks(body, context) });
+          pushBlock({
+            type: "details",
+            open: /\sopen(?:\s|>)/i.test(line),
+            summary,
+            children: parseBlocks(withSourceLineNumbers(body, bodySourceLineNumbers), context),
+          }, blockStart, end + 1);
           index = end + 1;
           continue;
         }
@@ -1368,36 +1429,38 @@
       if (/^\s{0,3}#{1,6}(?:[ \t]+|$)/.test(line)) {
         const heading = line.match(/^\s{0,3}(#{1,6})(?:[ \t]+(.*)|$)/);
         const text = (heading[2] || "").replace(/[ \t]+#+[ \t]*$/, "").trim();
-        blocks.push({ type: "heading", level: heading[1].length, lines: [text] });
         index += 1;
+        pushBlock({ type: "heading", level: heading[1].length, lines: [text] }, blockStart, index);
         continue;
       }
 
       if (isSetextHeading(lines, index)) {
-        blocks.push({ type: "heading", level: lines[index + 1].trim().startsWith("=") ? 1 : 2, lines: [line.trim()] });
         index += 2;
+        pushBlock({ type: "heading", level: lines[blockStart + 1].trim().startsWith("=") ? 1 : 2, lines: [line.trim()] }, blockStart, index);
         continue;
       }
 
       const table = parseTableAt(lines, index);
       if (table) {
-        blocks.push(table.block);
         index = table.nextIndex;
+        pushBlock(table.block, blockStart, index);
         continue;
       }
 
       if (isThematicBreak(line)) {
-        blocks.push({ type: "hr" });
         index += 1;
+        pushBlock({ type: "hr" }, blockStart, index);
         continue;
       }
 
       if (/^\s{0,3}>/.test(line)) {
         const quoteLines = [];
+        const quoteSourceLineNumbers = [];
         while (index < lines.length) {
           const currentLine = lines[index];
           if (/^\s{0,3}>/.test(currentLine)) {
             quoteLines.push(currentLine.replace(/^\s{0,3}>[ \t]?/, ""));
+            quoteSourceLineNumbers.push(sourceLineAt(lines, index, context));
             index += 1;
           } else if (
             currentLine.trim() &&
@@ -1409,6 +1472,7 @@
             !getListMarker(currentLine)
           ) {
             quoteLines.push(currentLine.trim());
+            quoteSourceLineNumbers.push(sourceLineAt(lines, index, context));
             index += 1;
           } else {
             break;
@@ -1416,17 +1480,24 @@
         }
         const alert = quoteLines[0]?.match(/^\[!([A-Z]+)\]\s*$/i);
         if (alert && ALERT_TYPES.has(alert[1].toUpperCase())) {
-          blocks.push({ type: "alert", kind: alert[1].toLowerCase(), children: parseBlocks(quoteLines.slice(1), context) });
+          pushBlock({
+            type: "alert",
+            kind: alert[1].toLowerCase(),
+            children: parseBlocks(withSourceLineNumbers(quoteLines.slice(1), quoteSourceLineNumbers.slice(1)), context),
+          }, blockStart, index);
         } else {
-          blocks.push({ type: "blockquote", children: parseBlocks(quoteLines, context) });
+          pushBlock({
+            type: "blockquote",
+            children: parseBlocks(withSourceLineNumbers(quoteLines, quoteSourceLineNumbers), context),
+          }, blockStart, index);
         }
         continue;
       }
 
       if (getListMarker(line)) {
         const list = parseList(lines, index, context);
-        blocks.push(list.block);
         index = list.nextIndex;
+        pushBlock(list.block, blockStart, index);
         continue;
       }
 
@@ -1437,17 +1508,22 @@
           index += 1;
         }
         while (codeLines.at(-1) === "") codeLines.pop();
-        blocks.push({ type: "code", language: "", lines: codeLines });
+        pushBlock({ type: "code", language: "", lines: codeLines }, blockStart, index);
         continue;
       }
 
       const paragraphLines = [line];
+      const paragraphSourceLineNumbers = [sourceLineAt(lines, index, context)];
       index += 1;
       while (index < lines.length && lines[index].trim() && !isBlockStart(lines, index)) {
         paragraphLines.push(lines[index]);
+        paragraphSourceLineNumbers.push(sourceLineAt(lines, index, context));
         index += 1;
       }
-      blocks.push({ type: "paragraph", lines: paragraphLines });
+      pushBlock({
+        type: "paragraph",
+        lines: withSourceLineNumbers(paragraphLines, paragraphSourceLineNumbers),
+      }, blockStart, index);
     }
     return blocks;
   }
@@ -1461,7 +1537,13 @@
     return context.footnoteOrder.indexOf(label) + 1;
   }
 
-  function renderTable(parent, block, context) {
+  function applySourceMapAttributes(element, sourceStart, sourceEnd, options) {
+    if (!options?.sourceMap || !element || !Number.isInteger(sourceStart)) return;
+    element.dataset.markdownSourceStart = String(sourceStart);
+    if (Number.isInteger(sourceEnd)) element.dataset.markdownSourceEnd = String(sourceEnd);
+  }
+
+  function renderTable(parent, block, context, options) {
     const wrapper = createElement("div", "markdown-table-wrapper");
     const table = createElement("table", "markdown-table");
     const thead = createElement("thead");
@@ -1473,11 +1555,12 @@
       appendInline(header, cell, context);
       headerRow.append(header);
     });
+    applySourceMapAttributes(headerRow, block.rowSourceLines?.[0], block.rowSourceLines?.[1] ?? block.sourceEnd, options);
     thead.append(headerRow);
     table.append(thead);
     if (block.rows.length) {
       const tbody = createElement("tbody");
-      block.rows.forEach((row) => {
+      block.rows.forEach((row, rowIndex) => {
         const tableRow = createElement("tr");
         row.forEach((cell, index) => {
           const dataCell = createElement("td");
@@ -1485,6 +1568,12 @@
           appendInline(dataCell, cell, context);
           tableRow.append(dataCell);
         });
+        applySourceMapAttributes(
+          tableRow,
+          block.rowSourceLines?.[rowIndex + 1],
+          block.rowSourceLines?.[rowIndex + 2] ?? block.sourceEnd,
+          options,
+        );
         tbody.append(tableRow);
       });
       table.append(tbody);
@@ -1493,7 +1582,7 @@
     parent.append(wrapper);
   }
 
-  function renderList(parent, block, context) {
+  function renderList(parent, block, context, options) {
     const list = createElement(block.ordered ? "ol" : "ul");
     if (block.ordered && block.start !== 1) list.start = block.start;
     block.items.forEach((item) => {
@@ -1514,16 +1603,17 @@
           appendInlineLines(taskContent, first.lines, context);
           listItem.append(taskContent);
         } else if (first) {
-          renderBlock(listItem, first, context);
+          renderBlock(listItem, first, context, options);
         }
       }
-      renderBlocks(listItem, children, context);
+      renderBlocks(listItem, children, context, options);
+      applySourceMapAttributes(listItem, item.sourceStart, item.sourceEnd, options);
       list.append(listItem);
     });
     parent.append(list);
   }
 
-  function renderFootnotes(parent, context) {
+  function renderFootnotes(parent, context, options) {
     if (!context.footnoteOrder.length) return;
     const section = createElement("section", "markdown-footnotes");
     section.setAttribute("aria-label", "Footnotes");
@@ -1531,50 +1621,54 @@
     heading.textContent = "Footnotes";
     section.append(heading);
     const list = createElement("ol");
+    let sourceStart = Number.POSITIVE_INFINITY;
+    let sourceEnd = 0;
     context.footnoteOrder.forEach((label) => {
       const item = createElement("li");
       item.id = `fn-${footnoteSlug(label)}`;
-      renderBlocks(item, parseBlocks(context.footnotes.get(label) || [], context), context);
+      const footnote = context.footnotes.get(label);
+      renderBlocks(item, parseBlocks(footnote?.lines || [], context), context, options);
       const back = createElement("a", "markdown-footnote-backref");
       back.href = `#fnref-${footnoteSlug(label)}-1`;
       back.textContent = " ↩";
       back.setAttribute("aria-label", "Back to footnote reference");
       item.append(back);
+      applySourceMapAttributes(item, footnote?.sourceStart, footnote?.sourceEnd, options);
+      if (Number.isInteger(footnote?.sourceStart)) sourceStart = Math.min(sourceStart, footnote.sourceStart);
+      if (Number.isInteger(footnote?.sourceEnd)) sourceEnd = Math.max(sourceEnd, footnote.sourceEnd);
       list.append(item);
     });
     section.append(list);
+    applySourceMapAttributes(section, Number.isFinite(sourceStart) ? sourceStart : undefined, sourceEnd, options);
     parent.append(section);
   }
 
-  function renderBlock(parent, block, context) {
-    if (block.type === "paragraph") return appendParagraph(parent, block.lines, context);
-    if (block.type === "heading") {
+  function renderBlock(parent, block, context, options = {}) {
+    const previousElement = parent.lastElementChild;
+    if (block.type === "paragraph") {
+      appendParagraph(parent, block.lines, context);
+    } else if (block.type === "heading") {
       const heading = createElement(`h${block.level}`);
       appendInlineLines(heading, block.lines, context);
       parent.append(heading);
-      return;
-    }
-    if (block.type === "code") return appendCodeBlock(parent, block.lines, block.language);
-    if (block.type === "math") {
+    } else if (block.type === "code") {
+      appendCodeBlock(parent, block.lines, block.language);
+    } else if (block.type === "math") {
       const math = createElement("div", "markdown-math markdown-math--block");
       math.setAttribute("aria-label", "Mathematical expression");
       appendText(math, block.lines.join("\n"));
       parent.append(math);
-      return;
-    }
-    if (block.type === "hr") {
+    } else if (block.type === "hr") {
       parent.append(createElement("hr"));
-      return;
-    }
-    if (block.type === "table") return renderTable(parent, block, context);
-    if (block.type === "list") return renderList(parent, block, context);
-    if (block.type === "blockquote") {
+    } else if (block.type === "table") {
+      renderTable(parent, block, context, options);
+    } else if (block.type === "list") {
+      renderList(parent, block, context, options);
+    } else if (block.type === "blockquote") {
       const quote = createElement("blockquote");
-      renderBlocks(quote, block.children, context);
+      renderBlocks(quote, block.children, context, options);
       parent.append(quote);
-      return;
-    }
-    if (block.type === "alert") {
+    } else if (block.type === "alert") {
       const alert = createElement("aside", `markdown-alert markdown-alert--${block.kind}`);
       alert.setAttribute("role", block.kind === "warning" || block.kind === "caution" ? "alert" : "note");
       const title = createElement("p", "markdown-alert__title");
@@ -1583,26 +1677,28 @@
       label.textContent = block.kind[0].toLocaleUpperCase() + block.kind.slice(1);
       title.append(label);
       alert.append(title);
-      renderBlocks(alert, block.children, context);
+      renderBlocks(alert, block.children, context, options);
       parent.append(alert);
-      return;
-    }
-    if (block.type === "details") {
+    } else if (block.type === "details") {
       const details = createElement("details", "markdown-details");
       if (block.open) details.open = true;
       const summary = createElement("summary");
       appendInline(summary, block.summary, context);
       details.append(summary);
-      renderBlocks(details, block.children, context);
+      renderBlocks(details, block.children, context, options);
       parent.append(details);
+    }
+    const renderedElement = parent.lastElementChild;
+    if (renderedElement !== previousElement) {
+      applySourceMapAttributes(renderedElement, block.sourceStart, block.sourceEnd, options);
     }
   }
 
-  function renderBlocks(parent, blocks, context) {
-    blocks.forEach((block) => renderBlock(parent, block, context));
+  function renderBlocks(parent, blocks, context, options = {}) {
+    blocks.forEach((block) => renderBlock(parent, block, context, options));
   }
 
-  function renderInto(container, source, emptyText = "No content yet.") {
+  function renderInto(container, source, emptyText = "No content yet.", options = {}) {
     container.replaceChildren();
     const text = String(source ?? "");
     if (!text.trim()) {
@@ -1617,9 +1713,11 @@
       footnotes: new Map(),
       references: new Map(),
     };
-    const lines = extractDefinitions(normalizeLines(text), context);
-    renderBlocks(container, parseBlocks(lines, context), context);
-    renderFootnotes(container, context);
+    const sourceLines = normalizeLines(text);
+    context.sourceLineCount = sourceLines.length;
+    const lines = extractDefinitions(sourceLines, context);
+    renderBlocks(container, parseBlocks(lines, context), context, options);
+    renderFootnotes(container, context, options);
   }
 
   function toPlainText(source) {

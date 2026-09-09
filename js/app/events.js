@@ -60,6 +60,7 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
     renderTagSuggestions,
     normalizeTagEditorInput,
     syncNoteEditorScroll,
+    scheduleNoteEditorScrollMap,
     scheduleNoteEditorPreview,
     setNoteEditorMode,
     scheduleNoteEditorHeight,
@@ -181,6 +182,9 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
     elements.noteContentPreview.addEventListener("scroll", () => {
       syncNoteEditorScroll(elements.noteContentPreview, elements.noteContent);
     });
+    elements.noteContentPreview.addEventListener("toggle", () => {
+      scheduleNoteEditorScrollMap(elements.noteContentPreview);
+    }, true);
     elements.noteType.addEventListener("change", () => {
       revalidateNoteEditorField("type");
       scheduleNoteAutoSave();
@@ -208,6 +212,11 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
     window.addEventListener("resize", () => {
       scheduleQuickViewHeightSync();
       scheduleNoteEditorHeight();
+      scheduleNoteEditorScrollMap(
+        elements.noteContentPreview.contains(document.activeElement)
+          ? elements.noteContentPreview
+          : elements.noteContent,
+      );
       scheduleTopbarActionsPinning();
       window.requestAnimationFrame(syncPinnedTopbarControlMetrics);
     });
