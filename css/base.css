@@ -730,7 +730,7 @@ select:focus-visible {
 .tag-filter-section {
   display: flex;
   min-height: 0;
-  flex: 0 1 auto;
+  flex: 0 0 auto;
   flex-direction: column;
   margin-top: 1.25rem;
   padding: 0 0.5rem;
@@ -763,12 +763,12 @@ select:focus-visible {
   align-items: center;
   align-content: flex-start;
   gap: 0.38rem 0.32rem;
-  max-height: clamp(12rem, 30vh, 22rem);
-  max-height: clamp(12rem, 30dvh, 22rem);
-  overflow-y: auto;
-  overscroll-behavior: contain;
+  /* Keep one scroll owner: the sidebar itself. Tags should grow naturally. */
+  max-height: none;
+  overflow: visible;
+  overscroll-behavior: auto;
   padding: 0.2rem 0.4rem 0.35rem 0.2rem;
-  scrollbar-gutter: stable;
+  scrollbar-gutter: auto;
 }
 
 

@@ -27,8 +27,8 @@ practice, and personal ideas in one calm, searchable local library.
 ## Screenshots
 
 The gallery uses the reusable [demo library](docs/sample-data/nook-demo-library.json):
-24 active notes, 2 notes in Trash, 7 note types, 10 tags, 3 pinned notes, and
-realistic Markdown content. The content is synthetic and safe to replace. Nook
+44 active notes, 4 notes in Trash, 9 note types, 22 tags, 6 pinned notes, and
+18 active Coding notes with realistic Markdown content. The content is synthetic and safe to replace. Nook
 stores it in the current browser's IndexedDB; no note content is sent to a
 server.
 
