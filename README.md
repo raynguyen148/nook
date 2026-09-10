@@ -19,7 +19,7 @@ practice, and personal ideas in one calm, searchable local library.
 - Copy the raw Markdown source or export the current note as `.md` or `.txt`.
 - Export and import a complete JSON backup. The local backup-health indicator reminds you when an export is missing or old.
 - Manage note types and tags from Settings → Organize Notes.
-- Choose Light, Warm, Dark, or Auto theme, switch between Focus, Comfortable, and Compact layouts, or collapse the sidebar into an icon rail.
+- Choose Light, Coffee, Forest, Midnight, Dark, or Auto theme, switch between Focus, Comfortable, and Compact layouts, or collapse the sidebar into an icon rail.
 - Recover an unfinished local editor draft after an interrupted session.
 - Keep multiple open tabs in sync when the browser supports `BroadcastChannel`.
 - Use `C` for quick capture plus platform-aware editor shortcuts for formatting, saving, and switching editor modes.
@@ -27,36 +27,41 @@ practice, and personal ideas in one calm, searchable local library.
 ## Screenshots
 
 The gallery uses the reusable [demo library](docs/sample-data/nook-demo-library.json):
-44 active notes, 4 notes in Trash, 9 note types, 22 tags, 6 pinned notes, and
+44 active notes, 4 notes in Trash, 9 note types, 12 tags, 6 pinned notes, and
 18 active Coding notes with realistic Markdown content. The content is synthetic and safe to replace. Nook
 stores it in the current browser's IndexedDB; no note content is sent to a
 server.
 
-### Library and navigation
+Full-library screenshots use one consistent desktop setup: Chrome at 125% zoom,
+the Compact four-column layout, and an expanded sidebar. The demo fixture keeps
+the sidebar to 12 tags so the tag list fits without an internal scrollbar.
 
-![Nook desktop library in a compact four-column layout with pinned notes and a recent backup](docs/screenshots/nook-library.jpg)
+### Library theme gallery
 
-![Nook desktop library in the two-column Comfortable layout](docs/screenshots/nook-comfortable.jpg)
+![Nook Light theme library in a compact four-column layout](docs/screenshots/nook-library-light.jpg)
 
-![Nook desktop library with the sidebar collapsed to an icon rail](docs/screenshots/nook-sidebar-collapsed.jpg)
+![Nook Coffee theme library in a compact four-column layout](docs/screenshots/nook-library-coffee.jpg)
 
-![Nook desktop library filtered by the Project type and dev tag](docs/screenshots/nook-filters.jpg)
+![Nook Forest theme library in a compact four-column layout](docs/screenshots/nook-library-forest.jpg)
 
-![Nook desktop library in dark theme](docs/screenshots/nook-dark.jpg)
+![Nook Midnight theme library in a compact four-column layout](docs/screenshots/nook-library-midnight.jpg)
+
+![Nook Dark theme library in a compact four-column layout](docs/screenshots/nook-library-dark.jpg)
+
 
 ### Note detail workspace
 
-![Nook Quick View rendering a rich Markdown note in the detail workspace](docs/screenshots/nook-quick-view.jpg)
+![Nook Quick View rendering a rich Markdown note in the detail workspace](docs/screenshots/nook-component-preview.jpg)
 
-![Nook Edit Markdown mode with tags, formatting tools, save status, and keyboard hints](docs/screenshots/nook-editor.jpg)
+![Nook Edit Markdown mode with tags, formatting tools, save status, and keyboard hints](docs/screenshots/nook-component-editor.jpg)
 
-![Nook Split mode showing raw Markdown beside its rendered preview](docs/screenshots/nook-split-view.jpg)
+![Nook Split mode showing raw Markdown beside its rendered preview](docs/screenshots/nook-component-split.jpg)
 
-### Organization and recovery
+### Settings and recovery UI
 
-![Nook Settings dialog for managing note types](docs/screenshots/nook-organize.jpg)
+![Nook Settings dialog for managing note types](docs/screenshots/nook-component-settings.jpg)
 
-![Nook Trash with restore and permanent-delete actions](docs/screenshots/nook-trash.jpg)
+![Nook Settings dialog for managing tags](docs/screenshots/nook-component-settings-tags.jpg)
 
 ## Quick start
 
@@ -239,7 +244,7 @@ step shows the number of notes, types, and tags that will be imported.
 
 The [Nook demo library](docs/sample-data/nook-demo-library.json) is a reusable,
 fictional sample collection for reviewing the UI, practicing import/export, and
-refreshing the README gallery. It contains active notes plus two Trash records
+refreshing the README gallery. It contains active notes plus four Trash records
 so restore and permanent-delete states are available immediately. Import it
 from the app's **Import** button whenever you need the same demo state again.
 
