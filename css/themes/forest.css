@@ -518,14 +518,60 @@ html[data-theme="forest"] .note-content-preview code:not(pre code) {
 
 html[data-theme="forest"] .quick-view-content pre,
 html[data-theme="forest"] .note-content-preview pre {
-  border: 1px solid #c2d5c5;
-  background: #e6efe7;
+  border-color: #3d654d;
+  background: #1f3b2b;
+  box-shadow: 0 2px 8px -2px rgb(30 65 42 / 14%);
 }
 
 html[data-theme="forest"] .quick-view-content pre code,
 html[data-theme="forest"] .note-content-preview pre code {
-  color: #284a35;
+  color: #e3f0e7;
 }
+
+html[data-theme="forest"] .quick-view-content .markdown-code-header,
+html[data-theme="forest"] .note-content-preview .markdown-code-header {
+  background: #294a36;
+  border-bottom-color: #3d654d;
+}
+
+html[data-theme="forest"] .quick-view-content .markdown-code-lang,
+html[data-theme="forest"] .note-content-preview .markdown-code-lang {
+  color: #b9dfc2;
+}
+
+html[data-theme="forest"] .quick-view-content .markdown-code-copy-btn,
+html[data-theme="forest"] .note-content-preview .markdown-code-copy-btn {
+  background: #315640;
+  color: #d8eddd;
+  border-color: #5a8065;
+}
+
+html[data-theme="forest"] .quick-view-content .markdown-code-copy-btn:hover,
+html[data-theme="forest"] .note-content-preview .markdown-code-copy-btn:hover {
+  background: #3f6f51;
+  border-color: #7aa087;
+  color: #ffffff;
+}
+
+html[data-theme="forest"] .quick-view-content .markdown-code-copy-btn.is-copied,
+html[data-theme="forest"] .note-content-preview .markdown-code-copy-btn.is-copied {
+  background: #2d543d;
+  border-color: #74a47c;
+  color: #d1eed5;
+}
+
+/* Forest syntax highlighting */
+html[data-theme="forest"] .token-keyword { color: #d7a5e8; font-weight: 600; }
+html[data-theme="forest"] .token-string { color: #a8d98a; }
+html[data-theme="forest"] .token-comment { color: #8fb49b; font-style: italic; }
+html[data-theme="forest"] .token-number { color: #e8c37d; }
+html[data-theme="forest"] .token-function { color: #8ed0e8; }
+html[data-theme="forest"] .token-boolean { color: #f0a98b; font-weight: 600; }
+html[data-theme="forest"] .token-operator { color: #b9dfc2; }
+html[data-theme="forest"] .token-property,
+html[data-theme="forest"] .token-tag { color: #f1a1b1; }
+html[data-theme="forest"] .token-type { color: #8dd4c1; }
+html[data-theme="forest"] .token-punctuation { color: #b7d0bd; }
 
 html[data-theme="forest"] .quick-view-content hr,
 html[data-theme="forest"] .note-content-preview hr,

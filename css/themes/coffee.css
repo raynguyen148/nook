@@ -798,16 +798,15 @@ html:not([data-theme]) .note-content-preview code:not(pre code) {
 }
 
 /* --------------------------------------------------------------------------
-   Markdown Code Blocks & Syntax (Warm Espresso Slate Palette)
+   Markdown Code Blocks & Syntax (Coffee palette; shared geometry)
    -------------------------------------------------------------------------- */
 html[data-theme="coffee"] .quick-view-content pre,
 html[data-theme="coffee"] .note-content-preview pre,
 html:not([data-theme]) .quick-view-content pre,
 html:not([data-theme]) .note-content-preview pre {
   background: #211c18;
-  border: 1px solid #3d332a;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(35, 25, 15, 0.12);
+  border-color: #4b392d;
+  box-shadow: 0 2px 8px -2px rgb(35 25 15 / 12%);
 }
 
 html[data-theme="coffee"] .quick-view-content pre code,
@@ -815,31 +814,73 @@ html[data-theme="coffee"] .note-content-preview pre code,
 html:not([data-theme]) .quick-view-content pre code,
 html:not([data-theme]) .note-content-preview pre code {
   color: #ede2d3;
-  background: transparent;
-  border: 0;
-  padding: 0;
 }
 
-html[data-theme="coffee"] .quick-view-code-copy,
-html:not([data-theme]) .quick-view-code-copy {
-  background: rgba(253, 251, 247, 0.1);
+html[data-theme="coffee"] .quick-view-content .markdown-code-header,
+html[data-theme="coffee"] .note-content-preview .markdown-code-header,
+html:not([data-theme]) .quick-view-content .markdown-code-header,
+html:not([data-theme]) .note-content-preview .markdown-code-header {
+  background: #33271f;
+  border-bottom-color: #4b392d;
+}
+
+html[data-theme="coffee"] .quick-view-content .markdown-code-lang,
+html[data-theme="coffee"] .note-content-preview .markdown-code-lang,
+html:not([data-theme]) .quick-view-content .markdown-code-lang,
+html:not([data-theme]) .note-content-preview .markdown-code-lang {
+  color: #c8aa8d;
+}
+
+html[data-theme="coffee"] .quick-view-content .markdown-code-copy-btn,
+html[data-theme="coffee"] .note-content-preview .markdown-code-copy-btn,
+html:not([data-theme]) .quick-view-content .markdown-code-copy-btn,
+html:not([data-theme]) .note-content-preview .markdown-code-copy-btn {
+  background: #453428;
   color: #d8ccbd;
-  border-color: rgba(253, 251, 247, 0.15);
+  border-color: #68503d;
 }
 
-html[data-theme="coffee"] .quick-view-code-copy:hover,
-html:not([data-theme]) .quick-view-code-copy:hover {
-  background: rgba(253, 251, 247, 0.2);
-  color: #ffffff;
+html[data-theme="coffee"] .quick-view-content .markdown-code-copy-btn:hover,
+html[data-theme="coffee"] .note-content-preview .markdown-code-copy-btn:hover,
+html:not([data-theme]) .quick-view-content .markdown-code-copy-btn:hover,
+html:not([data-theme]) .note-content-preview .markdown-code-copy-btn:hover {
+  background: #574131;
+  border-color: #84654c;
+  color: #fff8ee;
 }
 
-/* Warm Syntax Highlighting */
-html[data-theme="coffee"] .token-keyword { color: #f2994a; font-weight: 600; }
-html[data-theme="coffee"] .token-string { color: #a9c676; }
-html[data-theme="coffee"] .token-comment { color: #8e8072; font-style: italic; }
-html[data-theme="coffee"] .token-number { color: #d4a373; }
-html[data-theme="coffee"] .token-function { color: #f4c478; }
-html[data-theme="coffee"] .token-punctuation { color: #b8aba0; }
+html[data-theme="coffee"] .quick-view-content .markdown-code-copy-btn.is-copied,
+html[data-theme="coffee"] .note-content-preview .markdown-code-copy-btn.is-copied,
+html:not([data-theme]) .quick-view-content .markdown-code-copy-btn.is-copied,
+html:not([data-theme]) .note-content-preview .markdown-code-copy-btn.is-copied {
+  background: #384334;
+  border-color: #607b5d;
+  color: #cbe1b9;
+}
+
+/* Coffee syntax highlighting */
+html[data-theme="coffee"] .token-keyword,
+html:not([data-theme]) .token-keyword { color: #f2994a; font-weight: 600; }
+html[data-theme="coffee"] .token-string,
+html:not([data-theme]) .token-string { color: #a9c676; }
+html[data-theme="coffee"] .token-comment,
+html:not([data-theme]) .token-comment { color: #a99583; font-style: italic; }
+html[data-theme="coffee"] .token-number,
+html:not([data-theme]) .token-number { color: #d4a373; }
+html[data-theme="coffee"] .token-function,
+html:not([data-theme]) .token-function { color: #f4c478; }
+html[data-theme="coffee"] .token-boolean,
+html:not([data-theme]) .token-boolean { color: #f29b62; font-weight: 600; }
+html[data-theme="coffee"] .token-operator,
+html:not([data-theme]) .token-operator { color: #c8aa8d; }
+html[data-theme="coffee"] .token-property,
+html[data-theme="coffee"] .token-tag,
+html:not([data-theme]) .token-property,
+html:not([data-theme]) .token-tag { color: #e39a8f; }
+html[data-theme="coffee"] .token-type,
+html:not([data-theme]) .token-type { color: #8fc2a1; }
+html[data-theme="coffee"] .token-punctuation,
+html:not([data-theme]) .token-punctuation { color: #b8aba0; }
 
 /* --------------------------------------------------------------------------
    Markdown Callout Alerts (Harmonious Tinted Cream Bases)
