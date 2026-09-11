@@ -1,0 +1,513 @@
+/* Hallmark · pre-emit critique: P5 H5 E5 S5 R5 V4 */
+/* Nook - Retro theme: warm paper, heavy ink, offset print shadows. */
+
+html[data-theme="retro"] {
+  color-scheme: light;
+  --font-sans: "Trebuchet MS", Verdana, Arial, sans-serif;
+  --font-display: "Arial Rounded MT Bold", ui-rounded, "Trebuchet MS", Verdana, sans-serif;
+  --font-retro-title: Superclarendon, Rockwell, "American Typewriter", "Arial Rounded MT Bold", ui-rounded, serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --retro-canvas: #fff4dd;
+  --retro-paper: #fffdf8;
+  --retro-paper-muted: #f6ead2;
+  --retro-paper-hover: #efe0c2;
+  --retro-ink: #251f1a;
+  --retro-border: #2b241e;
+  --retro-muted: #6f655b;
+  --retro-disabled-surface: #e5dfd5;
+  --retro-disabled-ink: #746c64;
+  --retro-yellow: #ffd447;
+  --retro-yellow-hover: #f2c332;
+  --retro-pink: #f2abc1;
+  --retro-blue: #9ed7f5;
+  --retro-green: #b9dfa9;
+  --retro-orange: #f4a261;
+  --retro-red: #f45b3a;
+  --retro-red-soft: #fde8e4;
+  --retro-violet: #d7c5f5;
+  --retro-overlay: rgb(43 36 30 / 42%);
+  --retro-success: #27643a;
+  --retro-warning: #8a5100;
+  --retro-error: #a52d1c;
+  --retro-link: #705000;
+  --retro-code-surface: #2b241e;
+  --retro-code-header: #40372f;
+  --retro-code-text: #fff4dd;
+  --retro-code-muted: #d8cbb7;
+  --retro-token-keyword: #ff9d88;
+  --retro-token-string: #b9dfa9;
+  --retro-token-function: #9ed7f5;
+  --retro-token-number: #ffd447;
+  --retro-token-boolean: #f2abc1;
+  --retro-token-comment: #c2b7aa;
+  --retro-token-operator: #fff4dd;
+  --retro-token-property: #f2abc1;
+  --retro-token-type: #9ed7f5;
+  --retro-border-width: 2px;
+  --retro-radius-sm: 0.4rem;
+  --retro-radius-control: 0.55rem;
+  --retro-radius-card: 0.75rem;
+  --retro-radius-dialog: 1rem;
+  --retro-shadow-xs: 1px 1px 0 var(--retro-border);
+  --retro-shadow-sm: 2px 2px 0 var(--retro-border);
+  --retro-shadow-md: 4px 4px 0 var(--retro-border);
+  --retro-shadow-lg: 7px 7px 0 var(--retro-border);
+  --retro-shadow-hover: 5px 5px 0 var(--retro-border);
+  --retro-icon-stroke-width: 2.15;
+  --retro-icon-filter: drop-shadow(1px 1px 0 rgb(244 91 58 / 42%));
+  --retro-transition-duration: 80ms;
+  --retro-transition-easing: ease-out;
+  --select-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='m3.5 5.5 4.5 4.5 4.5-4.5' stroke='%232b241e' stroke-width='2.1' stroke-linecap='square' stroke-linejoin='miter'/%3E%3C/svg%3E");
+  --management-search-resting-border: var(--retro-border);
+  --management-search-resting-shadow: var(--retro-shadow-sm);
+  --management-row-input-resting-border: var(--retro-border);
+  --management-row-input-resting-shadow: var(--retro-shadow-sm);
+  --primary-accent: var(--retro-yellow);
+  --primary-accent-hover: var(--retro-yellow-hover);
+  --primary-accent-text: var(--retro-ink);
+  --primary-accent-soft: var(--retro-paper-muted);
+  --primary-accent-soft-hover: var(--retro-paper-hover);
+  --primary-accent-border: var(--retro-border);
+  --primary-accent-focus: var(--retro-yellow);
+  --primary-accent-shadow: var(--retro-border);
+  --primary-button-text: var(--retro-ink);
+  --focus-color: var(--retro-border);
+  --focus-radius: var(--retro-radius-control);
+  --interaction-duration: var(--retro-transition-duration);
+  --interaction-easing: var(--retro-transition-easing);
+  --pinned-card-border: var(--retro-border);
+  --pinned-card-border-hover: var(--retro-border);
+  --pinned-card-surface: var(--retro-paper-muted);
+  --pinned-card-shadow: var(--retro-shadow-md);
+  --pinned-marker-background: var(--retro-yellow);
+  --pinned-marker-border: var(--retro-border);
+  --pinned-marker-color: var(--retro-ink);
+  --note-card-surface: var(--retro-paper);
+  --note-card-border: var(--retro-border);
+  --note-card-title: var(--retro-ink);
+  --note-card-title-letter-spacing: -0.015em;
+  --note-card-preview: var(--retro-muted);
+  --note-card-muted: var(--retro-muted);
+  --note-card-action: var(--retro-ink);
+  --note-card-action-hover: var(--retro-ink);
+  --note-card-action-hover-surface: var(--retro-yellow);
+  --note-card-action-danger: var(--retro-ink);
+  --note-card-action-danger-surface: var(--retro-red);
+  --note-card-action-disabled: var(--retro-disabled-ink);
+  --toast-surface: var(--retro-paper);
+  --toast-border: var(--retro-border);
+  --toast-text: var(--retro-ink);
+  --toast-status-surface: var(--retro-yellow);
+  --toast-status-icon: var(--retro-ink);
+  --toast-action: var(--retro-link);
+  --toast-action-hover: var(--retro-ink);
+  --toast-focus: var(--retro-border);
+  --toast-shadow: var(--retro-shadow-md);
+  --toast-error-surface: var(--retro-red-soft);
+  --toast-error-border: var(--retro-border);
+  --toast-error-text: var(--retro-ink);
+  --toast-error-status-surface: var(--retro-red);
+  --toast-error-status-icon: var(--retro-ink);
+  --toast-error-action: var(--retro-ink);
+  --toast-error-action-hover: var(--retro-ink);
+  --toast-error-focus: var(--retro-border);
+  overflow-x: clip;
+  color: var(--retro-ink);
+  background: var(--retro-canvas);
+}
+
+html[data-theme="retro"] body {
+  overflow-x: clip;
+  color: var(--retro-ink);
+  background: var(--retro-canvas);
+  font-family: var(--font-sans);
+}
+
+html[data-theme="retro"] ::selection { color: var(--retro-ink); background: var(--retro-yellow); }
+html[data-theme="retro"] * { scrollbar-color: var(--retro-muted) transparent; }
+
+html[data-theme="retro"] :where(.brand strong, .topbar h1, .notes-panel__heading h2, .filter-section-title h2, .quick-view-document-header h1, .dialog-header h2, .empty-state h3, .startup-error h1) {
+  color: var(--retro-ink);
+  font-family: var(--font-display);
+  font-style: normal;
+  font-weight: 800;
+}
+
+html[data-theme="retro"] .topbar h1 {
+  font-family: var(--font-retro-title);
+  font-weight: 900;
+  letter-spacing: -0.025em;
+}
+
+/* Keep the app chrome typographically tactile instead of falling back to the
+ * platform's modern UI face. Reading copy stays on the quieter retro sans. */
+html[data-theme="retro"] :where(button, input, select, textarea) {
+  font-family: var(--font-mono);
+}
+
+html[data-theme="retro"] :where(button, input, select) {
+  letter-spacing: -0.01em;
+}
+
+html[data-theme="retro"] :where(.eyebrow, .subtitle, .brand small, .storage-status, .filter-heading, .filter-help, .results-meta, .note-card__meta, .quick-view-meta, .quick-view-context, .quick-view-content-label, .note-editor-stats, .note-save-status, .dialog-footer__stats, .shortcut-tooltip, .note-detail-action-tooltip__content, .note-formatting-tool__tooltip, .management-row__default, .usage-count, kbd) {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+html[data-theme="retro"] :where(.brand small, .filter-heading, .filter-section-title h2, .filter-help, .results-meta, .note-card__meta, .quick-view-meta, .dialog-description) { color: var(--retro-muted); }
+
+/* Sidebar and filters */
+html[data-theme="retro"] .sidebar { border-color: var(--retro-border); background: var(--retro-paper); box-shadow: var(--retro-shadow-sm); }
+html[data-theme="retro"] .brand-mark { filter: none; }
+html[data-theme="retro"] :where(.sidebar-toggle-btn, .storage-status) {
+  border: var(--retro-border-width) solid var(--retro-border);
+  border-radius: var(--retro-radius-control);
+  color: var(--retro-ink);
+  background: var(--retro-canvas);
+  box-shadow: var(--retro-shadow-sm);
+}
+
+html[data-theme="retro"] .storage-status {
+  flex-wrap: nowrap;
+  gap: 0.3rem;
+  max-width: 100%;
+  padding-inline: 0.35rem;
+  font-size: 0.55rem;
+  letter-spacing: -0.025em;
+  white-space: nowrap;
+}
+
+html[data-theme="retro"] :where(.space-link, .sidebar-filter) { border: var(--retro-border-width) solid transparent; border-radius: var(--retro-radius-control); color: var(--retro-muted); font-weight: 700; }
+html[data-theme="retro"] :where(.space-link, .sidebar-filter):is(.is-active, [aria-pressed="true"]) { border-color: var(--retro-border); color: var(--retro-ink); background: var(--retro-yellow); box-shadow: var(--retro-shadow-sm); }
+html[data-theme="retro"] :where(.space-link, .sidebar-filter):is(.is-active, [aria-pressed="true"]) .filter-count { color: var(--retro-ink); }
+
+/* Sidebar tag filters and note-card tags intentionally share one chip contract. */
+html[data-theme="retro"] :where(.tag-filter-option, .tag-chip, .selected-tag, .quick-view-tag, .tag-add-button) {
+  min-height: 1.48rem;
+  border: var(--retro-border-width) solid var(--retro-border);
+  border-radius: 999px;
+  padding: 0.17rem 0.48rem;
+  color: var(--retro-ink);
+  background: var(--retro-paper);
+  box-shadow: var(--retro-shadow-xs);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+html[data-theme="retro"] .tag-filter-option .filter-count { padding-left: 0.05rem; color: var(--retro-muted); font: inherit; }
+html[data-theme="retro"] :where(.tag-filter-option:has(input:checked), .tag-filter-option.is-active, .tag-chip.is-selected) { color: var(--retro-ink); background: var(--retro-yellow); box-shadow: var(--retro-shadow-sm); }
+html[data-theme="retro"] :where(.tag-filter-option:has(input:checked), .tag-filter-option.is-active) .filter-count { color: var(--retro-ink); }
+html[data-theme="retro"] .tag-filter-option:has(input:focus-visible) { outline: var(--retro-border-width) solid var(--retro-border); outline-offset: 3px; }
+html[data-theme="retro"] .type-badge {
+  border: var(--retro-border-width) solid var(--detail-type-chip-color, var(--retro-border));
+  color: var(--detail-type-chip-color, var(--retro-ink));
+  background: var(--detail-type-chip-background, var(--retro-paper-muted));
+  box-shadow: var(--retro-shadow-xs);
+  font-family: var(--font-mono);
+  font-weight: 800;
+}
+html[data-theme="retro"] :where(.more-tags, .untagged) { color: var(--retro-muted); }
+
+html[data-theme="retro"] :where(.active-filter-pill, .notes-count, .organize-tab__count, .usage-count, .management-row__default) {
+  border: var(--retro-border-width) solid var(--retro-border);
+  border-radius: 999px;
+  color: var(--retro-ink);
+  background: var(--retro-paper-muted);
+  box-shadow: var(--retro-shadow-xs);
+  font-weight: 700;
+}
+
+html[data-theme="retro"] :where(.active-filter-pill, .notes-count, .organize-tab__count) { font-family: var(--font-mono); }
+html[data-theme="retro"] .active-filter-pill { font-weight: 800; }
+html[data-theme="retro"] :where(.notes-count, .active-filter-pill.is-active) { background: var(--retro-yellow); }
+html[data-theme="retro"] :where(.text-button, .active-filter-clear-all, .active-filter-pill__clear) { color: var(--retro-link); font-weight: 700; text-decoration-color: currentColor; }
+
+/* Library section and toolbar share the same paper-and-ink construction as
+ * the sidebar and note cards instead of retaining the Light theme chrome. */
+html[data-theme="retro"] .notes-panel {
+  border: var(--retro-border-width) solid var(--retro-border);
+  border-radius: var(--retro-radius-dialog);
+  color: var(--retro-ink);
+  background: var(--retro-paper);
+  box-shadow: var(--retro-shadow-lg);
+}
+
+html[data-theme="retro"] .notes-panel__heading {
+  border-bottom: var(--retro-border-width) solid var(--retro-border);
+}
+
+html[data-theme="retro"] .toolbar {
+  border: var(--retro-border-width) solid var(--retro-border);
+  border-radius: var(--retro-radius-control);
+  background: var(--retro-paper-muted);
+  box-shadow: var(--retro-shadow-sm);
+}
+
+html[data-theme="retro"] .topbar-actions.is-pinned {
+  border: var(--retro-border-width) solid var(--retro-border);
+  border-radius: var(--retro-radius-control);
+  background: var(--retro-paper-muted);
+  box-shadow: var(--retro-shadow-sm);
+}
+
+/* Inputs, menus, and segmented controls */
+html[data-theme="retro"] :where(input:not([type]), input[type="text"], input[type="search"], input[type="email"], input[type="url"], textarea, select, .note-type-picker__trigger, .color-picker__trigger) {
+  border: var(--retro-border-width) solid var(--retro-border) !important;
+  border-radius: var(--retro-radius-control) !important;
+  color: var(--retro-ink) !important;
+  background-color: var(--retro-paper) !important;
+  box-shadow: var(--retro-shadow-sm) !important;
+}
+
+html[data-theme="retro"] :where(input, textarea)::placeholder { color: var(--retro-muted); }
+html[data-theme="retro"] :where(input:not([type]), input[type="text"], input[type="search"], input[type="email"], input[type="url"], textarea, select, .note-type-picker__trigger, .color-picker__trigger):focus-visible,
+html[data-theme="retro"] .tag-picker:focus-within {
+  border-color: var(--retro-border) !important;
+  outline: var(--retro-border-width) solid var(--retro-border) !important;
+  outline-offset: 3px;
+  background-color: var(--retro-canvas) !important;
+  box-shadow: var(--retro-shadow-sm) !important;
+}
+
+html[data-theme="retro"] :where(input, textarea, select):disabled { border-color: var(--retro-disabled-ink) !important; color: var(--retro-disabled-ink) !important; background: var(--retro-disabled-surface) !important; box-shadow: none !important; }
+html[data-theme="retro"] :where(input, textarea):invalid { border-color: var(--retro-error) !important; }
+html[data-theme="retro"] :where(.field-error, .note-save-status.is-error) { color: var(--retro-error); font-family: var(--font-mono); font-weight: 700; }
+
+html[data-theme="retro"] .search-field input {
+  box-shadow: var(--retro-shadow-xs) !important;
+}
+
+html[data-theme="retro"] .clear-search {
+  border: var(--retro-border-width) solid var(--retro-border);
+  border-radius: var(--retro-radius-sm);
+  color: var(--retro-ink);
+  background: var(--retro-yellow);
+  box-shadow: var(--retro-shadow-xs);
+}
+
+html[data-theme="retro"] .clear-search:focus-visible {
+  outline: var(--retro-border-width) solid var(--retro-border);
+  outline-offset: 2px;
+}
+
+html[data-theme="retro"] :where(.sort-field__trigger, .view-mode-control__choices, .note-editor-modes) { border: var(--retro-border-width) solid var(--retro-border); border-radius: var(--retro-radius-control); background: var(--retro-paper); box-shadow: var(--retro-shadow-sm); }
+html[data-theme="retro"] :where(.view-mode-button, .note-editor-mode__button) { border-radius: var(--retro-radius-sm); color: var(--retro-muted); }
+html[data-theme="retro"] :where(.view-mode-button.is-active, .view-mode-button[aria-pressed="true"], .note-editor-mode__button[aria-pressed="true"]) { border-color: var(--retro-border); color: var(--retro-ink); background: var(--retro-yellow); }
+
+html[data-theme="retro"] :where(.sort-field__menu, .tag-suggestions, .note-type-picker__menu, .color-picker__menu) { border: var(--retro-border-width) solid var(--retro-border); border-radius: var(--retro-radius-control); color: var(--retro-ink); background: var(--retro-paper); box-shadow: var(--retro-shadow-md); }
+html[data-theme="retro"] :where(.sort-field__option, .tag-suggestion, .note-type-picker__option, .color-picker__option) { color: var(--retro-ink); }
+html[data-theme="retro"] :where(.sort-field__option, .tag-suggestion, .note-type-picker__option, .color-picker__option):is(:hover, :focus-visible),
+html[data-theme="retro"] :where(.sort-field__option, .tag-suggestion, .note-type-picker__option, .color-picker__option)[aria-selected="true"] { outline: none; color: var(--retro-ink); background: var(--retro-yellow); }
+
+/* Buttons and action hierarchy */
+html[data-theme="retro"] :where(.button-primary, .button-secondary, .button-danger, .icon-button, .mobile-filter-toggle) {
+  border: var(--retro-border-width) solid var(--retro-border);
+  border-radius: var(--retro-radius-control);
+  color: var(--retro-ink);
+  box-shadow: var(--retro-shadow-sm);
+  font-weight: 800;
+  transition: transform var(--retro-transition-duration) var(--retro-transition-easing), box-shadow var(--retro-transition-duration) var(--retro-transition-easing), background-color var(--retro-transition-duration) var(--retro-transition-easing);
+}
+
+html[data-theme="retro"] .button-primary { color: var(--retro-ink); background: var(--retro-yellow); }
+html[data-theme="retro"] :where(.button-secondary, .icon-button, .mobile-filter-toggle) { background: var(--retro-paper); }
+html[data-theme="retro"] .button-danger { color: var(--retro-ink); background: var(--retro-red); }
+html[data-theme="retro"] :where(.button-primary, .button-secondary, .button-danger, .icon-button, .mobile-filter-toggle):focus-visible,
+html[data-theme="retro"] :where(.pagination-button, .note-card__action, .note-formatting-tool__button):focus-visible { outline: var(--retro-border-width) solid var(--retro-border); outline-offset: 3px; }
+html[data-theme="retro"] :where(.button-primary, .button-secondary, .button-danger, .icon-button, .mobile-filter-toggle):active:not(:disabled) { transform: translate(1px, 1px); box-shadow: var(--retro-shadow-xs); }
+html[data-theme="retro"] :where(.button-primary, .button-secondary, .button-danger, .icon-button, .mobile-filter-toggle):disabled { border-color: var(--retro-disabled-ink); color: var(--retro-disabled-ink); background: var(--retro-disabled-surface); box-shadow: none; transform: none; }
+
+html[data-theme="retro"] :where(.pagination-button, .note-card__action, .note-formatting-tool__button) { border: var(--retro-border-width) solid transparent; border-radius: var(--retro-radius-control); color: var(--retro-ink); background: transparent; }
+html[data-theme="retro"] .pagination-button.is-active { border-color: var(--retro-border); color: var(--retro-ink); background: var(--retro-yellow); box-shadow: var(--retro-shadow-xs); }
+html[data-theme="retro"] :where(.pagination-button:disabled, .pagination-ellipsis) { color: var(--retro-disabled-ink); }
+html[data-theme="retro"] :where(.note-card__action--danger, .note-card__action--permanent):is(:hover, :focus-visible) { border-color: var(--retro-border); color: var(--retro-ink); background: var(--retro-red); }
+html[data-theme="retro"] .note-card__action--restore:is(:hover, :focus-visible) { border-color: var(--retro-border); color: var(--retro-ink); background: var(--retro-green); }
+
+/* Note Detail footer utilities follow the sidebar's quieter icon language:
+ * unboxed at rest, with a compact surface appearing only on interaction. */
+html[data-theme="retro"] .note-detail-surface .dialog-footer__tools :where(.icon-button, .note-delete-button, .note-save-shortcut__trigger, .note-markdown-help__trigger),
+html[data-theme="retro"] .note-detail-surface .dialog-footer__preview-actions :where(.icon-button, .note-delete-button, .note-save-shortcut__trigger, .note-markdown-help__trigger) {
+  border: var(--retro-border-width) solid transparent;
+  border-radius: var(--retro-radius-sm);
+  color: var(--retro-muted);
+  background: transparent;
+  box-shadow: none;
+}
+
+html[data-theme="retro"] .note-detail-surface .dialog-footer__tools :where(.icon-button, .note-delete-button, .note-save-shortcut__trigger, .note-markdown-help__trigger):focus-visible,
+html[data-theme="retro"] .note-detail-surface .dialog-footer__preview-actions :where(.icon-button, .note-delete-button, .note-save-shortcut__trigger, .note-markdown-help__trigger):focus-visible {
+  border-color: var(--retro-border);
+  outline: var(--retro-border-width) solid var(--retro-border);
+  outline-offset: 3px;
+  color: var(--retro-ink);
+  background: var(--retro-paper-hover);
+}
+
+html[data-theme="retro"] .note-detail-surface .dialog-footer__tools :where(.icon-button, .note-delete-button, .note-save-shortcut__trigger, .note-markdown-help__trigger):active:not(:disabled),
+html[data-theme="retro"] .note-detail-surface .dialog-footer__preview-actions :where(.icon-button, .note-delete-button, .note-save-shortcut__trigger, .note-markdown-help__trigger):active:not(:disabled) {
+  color: var(--retro-ink);
+  background: var(--retro-yellow);
+  transform: translateY(1px);
+  box-shadow: none;
+}
+
+html[data-theme="retro"] .note-detail-surface .dialog-footer__tools :where(.icon-button, .note-delete-button):disabled,
+html[data-theme="retro"] .note-detail-surface .dialog-footer__preview-actions :where(.icon-button, .note-delete-button):disabled {
+  border-color: transparent;
+  color: var(--retro-disabled-ink);
+  background: transparent;
+  box-shadow: none;
+}
+
+/* Existing inline SVGs become square-ended, ink-stamped icons in Retro only.
+ * The offset coral edge suggests imperfect print registration without changing
+ * the icon geometry or duplicating markup for the other themes. */
+html[data-theme="retro"] :where(button svg, .note-save-status__icon, .empty-state__icon svg, .toast__indicator svg) {
+  stroke-width: var(--retro-icon-stroke-width);
+  stroke-linecap: square;
+  stroke-linejoin: miter;
+  filter: var(--retro-icon-filter);
+  shape-rendering: geometricPrecision;
+}
+
+html[data-theme="retro"] :where(button:disabled svg, [aria-disabled="true"] svg) {
+  filter: none;
+}
+
+html[data-theme="retro"] .search-icon {
+  color: var(--retro-ink);
+  font-family: var(--font-mono);
+  font-size: 1.05rem;
+  font-weight: 900;
+  text-shadow: 1px 1px 0 var(--retro-red);
+}
+
+/* Cards, editor, dialogs, and settings */
+html[data-theme="retro"] .note-card { border: var(--retro-border-width) solid var(--retro-border); border-radius: var(--retro-radius-card); color: var(--retro-ink); background: var(--retro-paper); box-shadow: var(--retro-shadow-md); transition: transform var(--retro-transition-duration) var(--retro-transition-easing), box-shadow var(--retro-transition-duration) var(--retro-transition-easing); }
+html[data-theme="retro"] .note-card--pinned { background: var(--retro-paper-muted); }
+html[data-theme="retro"] .note-card__title { color: var(--retro-ink); font-family: var(--font-display); font-style: normal; font-weight: 800; }
+html[data-theme="retro"] .note-card__preview { font-family: var(--font-sans); }
+html[data-theme="retro"] mark.search-highlight { border: var(--retro-border-width) solid var(--retro-border); border-radius: var(--retro-radius-sm); padding-inline: 0.18em; color: var(--retro-ink); background: var(--retro-pink); box-shadow: var(--retro-shadow-xs); }
+
+html[data-theme="retro"] :where(.app-dialog, .note-detail-surface) { border: var(--retro-border-width) solid var(--retro-border); border-radius: var(--retro-radius-dialog); color: var(--retro-ink); background: var(--retro-paper); box-shadow: var(--retro-shadow-lg); }
+html[data-theme="retro"] .app-dialog::backdrop { background: var(--retro-overlay); }
+html[data-theme="retro"] :where(.detail-commandbar, .dialog-header, .dialog-footer, .note-formatting-toolbar, .organize-tabs) { border-color: var(--retro-border); background: var(--retro-paper-muted); }
+
+html[data-theme="retro"] #note-title { border: 0 !important; border-bottom: 3px solid var(--retro-border) !important; border-radius: 0 !important; padding-inline: 0; color: var(--retro-ink) !important; background: transparent !important; box-shadow: none !important; font-family: var(--font-display); font-style: normal; font-weight: 800; }
+html[data-theme="retro"] #note-title:focus-visible { border-bottom-color: var(--retro-yellow) !important; outline: var(--retro-border-width) solid var(--retro-border) !important; outline-offset: 3px; }
+html[data-theme="retro"] .note-formatting-toolbar { border: var(--retro-border-width) solid var(--retro-border); border-radius: var(--retro-radius-control); box-shadow: var(--retro-shadow-sm); }
+html[data-theme="retro"] .note-formatting-tool__button { font-family: var(--font-mono); }
+html[data-theme="retro"] .note-formatting-tool__button:is(:hover, :focus-visible) { border-color: var(--retro-border); color: var(--retro-ink); background: var(--retro-yellow); }
+
+html[data-theme="retro"] :where(.note-save-status.is-saved, .note-save-status.is-new) { color: var(--retro-success); }
+html[data-theme="retro"] .note-save-status.is-saving { color: var(--retro-link); }
+html[data-theme="retro"] .note-save-status.is-dirty { color: var(--retro-warning); }
+html[data-theme="retro"] :where(.shortcut-tooltip, .note-save-shortcut__tooltip, .note-markdown-help__tooltip, .note-detail-action-tooltip__content, .note-formatting-tool__tooltip) { border: var(--retro-border-width) solid var(--retro-border); color: var(--retro-ink); background: var(--retro-paper); box-shadow: var(--retro-shadow-sm); }
+html[data-theme="retro"] kbd { border: var(--retro-border-width) solid var(--retro-border); border-radius: var(--retro-radius-sm); color: var(--retro-ink); background: var(--retro-paper-muted); box-shadow: var(--retro-shadow-xs); }
+html[data-theme="retro"] .search-shortcut { border: var(--retro-border-width) solid var(--retro-border); color: var(--retro-ink); background: var(--retro-paper-muted); box-shadow: var(--retro-shadow-xs); }
+html[data-theme="retro"] .search-shortcut kbd { min-width: 0; border: 0; border-radius: 0; padding: 0; color: inherit; background: transparent; box-shadow: none; font: inherit; }
+
+html[data-theme="retro"] .organize-tabs { border: var(--retro-border-width) solid var(--retro-border); border-radius: 999px; box-shadow: var(--retro-shadow-sm); }
+html[data-theme="retro"] .organize-tab { color: var(--retro-muted); background: transparent; }
+html[data-theme="retro"] .organize-tab:is(:hover, :focus-visible, .is-active) { outline: none; color: var(--retro-ink); background: var(--retro-yellow); }
+html[data-theme="retro"] .organize-tab.is-active { box-shadow: var(--retro-shadow-xs); }
+html[data-theme="retro"] .organize-tab.is-active .organize-tab__count { color: var(--retro-ink); background: var(--retro-paper); }
+
+html[data-theme="retro"] :where(.management-create-row, .management-list) { border: var(--retro-border-width) solid var(--retro-border); border-radius: var(--retro-radius-card); color: var(--retro-ink); background: var(--retro-paper-muted); box-shadow: var(--retro-shadow-sm); }
+html[data-theme="retro"] .management-row { border-color: var(--retro-border); color: var(--retro-ink); background: var(--retro-paper); }
+html[data-theme="retro"] .management-row__name { color: var(--retro-ink); }
+html[data-theme="retro"] .management-row--summary:hover { background: var(--retro-yellow); }
+html[data-theme="retro"] :where(.empty-state, .management-empty) { color: var(--retro-muted); }
+html[data-theme="retro"] .empty-state__icon { border: var(--retro-border-width) solid var(--retro-border); color: var(--retro-ink); background: var(--retro-yellow); box-shadow: var(--retro-shadow-sm); }
+html[data-theme="retro"] .startup-error { border-color: var(--retro-border); color: var(--retro-ink); background: var(--retro-red-soft); box-shadow: var(--retro-shadow-md); }
+
+/* Markdown Preview: Quick View and editor Preview use the same palette. */
+html[data-theme="retro"] :where(.quick-view-content, .note-content-preview) { color: var(--retro-ink); background: var(--retro-paper); font-family: var(--font-sans); }
+html[data-theme="retro"] :where(.quick-view-content, .note-content-preview) :where(h1, h2, h3, h4, h5, h6) { color: var(--retro-ink); font-family: var(--font-display); font-style: normal; font-weight: 800; }
+html[data-theme="retro"] :where(.quick-view-content, .note-content-preview) a { color: var(--retro-link); text-decoration-thickness: 0.12em; }
+html[data-theme="retro"] :where(.quick-view-content, .note-content-preview) a:hover { color: var(--retro-ink); }
+html[data-theme="retro"] :where(.quick-view-content, .note-content-preview) code:not(pre code) { border: var(--retro-border-width) solid var(--retro-border); border-radius: var(--retro-radius-sm); color: var(--retro-ink); background: var(--retro-paper-muted); font-family: var(--font-mono); font-weight: 700; }
+
+html[data-theme="retro"] :where(.quick-view-content, .note-content-preview) pre { border: var(--retro-border-width) solid var(--retro-border); border-radius: var(--retro-radius-card); color: var(--retro-code-text); background: var(--retro-code-surface); box-shadow: var(--retro-shadow-md); }
+html[data-theme="retro"] :where(.quick-view-content, .note-content-preview) pre code { border: 0; color: var(--retro-code-text); background: transparent; box-shadow: none; font-family: var(--font-mono); }
+html[data-theme="retro"] :where(.quick-view-content, .note-content-preview) .markdown-code-header { border-bottom-color: var(--retro-code-muted); color: var(--retro-code-text); background: var(--retro-code-header); }
+html[data-theme="retro"] :where(.quick-view-content, .note-content-preview) .markdown-code-lang { color: var(--retro-code-muted); font-family: var(--font-mono); }
+html[data-theme="retro"] :where(.quick-view-content, .note-content-preview) .markdown-code-copy-btn { border: var(--retro-border-width) solid var(--retro-code-muted); color: var(--retro-code-text); background: var(--retro-code-surface); }
+html[data-theme="retro"] :where(.quick-view-content, .note-content-preview) .markdown-code-copy-btn:is(:hover, :focus-visible) { outline: none; border-color: var(--retro-yellow); color: var(--retro-ink); background: var(--retro-yellow); }
+html[data-theme="retro"] :where(.quick-view-content, .note-content-preview) .markdown-code-copy-btn.is-copied { border-color: var(--retro-green); color: var(--retro-ink); background: var(--retro-green); }
+
+html[data-theme="retro"] .token-keyword { color: var(--retro-token-keyword); font-weight: 700; }
+html[data-theme="retro"] .token-string { color: var(--retro-token-string); }
+html[data-theme="retro"] .token-function { color: var(--retro-token-function); }
+html[data-theme="retro"] .token-number { color: var(--retro-token-number); }
+html[data-theme="retro"] .token-boolean { color: var(--retro-token-boolean); font-weight: 700; }
+html[data-theme="retro"] .token-comment { color: var(--retro-token-comment); font-style: italic; }
+html[data-theme="retro"] .token-operator { color: var(--retro-token-operator); }
+html[data-theme="retro"] :where(.token-property, .token-tag) { color: var(--retro-token-property); }
+html[data-theme="retro"] .token-type { color: var(--retro-token-type); }
+html[data-theme="retro"] .token-punctuation { color: var(--retro-code-muted); }
+
+html[data-theme="retro"] :where(.quick-view-content, .note-content-preview) blockquote { border: var(--retro-border-width) solid var(--retro-border); border-left: 6px solid var(--retro-yellow); border-radius: 0 var(--retro-radius-card) var(--retro-radius-card) 0; color: var(--retro-ink); background: var(--retro-paper-muted); box-shadow: var(--retro-shadow-md); }
+html[data-theme="retro"] :where(.quick-view-content, .note-content-preview) .markdown-table-wrapper { border: var(--retro-border-width) solid var(--retro-border); border-radius: var(--retro-radius-control); background: var(--retro-paper); box-shadow: var(--retro-shadow-md); }
+html[data-theme="retro"] :where(.quick-view-content, .note-content-preview) .markdown-table :where(th, td) { border-color: var(--retro-border); }
+html[data-theme="retro"] :where(.quick-view-content, .note-content-preview) .markdown-table th { color: var(--retro-ink); background: var(--retro-yellow); font-family: var(--font-display); font-style: normal; font-weight: 800; }
+html[data-theme="retro"] :where(.quick-view-content, .note-content-preview) .markdown-table tbody tr:nth-child(even) { background: var(--retro-paper-muted); }
+html[data-theme="retro"] :where(.quick-view-content, .note-content-preview) hr { border-color: var(--retro-border); border-top-style: dashed; }
+
+html[data-theme="retro"] :where(.quick-view-content, .note-content-preview) .markdown-alert { border: var(--retro-border-width) solid var(--retro-border); border-left-width: 6px; border-radius: var(--retro-radius-card); color: var(--retro-ink); background: var(--retro-blue); box-shadow: var(--retro-shadow-md); }
+html[data-theme="retro"] :where(.quick-view-content, .note-content-preview) .markdown-alert__title { color: var(--retro-ink); font-family: var(--font-display); font-style: normal; font-weight: 800; }
+html[data-theme="retro"] :where(.quick-view-content, .note-content-preview) .markdown-alert--tip { background: var(--retro-green); }
+html[data-theme="retro"] :where(.quick-view-content, .note-content-preview) .markdown-alert--warning { background: var(--retro-orange); }
+html[data-theme="retro"] :where(.quick-view-content, .note-content-preview) .markdown-alert--caution { background: var(--retro-red); }
+html[data-theme="retro"] :where(.quick-view-content, .note-content-preview) .markdown-alert--important { background: var(--retro-pink); }
+
+html[data-theme="retro"] :where(.quick-view-content, .note-content-preview) .markdown-details { border: var(--retro-border-width) solid var(--retro-border); border-radius: var(--retro-radius-control); color: var(--retro-ink); background: var(--retro-paper-muted); box-shadow: var(--retro-shadow-sm); }
+html[data-theme="retro"] :where(.quick-view-content, .note-content-preview) .markdown-details summary { color: var(--retro-ink); font-family: var(--font-display); font-style: normal; font-weight: 800; }
+html[data-theme="retro"] :where(.quick-view-content, .note-content-preview) .markdown-details summary:focus-visible { outline: var(--retro-border-width) solid var(--retro-border); outline-offset: 3px; background: var(--retro-yellow); }
+html[data-theme="retro"] :where(.quick-view-content, .note-content-preview) .markdown-math { border: var(--retro-border-width) solid var(--retro-border); color: var(--retro-ink); background: var(--retro-violet); font-family: var(--font-mono); }
+html[data-theme="retro"] :where(.quick-view-content, .note-content-preview) .markdown-math--block { box-shadow: var(--retro-shadow-sm); }
+html[data-theme="retro"] :where(.quick-view-content, .note-content-preview) .markdown-footnotes { border-color: var(--retro-border); color: var(--retro-muted); }
+html[data-theme="retro"] :where(.quick-view-content, .note-content-preview) .markdown-footnotes h4 { color: var(--retro-ink); font-family: var(--font-display); font-style: normal; }
+html[data-theme="retro"] :where(.quick-view-content, .note-content-preview) :where(.markdown-footnote-ref, .markdown-footnote-backref) { color: var(--retro-link); font-weight: 700; }
+html[data-theme="retro"] :where(.quick-view-content, .note-content-preview) :where(.markdown-image, .markdown-image-alt) { border: var(--retro-border-width) solid var(--retro-border); color: var(--retro-muted); background: var(--retro-paper-muted); box-shadow: var(--retro-shadow-sm); }
+html[data-theme="retro"] :where(.quick-view-content, .note-content-preview) .markdown-task-item > input { accent-color: var(--retro-red); }
+
+/* Theme icon */
+html[data-theme="retro"] .theme-toggle__icon--retro { display: inline-flex !important; }
+html[data-theme="retro"] :where(.theme-toggle__icon--sun, .theme-toggle__icon--coffee, .theme-toggle__icon--forest, .theme-toggle__icon--midnight, .theme-toggle__icon--moon, .theme-toggle__icon--auto) { display: none !important; }
+
+@media (hover: hover) and (pointer: fine) {
+  html[data-theme="retro"] :where(.sidebar-toggle-btn, .button-primary, .button-secondary, .button-danger, .icon-button, .mobile-filter-toggle):hover:not(:disabled),
+  html[data-theme="retro"] :where(.tag-filter-option, .tag-chip, .tag-add-button):hover,
+  html[data-theme="retro"] .note-card:hover { transform: translate(-1px, -1px); box-shadow: var(--retro-shadow-hover); }
+  html[data-theme="retro"] :where(.space-link, .sidebar-filter):hover { border-color: var(--retro-border); color: var(--retro-ink); background: var(--retro-paper-muted); box-shadow: var(--retro-shadow-sm); }
+  html[data-theme="retro"] :where(.pagination-button, .note-card__action, .note-formatting-tool__button):hover:not(:disabled) { border-color: var(--retro-border); color: var(--retro-ink); background: var(--retro-yellow); box-shadow: var(--retro-shadow-xs); }
+  html[data-theme="retro"] :where(.text-button, .active-filter-clear-all, .active-filter-pill__clear):hover:not(:disabled) { color: var(--retro-ink); background: var(--retro-yellow); }
+  html[data-theme="retro"] .note-detail-surface .dialog-footer__tools :where(.icon-button, .note-save-shortcut__trigger, .note-markdown-help__trigger):hover:not(:disabled),
+  html[data-theme="retro"] .note-detail-surface .dialog-footer__preview-actions :where(.icon-button, .note-save-shortcut__trigger, .note-markdown-help__trigger):hover:not(:disabled) { border-color: transparent; color: var(--retro-ink); background: var(--retro-paper-hover); box-shadow: none; }
+  html[data-theme="retro"] .note-detail-surface .dialog-footer__tools .note-delete-button:hover:not(:disabled),
+  html[data-theme="retro"] .note-detail-surface .dialog-footer__preview-actions .note-delete-button:hover:not(:disabled) { border-color: transparent; color: var(--retro-error); background: var(--retro-red-soft); box-shadow: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-theme="retro"] { --retro-transition-duration: 0ms; }
+  html[data-theme="retro"] :where(.note-card, button) { transform: none !important; }
+}
+
+@media (max-width: 620px) {
+  html[data-theme="retro"] :where(.app-dialog, .note-detail-surface) {
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  html[data-theme="retro"] .organize-tabs {
+    max-width: calc(100% - 2rem);
+  }
+}
+
+@media (forced-colors: active) {
+  html[data-theme="retro"] :where(.tag-filter-option, .tag-chip, .button, .icon-button, .note-card, .app-dialog) { border-color: ButtonText; box-shadow: none; }
+}

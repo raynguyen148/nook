@@ -413,6 +413,33 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
         return;
       }
 
+      const selection = window.getSelection();
+      const hasTextSelection = Boolean(selection && !selection.isCollapsed);
+      const libraryViewShortcutButton = {
+        1: elements.focusView,
+        2: elements.comfortableView,
+        3: elements.compactView,
+      }[event.key];
+      const matchesLibraryViewShortcut =
+        libraryViewShortcutButton &&
+        !event.metaKey &&
+        !event.ctrlKey &&
+        !event.altKey &&
+        !event.shiftKey &&
+        !event.repeat &&
+        !event.isComposing &&
+        !event.defaultPrevented &&
+        !editingText &&
+        !hasTextSelection &&
+        !activeModalDialog() &&
+        !isDetailWorkspaceOpen();
+
+      if (matchesLibraryViewShortcut) {
+        event.preventDefault();
+        libraryViewShortcutButton.click();
+        return;
+      }
+
       const matchesQuickCaptureShortcut =
         event.key.toLowerCase() === "c" &&
         !event.metaKey &&

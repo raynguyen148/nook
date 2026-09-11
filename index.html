@@ -14,7 +14,7 @@
           const stored = window.localStorage.getItem("nook:theme");
           // Preserve the renamed preferences for existing local installs.
           const storedTheme = stored === "warm" ? "coffee" : stored === "midnight-blue" ? "midnight" : stored;
-          const mode = ["light", "coffee", "forest", "midnight", "dark", "auto"].includes(storedTheme) ? storedTheme : "light";
+          const mode = ["light", "coffee", "forest", "midnight", "dark", "retro", "auto"].includes(storedTheme) ? storedTheme : "light";
           // Keep Auto aligned with resolveAutoTheme() in js/app/preferences.js.
           const theme = mode === "auto"
             ? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")
@@ -29,6 +29,7 @@
               forest: "#2f6b4f",
               "midnight": "#18263f",
               dark: "#0b0f19",
+              retro: "#fff4dd",
             };
             meta.content = themeColors[theme] || themeColors.light;
           }
@@ -251,6 +252,17 @@
                     <path d="M12 6.9a3.2 3.2 0 0 1 0 6.4Z" fill="currentColor" stroke="none" />
                   </svg>
                 </span>
+                <span class="theme-toggle__icon theme-toggle__icon--retro" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3.5" y="3.5" width="15" height="15" rx="2.5" />
+                    <path d="M7 18.5v2h13.5v-14h-2" />
+                    <circle cx="8" cy="8" r="0.9" fill="currentColor" stroke="none" />
+                    <circle cx="12" cy="8" r="0.9" fill="currentColor" stroke="none" />
+                    <circle cx="8" cy="12" r="0.9" fill="currentColor" stroke="none" />
+                    <circle cx="12" cy="12" r="0.9" fill="currentColor" stroke="none" />
+                    <path d="M7 15h8" />
+                  </svg>
+                </span>
                 <span id="theme-toggle-label" class="button-label">Light</span>
               </button>
               <span id="theme-toggle-shortcut-tooltip" class="shortcut-tooltip" role="tooltip">
@@ -357,6 +369,7 @@
                     type="button"
                     aria-pressed="true"
                     aria-label="Focus view: one column"
+                    aria-keyshortcuts="1"
                     aria-describedby="focus-view-tooltip"
                   >
                     <svg class="view-mode-icon view-mode-icon--focus" viewBox="0 0 24 24" aria-hidden="true">
@@ -365,6 +378,7 @@
                   </button>
                   <span id="focus-view-tooltip" class="shortcut-tooltip" role="tooltip">
                     <span>Focus view</span>
+                    <kbd>1</kbd>
                   </span>
                 </div>
                 <div class="view-mode-choice">
@@ -374,6 +388,7 @@
                     type="button"
                     aria-pressed="false"
                     aria-label="Comfortable view: two columns"
+                    aria-keyshortcuts="2"
                     aria-describedby="comfortable-view-tooltip"
                   >
                     <svg class="view-mode-icon view-mode-icon--comfortable" viewBox="0 0 24 24" aria-hidden="true">
@@ -383,6 +398,7 @@
                   </button>
                   <span id="comfortable-view-tooltip" class="shortcut-tooltip" role="tooltip">
                     <span>Comfortable view</span>
+                    <kbd>2</kbd>
                   </span>
                 </div>
                 <div class="view-mode-choice">
@@ -392,6 +408,7 @@
                     type="button"
                     aria-pressed="false"
                     aria-label="Compact view: four columns"
+                    aria-keyshortcuts="3"
                     aria-describedby="compact-view-tooltip"
                   >
                     <svg class="view-mode-icon view-mode-icon--compact" viewBox="0 0 24 24" aria-hidden="true">
@@ -403,6 +420,7 @@
                   </button>
                   <span id="compact-view-tooltip" class="shortcut-tooltip" role="tooltip">
                     <span>Compact view</span>
+                    <kbd>3</kbd>
                   </span>
                 </div>
               </div>

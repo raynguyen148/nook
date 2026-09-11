@@ -100,6 +100,7 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
       forest: "Forest",
       "midnight": "Midnight",
       dark: "Dark",
+      retro: "Retro",
       auto: "Auto",
     };
 
@@ -126,6 +127,7 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
         forest: "#2f6b4f",
         "midnight": "#18263f",
         dark: "#0b0f19",
+        retro: "#fff4dd",
       };
       themeColorMeta.content = themeColors[theme] || themeColors.light;
     }

@@ -437,6 +437,7 @@
   border-radius: var(--control-radius);
   background: rgb(248 250 252 / 96%);
   box-shadow: 0 12px 28px rgb(23 30 56 / 14%);
+  animation: topbar-actions-pin-in var(--motion-duration-medium) var(--motion-ease-out);
 }
 
 
