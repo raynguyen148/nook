@@ -260,6 +260,7 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
     ui.topbarActionsPinned = false;
     elements.topbar.classList.remove("is-actions-pinned");
     elements.topbarActions.classList.remove("is-pinned", "is-unpinning");
+    elements.toolbar.classList.remove("is-unpinning");
     elements.appShell.style.removeProperty("--pinned-actions-height");
     elements.appShell.style.removeProperty("--pinned-actions-width");
     elements.appShell.style.removeProperty("--pinned-toolbar-left");
@@ -268,19 +269,22 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
 
   function setToolbarPinned(pinned) {
     if (pinned === ui.toolbarPinned) return;
+
+    if (pinned) {
+      const toolbarSlotBounds = elements.toolbarSlot.getBoundingClientRect();
+      elements.toolbarSlot.style.height = `${toolbarSlotBounds.height}px`;
+    }
+
     ui.toolbarPinned = pinned;
-    elements.notesPanel.classList.toggle("is-toolbar-pinned", pinned);
     elements.toolbar.classList.toggle("is-pinned", pinned);
     elements.toolbar.classList.remove("is-unpinning");
 
     if (pinned) {
-      const toolbarBounds = elements.toolbar.getBoundingClientRect();
-      elements.notesPanel.style.setProperty("--pinned-toolbar-height", `${toolbarBounds.height}px`);
       syncPinnedTopbarControlMetrics();
       return;
     }
 
-    elements.notesPanel.style.removeProperty("--pinned-toolbar-height");
+    elements.toolbarSlot.style.removeProperty("height");
   }
 
   function setTopbarActionsPinned(pinned) {

@@ -479,12 +479,13 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
   function animateNoteDetailIn() {
     cancelNoteDetailAnimation();
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    elements.noteDetailWorkspace.style.willChange = "opacity, transform";
     const animation = elements.noteDetailWorkspace.animate(
       reducedMotion
         ? [{ opacity: 0 }, { opacity: 1 }]
         : [
-            { opacity: 0, transform: "translateY(6px) scale(0.992)" },
-            { opacity: 1, transform: "translateY(0) scale(1)" },
+            { opacity: 0, transform: "translateY(8px)" },
+            { opacity: 1, transform: "translateY(0)" },
           ],
       {
         duration: reducedMotion ? MOTION.micro : MOTION.medium,
@@ -493,6 +494,7 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
     );
     noteDetailAnimation = animation;
     animation.finished.catch(() => {}).finally(() => {
+      elements.noteDetailWorkspace.style.willChange = "auto";
       if (noteDetailAnimation === animation) noteDetailAnimation = null;
     });
   }
@@ -532,6 +534,7 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
 
     const finishClose = () => {
       if (transitionSequence !== noteDetailTransitionSequence) return;
+      elements.noteDetailWorkspace.style.willChange = "auto";
       closeAnimation.cancel();
       if (noteDetailAnimation === closeAnimation) noteDetailAnimation = null;
       ui.detailClosing = false;
@@ -549,12 +552,13 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
     };
 
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    elements.noteDetailWorkspace.style.willChange = "opacity, transform";
     const closeAnimation = elements.noteDetailWorkspace.animate(
       reducedMotion
         ? [{ opacity: 1 }, { opacity: 0 }]
         : [
-            { opacity: 1, transform: "translateY(0) scale(1)" },
-            { opacity: 0, transform: "translateY(4px) scale(0.995)" },
+            { opacity: 1, transform: "translateY(0)" },
+            { opacity: 0, transform: "translateY(4px)" },
           ],
       {
         duration: reducedMotion ? MOTION.micro : MOTION.short,
@@ -1042,13 +1046,15 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
     notesContentAnimation?.cancel();
 
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const offset = motion === "page-next" ? 8 : motion === "page-previous" ? -8 : 4;
+    const isPagination = motion.startsWith("page-");
+    const offset = motion === "page-next" ? 8 : motion === "page-previous" ? -8 : 0;
+
     const animation = elements.notesList.animate(
-      reducedMotion
-        ? [{ opacity: 0.82 }, { opacity: 1 }]
+      reducedMotion || !isPagination
+        ? [{ opacity: 0.6 }, { opacity: 1 }]
         : [
-            { opacity: 0.72, transform: `translate(${offset}px, ${motion.startsWith("page-") ? 0 : 3}px)` },
-            { opacity: 1, transform: "translate(0, 0)" },
+            { opacity: 0.72, transform: `translateX(${offset}px)` },
+            { opacity: 1, transform: "translateX(0)" },
           ],
       {
         duration: reducedMotion ? MOTION.micro : MOTION.short,

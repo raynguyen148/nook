@@ -712,7 +712,7 @@ select::-ms-expand {
   transition:
     border-color var(--motion-duration-short) var(--motion-ease-out),
     box-shadow var(--motion-duration-short) var(--motion-ease-out),
-    transform var(--motion-duration-short) var(--motion-ease-out);
+    background-color var(--motion-duration-short) var(--motion-ease-out);
 }
 
 
@@ -762,8 +762,10 @@ select::-ms-expand {
 
 .note-card:hover,
 .note-card:focus-within {
-  border-color: #c7d2fe;
-  box-shadow: 0 8px 18px -8px rgb(15 23 42 / 0.16), 0 3px 8px -6px rgb(15 23 42 / 0.08);
+  border-color: var(--primary-accent-border);
+  box-shadow: 0 0 0 3px var(--primary-accent-soft),
+              0 8px 24px -6px rgb(15 23 42 / 0.10);
+  background: var(--note-card-hover-surface, var(--note-card-surface, #fff));
 }
 
 

@@ -76,6 +76,7 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
     topbar: document.querySelector(".topbar"),
     topbarActions: document.querySelector(".topbar-actions"),
     notesPanel: document.querySelector(".notes-panel"),
+    toolbarSlot: document.querySelector(".toolbar-slot"),
     toolbar: document.querySelector(".toolbar"),
     themeToggle: document.querySelector("#theme-toggle"),
     themeToggleLabel: document.querySelector("#theme-toggle-label"),

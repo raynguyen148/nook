@@ -21,6 +21,7 @@
   --font-mono:
     ui-monospace, "SF Mono", SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
     "Courier New", monospace;
+  --motion-duration-extra-short: 100ms;
   --motion-duration-micro: 120ms;
   --motion-duration-short: 180ms;
   --motion-duration-medium: 260ms;
@@ -1045,8 +1046,9 @@ h2 {
 
 
 .button:active:not(:disabled) {
-  transform: scale(0.985);
-  transition-duration: var(--motion-duration-micro);
+  transform: scale(0.97);
+  opacity: 0.85;
+  transition-duration: var(--motion-duration-extra-short);
   transition-timing-function: var(--motion-ease-in);
 }
 

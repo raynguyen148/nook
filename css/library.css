@@ -421,12 +421,6 @@
 
 
 
-.notes-panel.is-toolbar-pinned .notes-panel__heading {
-  margin-bottom: calc(1.25rem + var(--pinned-toolbar-height));
-}
-
-
-
 .toolbar.is-pinned {
   position: fixed;
   z-index: 89;
