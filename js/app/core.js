@@ -11,6 +11,10 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
   const THEMES = ["light", "coffee", "forest", "midnight", "dark", "retro", "auto"];
   const SIDEBAR_COLLAPSED_STORAGE_KEY = "nook:sidebar-collapsed";
   const VIEW_MODE_STORAGE_KEY = "nook:notes-view-mode";
+  const NOTE_PREVIEW_LINES_STORAGE_KEY = "nook:note-preview-lines";
+  const NOTE_PREVIEW_LINES_MIN = 3;
+  const NOTE_PREVIEW_LINES_MAX = 10;
+  const NOTE_PREVIEW_LINES_DEFAULT = 3;
   const VIEW_MODE_ANIMATION_DURATION = 180;
   const VIEW_MODE_ANIMATION_EASING = "cubic-bezier(0.22, 1, 0.36, 1)";
   const MOTION = Object.freeze({
@@ -155,10 +159,14 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
     closeOrganizeDialog: document.querySelector("#close-organize-dialog-btn"),
     typesTab: document.querySelector("#types-tab"),
     tagsTab: document.querySelector("#tags-tab"),
+    displayTab: document.querySelector("#display-tab"),
     typesTabCount: document.querySelector("#types-tab-count"),
     tagsTabCount: document.querySelector("#tags-tab-count"),
     typesPanel: document.querySelector("#types-panel"),
     tagsPanel: document.querySelector("#tags-panel"),
+    displayPanel: document.querySelector("#display-panel"),
+    notePreviewLines: document.querySelector("#note-preview-lines"),
+    notePreviewLinesValue: document.querySelector("#note-preview-lines-value"),
     typesManagementSearch: document.querySelector("#types-management-search"),
     tagsManagementSearch: document.querySelector("#tags-management-search"),
     addTypeToggle: document.querySelector("#add-type-toggle"),
@@ -193,6 +201,7 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
     trashOnly: storedFilters.trashOnly,
     sort: getStoredSort(),
     viewMode: getStoredViewMode(),
+    notePreviewLines: getStoredNotePreviewLines(),
     page: 1,
     editingNoteId: "",
     selectedNoteTagIds: new Set(),
@@ -273,6 +282,20 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
       return ["focus", "comfortable", "compact"].includes(storedMode) ? storedMode : "comfortable";
     } catch {
       return "comfortable";
+    }
+  }
+
+  function normalizeNotePreviewLines(value) {
+    const parsed = Number(value);
+    if (!Number.isInteger(parsed)) return NOTE_PREVIEW_LINES_DEFAULT;
+    return Math.min(NOTE_PREVIEW_LINES_MAX, Math.max(NOTE_PREVIEW_LINES_MIN, parsed));
+  }
+
+  function getStoredNotePreviewLines() {
+    try {
+      return normalizeNotePreviewLines(window.localStorage.getItem(NOTE_PREVIEW_LINES_STORAGE_KEY));
+    } catch {
+      return NOTE_PREVIEW_LINES_DEFAULT;
     }
   }
 
@@ -812,6 +835,10 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
       MOTION,
       FILTER_STORAGE_KEY,
       SIDEBAR_COLLAPSED_STORAGE_KEY,
+      NOTE_PREVIEW_LINES_DEFAULT,
+      NOTE_PREVIEW_LINES_MAX,
+      NOTE_PREVIEW_LINES_MIN,
+      NOTE_PREVIEW_LINES_STORAGE_KEY,
       SORT_STORAGE_KEY,
       THEME_STORAGE_KEY,
       THEMES,
@@ -825,6 +852,8 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
     getStoredTheme,
     getStoredSidebarCollapsed,
     getStoredViewMode,
+    getStoredNotePreviewLines,
+    normalizeNotePreviewLines,
     getStoredSort,
     getStoredFilters,
     nowIso,

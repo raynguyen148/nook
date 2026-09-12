@@ -15,6 +15,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.42rem;
+  white-space: nowrap;
 }
 
 
@@ -188,7 +189,106 @@
 
 
 
+.display-settings {
+  max-height: none;
+  overflow: visible;
+}
+
+
+
+.display-setting {
+  align-items: flex-start;
+  padding: 1rem;
+}
+
+
+
+.display-setting__copy {
+  display: grid;
+  min-width: 0;
+  max-width: 18rem;
+  gap: 0.3rem;
+}
+
+
+
+.display-setting__description {
+  margin: 0;
+}
+
+
+
+.preview-lines-control {
+  display: grid;
+  width: min(100%, 13rem);
+  flex: 0 0 13rem;
+  gap: 0.42rem;
+}
+
+
+
+.preview-lines-control__header,
+.preview-lines-control__limits {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+
+
+.preview-lines-control__header label {
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+
+
+.display-setting .usage-count.preview-lines-control__value {
+  min-width: 3.9rem;
+  border: 1px solid var(--primary-accent-border);
+  color: var(--primary-accent-text);
+  background: var(--primary-accent-soft);
+  justify-content: center;
+}
+
+
+
+.preview-lines-control input[type="range"] {
+  width: 100%;
+  margin: 0;
+  accent-color: var(--primary-accent);
+  cursor: pointer;
+}
+
+
+
+.preview-lines-control input[type="range"]:focus-visible {
+  outline: 2px solid var(--focus-color, #6366f1);
+  outline-offset: 3px;
+}
+
+
+
+.preview-lines-control__limits {
+  margin: 0;
+  padding-inline: 0.1rem;
+  font-size: 0.68rem;
+  font-weight: 550;
+}
+
+
+
 @media (max-width: 620px) {
+  .organize-tabs {
+    width: calc(100% - 2rem);
+    margin: 1rem 1rem 0;
+    padding: 0.18rem;
+  }
+
+  .organize-tab {
+    padding-inline: 0.68rem;
+  }
+
   .organize-panel__intro {
     gap: 0.7rem;
   }
@@ -203,6 +303,17 @@
 
   .management-create-row {
     padding: 0.52rem;
+  }
+
+  .display-setting {
+    gap: 1rem;
+  }
+
+  .display-setting__copy,
+  .preview-lines-control {
+    width: 100%;
+    max-width: none;
+    flex-basis: auto;
   }
 
   .management-row--summary {

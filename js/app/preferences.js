@@ -6,6 +6,8 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
   const {
     FILTER_STORAGE_KEY,
     MOTION,
+    NOTE_PREVIEW_LINES_DEFAULT,
+    NOTE_PREVIEW_LINES_STORAGE_KEY,
     SIDEBAR_COLLAPSED_STORAGE_KEY,
     SORT_STORAGE_KEY,
     THEME_STORAGE_KEY,
@@ -462,6 +464,34 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
     animation.addEventListener("cancel", clearAnimation, { once: true });
   }
 
+  function syncNotePreviewLinesUI() {
+    const label = `${ui.notePreviewLines} lines`;
+    document.documentElement.style.setProperty("--note-card-preview-lines", String(ui.notePreviewLines));
+    elements.notePreviewLines.value = String(ui.notePreviewLines);
+    elements.notePreviewLines.setAttribute("aria-valuetext", label);
+    elements.notePreviewLinesValue.value = label;
+    elements.notePreviewLinesValue.textContent = label;
+  }
+
+  function setNotePreviewLines(value, { persist = true } = {}) {
+    const nextValue = api.normalizeNotePreviewLines(value);
+    if (nextValue === ui.notePreviewLines) return;
+
+    ui.notePreviewLines = nextValue;
+    syncNotePreviewLinesUI();
+
+    if (!persist) return;
+    try {
+      if (nextValue === NOTE_PREVIEW_LINES_DEFAULT) {
+        window.localStorage.removeItem(NOTE_PREVIEW_LINES_STORAGE_KEY);
+      } else {
+        window.localStorage.setItem(NOTE_PREVIEW_LINES_STORAGE_KEY, String(nextValue));
+      }
+    } catch {
+      // The preview length still works for this session when localStorage is unavailable.
+    }
+  }
+
   Object.assign(api, {
     getNextTheme,
     prefersReducedMotion,
@@ -486,5 +516,7 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
     persistFilters,
     syncViewModeUI,
     setViewMode,
+    syncNotePreviewLinesUI,
+    setNotePreviewLines,
   });
 });

@@ -36,8 +36,13 @@
           if (window.localStorage.getItem("nook:sidebar-collapsed") === "true") {
             document.documentElement.dataset.sidebarCollapsed = "true";
           }
+          const storedPreviewLines = Number(window.localStorage.getItem("nook:note-preview-lines"));
+          const previewLines = Number.isInteger(storedPreviewLines)
+            ? Math.min(10, Math.max(3, storedPreviewLines))
+            : 3;
+          document.documentElement.style.setProperty("--note-card-preview-lines", String(previewLines));
         } catch {
-          // Keep the default classic theme when browser privacy settings block localStorage.
+          // Keep default UI preferences when browser privacy settings block localStorage.
         }
       })();
     </script>
@@ -862,7 +867,7 @@
       <div class="dialog-header">
         <div>
           <p class="eyebrow">LIBRARY SETTINGS</p>
-          <h2 id="organize-dialog-title">Organize Notes</h2>
+          <h2 id="organize-dialog-title">Settings</h2>
         </div>
         <button id="close-organize-dialog-btn" class="icon-button" type="button" aria-label="Close settings" title="Close settings">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -871,12 +876,15 @@
         </button>
       </div>
 
-      <div class="organize-tabs" role="tablist" aria-label="Manage note organization">
+      <div class="organize-tabs" role="tablist" aria-label="Library settings">
         <button id="types-tab" class="organize-tab is-active" type="button" role="tab" aria-selected="true" aria-controls="types-panel" tabindex="0">
           <span>Note types</span><span id="types-tab-count" class="organize-tab__count" aria-hidden="true">0</span>
         </button>
         <button id="tags-tab" class="organize-tab" type="button" role="tab" aria-selected="false" aria-controls="tags-panel" tabindex="-1">
           <span>Tags</span><span id="tags-tab-count" class="organize-tab__count" aria-hidden="true">0</span>
+        </button>
+        <button id="display-tab" class="organize-tab" type="button" role="tab" aria-selected="false" aria-controls="display-panel" tabindex="-1">
+          <span>Display</span>
         </button>
       </div>
 
@@ -926,6 +934,31 @@
           <button class="button button-primary button-compact" type="submit">Create</button>
         </form>
         <div id="tags-list" class="management-list"></div>
+      </section>
+
+      <section id="display-panel" class="organize-panel is-hidden" role="tabpanel" aria-labelledby="display-tab">
+        <div class="organize-panel__intro">
+          <p class="dialog-description">Customize how much detail appears while browsing your library.</p>
+        </div>
+        <div class="management-list display-settings">
+          <div class="management-row display-setting">
+            <div class="display-setting__copy">
+              <h3 class="management-row__name">Note card content</h3>
+              <p id="note-preview-lines-help" class="dialog-description display-setting__description">Choose how many content lines appear on each note card. Changes apply instantly.</p>
+            </div>
+            <div class="preview-lines-control">
+              <div class="preview-lines-control__header">
+                <label class="management-row__name" for="note-preview-lines">Preview lines</label>
+                <output id="note-preview-lines-value" class="usage-count preview-lines-control__value" for="note-preview-lines">3 lines</output>
+              </div>
+              <input id="note-preview-lines" type="range" min="3" max="10" step="1" value="3" aria-describedby="note-preview-lines-help" />
+              <div class="dialog-description preview-lines-control__limits" aria-hidden="true">
+                <span>3</span>
+                <span>10</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </section>
     </dialog>
 

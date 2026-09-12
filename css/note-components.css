@@ -1020,8 +1020,8 @@ select::-ms-expand {
   font-size: 0.85rem;
   line-height: 1.6;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;
-  line-clamp: 3;
+  -webkit-line-clamp: var(--note-card-preview-lines, 3);
+  line-clamp: var(--note-card-preview-lines, 3);
 }
 
 

@@ -4,7 +4,12 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
   // Event registration and the final application bootstrap.
   const APP_MODULES_KEY = Symbol.for("nook.app.modules");
   const { api, storage, elements, library, ui, constants, shared } = app;
-  const { THEME_STORAGE_KEY, THEMES } = constants;
+  const {
+    NOTE_PREVIEW_LINES_DEFAULT,
+    NOTE_PREVIEW_LINES_STORAGE_KEY,
+    THEME_STORAGE_KEY,
+    THEMES,
+  } = constants;
   const { openColorPickers } = shared;
   const {
     getNextTheme,
@@ -26,6 +31,8 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
     syncSearchShortcutHint,
     syncNoteSaveShortcutHint,
     setViewMode,
+    syncNotePreviewLinesUI,
+    setNotePreviewLines,
     cleanTagInput,
     activeModalDialog,
     setupLibrarySync,
@@ -122,6 +129,9 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
       const theme = event.newValue === "warm" ? "coffee" : event.newValue === "midnight-blue" ? "midnight" : event.newValue;
       if (event.key === THEME_STORAGE_KEY && THEMES.includes(theme) && theme !== ui.theme) {
         setTheme(theme, { persist: false });
+      }
+      if (event.key === NOTE_PREVIEW_LINES_STORAGE_KEY) {
+        setNotePreviewLines(event.newValue ?? NOTE_PREVIEW_LINES_DEFAULT, { persist: false });
       }
     });
     elements.themeToggle.addEventListener("click", () => setTheme(getNextTheme(ui.theme)));
@@ -266,8 +276,11 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
     });
     elements.typesTab.addEventListener("click", () => setManagementTab("types"));
     elements.tagsTab.addEventListener("click", () => setManagementTab("tags"));
+    elements.displayTab.addEventListener("click", () => setManagementTab("display"));
     elements.typesTab.addEventListener("keydown", handleManagementTabKeydown);
     elements.tagsTab.addEventListener("keydown", handleManagementTabKeydown);
+    elements.displayTab.addEventListener("keydown", handleManagementTabKeydown);
+    elements.notePreviewLines.addEventListener("input", () => setNotePreviewLines(elements.notePreviewLines.value));
     elements.addTypeToggle.addEventListener("click", () => {
       setManagementCreateMode(ui.managementCreateKind === "types" ? "" : "types");
     });
@@ -549,6 +562,7 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
       setupLibrarySync();
       syncThemeUI();
       syncSidebarUI();
+      syncNotePreviewLinesUI();
       syncSearchShortcutHint();
       syncNoteSaveShortcutHint();
       storeBackupHealth(getStoredBackupHealth());

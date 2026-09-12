@@ -42,19 +42,24 @@ globalThis[Symbol.for("nook.app.modules")].register("organize", (app) => {
   const syncNoteEditorControls = (...args) => api.syncNoteEditorControls(...args);
 
   function setManagementTab(tab) {
-    const changed = ui.managementTab !== tab;
-    ui.managementTab = tab;
-    const typesActive = tab === "types";
-    elements.typesTab.classList.toggle("is-active", typesActive);
-    elements.tagsTab.classList.toggle("is-active", !typesActive);
-    elements.typesTab.setAttribute("aria-selected", String(typesActive));
-    elements.tagsTab.setAttribute("aria-selected", String(!typesActive));
-    elements.typesTab.tabIndex = typesActive ? 0 : -1;
-    elements.tagsTab.tabIndex = typesActive ? -1 : 0;
-    elements.typesPanel.classList.toggle("is-hidden", !typesActive);
-    elements.tagsPanel.classList.toggle("is-hidden", typesActive);
+    const tabs = [
+      ["types", elements.typesTab, elements.typesPanel],
+      ["tags", elements.tagsTab, elements.tagsPanel],
+      ["display", elements.displayTab, elements.displayPanel],
+    ];
+    const nextTab = tabs.some(([name]) => name === tab) ? tab : "types";
+    const changed = ui.managementTab !== nextTab;
+    ui.managementTab = nextTab;
+    tabs.forEach(([name, tabElement, panel]) => {
+      const active = name === nextTab;
+      tabElement.classList.toggle("is-active", active);
+      tabElement.setAttribute("aria-selected", String(active));
+      tabElement.tabIndex = active ? 0 : -1;
+      panel.classList.toggle("is-hidden", !active);
+    });
     if (changed && elements.organizeDialog.open) {
-      animateManagementSurface(typesActive ? elements.typesPanel : elements.tagsPanel);
+      const activePanel = tabs.find(([name]) => name === nextTab)[2];
+      animateManagementSurface(activePanel);
     }
   }
 
@@ -133,7 +138,7 @@ globalThis[Symbol.for("nook.app.modules")].register("organize", (app) => {
   }
 
   function handleManagementTabKeydown(event) {
-    const tabs = [elements.typesTab, elements.tagsTab];
+    const tabs = [elements.typesTab, elements.tagsTab, elements.displayTab];
     const currentIndex = tabs.indexOf(event.currentTarget);
     if (currentIndex < 0) return;
 
@@ -146,7 +151,7 @@ globalThis[Symbol.for("nook.app.modules")].register("organize", (app) => {
 
     event.preventDefault();
     const nextTab = tabs[nextIndex];
-    setManagementTab(nextTab === elements.typesTab ? "types" : "tags");
+    setManagementTab(nextTab === elements.typesTab ? "types" : nextTab === elements.tagsTab ? "tags" : "display");
     nextTab.focus();
   }
 
