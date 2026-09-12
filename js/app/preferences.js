@@ -96,6 +96,7 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
 
     const themeLabels = {
       light: "Light",
+      macos: "macOS",
       coffee: "Coffee",
       forest: "Forest",
       "midnight": "Midnight",
@@ -123,6 +124,7 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
     if (themeColorMeta) {
       const themeColors = {
         light: "#9e6b02",
+        macos: "#edf4fb",
         coffee: "#a35616",
         forest: "#2f6b4f",
         "midnight": "#18263f",

@@ -1,0 +1,820 @@
+/* Hallmark · macrostructure: Workbench · tone: soft, exact, native utility · anchor hue: macOS blue
+ * theme: custom · vibe: "Sonoma bright, airy, native utility" · paper: oklch(97.2% 0.012 250) · accent: oklch(54% 0.205 255)
+ * display: Apple system display · body: Apple system text · axes: light / system-native / cool
+ * studied: no · context: user-provided · contrast: pass (40-41) · mobile: pass (34, 49-57) · slop: pass
+ * Hallmark · pre-emit critique: P5 H5 E5 S5 R5 V4
+ */
+
+html[data-theme="macos"] {
+  color-scheme: light;
+  --macos-font-body: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --macos-font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --macos-font-brand: ui-rounded, "SF Pro Rounded", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --macos-font-mono: "SFMono-Regular", "SF Mono", Menlo, Monaco, ui-monospace, monospace;
+  --font-sans: var(--macos-font-body);
+  --font-display: var(--macos-font-display);
+  --font-mono: var(--macos-font-mono);
+
+  --macos-canvas: oklch(97.2% 0.012 250);
+  --macos-surface: oklch(99.2% 0.006 250);
+  --macos-surface-muted: oklch(95.1% 0.014 250);
+  --macos-surface-hover: oklch(92.8% 0.018 250);
+  --macos-surface-pressed: oklch(89.5% 0.022 250);
+  --macos-ink: oklch(22% 0.022 255);
+  --macos-ink-secondary: oklch(39% 0.025 255);
+  --macos-muted: oklch(49% 0.022 255);
+  --macos-disabled: oklch(65% 0.016 250);
+  --macos-rule: oklch(82% 0.018 250);
+  --macos-rule-strong: oklch(69% 0.025 250);
+  --macos-control-border: oklch(66% 0.025 250);
+  --macos-accent: oklch(54% 0.205 255);
+  --macos-accent-hover: oklch(48% 0.205 255);
+  --macos-accent-ink: oklch(98.5% 0.008 250);
+  --macos-accent-soft: oklch(93.5% 0.043 250);
+  --macos-accent-soft-hover: oklch(90.5% 0.058 250);
+  --macos-focus: oklch(56% 0.215 255);
+  --macos-focus-soft: oklch(56% 0.215 255 / 0.2);
+  --macos-success: oklch(45% 0.12 150);
+  --macos-success-soft: oklch(95% 0.035 150);
+  --macos-warning: oklch(47% 0.13 75);
+  --macos-warning-soft: oklch(95% 0.04 75);
+  --macos-error: oklch(49% 0.19 25);
+  --macos-error-soft: oklch(96% 0.035 25);
+  --macos-overlay: oklch(24% 0.028 255 / 0.34);
+  --macos-glass: oklch(98.5% 0.009 250 / 0.88);
+  --macos-code-surface: oklch(22% 0.027 255);
+  --macos-code-header: oklch(26% 0.03 255);
+  --macos-code-text: oklch(93.5% 0.012 250);
+  --macos-code-muted: oklch(72% 0.025 250);
+  --macos-token-keyword: oklch(76% 0.15 320);
+  --macos-token-string: oklch(79% 0.13 155);
+  --macos-token-function: oklch(80% 0.12 235);
+  --macos-token-number: oklch(82% 0.13 75);
+  --macos-token-boolean: oklch(73% 0.16 25);
+  --macos-token-property: oklch(82% 0.1 190);
+  --macos-token-type: oklch(78% 0.12 280);
+  --macos-shadow-xs: 0 1px 2px oklch(24% 0.025 255 / 0.07);
+  --macos-shadow-sm: 0 8px 24px oklch(24% 0.025 255 / 0.09);
+  --macos-shadow-lg: 0 24px 64px oklch(24% 0.025 255 / 0.18);
+  --macos-radius-control: 0.62rem;
+  --macos-radius-card: 0.9rem;
+  --macos-radius-panel: 1.12rem;
+  --macos-radius-dialog: 1.25rem;
+
+  --control-radius: var(--macos-radius-control);
+  --surface-radius: var(--macos-radius-panel);
+  --management-search-resting-border: var(--macos-rule);
+  --management-search-resting-shadow: var(--macos-shadow-xs);
+  --management-row-input-resting-border: var(--macos-rule);
+  --management-row-input-resting-shadow: var(--macos-shadow-xs);
+  --primary-accent: var(--macos-accent);
+  --primary-accent-hover: var(--macos-accent-hover);
+  --primary-accent-text: var(--macos-accent-hover);
+  --primary-accent-soft: var(--macos-accent-soft);
+  --primary-accent-soft-hover: var(--macos-accent-soft-hover);
+  --primary-accent-border: var(--macos-rule-strong);
+  --primary-accent-focus: var(--macos-focus-soft);
+  --primary-accent-shadow: var(--macos-focus-soft);
+  --primary-button-text: var(--macos-accent-ink);
+  --focus-color: var(--macos-focus);
+  --focus-radius: var(--macos-radius-control);
+  --interaction-duration: var(--motion-duration-short);
+  --interaction-easing: var(--motion-ease-out);
+  --pinned-card-border: var(--macos-rule-strong);
+  --pinned-card-border-hover: var(--macos-accent);
+  --pinned-card-surface: var(--macos-accent-soft);
+  --pinned-card-shadow: var(--macos-shadow-xs);
+  --pinned-marker-background: var(--macos-surface);
+  --pinned-marker-border: var(--macos-rule-strong);
+  --pinned-marker-color: var(--macos-accent-hover);
+  --note-card-surface: var(--macos-surface);
+  --note-card-border: var(--macos-rule);
+  --note-card-title: var(--macos-ink);
+  --note-card-title-letter-spacing: -0.018em;
+  --note-card-preview: var(--macos-ink-secondary);
+  --note-card-muted: var(--macos-muted);
+  --note-card-action: var(--macos-muted);
+  --note-card-action-hover: var(--macos-ink);
+  --note-card-action-hover-surface: var(--macos-surface-hover);
+  --note-card-action-danger: var(--macos-error);
+  --note-card-action-danger-surface: var(--macos-error-soft);
+  --note-card-action-disabled: var(--macos-disabled);
+  --toast-surface: var(--macos-ink);
+  --toast-border: var(--macos-ink-secondary);
+  --toast-text: var(--macos-surface);
+  --toast-status-surface: var(--macos-ink-secondary);
+  --toast-status-icon: var(--macos-accent-soft);
+  --toast-action: var(--macos-accent-soft);
+  --toast-action-hover: var(--macos-surface);
+  --toast-focus: var(--macos-accent-soft);
+  --toast-shadow: var(--macos-shadow-lg);
+  --toast-error-surface: var(--macos-ink);
+  --toast-error-border: var(--macos-error);
+  --toast-error-text: var(--macos-surface);
+  --toast-error-status-surface: var(--macos-error);
+  --toast-error-status-icon: var(--macos-surface);
+  --toast-error-action: var(--macos-error-soft);
+  --toast-error-action-hover: var(--macos-surface);
+  --toast-error-focus: var(--macos-error-soft);
+  --detail-type-chip-border: var(--macos-rule);
+  --detail-type-chip-color: var(--macos-ink-secondary);
+  --detail-type-chip-background: var(--macos-surface-muted);
+
+  overflow-x: clip;
+  color: var(--macos-ink);
+  background: var(--macos-canvas);
+}
+
+html[data-theme="macos"] body {
+  overflow-x: clip;
+  color: var(--macos-ink);
+  background: var(--macos-canvas);
+  font-family: var(--font-sans);
+  letter-spacing: -0.006em;
+}
+
+html[data-theme="macos"] ::selection {
+  color: var(--macos-ink);
+  background: var(--macos-accent-soft-hover);
+}
+
+html[data-theme="macos"] * {
+  scrollbar-color: var(--macos-rule-strong) transparent;
+}
+
+html[data-theme="macos"] :where(button, input, select, textarea):focus-visible {
+  outline-color: var(--macos-focus);
+}
+
+html[data-theme="macos"] :where(.brand strong, .topbar h1, .notes-panel__heading h2, .quick-view-document-header h1, .dialog-header h2, .empty-state h3, .startup-error h1) {
+  min-width: 0;
+  color: var(--macos-ink);
+  font-family: var(--font-display);
+  font-style: normal;
+  overflow-wrap: anywhere;
+}
+
+html[data-theme="macos"] .brand strong {
+  font-family: var(--macos-font-brand);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+
+html[data-theme="macos"] .topbar h1 {
+  font-weight: 720;
+  letter-spacing: -0.035em;
+}
+
+html[data-theme="macos"] :where(.brand small, .filter-heading, .filter-section-title h2, .filter-help, .sidebar-empty, .subtitle, .results-meta, .note-card__meta, .quick-view-meta, .dialog-description, .dialog-footer__stats) {
+  color: var(--macos-muted);
+}
+
+html[data-theme="macos"] .eyebrow {
+  color: var(--macos-accent-hover);
+  font-weight: 680;
+}
+
+html[data-theme="macos"] :where(.sidebar, .notes-panel) {
+  border-color: var(--macos-rule);
+  color: var(--macos-ink);
+  background: var(--macos-surface);
+  box-shadow: var(--macos-shadow-sm);
+}
+
+html[data-theme="macos"] .sidebar {
+  border-radius: var(--macos-radius-panel);
+}
+
+html[data-theme="macos"] .notes-panel {
+  border-radius: var(--macos-radius-panel);
+}
+
+html[data-theme="macos"] :where(.space-navigation, .notes-panel__heading) {
+  border-color: var(--macos-surface-hover);
+}
+
+html[data-theme="macos"] :where(.sidebar-toggle-btn, .storage-status) {
+  border-color: var(--macos-rule);
+  color: var(--macos-ink-secondary);
+  background: var(--macos-surface-muted);
+  box-shadow: none;
+}
+
+html[data-theme="macos"] .storage-status {
+  color: var(--macos-ink-secondary);
+}
+
+html[data-theme="macos"] :where(.space-link, .sidebar-filter) {
+  border-color: transparent;
+  border-radius: var(--macos-radius-control);
+  color: var(--macos-ink-secondary);
+}
+
+html[data-theme="macos"] :where(.space-link, .sidebar-filter):is(.is-active, [aria-pressed="true"]) {
+  border-color: var(--macos-rule);
+  color: var(--macos-accent-hover);
+  background: var(--macos-accent-soft);
+  font-weight: 650;
+}
+
+html[data-theme="macos"] :where(.space-link, .sidebar-filter):is(.is-active, [aria-pressed="true"]) .filter-count {
+  color: var(--macos-accent-hover);
+}
+
+html[data-theme="macos"] .filter-count {
+  color: var(--macos-muted);
+}
+
+html[data-theme="macos"] :where(.tag-filter-option, .tag-chip, .note-tag-chip, .selected-tag, .quick-view-tag, .tag-add-button) {
+  border-color: var(--macos-rule);
+  color: var(--macos-ink-secondary);
+  background: var(--macos-surface-muted);
+}
+
+html[data-theme="macos"] :where(.tag-filter-option:has(input:checked), .tag-filter-option.is-active, .tag-chip.is-selected) {
+  border-color: var(--macos-rule-strong);
+  color: var(--macos-accent-hover);
+  background: var(--macos-accent-soft);
+}
+
+html[data-theme="macos"] .tag-filter-option:has(input:focus-visible) {
+  outline-color: var(--macos-focus);
+}
+
+html[data-theme="macos"] .notes-count,
+html[data-theme="macos"] :where(.active-filter-pill, .organize-tab__count, .usage-count, .management-row__default) {
+  border-color: var(--macos-rule);
+  color: var(--macos-ink-secondary);
+  background: var(--macos-surface-muted);
+}
+
+html[data-theme="macos"] :where(.active-filter-pill, .active-filter-pill.is-active) {
+  border-color: var(--macos-rule-strong);
+  color: var(--macos-accent-hover);
+  background: var(--macos-accent-soft);
+}
+
+html[data-theme="macos"] :where(.text-button, .active-filter-clear-all, .active-filter-pill__clear) {
+  color: var(--macos-accent-hover);
+}
+
+html[data-theme="macos"] .toolbar {
+  border-color: var(--macos-rule);
+  border-radius: var(--macos-radius-card);
+  color: var(--macos-ink);
+  background: var(--macos-surface-muted);
+  box-shadow: var(--macos-shadow-xs);
+}
+
+html[data-theme="macos"] :where(.toolbar.is-pinned, .topbar-actions.is-pinned) {
+  border-color: var(--macos-rule);
+  color: var(--macos-ink);
+  background: var(--macos-glass);
+  box-shadow: var(--macos-shadow-sm);
+  backdrop-filter: saturate(130%) blur(18px);
+}
+
+html[data-theme="macos"] :where(input:not([type]), input[type="text"], input[type="search"], input[type="email"], input[type="url"], textarea, select, .note-type-picker__trigger, .color-picker__trigger) {
+  border-color: var(--macos-control-border);
+  color: var(--macos-ink);
+  background-color: var(--macos-surface);
+  box-shadow: var(--macos-shadow-xs);
+}
+
+html[data-theme="macos"] :where(input, textarea)::placeholder {
+  color: var(--macos-muted);
+}
+
+html[data-theme="macos"] :where(input:not([type]), input[type="text"], input[type="search"], input[type="email"], input[type="url"], textarea, select, .note-type-picker__trigger, .color-picker__trigger):focus-visible,
+html[data-theme="macos"] .tag-picker:focus-within {
+  border-color: var(--macos-focus);
+  outline-color: var(--macos-focus);
+  background-color: var(--macos-surface);
+  box-shadow: 0 0 0 3px var(--macos-focus-soft);
+}
+
+html[data-theme="macos"] :where(input, textarea, select):disabled {
+  border-color: var(--macos-rule);
+  color: var(--macos-disabled);
+  background: var(--macos-surface-muted);
+  box-shadow: none;
+  opacity: 0.65;
+}
+
+html[data-theme="macos"] :where(input, textarea)[aria-invalid="true"] {
+  border-color: var(--macos-error);
+}
+
+html[data-theme="macos"] :where(.field-error, .note-save-status.is-error) {
+  color: var(--macos-error);
+}
+
+html[data-theme="macos"] .search-shortcut {
+  border-color: var(--macos-control-border);
+  color: var(--macos-ink-secondary);
+  background: var(--macos-surface-muted);
+  box-shadow: none;
+}
+
+html[data-theme="macos"] .search-shortcut kbd {
+  border: 0;
+  color: var(--macos-ink);
+  background: transparent;
+  box-shadow: none;
+}
+
+html[data-theme="macos"] :where(.sort-field__trigger, .view-mode-control__choices, .note-editor-modes) {
+  border-color: var(--macos-control-border);
+  color: var(--macos-ink);
+  background: var(--macos-surface-muted);
+}
+
+html[data-theme="macos"] :where(.view-mode-button, .note-editor-mode__button) {
+  border-radius: calc(var(--macos-radius-control) - 0.18rem);
+  color: var(--macos-muted);
+  background: transparent;
+}
+
+html[data-theme="macos"] :where(.view-mode-button.is-active, .view-mode-button[aria-pressed="true"], .note-editor-mode__button[aria-pressed="true"]) {
+  border-color: var(--macos-rule);
+  color: var(--macos-ink);
+  background: var(--macos-surface);
+  box-shadow: var(--macos-shadow-xs);
+}
+
+html[data-theme="macos"] :where(.sort-field__menu, .tag-suggestions, .note-type-picker__menu, .color-picker__menu) {
+  border-color: var(--macos-rule);
+  border-radius: var(--macos-radius-card);
+  color: var(--macos-ink);
+  background: var(--macos-surface);
+  box-shadow: var(--macos-shadow-sm);
+}
+
+html[data-theme="macos"] :where(.sort-field__option, .tag-suggestion, .note-type-picker__option, .color-picker__option) {
+  color: var(--macos-ink-secondary);
+}
+
+html[data-theme="macos"] :where(.sort-field__option, .tag-suggestion, .note-type-picker__option, .color-picker__option):is(:focus-visible, [aria-selected="true"]) {
+  outline: none;
+  color: var(--macos-ink);
+  background: var(--macos-accent-soft);
+}
+
+html[data-theme="macos"] :where(.button-primary, .button-secondary, .button-danger, .icon-button, .mobile-filter-toggle) {
+  border-radius: var(--macos-radius-control);
+}
+
+html[data-theme="macos"] .button-primary {
+  border-color: var(--macos-accent);
+  color: var(--macos-accent-ink);
+  background: var(--macos-accent);
+  box-shadow: var(--macos-shadow-xs);
+}
+
+html[data-theme="macos"] :where(.button-secondary, .icon-button, .mobile-filter-toggle) {
+  border-color: var(--macos-control-border);
+  color: var(--macos-ink-secondary);
+  background: var(--macos-surface);
+  box-shadow: var(--macos-shadow-xs);
+}
+
+html[data-theme="macos"] .button-danger {
+  border-color: var(--macos-error);
+  color: var(--macos-error);
+  background: var(--macos-error-soft);
+}
+
+html[data-theme="macos"] :where(.button-primary, .button-secondary, .button-danger, .icon-button, .mobile-filter-toggle):focus-visible,
+html[data-theme="macos"] :where(.pagination-button, .note-card__action, .note-formatting-tool__button):focus-visible {
+  outline: 2px solid var(--macos-focus);
+  outline-offset: 2px;
+}
+
+html[data-theme="macos"] :where(.button-primary, .button-secondary, .button-danger, .icon-button, .mobile-filter-toggle):active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+html[data-theme="macos"] :where(.button-primary, .button-secondary, .button-danger, .icon-button, .mobile-filter-toggle):disabled {
+  border-color: var(--macos-rule);
+  color: var(--macos-disabled);
+  background: var(--macos-surface-muted);
+  box-shadow: none;
+  transform: none;
+  opacity: 0.65;
+}
+
+html[data-theme="macos"] :where(.pagination-button, .note-card__action, .note-formatting-tool__button) {
+  border-color: transparent;
+  color: var(--macos-ink-secondary);
+  background: transparent;
+}
+
+html[data-theme="macos"] .pagination-button.is-active {
+  border-color: var(--macos-rule-strong);
+  color: var(--macos-accent-hover);
+  background: var(--macos-accent-soft);
+}
+
+html[data-theme="macos"] :where(.pagination-button:disabled, .pagination-ellipsis) {
+  color: var(--macos-disabled);
+}
+
+html[data-theme="macos"] :where(.note-card__action--danger, .note-card__action--permanent):is(:hover, :focus-visible) {
+  border-color: var(--macos-error);
+  color: var(--macos-error);
+  background: var(--macos-error-soft);
+}
+
+html[data-theme="macos"] .note-card__action--restore:is(:hover, :focus-visible) {
+  border-color: var(--macos-success);
+  color: var(--macos-success);
+  background: var(--macos-success-soft);
+}
+
+html[data-theme="macos"] .note-card {
+  border-color: var(--macos-rule);
+  border-radius: var(--macos-radius-card);
+  color: var(--macos-ink);
+  background: var(--macos-surface);
+  box-shadow: var(--macos-shadow-xs);
+}
+
+html[data-theme="macos"] .note-card--pinned {
+  border-color: var(--macos-rule-strong);
+  background: var(--macos-accent-soft);
+  box-shadow: var(--macos-shadow-xs);
+}
+
+html[data-theme="macos"] .note-card__title {
+  color: var(--macos-ink);
+  font-family: var(--font-display);
+  font-style: normal;
+  font-weight: 680;
+}
+
+html[data-theme="macos"] .note-card__footer {
+  border-color: var(--macos-surface-hover);
+}
+
+html[data-theme="macos"] mark.search-highlight {
+  color: var(--macos-ink);
+  background: var(--macos-accent-soft-hover);
+}
+
+html[data-theme="macos"] :where(.app-dialog, .note-detail-surface) {
+  border-color: var(--macos-rule-strong);
+  border-radius: var(--macos-radius-dialog);
+  color: var(--macos-ink);
+  background: var(--macos-surface);
+  box-shadow: var(--macos-shadow-lg);
+}
+
+html[data-theme="macos"] .app-dialog::backdrop {
+  background: var(--macos-overlay);
+  backdrop-filter: blur(8px);
+}
+
+html[data-theme="macos"] :where(.detail-commandbar, .dialog-header, .dialog-footer, .note-formatting-toolbar, .organize-tabs) {
+  border-color: var(--macos-rule);
+  color: var(--macos-ink);
+  background: var(--macos-surface-muted);
+}
+
+html[data-theme="macos"] #note-title {
+  color: var(--macos-ink);
+  background: transparent;
+  font-family: var(--font-display);
+  font-style: normal;
+  font-weight: 720;
+}
+
+html[data-theme="macos"] #note-content {
+  border-color: var(--macos-rule);
+  color: var(--macos-ink);
+  background: var(--macos-surface);
+  font-family: var(--font-mono);
+}
+
+html[data-theme="macos"] .note-formatting-tool__button:is(:hover, :focus-visible) {
+  border-color: var(--macos-rule);
+  color: var(--macos-ink);
+  background: var(--macos-surface);
+}
+
+html[data-theme="macos"] :where(.note-save-status.is-saved, .note-save-status.is-new) {
+  color: var(--macos-success);
+}
+
+html[data-theme="macos"] .note-save-status.is-saving {
+  color: var(--macos-accent-hover);
+  background: var(--macos-accent-soft);
+  border-color: var(--macos-rule-strong);
+}
+
+html[data-theme="macos"] .note-save-status.is-dirty {
+  color: var(--macos-warning);
+  background: var(--macos-warning-soft);
+  border-color: var(--macos-rule-strong);
+}
+
+html[data-theme="macos"] :where(.shortcut-tooltip, .note-save-shortcut__tooltip, .note-markdown-help__tooltip, .note-detail-action-tooltip__content, .note-formatting-tool__tooltip) {
+  border-color: var(--macos-rule);
+  color: var(--macos-ink-secondary);
+  background: var(--macos-glass);
+  box-shadow: var(--macos-shadow-sm);
+  backdrop-filter: saturate(130%) blur(18px);
+}
+
+html[data-theme="macos"] kbd {
+  border-color: var(--macos-rule-strong);
+  color: var(--macos-ink-secondary);
+  background: var(--macos-surface-muted);
+  box-shadow: var(--macos-shadow-xs);
+}
+
+html[data-theme="macos"] .organize-tabs {
+  border-radius: 999px;
+}
+
+html[data-theme="macos"] .organize-tab {
+  color: var(--macos-muted);
+  background: transparent;
+}
+
+html[data-theme="macos"] .organize-tab:is(:hover, :focus-visible, .is-active) {
+  color: var(--macos-ink);
+  background: var(--macos-surface);
+}
+
+html[data-theme="macos"] .organize-tab.is-active {
+  box-shadow: var(--macos-shadow-xs);
+}
+
+html[data-theme="macos"] :where(.management-create-row, .management-list) {
+  border-color: var(--macos-rule);
+  border-radius: var(--macos-radius-card);
+  color: var(--macos-ink);
+  background: var(--macos-surface-muted);
+}
+
+html[data-theme="macos"] .management-row {
+  border-color: var(--macos-rule);
+  color: var(--macos-ink);
+  background: var(--macos-surface);
+}
+
+html[data-theme="macos"] .management-row__name {
+  color: var(--macos-ink);
+}
+
+html[data-theme="macos"] :where(.empty-state, .management-empty) {
+  border-color: var(--macos-rule);
+  color: var(--macos-muted);
+  background: var(--macos-surface-muted);
+}
+
+html[data-theme="macos"] .empty-state__icon {
+  border-color: var(--macos-rule);
+  color: var(--macos-accent-hover);
+  background: var(--macos-accent-soft);
+  box-shadow: none;
+}
+
+html[data-theme="macos"] .startup-error {
+  border-color: var(--macos-error);
+  color: var(--macos-error);
+  background: var(--macos-error-soft);
+}
+
+html[data-theme="macos"] :where(.quick-view-content, .note-content-preview) {
+  color: var(--macos-ink);
+  background: var(--macos-surface);
+  font-family: var(--font-sans);
+}
+
+html[data-theme="macos"] :where(.quick-view-content, .note-content-preview) :where(h1, h2, h3, h4, h5, h6) {
+  color: var(--macos-ink);
+  font-family: var(--font-display);
+  font-style: normal;
+  font-weight: 680;
+}
+
+html[data-theme="macos"] :where(.quick-view-content, .note-content-preview) a {
+  color: var(--macos-accent-hover);
+}
+
+html[data-theme="macos"] :where(.quick-view-content, .note-content-preview) code:not(pre code) {
+  border-color: var(--macos-rule);
+  color: var(--macos-ink-secondary);
+  background: var(--macos-surface-muted);
+  font-family: var(--font-mono);
+}
+
+html[data-theme="macos"] :where(.quick-view-content, .note-content-preview) pre {
+  border-color: var(--macos-code-header);
+  color: var(--macos-code-text);
+  background: var(--macos-code-surface);
+  box-shadow: var(--macos-shadow-sm);
+}
+
+html[data-theme="macos"] :where(.quick-view-content, .note-content-preview) pre code {
+  border: 0;
+  color: var(--macos-code-text);
+  background: transparent;
+  box-shadow: none;
+  font-family: var(--font-mono);
+}
+
+html[data-theme="macos"] :where(.quick-view-content, .note-content-preview) .markdown-code-header {
+  border-bottom-color: var(--macos-ink-secondary);
+  color: var(--macos-code-text);
+  background: var(--macos-code-header);
+}
+
+html[data-theme="macos"] :where(.quick-view-content, .note-content-preview) .markdown-code-lang {
+  color: var(--macos-code-muted);
+  font-family: var(--font-mono);
+}
+
+html[data-theme="macos"] :where(.quick-view-content, .note-content-preview) .markdown-code-copy-btn {
+  border-color: var(--macos-ink-secondary);
+  color: var(--macos-code-text);
+  background: var(--macos-code-surface);
+}
+
+html[data-theme="macos"] :where(.quick-view-content, .note-content-preview) .markdown-code-copy-btn:is(:hover, :focus-visible) {
+  border-color: var(--macos-accent-soft);
+  color: var(--macos-ink);
+  background: var(--macos-accent-soft);
+}
+
+html[data-theme="macos"] :where(.quick-view-content, .note-content-preview) .markdown-code-copy-btn.is-copied {
+  border-color: var(--macos-success);
+  color: var(--macos-ink);
+  background: var(--macos-success-soft);
+}
+
+html[data-theme="macos"] .token-keyword { color: var(--macos-token-keyword); }
+html[data-theme="macos"] .token-string { color: var(--macos-token-string); }
+html[data-theme="macos"] .token-function { color: var(--macos-token-function); }
+html[data-theme="macos"] .token-number { color: var(--macos-token-number); }
+html[data-theme="macos"] .token-boolean { color: var(--macos-token-boolean); }
+html[data-theme="macos"] .token-comment { color: var(--macos-code-muted); }
+html[data-theme="macos"] .token-operator { color: var(--macos-code-text); }
+html[data-theme="macos"] :where(.token-property, .token-tag) { color: var(--macos-token-property); }
+html[data-theme="macos"] .token-type { color: var(--macos-token-type); }
+html[data-theme="macos"] .token-punctuation { color: var(--macos-code-muted); }
+
+html[data-theme="macos"] :where(.quick-view-content, .note-content-preview) blockquote {
+  border-color: var(--macos-rule);
+  border-left-color: var(--macos-accent);
+  color: var(--macos-ink-secondary);
+  background: var(--macos-surface-muted);
+}
+
+html[data-theme="macos"] :where(.quick-view-content, .note-content-preview) .markdown-table-wrapper {
+  border-color: var(--macos-rule);
+  color: var(--macos-ink);
+  background: var(--macos-surface);
+  box-shadow: var(--macos-shadow-xs);
+}
+
+html[data-theme="macos"] :where(.quick-view-content, .note-content-preview) .markdown-table :where(th, td) {
+  border-color: var(--macos-rule);
+}
+
+html[data-theme="macos"] :where(.quick-view-content, .note-content-preview) .markdown-table th {
+  color: var(--macos-ink);
+  background: var(--macos-surface-muted);
+  font-family: var(--font-display);
+  font-style: normal;
+}
+
+html[data-theme="macos"] :where(.quick-view-content, .note-content-preview) .markdown-table tbody tr:nth-child(even) {
+  background: var(--macos-canvas);
+}
+
+html[data-theme="macos"] :where(.quick-view-content, .note-content-preview) hr {
+  border-color: var(--macos-rule);
+}
+
+html[data-theme="macos"] :where(.quick-view-content, .note-content-preview) .markdown-alert {
+  border-color: var(--macos-rule);
+  color: var(--macos-ink-secondary);
+  background: var(--macos-accent-soft);
+}
+
+html[data-theme="macos"] :where(.quick-view-content, .note-content-preview) .markdown-alert__title {
+  color: var(--macos-accent-hover);
+}
+
+html[data-theme="macos"] :where(.quick-view-content, .note-content-preview) .markdown-alert--tip {
+  border-color: var(--macos-success);
+  color: var(--macos-ink-secondary);
+  background: var(--macos-success-soft);
+}
+
+html[data-theme="macos"] :where(.quick-view-content, .note-content-preview) .markdown-alert--warning {
+  border-color: var(--macos-warning);
+  color: var(--macos-ink-secondary);
+  background: var(--macos-warning-soft);
+}
+
+html[data-theme="macos"] :where(.quick-view-content, .note-content-preview) .markdown-alert--caution {
+  border-color: var(--macos-error);
+  color: var(--macos-ink-secondary);
+  background: var(--macos-error-soft);
+}
+
+html[data-theme="macos"] :where(.quick-view-content, .note-content-preview) .markdown-details,
+html[data-theme="macos"] :where(.quick-view-content, .note-content-preview) .markdown-math,
+html[data-theme="macos"] :where(.quick-view-content, .note-content-preview) :where(.markdown-image, .markdown-image-alt) {
+  border-color: var(--macos-rule);
+  color: var(--macos-ink-secondary);
+  background: var(--macos-surface-muted);
+}
+
+html[data-theme="macos"] :where(.quick-view-content, .note-content-preview) .markdown-details summary {
+  color: var(--macos-ink);
+}
+
+html[data-theme="macos"] :where(.quick-view-content, .note-content-preview) .markdown-footnotes {
+  border-color: var(--macos-rule);
+  color: var(--macos-muted);
+}
+
+html[data-theme="macos"] :where(.quick-view-content, .note-content-preview) .markdown-task-item > input {
+  accent-color: var(--macos-accent);
+}
+
+html[data-theme="macos"] .theme-toggle__icon--macos {
+  display: inline-flex !important;
+}
+
+html[data-theme="macos"] :where(.theme-toggle__icon--sun, .theme-toggle__icon--coffee, .theme-toggle__icon--forest, .theme-toggle__icon--midnight, .theme-toggle__icon--moon, .theme-toggle__icon--retro, .theme-toggle__icon--auto) {
+  display: none !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  html[data-theme="macos"] :where(.sidebar-toggle-btn, .button-secondary, .icon-button, .mobile-filter-toggle):hover:not(:disabled),
+  html[data-theme="macos"] :where(.space-link, .sidebar-filter, .tag-filter-option, .tag-chip, .tag-add-button):hover {
+    border-color: var(--macos-rule-strong);
+    color: var(--macos-ink);
+    background: var(--macos-surface-hover);
+  }
+
+  html[data-theme="macos"] .button-primary:hover:not(:disabled) {
+    border-color: var(--macos-accent-hover);
+    color: var(--macos-accent-ink);
+    background: var(--macos-accent-hover);
+    box-shadow: var(--macos-shadow-xs);
+    transform: none;
+  }
+
+  html[data-theme="macos"] .button-danger:hover:not(:disabled) {
+    border-color: var(--macos-error);
+    color: var(--macos-surface);
+    background: var(--macos-error);
+  }
+
+  html[data-theme="macos"] .note-card:hover,
+  html[data-theme="macos"] .note-card.is-hover {
+    border-color: var(--macos-rule-strong);
+    box-shadow: var(--macos-shadow-sm);
+  }
+
+  html[data-theme="macos"] .note-card--pinned:hover,
+  html[data-theme="macos"] .note-card--pinned.is-hover {
+    border-color: var(--macos-accent);
+  }
+
+  html[data-theme="macos"] :where(.sort-field__option, .tag-suggestion, .note-type-picker__option, .color-picker__option):hover {
+    color: var(--macos-ink);
+    background: var(--macos-surface-hover);
+  }
+
+  html[data-theme="macos"] .management-row--summary:hover {
+    background: var(--macos-surface-hover);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-theme="macos"] :where(.note-card, button) {
+    transform: none !important;
+  }
+}
+
+@media (max-width: 620px) {
+  html[data-theme="macos"] :where(.app-dialog, .note-detail-surface) {
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+}
+
+@media (forced-colors: active) {
+  html[data-theme="macos"] :where(.tag-filter-option, .tag-chip, .button, .icon-button, .note-card, .app-dialog) {
+    border-color: ButtonText;
+    box-shadow: none;
+  }
+}
