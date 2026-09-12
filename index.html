@@ -14,7 +14,7 @@
           const stored = window.localStorage.getItem("nook:theme");
           // Preserve the renamed preferences for existing local installs.
           const storedTheme = stored === "warm" ? "coffee" : stored === "midnight-blue" ? "midnight" : stored;
-          const mode = ["light", "macos", "coffee", "forest", "midnight", "dark", "retro", "auto"].includes(storedTheme) ? storedTheme : "light";
+          const mode = ["light", "coffee", "forest", "midnight", "dark", "retro", "auto"].includes(storedTheme) ? storedTheme : "light";
           // Keep Auto aligned with resolveAutoTheme() in js/app/preferences.js.
           const theme = mode === "auto"
             ? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")
@@ -25,7 +25,6 @@
           if (meta) {
             const themeColors = {
               light: "#9e6b02",
-              macos: "#edf4fb",
               coffee: "#a35616",
               forest: "#2f6b4f",
               "midnight": "#18263f",
@@ -217,13 +216,6 @@
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round">
                     <circle cx="12" cy="12" r="3.4" />
                     <path d="M12 2.8v2M12 19.2v2M21.2 12h-2M4.8 12h-2M18.5 5.5l-1.4 1.4M6.9 17.1l-1.4 1.4M18.5 18.5l-1.4-1.4M6.9 6.9 5.5 5.5" />
-                  </svg>
-                </span>
-                <span class="theme-toggle__icon theme-toggle__icon--macos" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="3.5" y="4" width="17" height="16" rx="4" />
-                    <path d="M8 8.5h.01M11 8.5h.01" />
-                    <path d="M7.5 13.25h9M7.5 16.25h5.5" />
                   </svg>
                 </span>
                 <span class="theme-toggle__icon theme-toggle__icon--coffee" aria-hidden="true">

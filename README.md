@@ -19,7 +19,7 @@ practice, and personal ideas in one calm, searchable local library.
 - Copy the raw Markdown source or export the current note as `.md` or `.txt`.
 - Export and import a complete JSON backup. The local backup-health indicator reminds you when an export is missing or old.
 - Manage note types and tags from Settings → Organize Notes.
-- Choose Light, macOS, Coffee, Forest, Midnight, Dark, Retro, or Auto theme, switch between Focus, Comfortable, and Compact layouts, or collapse the sidebar into an icon rail.
+- Choose Light, Coffee, Forest, Midnight, Dark, Retro, or Auto theme, switch between Focus, Comfortable, and Compact layouts, or collapse the sidebar into an icon rail.
 - Recover an unfinished local editor draft after an interrupted session.
 - Keep multiple open tabs in sync when the browser supports `BroadcastChannel`.
 - Use `C` for quick capture plus platform-aware editor shortcuts for formatting, saving, and switching editor modes.
@@ -139,8 +139,8 @@ is permanently deleted or Trash is emptied.
 
 ### Themes
 
-Nook has a light, clean interface by default. You can use the theme button (or `T`) to cycle between eight
-modes: Light, macOS, Coffee, Forest, Midnight, Dark, Retro, and Auto. Auto matches
+Nook has a light, clean interface by default. You can use the theme button (or `T`) to cycle between seven
+modes: Light, Coffee, Forest, Midnight, Dark, Retro, and Auto. Auto matches
 your device's system color scheme preference (Light or Dark). Hover over or keyboard-focus the button to see the
 current and next theme. Auto stays selected after reload and updates when the system theme changes.
 

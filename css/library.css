@@ -85,7 +85,9 @@
 
 
 .topbar-actions .theme-toggle {
-  min-width: 2.5rem;
+  width: 7.25rem;
+  min-width: 7.25rem;
+  flex-shrink: 0;
   border-radius: var(--control-radius);
 }
 

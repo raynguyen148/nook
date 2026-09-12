@@ -96,7 +96,6 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
 
     const themeLabels = {
       light: "Light",
-      macos: "macOS",
       coffee: "Coffee",
       forest: "Forest",
       "midnight": "Midnight",
@@ -124,7 +123,6 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
     if (themeColorMeta) {
       const themeColors = {
         light: "#9e6b02",
-        macos: "#edf4fb",
         coffee: "#a35616",
         forest: "#2f6b4f",
         "midnight": "#18263f",
@@ -140,6 +138,7 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
     ui.theme = theme;
     const applyTheme = () => {
       syncThemeUI();
+      if (ui.topbarActionsPinned) syncPinnedTopbarControlMetrics();
       if (!persist) return;
       try {
         window.localStorage.setItem(THEME_STORAGE_KEY, ui.theme);
@@ -147,8 +146,20 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
         // The theme still works for this session when browser privacy settings block localStorage.
       }
     };
-    if (animate) runUiViewTransition("theme", applyTheme);
-    else applyTheme();
+    const hasPinnedHeader = ui.topbarActionsPinned || ui.toolbarPinned;
+    if (animate && !hasPinnedHeader) {
+      runUiViewTransition("theme", applyTheme);
+      return;
+    }
+
+    // Root view-transition snapshots duplicate fixed-position controls while
+    // both pinned header rows are visible. Apply the palette directly in that
+    // state so the live controls keep their measured position and dimensions.
+    if (hasPinnedHeader) {
+      uiViewTransition?.skipTransition?.();
+      delete document.documentElement.dataset.uiTransition;
+    }
+    applyTheme();
   }
 
   function syncSidebarUI() {
