@@ -20,6 +20,10 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
   let uiViewTransition = null;
   let sidebarCollapseStartTimer = 0;
   let sidebarCollapseRevealTimer = 0;
+  let sidebarCollapseFinishTimer = 0;
+  let sidebarExpandStartTimer = 0;
+  let sidebarExpandRevealTimer = 0;
+  let sidebarExpandFinishTimer = 0;
 
   // These core utilities are resolved only when an interaction occurs, after
   // every installer has completed.
@@ -194,30 +198,62 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
       window.clearTimeout(sidebarCollapseRevealTimer);
       sidebarCollapseRevealTimer = 0;
     }
+    if (sidebarCollapseFinishTimer) {
+      window.clearTimeout(sidebarCollapseFinishTimer);
+      sidebarCollapseFinishTimer = 0;
+    }
     elements.appShell.classList.remove("is-sidebar-collapsing");
+    elements.appShell.classList.remove("is-sidebar-resizing");
   }
 
-  function canStageSidebarCollapse() {
+  function canStageSidebarTransition() {
     return !prefersReducedMotion() && window.matchMedia("(min-width: 821px)").matches;
   }
 
+  function clearSidebarExpandChoreography() {
+    if (sidebarExpandStartTimer) {
+      window.clearTimeout(sidebarExpandStartTimer);
+      sidebarExpandStartTimer = 0;
+    }
+    if (sidebarExpandRevealTimer) {
+      window.clearTimeout(sidebarExpandRevealTimer);
+      sidebarExpandRevealTimer = 0;
+    }
+    if (sidebarExpandFinishTimer) {
+      window.clearTimeout(sidebarExpandFinishTimer);
+      sidebarExpandFinishTimer = 0;
+    }
+    elements.appShell.classList.remove("is-sidebar-expanding");
+    elements.appShell.classList.remove("is-sidebar-resizing");
+  }
+
   function toggleSidebar(collapsed = !ui.sidebarCollapsed) {
-    const isCollapseInFlight = Boolean(sidebarCollapseStartTimer || sidebarCollapseRevealTimer);
-    if (ui.sidebarCollapsed === collapsed && !isCollapseInFlight) return;
+    const isCollapseInFlight = Boolean(
+      sidebarCollapseStartTimer || sidebarCollapseRevealTimer || sidebarCollapseFinishTimer
+    );
+    const isExpandInFlight = Boolean(
+      sidebarExpandStartTimer || sidebarExpandRevealTimer || sidebarExpandFinishTimer
+    );
+    const isTransitionInFlight = isCollapseInFlight || isExpandInFlight;
+    if (ui.sidebarCollapsed === collapsed && !isTransitionInFlight) return;
+
+    const isDomCollapsed = elements.appShell.classList.contains("is-sidebar-collapsed");
+    uiViewTransition?.skipTransition?.();
+    delete document.documentElement.dataset.uiTransition;
 
     if (collapsed) {
-      uiViewTransition?.skipTransition?.();
-      delete document.documentElement.dataset.uiTransition;
       ui.sidebarCollapsed = true;
+      clearSidebarExpandChoreography();
 
-      if (!canStageSidebarCollapse()) {
+      if (!canStageSidebarTransition() || isDomCollapsed) {
+        clearSidebarCollapseChoreography();
         syncSidebarUI();
         persistSidebarCollapsedState(true);
         return;
       }
 
       clearSidebarCollapseChoreography();
-      elements.appShell.classList.add("is-sidebar-collapsing");
+      elements.appShell.classList.add("is-sidebar-collapsing", "is-sidebar-resizing");
       sidebarCollapseStartTimer = window.setTimeout(() => {
         sidebarCollapseStartTimer = 0;
         syncSidebarUI();
@@ -226,22 +262,39 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
           sidebarCollapseRevealTimer = 0;
           elements.appShell.classList.remove("is-sidebar-collapsing");
         }, MOTION.short);
+        sidebarCollapseFinishTimer = window.setTimeout(() => {
+          sidebarCollapseFinishTimer = 0;
+          elements.appShell.classList.remove("is-sidebar-resizing");
+        }, MOTION.medium);
       }, MOTION.micro);
       return;
     }
 
     clearSidebarCollapseChoreography();
-    ui.sidebarCollapsed = collapsed;
-    if (isCollapseInFlight) {
+    ui.sidebarCollapsed = false;
+    if (!canStageSidebarTransition() || !isDomCollapsed) {
+      clearSidebarExpandChoreography();
       syncSidebarUI();
       persistSidebarCollapsedState(false);
       return;
     }
 
-    runUiViewTransition("sidebar-expand", () => {
+    // Mirror collapse: fade the current rail, expand it, then reveal full content.
+    clearSidebarExpandChoreography();
+    elements.appShell.classList.add("is-sidebar-expanding", "is-sidebar-resizing");
+    sidebarExpandStartTimer = window.setTimeout(() => {
+      sidebarExpandStartTimer = 0;
       syncSidebarUI();
       persistSidebarCollapsedState(false);
-    });
+      sidebarExpandRevealTimer = window.setTimeout(() => {
+        sidebarExpandRevealTimer = 0;
+        elements.appShell.classList.remove("is-sidebar-expanding");
+      }, MOTION.short);
+      sidebarExpandFinishTimer = window.setTimeout(() => {
+        sidebarExpandFinishTimer = 0;
+        elements.appShell.classList.remove("is-sidebar-resizing");
+      }, MOTION.medium);
+    }, MOTION.micro);
   }
 
   function measureTopbarActionsPinBounds() {

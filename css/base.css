@@ -60,35 +60,10 @@ body {
 
 
 
-/* Theme changes use a restrained document crossfade. Expanding the sidebar
- * uses stable snapshots; collapsing uses a direct, staged rail transition. */
-html[data-ui-transition="sidebar-expand"] .sidebar {
-  view-transition-name: nook-sidebar;
-  transition: none;
-}
-
-
-
-html[data-ui-transition="sidebar-expand"] .workspace {
-  view-transition-name: nook-workspace;
-}
-
-
-
-html[data-ui-transition="sidebar-expand"] .app-shell {
-  transition: none;
-}
-
-
-
+/* Theme changes use a restrained document crossfade. Sidebar width changes
+ * use direct staged motion so live descendants stay stable during reflow. */
 html[data-ui-transition="theme"]::view-transition-old(root),
-html[data-ui-transition="theme"]::view-transition-new(root),
-html[data-ui-transition="sidebar-expand"]::view-transition-old(root),
-html[data-ui-transition="sidebar-expand"]::view-transition-new(root),
-html[data-ui-transition="sidebar-expand"]::view-transition-old(nook-sidebar),
-html[data-ui-transition="sidebar-expand"]::view-transition-new(nook-sidebar),
-html[data-ui-transition="sidebar-expand"]::view-transition-old(nook-workspace),
-html[data-ui-transition="sidebar-expand"]::view-transition-new(nook-workspace) {
+html[data-ui-transition="theme"]::view-transition-new(root) {
   mix-blend-mode: normal;
 }
 
@@ -106,35 +81,6 @@ html[data-ui-transition="theme"]::view-transition-new(root) {
 
 
 
-html[data-ui-transition="sidebar-expand"]::view-transition-old(root),
-html[data-ui-transition="sidebar-expand"]::view-transition-new(root) {
-  animation: none;
-}
-
-
-
-html[data-ui-transition="sidebar-expand"]::view-transition-group(nook-sidebar),
-html[data-ui-transition="sidebar-expand"]::view-transition-group(nook-workspace) {
-  animation-duration: var(--motion-duration-long);
-  animation-timing-function: var(--motion-ease-in-out);
-}
-
-
-
-html[data-ui-transition="sidebar-expand"]::view-transition-old(nook-sidebar),
-html[data-ui-transition="sidebar-expand"]::view-transition-old(nook-workspace) {
-  animation: nook-motion-fade-out var(--motion-duration-micro) var(--motion-ease-in) both;
-}
-
-
-
-html[data-ui-transition="sidebar-expand"]::view-transition-new(nook-sidebar),
-html[data-ui-transition="sidebar-expand"]::view-transition-new(nook-workspace) {
-  animation: nook-motion-fade-in var(--motion-duration-medium) var(--motion-ease-out) 80ms both;
-}
-
-
-
 @media (min-width: 821px) {
   .sidebar__header,
   .backup-health,
@@ -145,12 +91,17 @@ html[data-ui-transition="sidebar-expand"]::view-transition-new(nook-workspace) {
       transform var(--motion-duration-micro) var(--motion-ease-in);
   }
 
-  .app-shell.is-sidebar-collapsing .sidebar__header,
-  .app-shell.is-sidebar-collapsing .backup-health,
-  .app-shell.is-sidebar-collapsing .space-navigation,
-  .app-shell.is-sidebar-collapsing #regular-filter-controls {
+  .app-shell:is(.is-sidebar-collapsing, .is-sidebar-expanding) .sidebar__header,
+  .app-shell:is(.is-sidebar-collapsing, .is-sidebar-expanding) .backup-health,
+  .app-shell:is(.is-sidebar-collapsing, .is-sidebar-expanding) .space-navigation,
+  .app-shell:is(.is-sidebar-collapsing, .is-sidebar-expanding) #regular-filter-controls {
     opacity: 0;
     transform: translateX(-0.25rem);
+  }
+
+  /* Keep the scroll track hidden until the moving rail reaches its final width. */
+  .app-shell.is-sidebar-resizing .sidebar {
+    overflow: hidden;
   }
 }
 
