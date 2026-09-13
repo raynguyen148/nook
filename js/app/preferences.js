@@ -177,7 +177,8 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
       const actionLabel = isCollapsed ? "Expand sidebar" : "Collapse sidebar";
       elements.sidebarToggle.setAttribute("aria-expanded", String(!isCollapsed));
       elements.sidebarToggle.setAttribute("aria-label", actionLabel);
-      elements.sidebarToggle.title = `${actionLabel} (${shortcutModifier})`;
+      elements.sidebarToggleTooltipText.textContent = actionLabel;
+      elements.sidebarToggleShortcut.textContent = shortcutModifier;
     }
   }
 

@@ -92,18 +92,24 @@
               <small>Private workspace</small>
             </span>
           </div>
-          <button
-            id="sidebar-toggle-btn"
-            class="sidebar-toggle-btn"
-            type="button"
-            aria-expanded="true"
-            aria-label="Collapse sidebar"
-            title="Collapse sidebar"
-          >
-            <svg class="sidebar-toggle-btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="m15 6-6 6 6 6" />
-            </svg>
-          </button>
+          <div class="shortcut-button sidebar-toggle">
+            <button
+              id="sidebar-toggle-btn"
+              class="sidebar-toggle-btn"
+              type="button"
+              aria-expanded="true"
+              aria-label="Collapse sidebar"
+              aria-describedby="sidebar-toggle-tooltip"
+            >
+              <svg class="sidebar-toggle-btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="m15 6-6 6 6 6" />
+              </svg>
+            </button>
+            <span id="sidebar-toggle-tooltip" class="shortcut-tooltip sidebar-toggle__tooltip" role="tooltip">
+              <span id="sidebar-toggle-tooltip-text">Collapse sidebar</span>
+              <kbd id="sidebar-toggle-shortcut">⌘\\</kbd>
+            </span>
+          </div>
         </div>
 
         <div id="backup-health" class="storage-status backup-health" aria-live="polite" title="Your notes are stored locally in this browser. This is the backup status.">

@@ -190,6 +190,8 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
     backupHealthMessage: document.querySelector("#backup-health-message"),
     sidebar: document.querySelector(".sidebar"),
     sidebarToggle: document.querySelector("#sidebar-toggle-btn"),
+    sidebarToggleTooltipText: document.querySelector("#sidebar-toggle-tooltip-text"),
+    sidebarToggleShortcut: document.querySelector("#sidebar-toggle-shortcut"),
   };
 
   const storedFilters = getStoredFilters();
