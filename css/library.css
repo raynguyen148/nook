@@ -342,10 +342,20 @@
     gap: 0.55rem;
   }
 
-  .note-dialog .note-save-shortcut__tooltip,
   .note-dialog .note-markdown-help__tooltip {
     right: 0;
     left: auto;
+  }
+
+  .note-dialog .note-save-shortcut__tooltip {
+    right: auto;
+    left: 50%;
+    transform: translate(-50%, 0.2rem);
+  }
+
+  .note-dialog .note-save-shortcut:hover .note-save-shortcut__tooltip,
+  .note-dialog .note-save-shortcut:focus-within .note-save-shortcut__tooltip {
+    transform: translate(-50%, 0);
   }
 
   .notes-panel {

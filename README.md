@@ -155,12 +155,15 @@ The modifier is `Command` on macOS and `Control` on Windows/Linux.
 | Library | `V` | Preview the note card currently under the pointer |
 | Library | `1` / `2` / `3` | Switch to Focus / Comfortable / Compact layout |
 | App | `⌘/Ctrl + \` | Toggle the sidebar when no modal dialog is open |
-| Library / Quick View | `T` | Cycle to the next theme |
+| App, outside form controls | `T` | Cycle to the next theme |
 | Library / Settings | `S` | Open or close Settings |
 | Note editor | `1` / `2` / `3` | Switch to Markdown / Split / Preview mode |
 | Note editor | `⌘/Ctrl + B` | Toggle bold around selected editor text |
 | Note editor | `⌘/Ctrl + I` | Toggle italic around selected editor text |
 | Note editor | `⌘/Ctrl + K` | Insert a link around selected editor text |
+| Note editor | `⌘/Ctrl + E` | Toggle inline code around selected editor text |
+| Note editor | `⌘/Ctrl + Shift + 7` | Toggle a numbered list on the selected lines |
+| Note editor | `⌘/Ctrl + Shift + 8` | Toggle a bullet list on the selected lines |
 | Note editor | `⌘/Ctrl + Shift + S` | Save changes and keep the editor open |
 | Note editor | `⌘/Ctrl + Enter` | Save changes and close the editor |
 | Note view / dialog | `Esc` | Close the current view or dialog |

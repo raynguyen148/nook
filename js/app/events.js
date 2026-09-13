@@ -323,16 +323,19 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
       const usesCommandKey = usesMacKeyboardShortcuts();
       const hasSaveModifier = usesCommandKey ? event.metaKey && !event.ctrlKey : event.ctrlKey && !event.metaKey;
       const formattingKey = event.key.toLowerCase();
-      const matchesNoteFormattingShortcut =
+      const noteFormattingShortcut = !event.shiftKey
+        ? { b: "bold", e: "inline-code", i: "italic", k: "link" }[formattingKey]
+        : { Digit7: "ordered-list", Digit8: "bullet-list" }[event.code];
+      const matchesNoteFormattingShortcut = Boolean(
         event.target === elements.noteContent &&
-        ["b", "i", "k"].includes(formattingKey) &&
+        noteFormattingShortcut &&
         !event.altKey &&
-        !event.shiftKey &&
-        hasSaveModifier;
+        hasSaveModifier,
+      );
 
       if (matchesNoteFormattingShortcut && isNoteEditorOpen()) {
         event.preventDefault();
-        if (!event.repeat && !event.isComposing) applyNoteFormattingShortcut(formattingKey);
+        if (!event.repeat && !event.isComposing) applyNoteFormattingShortcut(noteFormattingShortcut);
         return;
       }
 
@@ -393,6 +396,10 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
         target instanceof HTMLTextAreaElement ||
         target instanceof HTMLSelectElement ||
         (target instanceof HTMLElement && target.isContentEditable);
+      const blocksThemeShortcut =
+        editingText ||
+        target instanceof HTMLButtonElement ||
+        target instanceof HTMLFormElement;
       const matchesNoteEditorModeShortcut =
         isNoteEditorOpen() &&
         ["1", "2", "3"].includes(formattingKey) &&
@@ -497,9 +504,8 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
 
       if (
         matchesThemeShortcut &&
-        !editingText &&
-        !activeModalDialog() &&
-        (!isDetailWorkspaceOpen() || isQuickViewOpen())
+        !blocksThemeShortcut &&
+        !activeModalDialog()
       ) {
         event.preventDefault();
         setTheme(getNextTheme(ui.theme));

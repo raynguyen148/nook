@@ -820,8 +820,10 @@ html[data-theme="midnight"] .note-formatting-tool__button:hover {
 }
 
 html[data-theme="midnight"] .note-formatting-tool__tooltip {
-  border-color: #3d5a78;
-  background: #0b1626;
+  border-color: #557895;
+  color: #e5efff;
+  background: #112038;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.55), 0 2px 6px rgba(0, 0, 0, 0.35);
 }
 
 html[data-theme="midnight"] .tag-picker {

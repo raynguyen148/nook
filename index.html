@@ -667,7 +667,7 @@
                   <path d="M5 6h.01M9 6h.01M13 6h.01M17 6h.01M5 10h.01M9 10h.01M13 10h.01M17 10h.01M7.5 13h9"></path>
                 </svg>
               </button>
-              <span id="note-save-shortcut-help" class="sr-only">Press 1 for the Markdown editor, 2 for split preview, and 3 for Preview. Bold, italic, and link shortcuts format selected note content. Quick save keeps this note open. Save note closes it.</span>
+              <span id="note-save-shortcut-help" class="sr-only">Press 1 for the Markdown editor, 2 for split preview, and 3 for Preview. Press T to cycle the theme when focus is outside form controls. Formatting shortcuts support bold, italic, links, inline code, numbered lists, and bullet lists. Quick save keeps this note open. Save note closes it.</span>
               <div class="note-save-shortcut__tooltip" role="tooltip">
                 <p>Note shortcuts</p>
                 <div class="note-save-shortcut__row">
@@ -681,6 +681,10 @@
                 <div class="note-save-shortcut__row">
                   <span>Preview</span>
                   <span class="note-save-shortcut__keys"><kbd>3</kbd></span>
+                </div>
+                <div class="note-save-shortcut__row">
+                  <span>Cycle theme</span>
+                  <span class="note-save-shortcut__keys"><kbd>T</kbd></span>
                 </div>
                 <div class="note-save-shortcut__row">
                   <span>Bold</span>
@@ -698,6 +702,24 @@
                   <span>Insert link</span>
                   <span class="note-save-shortcut__keys">
                     <kbd class="note-formatting-shortcut-modifier">⌘</kbd><span>+</span><kbd>K</kbd>
+                  </span>
+                </div>
+                <div class="note-save-shortcut__row">
+                  <span>Inline code</span>
+                  <span class="note-save-shortcut__keys">
+                    <kbd class="note-formatting-shortcut-modifier">⌘</kbd><span>+</span><kbd>E</kbd>
+                  </span>
+                </div>
+                <div class="note-save-shortcut__row">
+                  <span>Numbered list</span>
+                  <span class="note-save-shortcut__keys">
+                    <kbd class="note-formatting-shortcut-modifier">⌘</kbd><span>+</span><kbd>Shift</kbd><span>+</span><kbd>7</kbd>
+                  </span>
+                </div>
+                <div class="note-save-shortcut__row">
+                  <span>Bullet list</span>
+                  <span class="note-save-shortcut__keys">
+                    <kbd class="note-formatting-shortcut-modifier">⌘</kbd><span>+</span><kbd>Shift</kbd><span>+</span><kbd>8</kbd>
                   </span>
                 </div>
                 <div class="note-save-shortcut__row">
@@ -725,7 +747,7 @@
                     <path d="m7 2.5-2 15M14 2.5l-2 15M2.5 7h15M1.5 12h15"></path>
                   </svg>
                 </button>
-                <span id="note-markdown-help-description" class="sr-only">Markdown formatting guide for headings, emphasis, code, lists, tables, alerts, and footnotes.</span>
+                <span id="note-markdown-help-description" class="sr-only">Markdown formatting guide for headings, emphasis, code, lists, quotes, tables, alerts, and footnotes.</span>
                 <div class="note-markdown-help__tooltip" role="tooltip">
                   <p>Markdown guide</p>
                   <div class="note-markdown-help__row"><span>Heading</span><code># &nbsp;## &nbsp;###</code></div>
@@ -736,6 +758,7 @@
                   <div class="note-markdown-help__row"><span>Code block</span><code>```js ... ```</code></div>
                   <div class="note-markdown-help__row"><span>Bullet list</span><code>- item</code></div>
                   <div class="note-markdown-help__row"><span>Numbered list</span><code>1. item</code></div>
+                  <div class="note-markdown-help__row"><span>Quote</span><code>&gt; text</code></div>
                   <div class="note-markdown-help__row"><span>Task list</span><code>- [ ] item</code></div>
                   <div class="note-markdown-help__row"><span>Table</span><code>| A | B |</code></div>
                   <div class="note-markdown-help__row"><span>Alert</span><code>&gt; [!NOTE]</code></div>
@@ -1004,7 +1027,7 @@
                 <dd class="shortcut-keys"><span class="shortcut-key-combo"><kbd class="settings-shortcut-modifier">⌘</kbd><span>+</span><kbd>\</kbd></span></dd>
               </div>
               <div class="management-row shortcut-row">
-                <dt class="shortcut-row__label">Cycle theme</dt>
+                <dt class="shortcut-row__label">Cycle theme outside form controls</dt>
                 <dd class="shortcut-keys"><kbd>T</kbd></dd>
               </div>
               <div class="management-row shortcut-row">
@@ -1036,6 +1059,18 @@
               <div class="management-row shortcut-row">
                 <dt class="shortcut-row__label">Insert a link</dt>
                 <dd class="shortcut-keys"><span class="shortcut-key-combo"><kbd class="settings-shortcut-modifier">⌘</kbd><span>+</span><kbd>K</kbd></span></dd>
+              </div>
+              <div class="management-row shortcut-row">
+                <dt class="shortcut-row__label">Toggle inline code</dt>
+                <dd class="shortcut-keys"><span class="shortcut-key-combo"><kbd class="settings-shortcut-modifier">⌘</kbd><span>+</span><kbd>E</kbd></span></dd>
+              </div>
+              <div class="management-row shortcut-row">
+                <dt class="shortcut-row__label">Toggle numbered list</dt>
+                <dd class="shortcut-keys"><span class="shortcut-key-combo"><kbd class="settings-shortcut-modifier">⌘</kbd><span>+</span><kbd>Shift</kbd><span>+</span><kbd>7</kbd></span></dd>
+              </div>
+              <div class="management-row shortcut-row">
+                <dt class="shortcut-row__label">Toggle bullet list</dt>
+                <dd class="shortcut-keys"><span class="shortcut-key-combo"><kbd class="settings-shortcut-modifier">⌘</kbd><span>+</span><kbd>Shift</kbd><span>+</span><kbd>8</kbd></span></dd>
               </div>
               <div class="management-row shortcut-row">
                 <dt class="shortcut-row__label">Save and keep editing</dt>

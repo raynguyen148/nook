@@ -896,16 +896,9 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
     );
   }
 
-  function applyNoteFormattingShortcut(key) {
-    if (key === "b") {
-      toggleNoteContentWrapper("**");
-      return;
-    }
-    if (key === "i") {
-      toggleNoteContentWrapper("*");
-      return;
-    }
-    if (key === "k") insertNoteLink();
+  function applyNoteFormattingShortcut(formatting) {
+    if (formatting === "link") return insertNoteLink();
+    applyNoteFormatting(formatting);
   }
 
   function selectedNoteContentLineRange() {
