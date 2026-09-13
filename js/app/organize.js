@@ -46,6 +46,7 @@ globalThis[Symbol.for("nook.app.modules")].register("organize", (app) => {
       ["types", elements.typesTab, elements.typesPanel],
       ["tags", elements.tagsTab, elements.tagsPanel],
       ["display", elements.displayTab, elements.displayPanel],
+      ["shortcuts", elements.shortcutsTab, elements.shortcutsPanel],
     ];
     const nextTab = tabs.some(([name]) => name === tab) ? tab : "types";
     const changed = ui.managementTab !== nextTab;
@@ -138,7 +139,7 @@ globalThis[Symbol.for("nook.app.modules")].register("organize", (app) => {
   }
 
   function handleManagementTabKeydown(event) {
-    const tabs = [elements.typesTab, elements.tagsTab, elements.displayTab];
+    const tabs = [elements.typesTab, elements.tagsTab, elements.displayTab, elements.shortcutsTab];
     const currentIndex = tabs.indexOf(event.currentTarget);
     if (currentIndex < 0) return;
 
@@ -151,7 +152,14 @@ globalThis[Symbol.for("nook.app.modules")].register("organize", (app) => {
 
     event.preventDefault();
     const nextTab = tabs[nextIndex];
-    setManagementTab(nextTab === elements.typesTab ? "types" : nextTab === elements.tagsTab ? "tags" : "display");
+    const nextTabName = nextTab === elements.typesTab
+      ? "types"
+      : nextTab === elements.tagsTab
+        ? "tags"
+        : nextTab === elements.displayTab
+          ? "display"
+          : "shortcuts";
+    setManagementTab(nextTabName);
     nextTab.focus();
   }
 

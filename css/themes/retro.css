@@ -181,6 +181,17 @@ html[data-theme="retro"] :where(.space-link, .sidebar-filter) { border: var(--re
 html[data-theme="retro"] :where(.space-link, .sidebar-filter):is(.is-active, [aria-pressed="true"]) { border-color: var(--retro-border); color: var(--retro-ink); background: var(--retro-yellow); box-shadow: var(--retro-shadow-sm); }
 html[data-theme="retro"] :where(.space-link, .sidebar-filter):is(.is-active, [aria-pressed="true"]) .filter-count { color: var(--retro-ink); }
 
+/* Note types retain Retro's ink border and offset shadow while reusing the
+ * shared type-aware surface and text colors used by the other themes. */
+html[data-theme="retro"] .sidebar-filter--type:is(.is-active, [aria-pressed="true"]) {
+  color: var(--filter-type-text, var(--retro-ink));
+  background: var(--filter-type-background, var(--retro-paper-muted));
+}
+
+html[data-theme="retro"] .sidebar-filter--type:is(.is-active, [aria-pressed="true"]) .filter-count {
+  color: inherit;
+}
+
 /* Sidebar tag filters and note-card tags intentionally share one chip contract. */
 html[data-theme="retro"] :where(.tag-filter-option, .tag-chip, .selected-tag, .quick-view-tag, .tag-add-button) {
   min-height: 1.48rem;

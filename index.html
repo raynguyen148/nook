@@ -880,13 +880,16 @@
 
       <div class="organize-tabs" role="tablist" aria-label="Library settings">
         <button id="types-tab" class="organize-tab is-active" type="button" role="tab" aria-selected="true" aria-controls="types-panel" tabindex="0">
-          <span>Note types</span><span id="types-tab-count" class="organize-tab__count" aria-hidden="true">0</span>
+          <span><span class="organize-tab__mobile-hidden">Note </span>Types</span><span id="types-tab-count" class="organize-tab__count" aria-hidden="true">0</span>
         </button>
         <button id="tags-tab" class="organize-tab" type="button" role="tab" aria-selected="false" aria-controls="tags-panel" tabindex="-1">
           <span>Tags</span><span id="tags-tab-count" class="organize-tab__count" aria-hidden="true">0</span>
         </button>
         <button id="display-tab" class="organize-tab" type="button" role="tab" aria-selected="false" aria-controls="display-panel" tabindex="-1">
           <span>Display</span>
+        </button>
+        <button id="shortcuts-tab" class="organize-tab" type="button" role="tab" aria-selected="false" aria-controls="shortcuts-panel" tabindex="-1">
+          <span>Shortcuts</span>
         </button>
       </div>
 
@@ -960,6 +963,94 @@
               </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      <section id="shortcuts-panel" class="organize-panel is-hidden" role="tabpanel" aria-labelledby="shortcuts-tab">
+        <div class="organize-panel__intro">
+          <p class="dialog-description">Shortcuts adapt to the current screen. Plain keys are ignored while you are typing in a field.</p>
+        </div>
+
+        <div class="shortcut-settings">
+          <section class="shortcut-group" aria-labelledby="library-shortcuts-title">
+            <h3 id="library-shortcuts-title" class="management-row__name shortcut-group__title">Library</h3>
+            <dl class="management-list shortcut-list">
+              <div class="management-row shortcut-row">
+                <dt class="shortcut-row__label">Focus search</dt>
+                <dd class="shortcut-keys">
+                  <span class="shortcut-key-combo"><kbd class="settings-shortcut-modifier">⌘</kbd><span>+</span><kbd>F</kbd></span>
+                  <span class="shortcut-key-alternative">or</span>
+                  <kbd>/</kbd>
+                </dd>
+              </div>
+              <div class="management-row shortcut-row">
+                <dt class="shortcut-row__label">Create a new note</dt>
+                <dd class="shortcut-keys"><kbd>C</kbd></dd>
+              </div>
+              <div class="management-row shortcut-row">
+                <dt class="shortcut-row__label">Preview hovered note</dt>
+                <dd class="shortcut-keys"><kbd>V</kbd></dd>
+              </div>
+              <div class="management-row shortcut-row">
+                <dt class="shortcut-row__label">Switch layout</dt>
+                <dd class="shortcut-keys shortcut-keys--labeled">
+                  <span><kbd>1</kbd> Focus</span>
+                  <span><kbd>2</kbd> Comfortable</span>
+                  <span><kbd>3</kbd> Compact</span>
+                </dd>
+              </div>
+              <div class="management-row shortcut-row">
+                <dt class="shortcut-row__label">Toggle sidebar</dt>
+                <dd class="shortcut-keys"><span class="shortcut-key-combo"><kbd class="settings-shortcut-modifier">⌘</kbd><span>+</span><kbd>\</kbd></span></dd>
+              </div>
+              <div class="management-row shortcut-row">
+                <dt class="shortcut-row__label">Cycle theme</dt>
+                <dd class="shortcut-keys"><kbd>T</kbd></dd>
+              </div>
+              <div class="management-row shortcut-row">
+                <dt class="shortcut-row__label">Open or close Settings</dt>
+                <dd class="shortcut-keys"><kbd>S</kbd></dd>
+              </div>
+            </dl>
+          </section>
+
+          <section class="shortcut-group" aria-labelledby="note-shortcuts-title">
+            <h3 id="note-shortcuts-title" class="management-row__name shortcut-group__title">Note view and editor</h3>
+            <dl class="management-list shortcut-list">
+              <div class="management-row shortcut-row">
+                <dt class="shortcut-row__label">Switch editor mode</dt>
+                <dd class="shortcut-keys shortcut-keys--labeled">
+                  <span><kbd>1</kbd> Markdown</span>
+                  <span><kbd>2</kbd> Split</span>
+                  <span><kbd>3</kbd> Preview</span>
+                </dd>
+              </div>
+              <div class="management-row shortcut-row">
+                <dt class="shortcut-row__label">Bold selected text</dt>
+                <dd class="shortcut-keys"><span class="shortcut-key-combo"><kbd class="settings-shortcut-modifier">⌘</kbd><span>+</span><kbd>B</kbd></span></dd>
+              </div>
+              <div class="management-row shortcut-row">
+                <dt class="shortcut-row__label">Italicize selected text</dt>
+                <dd class="shortcut-keys"><span class="shortcut-key-combo"><kbd class="settings-shortcut-modifier">⌘</kbd><span>+</span><kbd>I</kbd></span></dd>
+              </div>
+              <div class="management-row shortcut-row">
+                <dt class="shortcut-row__label">Insert a link</dt>
+                <dd class="shortcut-keys"><span class="shortcut-key-combo"><kbd class="settings-shortcut-modifier">⌘</kbd><span>+</span><kbd>K</kbd></span></dd>
+              </div>
+              <div class="management-row shortcut-row">
+                <dt class="shortcut-row__label">Save and keep editing</dt>
+                <dd class="shortcut-keys"><span class="shortcut-key-combo"><kbd class="settings-shortcut-modifier">⌘</kbd><span>+</span><kbd>Shift</kbd><span>+</span><kbd>S</kbd></span></dd>
+              </div>
+              <div class="management-row shortcut-row">
+                <dt class="shortcut-row__label">Save and close</dt>
+                <dd class="shortcut-keys"><span class="shortcut-key-combo"><kbd class="settings-shortcut-modifier">⌘</kbd><span>+</span><kbd>Enter</kbd></span></dd>
+              </div>
+              <div class="management-row shortcut-row">
+                <dt class="shortcut-row__label">Close current view</dt>
+                <dd class="shortcut-keys"><kbd>Esc</kbd></dd>
+              </div>
+            </dl>
+          </section>
         </div>
       </section>
     </dialog>

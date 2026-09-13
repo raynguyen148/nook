@@ -105,16 +105,38 @@ html[data-theme="light"] .storage-status {
   background: #f8fafc;
 }
 
-/* Keep the Light theme's All notes space aligned with its active date
- * filters instead of inheriting the neutral navigation active surface. */
-html[data-theme="light"] #all-notes-space.is-active {
+/* Selected navigation items reserve a transparent border so active states do
+ * not shift. Global filters use the Light accent; note types reuse the same
+ * color-aware border, text, and surface tokens as their active filter pill. */
+html[data-theme="light"] :where(.space-link, .sidebar-filter) {
+  border: 1px solid transparent;
+}
+
+html[data-theme="light"] :where(.space-link, .sidebar-filter).is-active {
+  border-color: var(--primary-accent-border);
   color: var(--primary-accent-text);
   background: var(--primary-accent-soft);
   font-weight: 600;
 }
 
-html[data-theme="light"] #all-notes-space.is-active .filter-count {
+html[data-theme="light"] :where(.space-link, .sidebar-filter).is-active .filter-count {
   color: var(--primary-accent);
+}
+
+html[data-theme="light"] .sidebar-filter--type.is-active {
+  border-color: var(--filter-type-border, var(--primary-accent-border));
+  color: var(--filter-type-text, var(--primary-accent-text));
+  background: var(--filter-type-background, var(--primary-accent-soft));
+}
+
+html[data-theme="light"] .sidebar-filter--type.is-active .filter-count {
+  color: inherit;
+}
+
+html[data-theme="light"] .space-link--trash.is-active {
+  border-color: #fecdd3;
+  color: #a94352;
+  background: #fff1f3;
 }
 
 html[data-theme="light"] .topbar h1 {

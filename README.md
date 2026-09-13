@@ -148,23 +148,27 @@ current and next theme. Auto stays selected after reload and updates when the sy
 
 The modifier is `Command` on macOS and `Control` on Windows/Linux.
 
-| Shortcut | Action |
-| --- | --- |
-| `⌘/Ctrl + F` | Focus search when no modal dialog is open |
-| `/` | Focus search when not already editing a field |
-| `C` | Start a new note from the library when focus is not inside a form field |
-| `⌘/Ctrl + B` | Toggle bold around selected editor text |
-| `⌘/Ctrl + I` | Toggle italic around selected editor text |
-| `⌘/Ctrl + K` | Insert a link around selected editor text |
-| `1` | Switch to Markdown editor |
-| `2` | Switch to Split preview |
-| `3` | Switch to rendered Preview |
-| `⌘/Ctrl + Shift + S` | Save changes and keep the editor open |
-| `⌘/Ctrl + Enter` | Save changes and close the editor |
+| Context | Shortcut | Action |
+| --- | --- | --- |
+| Library | `⌘/Ctrl + F` or `/` | Focus search when no modal dialog is open |
+| Library | `C` | Start a new note when focus is not inside a form field |
+| Library | `V` | Preview the note card currently under the pointer |
+| Library | `1` / `2` / `3` | Switch to Focus / Comfortable / Compact layout |
+| App | `⌘/Ctrl + \` | Toggle the sidebar when no modal dialog is open |
+| Library / Quick View | `T` | Cycle to the next theme |
+| Library / Settings | `S` | Open or close Settings |
+| Note editor | `1` / `2` / `3` | Switch to Markdown / Split / Preview mode |
+| Note editor | `⌘/Ctrl + B` | Toggle bold around selected editor text |
+| Note editor | `⌘/Ctrl + I` | Toggle italic around selected editor text |
+| Note editor | `⌘/Ctrl + K` | Insert a link around selected editor text |
+| Note editor | `⌘/Ctrl + Shift + S` | Save changes and keep the editor open |
+| Note editor | `⌘/Ctrl + Enter` | Save changes and close the editor |
+| Note view / dialog | `Esc` | Close the current view or dialog |
 
-Shortcut and Markdown help are available from the editor footer through hover
-and keyboard focus. Plain keys are scoped away from editable fields so typing
-inside a note is unaffected.
+The complete shortcut reference is available in Settings. Shortcut and Markdown
+help also remain available from the editor footer through hover and keyboard
+focus. Plain keys are scoped away from editable fields so typing inside a note
+is unaffected.
 
 ## Markdown support
 

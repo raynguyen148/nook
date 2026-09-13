@@ -161,13 +161,16 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
     typesTab: document.querySelector("#types-tab"),
     tagsTab: document.querySelector("#tags-tab"),
     displayTab: document.querySelector("#display-tab"),
+    shortcutsTab: document.querySelector("#shortcuts-tab"),
     typesTabCount: document.querySelector("#types-tab-count"),
     tagsTabCount: document.querySelector("#tags-tab-count"),
     typesPanel: document.querySelector("#types-panel"),
     tagsPanel: document.querySelector("#tags-panel"),
     displayPanel: document.querySelector("#display-panel"),
+    shortcutsPanel: document.querySelector("#shortcuts-panel"),
     notePreviewLines: document.querySelector("#note-preview-lines"),
     notePreviewLinesValue: document.querySelector("#note-preview-lines-value"),
+    settingsShortcutModifiers: [...document.querySelectorAll(".settings-shortcut-modifier")],
     typesManagementSearch: document.querySelector("#types-management-search"),
     tagsManagementSearch: document.querySelector("#tags-management-search"),
     addTypeToggle: document.querySelector("#add-type-toggle"),
@@ -511,6 +514,9 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
     elements.noteQuickSaveShortcutModifier.textContent = modifier;
     elements.noteSaveShortcutModifier.textContent = modifier;
     elements.noteFormattingShortcutModifiers.forEach((element) => {
+      element.textContent = modifier;
+    });
+    elements.settingsShortcutModifiers.forEach((element) => {
       element.textContent = modifier;
     });
     elements.noteSaveShortcutHelp.textContent = `Press 1 for the Markdown editor, 2 for split preview, and 3 for Preview. Bold, italic, and link shortcuts format selected note content. Quick save keeps this note open: ${modifierName}, Shift, and S. Save note and close: ${modifierName} and Enter.`;

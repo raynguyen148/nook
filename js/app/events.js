@@ -277,9 +277,11 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
     elements.typesTab.addEventListener("click", () => setManagementTab("types"));
     elements.tagsTab.addEventListener("click", () => setManagementTab("tags"));
     elements.displayTab.addEventListener("click", () => setManagementTab("display"));
+    elements.shortcutsTab.addEventListener("click", () => setManagementTab("shortcuts"));
     elements.typesTab.addEventListener("keydown", handleManagementTabKeydown);
     elements.tagsTab.addEventListener("keydown", handleManagementTabKeydown);
     elements.displayTab.addEventListener("keydown", handleManagementTabKeydown);
+    elements.shortcutsTab.addEventListener("keydown", handleManagementTabKeydown);
     elements.notePreviewLines.addEventListener("input", () => setNotePreviewLines(elements.notePreviewLines.value));
     elements.addTypeToggle.addEventListener("click", () => {
       setManagementCreateMode(ui.managementCreateKind === "types" ? "" : "types");
@@ -385,23 +387,6 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
         return;
       }
 
-      const matchesQuickViewEditShortcut =
-        isQuickViewOpen() &&
-        formattingKey === "e" &&
-        !event.metaKey &&
-        !event.ctrlKey &&
-        !event.altKey &&
-        !event.shiftKey &&
-        !event.repeat &&
-        !event.isComposing &&
-        !event.defaultPrevented;
-
-      if (matchesQuickViewEditShortcut && !ui.noteSaveInFlight) {
-        event.preventDefault();
-        setNoteEditorMode("edit");
-        return;
-      }
-
       const target = event.target;
       const editingText =
         target instanceof HTMLInputElement ||
@@ -428,6 +413,28 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
 
       const selection = window.getSelection();
       const hasTextSelection = Boolean(selection && !selection.isCollapsed);
+      const hoveredNotePreviewButton = document.querySelector(".note-card:hover .note-card__title");
+      const matchesHoveredNotePreviewShortcut =
+        formattingKey === "v" &&
+        hoveredNotePreviewButton instanceof HTMLButtonElement &&
+        !event.metaKey &&
+        !event.ctrlKey &&
+        !event.altKey &&
+        !event.shiftKey &&
+        !event.repeat &&
+        !event.isComposing &&
+        !event.defaultPrevented &&
+        !editingText &&
+        !hasTextSelection &&
+        !activeModalDialog() &&
+        !isDetailWorkspaceOpen();
+
+      if (matchesHoveredNotePreviewShortcut) {
+        event.preventDefault();
+        hoveredNotePreviewButton.click();
+        return;
+      }
+
       const libraryViewShortcutButton = {
         1: elements.focusView,
         2: elements.comfortableView,
