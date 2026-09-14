@@ -422,12 +422,11 @@ html[data-theme="retro"] .search-shortcut kbd { min-width: 0; border: 0; border-
 
 html[data-theme="retro"] .organize-tabs { border: var(--retro-border-width) solid var(--retro-border); border-radius: 999px; box-shadow: var(--retro-shadow-sm); }
 html[data-theme="retro"] .organize-tab { color: var(--retro-muted); background: transparent; }
-html[data-theme="retro"] .organize-tab:is(:hover, :focus-visible, .is-active) { outline: none; color: var(--retro-ink); background: var(--retro-yellow); }
+html[data-theme="retro"] .organize-tab:is(:focus-visible, .is-active) { outline: none; color: var(--retro-ink); background: var(--retro-yellow); }
 html[data-theme="retro"] .organize-tab.is-active { box-shadow: var(--retro-shadow-xs); }
 html[data-theme="retro"] :where(.management-create-row, .management-list) { border: var(--retro-border-width) solid var(--retro-border); border-radius: var(--retro-radius-card); color: var(--retro-ink); background: var(--retro-paper-muted); box-shadow: var(--retro-shadow-sm); }
-html[data-theme="retro"] .management-row { border-color: var(--retro-border); color: var(--retro-ink); background: var(--retro-paper); }
+html[data-theme="retro"] .management-row { border-color: var(--retro-border); color: var(--retro-ink); background: transparent; }
 html[data-theme="retro"] .management-row__name { color: var(--retro-ink); }
-html[data-theme="retro"] .management-row--summary:hover { background: var(--retro-yellow); }
 html[data-theme="retro"] :where(.empty-state, .management-empty) { color: var(--retro-muted); }
 html[data-theme="retro"] .empty-state__icon { border: var(--retro-border-width) solid var(--retro-border); color: var(--retro-ink); background: var(--retro-yellow); box-shadow: var(--retro-shadow-sm); }
 html[data-theme="retro"] .startup-error { border-color: var(--retro-border); color: var(--retro-ink); background: var(--retro-red-soft); box-shadow: var(--retro-shadow-md); }

@@ -9,6 +9,11 @@
    Organize dialog, type/tag pickers, management rows, toast, and startup state.
    ========================================================================== */
 
+:root {
+  --settings-scrollbar-thumb: #8f959e;
+  --settings-scrollbar-thumb-hover: #707780;
+}
+
 .organize-dialog {
   width: min(calc(100% - 2rem), 560px);
 }
@@ -43,19 +48,7 @@
   font-size: 0.82rem;
   font-weight: 600;
   cursor: pointer;
-  transition:
-    color var(--motion-duration-short) var(--motion-ease-out),
-    background-color var(--motion-duration-short) var(--motion-ease-out),
-    box-shadow var(--motion-duration-short) var(--motion-ease-out);
 }
-
-
-
-.organize-tab:hover:not(.is-active) {
-  color: #0f172a;
-  background: rgba(0, 0, 0, 0.05);
-}
-
 
 
 .organize-tab.is-active {
@@ -71,38 +64,44 @@
   overflow: auto;
   padding: 1rem 1.25rem 1.25rem;
   overscroll-behavior: contain;
-  scrollbar-color: var(--primary-accent-border) transparent;
   scrollbar-gutter: stable;
+}
+
+
+
+.organize-dialog :is(.organize-panel, .management-list, .theme-picker__options, .color-picker__menu) {
+  scrollbar-color: var(--settings-scrollbar-thumb) transparent;
   scrollbar-width: thin;
 }
 
 
 
-.organize-panel::-webkit-scrollbar {
-  width: 0.75rem;
+.organize-dialog :is(.organize-panel, .management-list, .theme-picker__options, .color-picker__menu)::-webkit-scrollbar {
+  width: 0.78rem;
+  height: 0.78rem;
 }
 
 
 
-.organize-panel::-webkit-scrollbar-track {
-  margin-block: 0.4rem;
+.organize-dialog :is(.organize-panel, .management-list, .theme-picker__options, .color-picker__menu)::-webkit-scrollbar-track {
+  margin-block: 0.42rem;
   background: transparent;
 }
 
 
 
-.organize-panel::-webkit-scrollbar-thumb {
-  border: 0.25rem solid transparent;
+.organize-dialog :is(.organize-panel, .management-list, .theme-picker__options, .color-picker__menu)::-webkit-scrollbar-thumb {
+  border: 0.22rem solid transparent;
   border-radius: 9999px;
-  background: var(--primary-accent-border);
+  background: var(--settings-scrollbar-thumb);
   background-clip: padding-box;
 }
 
 
 
 @media (hover: hover) and (pointer: fine) {
-  .organize-panel::-webkit-scrollbar-thumb:hover {
-    background-color: var(--primary-accent);
+  .organize-dialog :is(.organize-panel, .management-list, .theme-picker__options, .color-picker__menu)::-webkit-scrollbar-thumb:hover {
+    background-color: var(--settings-scrollbar-thumb-hover);
   }
 }
 
@@ -388,19 +387,12 @@
   border-radius: 0;
   padding: 0.85rem 1rem;
   background: #ffffff;
-  transition: background-color var(--motion-duration-short) var(--motion-ease-out);
 }
 
 
 
 .management-row:last-child {
   border-bottom: 0;
-}
-
-
-
-.management-row--summary:hover {
-  background: #f8fafc;
 }
 
 
@@ -888,4 +880,98 @@
   margin: 0;
   color: #8c5560;
   line-height: 1.55;
+}
+
+
+
+/* --------------------------------------------------------------------------
+   Settings visual contract
+   Keep every Settings tab on the same restrained type scale and let each
+   theme supply the surface tokens. The dialog prefix intentionally wins over
+   feature-level defaults in organize.css without requiring !important.
+   -------------------------------------------------------------------------- */
+.organize-dialog .organize-tab {
+  font-size: 0.8rem;
+}
+
+
+
+.organize-dialog .organize-panel {
+  color: var(--note-card-title, #0f172a);
+}
+
+
+
+.organize-dialog .dialog-description {
+  font-size: 0.8rem;
+  line-height: 1.45;
+}
+
+
+
+.organize-dialog .organize-panel__count {
+  font-size: 0.78rem;
+}
+
+
+
+.organize-dialog .management-list {
+  border-color: var(--note-card-border, #e2e8f0);
+  background: var(--note-card-surface, #ffffff);
+}
+
+
+
+.organize-dialog .management-row {
+  border-bottom-color: var(--note-card-border, #e2e8f0);
+  color: var(--note-card-title, #0f172a);
+  background: transparent;
+}
+
+
+
+.organize-dialog .management-row__name {
+  font-size: 0.875rem;
+}
+
+
+
+.organize-dialog .management-row__metadata,
+.organize-dialog .management-row__usage,
+.organize-dialog .management-row__trash-usage {
+  font-size: 0.8rem;
+}
+
+
+
+.organize-dialog .management-row__actions .button,
+.organize-dialog .management-row__controls--editing .button,
+.organize-dialog .data-setting__actions .button {
+  font-size: 0.78rem;
+}
+
+
+
+.organize-dialog .shortcut-group__title {
+  font-size: 0.8rem;
+}
+
+
+
+.organize-dialog .shortcut-row__label {
+  font-size: 0.8rem;
+}
+
+
+
+.organize-dialog .shortcut-keys {
+  font-size: 0.72rem;
+}
+
+
+
+@media (max-width: 620px) {
+  .organize-dialog .organize-tab {
+    font-size: 0.76rem;
+  }
 }

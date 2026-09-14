@@ -1326,10 +1326,6 @@ html[data-theme="midnight"] .organize-tab {
   transition: color var(--interaction-duration) var(--motion-ease-out), background-color var(--interaction-duration) var(--motion-ease-out), border-color var(--interaction-duration) var(--motion-ease-out);
 }
 
-html[data-theme="midnight"] .organize-tab:hover {
-  color: #e5efff;
-}
-
 html[data-theme="midnight"] .organize-tab.is-active {
   border-bottom-color: transparent;
   color: var(--primary-accent-text);
@@ -1346,11 +1342,7 @@ html[data-theme="midnight"] .management-list {
 html[data-theme="midnight"] .management-row {
   border-color: #1d3550;
   border-bottom-color: #1d3550;
-  background: #0f1b2d;
-}
-
-html[data-theme="midnight"] .management-row--summary:hover {
-  background: #14243a;
+  background: transparent;
 }
 
 html[data-theme="midnight"] .management-row__name {

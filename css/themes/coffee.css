@@ -1231,11 +1231,6 @@ html:not([data-theme]) .management-row {
   border-bottom-color: #e5dacb;
 }
 
-html[data-theme="coffee"] .management-row:hover,
-html:not([data-theme]) .management-row:hover {
-  background: #f0e6d6;
-}
-
 html[data-theme="coffee"] .management-row__name,
 html:not([data-theme]) .management-row__name {
   color: #261e18;

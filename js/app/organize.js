@@ -148,7 +148,13 @@ globalThis[Symbol.for("nook.app.modules")].register("organize", (app) => {
 
   function createManagementUsageMetadata(total, active) {
     const metadata = createElement("div", { className: "management-row__metadata" });
-    metadata.append(createElement("span", { className: "management-row__usage", text: pluralize(active, "note") }));
+
+    const activeSpan = createElement("span", { className: "management-row__usage" });
+    activeSpan.append(
+      document.createTextNode(`${active} `),
+      createElement("span", { text: active === 1 ? "note" : "notes" })
+    );
+    metadata.append(activeSpan);
 
     const trashed = Math.max(0, total - active);
     if (!trashed) return metadata;
@@ -159,10 +165,11 @@ globalThis[Symbol.for("nook.app.modules")].register("organize", (app) => {
     });
     trashUsage.append(
       createTrashUsageIcon(),
-      createElement("span", { text: String(trashed), attributes: { "aria-hidden": "true" } }),
+      document.createTextNode(` ${trashed}`),
       createElement("span", { className: "sr-only", text: `${pluralize(trashed, "note")} in Trash` }),
     );
     metadata.append(trashUsage);
+
     return metadata;
   }
 
@@ -431,7 +438,7 @@ globalThis[Symbol.for("nook.app.modules")].register("organize", (app) => {
             }
           });
         }
-        row.append(main, metadata, actions);
+        row.append(main, actions, metadata);
       }
       fragment.append(row);
     });
@@ -536,7 +543,7 @@ globalThis[Symbol.for("nook.app.modules")].register("organize", (app) => {
             showError(error);
           }
         });
-        row.append(main, metadata, actions);
+        row.append(main, actions, metadata);
       }
       fragment.append(row);
     });

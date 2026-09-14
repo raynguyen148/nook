@@ -24,6 +24,7 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
   let sidebarExpandStartTimer = 0;
   let sidebarExpandRevealTimer = 0;
   let sidebarExpandFinishTimer = 0;
+  let themePickerCloseTimer = 0;
   const THEME_LABELS = Object.freeze({
     auto: "Auto",
     light: "Light",
@@ -133,8 +134,40 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
     elements.themePickerTrigger.hidden = false;
   }
 
+  function clearThemePickerClosingState() {
+    if (themePickerCloseTimer) {
+      window.clearTimeout(themePickerCloseTimer);
+      themePickerCloseTimer = 0;
+    }
+    elements.themePickerMenu.classList.remove("is-closing");
+  }
+
+  function releaseThemePickerGeometry() {
+    clearThemePickerClosingState();
+    elements.organizeDialog.style.removeProperty("--theme-picker-dialog-height");
+    elements.organizeDialog.style.removeProperty("--theme-picker-panel-gutter");
+  }
+
   function openThemePicker() {
-    if (!elements.themePickerMenu.hidden || elements.themePickerTrigger.disabled) return;
+    const isClosing = elements.themePickerMenu.classList.contains("is-closing");
+    if ((!elements.themePickerMenu.hidden && !isClosing) || elements.themePickerTrigger.disabled) return;
+    clearThemePickerClosingState();
+    const panelBounds = elements.displayPanel.getBoundingClientRect();
+    const panelIntroBounds = elements.displayPanel
+      .querySelector(".organize-panel__intro")
+      ?.getBoundingClientRect();
+    const panelStyle = window.getComputedStyle(elements.displayPanel);
+    const panelScrollbarGutter = panelIntroBounds
+      ? Math.max(0, panelBounds.right - panelIntroBounds.right - parseFloat(panelStyle.paddingRight))
+      : 0;
+    elements.organizeDialog.style.setProperty(
+      "--theme-picker-dialog-height",
+      `${elements.organizeDialog.getBoundingClientRect().height}px`,
+    );
+    elements.organizeDialog.style.setProperty(
+      "--theme-picker-panel-gutter",
+      `${panelScrollbarGutter}px`,
+    );
     elements.themePickerMenu.hidden = false;
     elements.themePicker.classList.add("is-open");
     elements.themePickerTrigger.setAttribute("aria-expanded", "true");
@@ -147,15 +180,35 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
   }
 
   function closeThemePicker({ focusTrigger = false } = {}) {
-    if (elements.themePickerMenu.hidden) return;
-    elements.themePickerMenu.hidden = true;
+    if (elements.themePickerMenu.hidden) {
+      releaseThemePickerGeometry();
+      return;
+    }
+    if (elements.themePickerMenu.classList.contains("is-closing")) {
+      if (focusTrigger) elements.themePickerTrigger.focus({ preventScroll: true });
+      return;
+    }
+    elements.themePickerMenu.classList.add("is-closing");
     elements.themePicker.classList.remove("is-open");
     elements.themePickerTrigger.setAttribute("aria-expanded", "false");
+    const finishClosing = () => {
+      elements.themePickerMenu.hidden = true;
+      releaseThemePickerGeometry();
+    };
+    if (prefersReducedMotion()) finishClosing();
+    else {
+      themePickerCloseTimer = window.setTimeout(
+        finishClosing,
+        MOTION.short,
+      );
+    }
     if (focusTrigger) elements.themePickerTrigger.focus({ preventScroll: true });
   }
 
   function toggleThemePicker() {
-    if (elements.themePickerMenu.hidden) openThemePicker();
+    if (elements.themePickerMenu.hidden || elements.themePickerMenu.classList.contains("is-closing")) {
+      openThemePicker();
+    }
     else closeThemePicker({ focusTrigger: true });
   }
 

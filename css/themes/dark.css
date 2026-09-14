@@ -1326,10 +1326,6 @@ html[data-theme="dark"] .organize-tab {
   transition: color var(--interaction-duration) var(--motion-ease-out), background-color var(--interaction-duration) var(--motion-ease-out), border-color var(--interaction-duration) var(--motion-ease-out);
 }
 
-html[data-theme="dark"] .organize-tab:hover {
-  color: #e8e8e8;
-}
-
 html[data-theme="dark"] .organize-tab.is-active {
   border-bottom-color: transparent;
   color: var(--primary-accent-text);
@@ -1346,11 +1342,7 @@ html[data-theme="dark"] .management-list {
 html[data-theme="dark"] .management-row {
   border-color: #2b2b2b;
   border-bottom-color: #2b2b2b;
-  background: #1e1e1e;
-}
-
-html[data-theme="dark"] .management-row--summary:hover {
-  background: #252526;
+  background: transparent;
 }
 
 html[data-theme="dark"] .management-row__name {

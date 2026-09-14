@@ -7,7 +7,7 @@
    Final Settings modal, management list, and picker presentation.
    ========================================================================== */
 
-/* Organize notes / Settings modal: clean modern list with hover actions */
+/* Organize notes / Settings modal: quiet, hover-revealed management controls */
 :root {
   --management-search-resting-border: #cbd5e1;
   --management-search-resting-shadow: 0 1px 2px rgb(0 0 0 / 4%);
@@ -41,6 +41,7 @@
   display: inline-flex;
   align-items: center;
   white-space: nowrap;
+  font-size: 0.78rem;
 }
 
 
@@ -130,23 +131,26 @@
 
 .management-row--summary {
   position: relative;
-  min-height: 3.9rem;
+  min-height: 2.8rem;
+  border-bottom: 1px solid var(--note-card-border, #e2e8f0);
+  border-radius: 0.76rem;
+  padding: 0.4rem 0.8rem;
+}
+
+
+
+.management-row--summary:last-child {
   border-bottom: 0;
-  border-radius: 0.72rem;
-  padding: 0.75rem 1rem;
 }
 
 
 
 .management-row--summary .management-row__main {
+  display: flex;
+  align-items: center;
   gap: 0.8rem;
-}
-
-
-
-.management-row--summary :is(.type-dot, .tag-marker) {
-  width: 0.9rem;
-  height: 0.9rem;
+  flex: 1;
+  min-width: 0;
 }
 
 
@@ -159,9 +163,11 @@
 
 .management-row__name {
   color: #0f172a;
-  font-size: 0.98rem;
+  font-size: 0.875rem;
   font-weight: 540;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 
@@ -171,20 +177,27 @@
   align-items: center;
   flex: 0 0 auto;
   gap: 0.85rem;
-  margin-left: auto;
   color: var(--note-card-preview);
-  font-size: 0.94rem;
+  font-size: 0.84rem;
   font-variant-numeric: tabular-nums;
   font-weight: 500;
   line-height: 1.2;
-  transition: opacity var(--interaction-duration) var(--interaction-easing);
   white-space: nowrap;
 }
 
 
 
 .management-row__usage {
-  color: inherit;
+  color: var(--text-color, inherit);
+  font-weight: 540;
+}
+
+
+
+.management-row__usage span {
+  color: var(--note-card-preview);
+  font-weight: 400;
+  font-size: 0.8rem;
 }
 
 
@@ -193,8 +206,10 @@
   display: inline-flex;
   align-items: center;
   gap: 0.28rem;
-  color: inherit;
-  opacity: 0.62;
+  color: var(--note-card-preview);
+  font-weight: 400;
+  font-size: 0.8rem;
+  opacity: 0.85;
 }
 
 
@@ -213,8 +228,6 @@
   gap: 0.4rem;
   margin-left: auto;
   flex: 0 0 auto;
-  opacity: 0;
-  transition: opacity var(--interaction-duration) var(--interaction-easing);
 }
 
 
@@ -234,35 +247,29 @@
 
 
 
-.management-row__actions {
-  opacity: 0;
-  transition: opacity var(--interaction-duration) var(--interaction-easing);
-}
-
-
-
 .management-row--summary .management-row__actions {
-  position: absolute;
-  top: 50%;
-  right: 1rem;
-  z-index: 1;
-  transform: translateY(-50%);
-  pointer-events: none;
+  margin-left: auto;
+  margin-right: 0.75rem;
 }
 
 
 
-.management-row:hover .management-row__actions,
-.management-row:focus-within .management-row__actions {
-  opacity: 1;
-  pointer-events: auto;
-}
+/* Keep row metadata in place while actions are revealed on pointer hover or
+ * keyboard focus. The reserved action slot prevents the count from shifting
+ * when the buttons become visible. Touch/coarse pointers keep actions visible
+ * through the media rule below. */
+@media (hover: hover) and (pointer: fine) {
+  .management-row--summary .management-row__actions {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--motion-duration-short) var(--motion-ease-out);
+  }
 
-
-
-.management-row--summary:hover .management-row__metadata,
-.management-row--summary:focus-within .management-row__metadata {
-  opacity: 0;
+  .management-row--summary:hover .management-row__actions,
+  .management-row--summary:focus-within .management-row__actions {
+    opacity: 1;
+    pointer-events: auto;
+  }
 }
 
 
@@ -272,19 +279,8 @@
     flex-wrap: wrap;
   }
 
-  .management-row__actions {
-    opacity: 1;
-  }
-
   .management-row--summary .management-row__actions {
-    position: static;
-    transform: none;
     pointer-events: auto;
-  }
-
-  .management-row--summary:hover .management-row__metadata,
-  .management-row--summary:focus-within .management-row__metadata {
-    opacity: 1;
   }
 }
 
@@ -326,8 +322,7 @@
 
 
 
-.organize-dialog .display-settings > .display-setting,
-.organize-dialog .display-settings > .display-setting:hover {
+.organize-dialog .display-settings > .display-setting {
   background: transparent;
   transition: none;
 }
@@ -631,10 +626,16 @@
 
 
 
-.theme-picker__menu[hidden] {
-  display: none;
+.theme-picker__menu[hidden],
+.theme-picker__menu.is-closing {
   opacity: 0;
   transform: translateY(-0.25rem);
+}
+
+
+
+.theme-picker__menu[hidden] {
+  display: none;
 }
 
 
@@ -645,10 +646,29 @@
 
 
 
-.organize-dialog:has(.theme-picker__menu:not([hidden])),
-.organize-panel:has(.theme-picker__menu:not([hidden])),
+.theme-picker__menu.is-closing {
+  pointer-events: none;
+  transition-timing-function: var(--motion-ease-in);
+}
+
+
+
 .display-settings:has(.theme-picker__menu:not([hidden])) {
   overflow: visible;
+}
+
+
+
+@media (min-width: 621px) {
+  .organize-dialog:has(.theme-picker__menu:not([hidden])) {
+    height: var(--theme-picker-dialog-height);
+    overflow: visible;
+  }
+
+  .organize-panel:has(.theme-picker__menu:not([hidden])) {
+    overflow: visible;
+    padding-right: calc(1.25rem + var(--theme-picker-panel-gutter, 0px));
+  }
 }
 
 
@@ -708,6 +728,16 @@
 
 
 
+@media (hover: hover) and (pointer: fine) {
+  .theme-picker__option:hover:not(:disabled):not([aria-selected="true"]) {
+    color: var(--primary-accent-text);
+    background: var(--primary-accent-soft-hover);
+    box-shadow: inset 0 0 0 1px var(--note-card-surface);
+  }
+}
+
+
+
 .theme-picker__option:active:not(:disabled) {
   background: var(--primary-accent-soft-hover);
 }
@@ -717,16 +747,6 @@
 .theme-picker__option:disabled {
   cursor: not-allowed;
   opacity: 0.55;
-}
-
-
-
-@media (hover: hover) and (pointer: fine) {
-  .theme-picker__option:hover:not(:disabled) {
-    color: var(--primary-accent-text);
-    background: var(--primary-accent-soft);
-    box-shadow: inset 0 0 0 1px var(--note-card-surface);
-  }
 }
 
 
@@ -806,7 +826,7 @@
 
 .data-setting__copy .dialog-description {
   margin: 0;
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   line-height: 1.45;
 }
 
@@ -1128,29 +1148,36 @@
   .management-row--summary {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
-    align-items: center;
+    align-items: start;
+    row-gap: 0.38rem;
   }
 
   .management-row--summary .management-row__main {
-    grid-column: 1;
+    grid-column: 1 / -1;
+    grid-row: 1;
   }
 
   .management-row--summary .management-row__metadata {
     grid-column: 2;
+    grid-row: 2;
     margin-left: 0;
+    justify-self: end;
   }
 
   .management-row--summary .management-row__actions {
     position: static;
     transform: none;
     pointer-events: auto;
-    grid-column: 1 / -1;
-    justify-content: flex-end;
-    width: 100%;
+    grid-column: 1;
+    grid-row: 2;
+    justify-content: flex-start;
+    width: auto;
   }
 
   .management-row--summary .management-row__actions .button {
-    min-height: 2.6rem;
+    min-width: 2.9rem;
+    min-height: 2.35rem;
+    padding-inline: 0.45rem;
   }
 
   form.management-row .management-row__controls {
