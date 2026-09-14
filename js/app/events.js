@@ -18,6 +18,7 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
     refreshAutoTheme,
     setTheme,
     syncSidebarUI,
+    positionSidebarToggleTooltip,
     toggleSidebar,
     syncPinnedTopbarControlMetrics,
     scheduleTopbarActionsPinning,
@@ -107,6 +108,8 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
   function bindEvents() {
     elements.mobileFilterToggle.addEventListener("click", toggleMobileFilters);
     elements.sidebarToggle?.addEventListener("click", () => toggleSidebar());
+    elements.sidebarToggle?.addEventListener("pointerenter", positionSidebarToggleTooltip);
+    elements.sidebarToggle?.addEventListener("focus", positionSidebarToggleTooltip);
     elements.tagFilterToggle.addEventListener("click", toggleTagFilterExpansion);
     elements.createdTodayFilter.addEventListener("click", toggleTodayFilter);
     elements.updatedTodayFilter.addEventListener("click", toggleUpdatedTodayFilter);
@@ -139,6 +142,11 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
       }
     });
     elements.themeToggle.addEventListener("click", () => setTheme(getNextTheme(ui.theme)));
+    elements.themeOptions.forEach((option) => {
+      option.addEventListener("change", () => {
+        if (option.checked) setTheme(option.value);
+      });
+    });
     document.addEventListener("visibilitychange", refreshAutoTheme);
     window.addEventListener("focus", refreshAutoTheme);
     window.addEventListener("pageshow", refreshAutoTheme);
@@ -233,6 +241,7 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
       );
       scheduleTopbarActionsPinning();
       scheduleTagFilterLayout();
+      positionSidebarToggleTooltip();
       window.requestAnimationFrame(syncPinnedTopbarControlMetrics);
     });
     window.addEventListener("scroll", scheduleTopbarActionsPinning, { passive: true });

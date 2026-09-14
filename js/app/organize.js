@@ -40,6 +40,7 @@ globalThis[Symbol.for("nook.app.modules")].register("organize", (app) => {
   const renderTagSuggestions = (...args) => api.renderTagSuggestions(...args);
   const hasUnsavedNoteChanges = (...args) => api.hasUnsavedNoteChanges(...args);
   const syncNoteEditorControls = (...args) => api.syncNoteEditorControls(...args);
+  const isDeletedNote = (...args) => api.isDeletedNote(...args);
 
   function setManagementTab(tab) {
     const tabs = [
@@ -118,6 +119,10 @@ globalThis[Symbol.for("nook.app.modules")].register("organize", (app) => {
   function managementMatchesQuery(kind, value) {
     const query = managementQuery(kind);
     return !query || value.toLocaleLowerCase().includes(query);
+  }
+
+  function formatUsageCounts(total, active) {
+    return `${total} total · ${active} active`;
   }
 
   function startManagementEdit(kind, id) {
@@ -289,8 +294,12 @@ globalThis[Symbol.for("nook.app.modules")].register("organize", (app) => {
   }
 
   function renderTypeManagement({ animate = false } = {}) {
-    const usageCounts = new Map();
-    library.notes.forEach((note) => usageCounts.set(note.typeId, (usageCounts.get(note.typeId) || 0) + 1));
+    const totalUsageCounts = new Map();
+    const activeUsageCounts = new Map();
+    library.notes.forEach((note) => {
+      totalUsageCounts.set(note.typeId, (totalUsageCounts.get(note.typeId) || 0) + 1);
+      if (!isDeletedNote(note)) activeUsageCounts.set(note.typeId, (activeUsageCounts.get(note.typeId) || 0) + 1);
+    });
     elements.typesList.replaceChildren();
     const visibleTypes = library.types.filter((type) => managementMatchesQuery("types", type.name));
     if (!visibleTypes.length) {
@@ -304,7 +313,9 @@ globalThis[Symbol.for("nook.app.modules")].register("organize", (app) => {
 
     const fragment = document.createDocumentFragment();
     visibleTypes.forEach((type) => {
-      const usage = usageCounts.get(type.id) || 0;
+      const totalUsage = totalUsageCounts.get(type.id) || 0;
+      const activeUsage = activeUsageCounts.get(type.id) || 0;
+      const usageLabel = formatUsageCounts(totalUsage, activeUsage);
       const isEditing = ui.managementEditing?.kind === "types" && ui.managementEditing.id === type.id;
       const row = isEditing
         ? createElement("form", { className: "management-row management-row--type", dataset: { managementEditId: type.id } })
@@ -328,7 +339,7 @@ globalThis[Symbol.for("nook.app.modules")].register("organize", (app) => {
         const cancel = createElement("button", { className: "button button-secondary button-compact", type: "button", text: "Cancel" });
         const save = createElement("button", { className: "button button-primary button-compact", type: "submit", text: "Save" });
         main.append(nameInput);
-        controls.append(colorPicker.root, createElement("span", { className: "usage-count", text: pluralize(usage, "note") }), cancel, save);
+        controls.append(colorPicker.root, createElement("span", { className: "usage-count", text: usageLabel }), cancel, save);
         row.append(main, controls);
         cancel.addEventListener("click", cancelManagementEdit);
         row.addEventListener("submit", async (event) => {
@@ -352,7 +363,7 @@ globalThis[Symbol.for("nook.app.modules")].register("organize", (app) => {
         });
         main.append(createElement("span", { className: "management-row__name", text: type.name }));
         if (type.id === storage.FALLBACK_TYPE_ID) main.append(createElement("span", { className: "management-row__default", text: "Default" }));
-        main.append(createElement("span", { className: "usage-count", text: pluralize(usage, "note") }));
+        main.append(createElement("span", { className: "usage-count", text: usageLabel }));
         actions.append(edit);
         edit.addEventListener("click", () => startManagementEdit("types", type.id));
 
@@ -365,7 +376,7 @@ globalThis[Symbol.for("nook.app.modules")].register("organize", (app) => {
           });
           actions.append(remove);
           remove.addEventListener("click", async () => {
-            const affected = usageCounts.get(type.id) || 0;
+            const affected = totalUsageCounts.get(type.id) || 0;
             const fallbackType = typeFor(storage.FALLBACK_TYPE_ID);
             const description = affected
               ? `“${type.name}” will be deleted. ${pluralize(affected, "note")} will move to ${fallbackType.name}.`
@@ -395,10 +406,14 @@ globalThis[Symbol.for("nook.app.modules")].register("organize", (app) => {
   }
 
   function renderTagManagement({ animate = false } = {}) {
-    const usageCounts = new Map();
-    library.notes.forEach((note) =>
-      note.tagIds.forEach((tagId) => usageCounts.set(tagId, (usageCounts.get(tagId) || 0) + 1)),
-    );
+    const totalUsageCounts = new Map();
+    const activeUsageCounts = new Map();
+    library.notes.forEach((note) => {
+      note.tagIds.forEach((tagId) => {
+        totalUsageCounts.set(tagId, (totalUsageCounts.get(tagId) || 0) + 1);
+        if (!isDeletedNote(note)) activeUsageCounts.set(tagId, (activeUsageCounts.get(tagId) || 0) + 1);
+      });
+    });
     elements.tagsList.replaceChildren();
     const visibleTags = library.tags.filter((tag) => managementMatchesQuery("tags", tagLabel(tag)));
     if (!visibleTags.length) {
@@ -414,7 +429,9 @@ globalThis[Symbol.for("nook.app.modules")].register("organize", (app) => {
     }
     const fragment = document.createDocumentFragment();
     visibleTags.forEach((tag) => {
-      const usage = usageCounts.get(tag.id) || 0;
+      const totalUsage = totalUsageCounts.get(tag.id) || 0;
+      const activeUsage = activeUsageCounts.get(tag.id) || 0;
+      const usageLabel = formatUsageCounts(totalUsage, activeUsage);
       const label = tagLabel(tag);
       const isEditing = ui.managementEditing?.kind === "tags" && ui.managementEditing.id === tag.id;
       const row = isEditing
@@ -433,7 +450,7 @@ globalThis[Symbol.for("nook.app.modules")].register("organize", (app) => {
         const cancel = createElement("button", { className: "button button-secondary button-compact", type: "button", text: "Cancel" });
         const save = createElement("button", { className: "button button-primary button-compact", type: "submit", text: "Save" });
         main.append(nameInput);
-        controls.append(createElement("span", { className: "usage-count", text: pluralize(usage, "note") }), cancel, save);
+        controls.append(createElement("span", { className: "usage-count", text: usageLabel }), cancel, save);
         row.append(main, controls);
         cancel.addEventListener("click", cancelManagementEdit);
         row.addEventListener("submit", async (event) => {
@@ -462,11 +479,11 @@ globalThis[Symbol.for("nook.app.modules")].register("organize", (app) => {
           attributes: { "aria-label": `Delete ${label}` },
         });
         main.append(createElement("span", { className: "management-row__name", text: label }));
-        main.append(createElement("span", { className: "usage-count", text: pluralize(usage, "note") }));
+        main.append(createElement("span", { className: "usage-count", text: usageLabel }));
         actions.append(edit, remove);
         edit.addEventListener("click", () => startManagementEdit("tags", tag.id));
         remove.addEventListener("click", async () => {
-          const affected = usageCounts.get(tag.id) || 0;
+          const affected = totalUsageCounts.get(tag.id) || 0;
           const description = affected
             ? `“${label}” will be deleted and removed from ${pluralize(affected, "note")}.`
             : `“${label}” will be deleted.`;

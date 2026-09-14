@@ -1,3 +1,6 @@
+/* Hallmark · component: theme picker · genre: editorial · theme: inherited
+ * pre-emit critique: P5 H5 E5 S5 R5 V4 · contrast: pass · responsive: pass
+ */
 /* ==========================================================================
    Nook - Organize Surface
    Final Settings modal, management list, and picker presentation.
@@ -9,6 +12,24 @@
   --management-search-resting-shadow: 0 1px 2px rgb(0 0 0 / 4%);
   --management-row-input-resting-border: #cbd5e1;
   --management-row-input-resting-shadow: none;
+  --theme-swatch-light-paper: #fffdf8;
+  --theme-swatch-light-accent: #9e6b02;
+  --theme-swatch-light-rule: #ded5c4;
+  --theme-swatch-coffee-paper: #faf5ee;
+  --theme-swatch-coffee-accent: #a35616;
+  --theme-swatch-coffee-rule: #dfcdb8;
+  --theme-swatch-forest-paper: #f3f7f1;
+  --theme-swatch-forest-accent: #2f6b4f;
+  --theme-swatch-forest-rule: #c3d3c6;
+  --theme-swatch-midnight-paper: #0f1b2d;
+  --theme-swatch-midnight-accent: #4aa8ed;
+  --theme-swatch-midnight-rule: #29415f;
+  --theme-swatch-dark-paper: #1e1e1e;
+  --theme-swatch-dark-accent: #c48828;
+  --theme-swatch-dark-rule: #51442e;
+  --theme-swatch-retro-paper: #fff4dd;
+  --theme-swatch-retro-accent: #ffd447;
+  --theme-swatch-retro-rule: #2b241e;
 }
 
 .organize-tab {
@@ -191,7 +212,7 @@
 
 .display-settings {
   max-height: none;
-  overflow: visible;
+  overflow: hidden;
 }
 
 
@@ -199,6 +220,14 @@
 .display-setting {
   align-items: flex-start;
   padding: 1rem;
+}
+
+
+
+.organize-dialog .display-settings > .display-setting,
+.organize-dialog .display-settings > .display-setting:hover {
+  background: transparent;
+  transition: none;
 }
 
 
@@ -214,6 +243,216 @@
 
 .display-setting__description {
   margin: 0;
+}
+
+
+
+.display-setting__description kbd {
+  display: inline-grid;
+  min-width: 1.25rem;
+  min-height: 1.25rem;
+  place-items: center;
+  border: 1px solid var(--note-card-border, #d9dee7);
+  border-bottom-width: 2px;
+  border-radius: 0.3rem;
+  padding: 0.05rem 0.3rem;
+  color: var(--note-card-title, #596579);
+  background: var(--note-card-surface, #fff);
+  font: inherit;
+  font-size: 0.68rem;
+  font-weight: 650;
+  line-height: 1;
+  vertical-align: 0.05rem;
+}
+
+
+
+.theme-picker {
+  width: min(100%, 13rem);
+  min-width: 0;
+  flex: 0 0 13rem;
+  margin: 0;
+  border: 0;
+  padding: 0;
+}
+
+
+
+.theme-picker__options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.42rem;
+}
+
+
+
+.theme-option {
+  position: relative;
+  display: flex;
+  min-width: 0;
+  min-height: 2.25rem;
+  align-items: center;
+  gap: 0.42rem;
+  border: 1px solid var(--note-card-border, #d9dee7);
+  border-radius: 0.58rem;
+  padding: 0.42rem 0.5rem;
+  color: var(--note-card-title, #0f172a);
+  background: var(--note-card-surface, #fff);
+  font-size: 0.74rem;
+  font-weight: 600;
+  line-height: 1.15;
+  cursor: pointer;
+  transition:
+    color var(--motion-duration-short) var(--motion-ease-out),
+    border-color var(--motion-duration-short) var(--motion-ease-out);
+}
+
+
+
+.theme-option:has(.theme-option__input:checked) {
+  border-color: var(--primary-accent);
+  color: var(--primary-accent-text);
+  background: var(--note-card-surface, #fff);
+  box-shadow: none;
+}
+
+
+
+.theme-option:has(.theme-option__input:disabled) {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+
+
+.theme-option:has(.theme-option__input:focus-visible) {
+  outline: 2px solid var(--focus-color, #6366f1);
+  outline-offset: 2px;
+}
+
+
+
+.theme-option__input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+
+
+.theme-option__swatch {
+  --theme-swatch-paper: var(--note-card-surface, #fff);
+  --theme-swatch-accent: var(--primary-accent);
+  --theme-swatch-rule: var(--note-card-border, #d9dee7);
+  display: inline-block;
+  width: 1.25rem;
+  height: 1.25rem;
+  flex: none;
+  border: 1px solid var(--theme-swatch-rule);
+  border-radius: 50%;
+  box-sizing: border-box;
+  background: linear-gradient(
+    90deg,
+    var(--theme-swatch-paper) 0 50%,
+    var(--theme-swatch-accent) 50% 100%
+  );
+}
+
+
+
+.theme-option__swatch--light {
+  --theme-swatch-paper: var(--theme-swatch-light-paper);
+  --theme-swatch-accent: var(--theme-swatch-light-accent);
+  --theme-swatch-rule: var(--theme-swatch-light-rule);
+}
+
+
+
+.theme-option__swatch--coffee {
+  --theme-swatch-paper: var(--theme-swatch-coffee-paper);
+  --theme-swatch-accent: var(--theme-swatch-coffee-accent);
+  --theme-swatch-rule: var(--theme-swatch-coffee-rule);
+}
+
+
+
+.theme-option__swatch--forest {
+  --theme-swatch-paper: var(--theme-swatch-forest-paper);
+  --theme-swatch-accent: var(--theme-swatch-forest-accent);
+  --theme-swatch-rule: var(--theme-swatch-forest-rule);
+}
+
+
+
+.theme-option__swatch--midnight {
+  --theme-swatch-paper: var(--theme-swatch-midnight-paper);
+  --theme-swatch-accent: var(--theme-swatch-midnight-accent);
+  --theme-swatch-rule: var(--theme-swatch-midnight-rule);
+}
+
+
+
+.theme-option__swatch--dark {
+  --theme-swatch-paper: var(--theme-swatch-dark-paper);
+  --theme-swatch-accent: var(--theme-swatch-dark-accent);
+  --theme-swatch-rule: var(--theme-swatch-dark-rule);
+}
+
+
+
+.theme-option__swatch--retro {
+  --theme-swatch-paper: var(--theme-swatch-retro-paper);
+  --theme-swatch-accent: var(--theme-swatch-retro-accent);
+  --theme-swatch-rule: var(--theme-swatch-retro-rule);
+}
+
+
+
+.theme-option--auto {
+  grid-column: 1 / -1;
+}
+
+
+
+.theme-option__system-icon {
+  display: inline-grid;
+  width: 1.1rem;
+  height: 1.1rem;
+  flex: none;
+  place-items: center;
+  color: currentColor;
+}
+
+
+
+.theme-option__system-icon svg {
+  width: 100%;
+  height: 100%;
+  stroke: currentColor;
+  stroke-width: 1.65;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+
+
+.theme-option__label {
+  min-width: 0;
+  white-space: nowrap;
+}
+
+
+
+.theme-option__meta {
+  margin-inline-start: auto;
+  color: currentColor;
+  font-size: 0.64rem;
+  font-weight: 500;
+  opacity: 0.66;
+  white-space: nowrap;
 }
 
 
@@ -453,10 +692,15 @@
   }
 
   .display-setting__copy,
+  .theme-picker,
   .preview-lines-control {
     width: 100%;
     max-width: none;
     flex-basis: auto;
+  }
+
+  .theme-option {
+    min-height: 2.75rem;
   }
 
   .management-row--summary {
@@ -510,6 +754,15 @@
 
   form.management-row--type .usage-count {
     grid-column: 1;
+  }
+}
+
+
+
+@media (forced-colors: active) {
+  .theme-option:has(.theme-option__input:checked) {
+    outline: 2px solid Highlight;
+    outline-offset: -2px;
   }
 }
 

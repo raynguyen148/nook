@@ -170,6 +170,7 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
     tagsPanel: document.querySelector("#tags-panel"),
     displayPanel: document.querySelector("#display-panel"),
     shortcutsPanel: document.querySelector("#shortcuts-panel"),
+    themeOptions: [...document.querySelectorAll('.theme-option__input[name="theme"]')],
     notePreviewLines: document.querySelector("#note-preview-lines"),
     notePreviewLinesValue: document.querySelector("#note-preview-lines-value"),
     settingsShortcutModifiers: [...document.querySelectorAll(".settings-shortcut-modifier")],
@@ -192,6 +193,7 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
     backupHealthMessage: document.querySelector("#backup-health-message"),
     sidebar: document.querySelector(".sidebar"),
     sidebarToggle: document.querySelector("#sidebar-toggle-btn"),
+    sidebarToggleTooltip: document.querySelector("#sidebar-toggle-tooltip"),
     sidebarToggleTooltipText: document.querySelector("#sidebar-toggle-tooltip-text"),
     sidebarToggleShortcut: document.querySelector("#sidebar-toggle-shortcut"),
   };

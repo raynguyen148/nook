@@ -100,6 +100,9 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
     const theme = mode === "auto" ? resolveAutoTheme() : mode;
     document.documentElement.dataset.theme = theme;
     document.documentElement.dataset.themeMode = mode;
+    elements.themeOptions.forEach((option) => {
+      option.checked = option.value === mode;
+    });
 
     const themeLabels = {
       light: "Light",
@@ -182,7 +185,21 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
       elements.sidebarToggleTooltipText.textContent = actionLabel;
       elements.sidebarToggleShortcut.textContent = shortcutModifier;
     }
+    if (isCollapsed) window.requestAnimationFrame(positionSidebarToggleTooltip);
     scheduleTagFilterLayout();
+  }
+
+  function positionSidebarToggleTooltip() {
+    if (!ui.sidebarCollapsed || !elements.sidebarToggle || !elements.sidebarToggleTooltip) return;
+    const toggleBounds = elements.sidebarToggle.getBoundingClientRect();
+    elements.sidebarToggleTooltip.style.setProperty(
+      "--sidebar-toggle-tooltip-left",
+      `${Math.round(toggleBounds.right + 8)}px`,
+    );
+    elements.sidebarToggleTooltip.style.setProperty(
+      "--sidebar-toggle-tooltip-top",
+      `${Math.round(toggleBounds.top + toggleBounds.height / 2)}px`,
+    );
   }
 
   function persistSidebarCollapsedState(collapsed) {
@@ -269,6 +286,7 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
         sidebarCollapseFinishTimer = window.setTimeout(() => {
           sidebarCollapseFinishTimer = 0;
           elements.appShell.classList.remove("is-sidebar-resizing");
+          positionSidebarToggleTooltip();
         }, MOTION.medium);
       }, MOTION.micro);
       return;
@@ -563,6 +581,7 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
     refreshAutoTheme,
     setTheme,
     syncSidebarUI,
+    positionSidebarToggleTooltip,
     toggleSidebar,
     measureTopbarActionsPinBounds,
     finishTopbarActionsUnpin,

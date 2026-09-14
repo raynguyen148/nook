@@ -989,6 +989,58 @@
         <div class="management-list display-settings">
           <div class="management-row display-setting">
             <div class="display-setting__copy">
+              <h3 id="theme-picker-title" class="management-row__name">Theme</h3>
+              <p id="theme-picker-help" class="dialog-description display-setting__description">Choose a theme directly, or let Auto follow your system. Press <kbd>T</kbd> in the library to cycle.</p>
+            </div>
+            <fieldset class="theme-picker" aria-labelledby="theme-picker-title" aria-describedby="theme-picker-help">
+              <legend class="sr-only">Choose a theme</legend>
+              <div class="theme-picker__options">
+                <label class="theme-option theme-option--auto">
+                  <input class="theme-option__input" type="radio" name="theme" value="auto" />
+                  <span class="theme-option__system-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none">
+                      <rect x="3.5" y="4.5" width="17" height="12" rx="2.5"></rect>
+                      <path d="M9 20h6M12 16.5V20"></path>
+                    </svg>
+                  </span>
+                  <span class="theme-option__label">Auto</span>
+                  <span class="theme-option__meta">Follows system</span>
+                </label>
+                <label class="theme-option">
+                  <input class="theme-option__input" type="radio" name="theme" value="light" />
+                  <span class="theme-option__swatch theme-option__swatch--light" aria-hidden="true"></span>
+                  <span class="theme-option__label">Light</span>
+                </label>
+                <label class="theme-option">
+                  <input class="theme-option__input" type="radio" name="theme" value="coffee" />
+                  <span class="theme-option__swatch theme-option__swatch--coffee" aria-hidden="true"></span>
+                  <span class="theme-option__label">Coffee</span>
+                </label>
+                <label class="theme-option">
+                  <input class="theme-option__input" type="radio" name="theme" value="forest" />
+                  <span class="theme-option__swatch theme-option__swatch--forest" aria-hidden="true"></span>
+                  <span class="theme-option__label">Forest</span>
+                </label>
+                <label class="theme-option">
+                  <input class="theme-option__input" type="radio" name="theme" value="midnight" />
+                  <span class="theme-option__swatch theme-option__swatch--midnight" aria-hidden="true"></span>
+                  <span class="theme-option__label">Midnight</span>
+                </label>
+                <label class="theme-option">
+                  <input class="theme-option__input" type="radio" name="theme" value="dark" />
+                  <span class="theme-option__swatch theme-option__swatch--dark" aria-hidden="true"></span>
+                  <span class="theme-option__label">Dark</span>
+                </label>
+                <label class="theme-option">
+                  <input class="theme-option__input" type="radio" name="theme" value="retro" />
+                  <span class="theme-option__swatch theme-option__swatch--retro" aria-hidden="true"></span>
+                  <span class="theme-option__label">Retro</span>
+                </label>
+              </div>
+            </fieldset>
+          </div>
+          <div class="management-row display-setting">
+            <div class="display-setting__copy">
               <h3 class="management-row__name">Note card content</h3>
               <p id="note-preview-lines-help" class="dialog-description display-setting__description">Choose how many content lines appear on each note card. Changes apply instantly.</p>
             </div>

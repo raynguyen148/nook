@@ -101,15 +101,48 @@
     height: 2rem;
   }
 
-  /* ── Toggle button: always visible when collapsed ── */
+  /* ── Toggle button: persistent, discoverable affordance in the narrow rail ── */
   .app-shell.is-sidebar-collapsed .sidebar-toggle-btn,
   html[data-sidebar-collapsed="true"] .app-shell .sidebar-toggle-btn {
+    width: 1.85rem;
+    height: 1.85rem;
+    border-color: var(--primary-accent-border);
+    color: var(--primary-accent-text);
+    background: var(--primary-accent-soft);
     opacity: 1;
+  }
+
+  .app-shell.is-sidebar-collapsed .sidebar-toggle-btn:hover,
+  html[data-sidebar-collapsed="true"] .app-shell .sidebar-toggle-btn:hover {
+    border-color: var(--primary-accent);
+    color: var(--primary-accent-hover);
+    background: var(--primary-accent-soft-hover);
   }
 
   .app-shell.is-sidebar-collapsed .sidebar-toggle-btn__icon,
   html[data-sidebar-collapsed="true"] .app-shell .sidebar-toggle-btn__icon {
+    width: 0.85rem;
+    height: 0.85rem;
     transform: rotate(180deg);
+  }
+
+  /* Escape the sidebar scroll container so the collapsed toggle tooltip is
+   * not clipped at the narrow rail boundary. Runtime measurements keep it
+   * anchored to the button through resize and sidebar transitions. */
+  .app-shell.is-sidebar-collapsed .sidebar-toggle__tooltip,
+  html[data-sidebar-collapsed="true"] .app-shell .sidebar-toggle__tooltip {
+    position: fixed;
+    top: var(--sidebar-toggle-tooltip-top, 0);
+    right: auto;
+    left: var(--sidebar-toggle-tooltip-left, 0);
+    transform: translate(-0.2rem, -50%);
+  }
+
+  .app-shell.is-sidebar-collapsed .sidebar-toggle:hover .sidebar-toggle__tooltip,
+  html[data-sidebar-collapsed="true"] .app-shell .sidebar-toggle:hover .sidebar-toggle__tooltip,
+  .app-shell.is-sidebar-collapsed .sidebar-toggle-btn:focus-visible + .sidebar-toggle__tooltip,
+  html[data-sidebar-collapsed="true"] .app-shell .sidebar-toggle-btn:focus-visible + .sidebar-toggle__tooltip {
+    transform: translate(0, -50%);
   }
 
   /* The backup status is useful in the full sidebar, not the icon-only rail. */
@@ -210,21 +243,6 @@
   .app-shell.is-sidebar-collapsed .tag-filter-section,
   html[data-sidebar-collapsed="true"] .app-shell .tag-filter-section {
     display: none;
-  }
-
-  /* ── Dark theme overrides for collapsed toggle button ── */
-  html[data-theme="dark"] .app-shell.is-sidebar-collapsed .sidebar-toggle-btn,
-  html[data-theme="dark"][data-sidebar-collapsed="true"] .app-shell .sidebar-toggle-btn {
-    background: #131d31;
-    border-color: #27354d;
-    color: #94a3b8;
-  }
-
-  html[data-theme="dark"] .app-shell.is-sidebar-collapsed .sidebar-toggle-btn:hover,
-  html[data-theme="dark"][data-sidebar-collapsed="true"] .app-shell .sidebar-toggle-btn:hover {
-    background: #1e293b;
-    border-color: #3b4d6b;
-    color: #cbd5e1;
   }
 
   /* ── Content area expansion when sidebar is collapsed ── */
