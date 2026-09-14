@@ -305,6 +305,8 @@ html[data-theme="retro"] .clear-search:focus-visible {
 
 html[data-theme="retro"] :where(.sort-field__trigger, .view-mode-control__choices, .note-editor-modes) { border: var(--retro-border-width) solid var(--retro-border); border-radius: var(--retro-radius-control); background: var(--retro-paper); box-shadow: var(--retro-shadow-sm); }
 html[data-theme="retro"] :where(.view-mode-button, .note-editor-mode__button) { border-radius: var(--retro-radius-sm); color: var(--retro-muted); }
+html[data-theme="retro"] .note-editor-modes,
+html[data-theme="retro"] .note-editor-mode__button { border-radius: 9999px; }
 html[data-theme="retro"] :where(.view-mode-button.is-active, .view-mode-button[aria-pressed="true"], .note-editor-mode__button[aria-pressed="true"]) { border-color: var(--retro-border); color: var(--retro-ink); background: var(--retro-yellow); }
 
 html[data-theme="retro"] :where(.sort-field__menu, .tag-suggestions, .note-type-picker__menu, .color-picker__menu) { border: var(--retro-border-width) solid var(--retro-border); border-radius: var(--retro-radius-control); color: var(--retro-ink); background: var(--retro-paper); box-shadow: var(--retro-shadow-md); }

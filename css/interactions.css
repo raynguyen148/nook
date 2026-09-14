@@ -661,7 +661,7 @@ textarea:focus-visible {
   align-items: center;
   gap: 0.1rem;
   border: 1px solid #e2e8f0;
-  border-radius: var(--control-radius);
+  border-radius: 9999px;
   padding: 0.16rem;
   background: #f1f5f9;
   box-shadow: 0 1px 2px rgb(15 23 42 / 4%);
@@ -683,7 +683,7 @@ textarea:focus-visible {
   justify-content: center;
   gap: 0.36rem;
   border: 0;
-  border-radius: 0.56rem;
+  border-radius: 9999px;
   padding: 0 0.6rem;
   color: #64748b;
   background: transparent;
