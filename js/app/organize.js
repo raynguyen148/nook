@@ -130,6 +130,42 @@ globalThis[Symbol.for("nook.app.modules")].register("organize", (app) => {
     return `${total} total · ${active} active`;
   }
 
+  function createTrashUsageIcon() {
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("viewBox", "0 0 24 24");
+    svg.setAttribute("fill", "none");
+    svg.setAttribute("stroke", "currentColor");
+    svg.setAttribute("stroke-width", "1.7");
+    svg.setAttribute("stroke-linecap", "round");
+    svg.setAttribute("stroke-linejoin", "round");
+    svg.setAttribute("aria-hidden", "true");
+
+    const lid = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    lid.setAttribute("d", "M3 6h18M9 6V4h6v2M6 6l1 14h10l1-14");
+    svg.append(lid);
+    return svg;
+  }
+
+  function createManagementUsageMetadata(total, active) {
+    const metadata = createElement("div", { className: "management-row__metadata" });
+    metadata.append(createElement("span", { className: "management-row__usage", text: pluralize(active, "note") }));
+
+    const trashed = Math.max(0, total - active);
+    if (!trashed) return metadata;
+
+    const trashUsage = createElement("span", {
+      className: "management-row__trash-usage",
+      title: `${pluralize(trashed, "note")} in Trash`,
+    });
+    trashUsage.append(
+      createTrashUsageIcon(),
+      createElement("span", { text: String(trashed), attributes: { "aria-hidden": "true" } }),
+      createElement("span", { className: "sr-only", text: `${pluralize(trashed, "note")} in Trash` }),
+    );
+    metadata.append(trashUsage);
+    return metadata;
+  }
+
   function startManagementEdit(kind, id) {
     ui.managementQueries[kind] = "";
     const search = kind === "types" ? elements.typesManagementSearch : elements.tagsManagementSearch;
@@ -353,6 +389,7 @@ globalThis[Symbol.for("nook.app.modules")].register("organize", (app) => {
         });
       } else {
         const actions = createElement("div", { className: "management-row__actions" });
+        const metadata = createManagementUsageMetadata(totalUsage, activeUsage);
         const edit = createElement("button", {
           className: "button button-secondary button-compact",
           type: "button",
@@ -361,7 +398,6 @@ globalThis[Symbol.for("nook.app.modules")].register("organize", (app) => {
         });
         main.append(createElement("span", { className: "management-row__name", text: type.name }));
         if (type.id === storage.FALLBACK_TYPE_ID) main.append(createElement("span", { className: "management-row__default", text: "Default" }));
-        main.append(createElement("span", { className: "usage-count", text: usageLabel }));
         actions.append(edit);
         edit.addEventListener("click", () => startManagementEdit("types", type.id));
 
@@ -395,7 +431,7 @@ globalThis[Symbol.for("nook.app.modules")].register("organize", (app) => {
             }
           });
         }
-        row.append(main, actions);
+        row.append(main, metadata, actions);
       }
       fragment.append(row);
     });
@@ -464,6 +500,7 @@ globalThis[Symbol.for("nook.app.modules")].register("organize", (app) => {
         });
       } else {
         const actions = createElement("div", { className: "management-row__actions" });
+        const metadata = createManagementUsageMetadata(totalUsage, activeUsage);
         const edit = createElement("button", {
           className: "button button-secondary button-compact",
           type: "button",
@@ -477,7 +514,6 @@ globalThis[Symbol.for("nook.app.modules")].register("organize", (app) => {
           attributes: { "aria-label": `Delete ${label}` },
         });
         main.append(createElement("span", { className: "management-row__name", text: label }));
-        main.append(createElement("span", { className: "usage-count", text: usageLabel }));
         actions.append(edit, remove);
         edit.addEventListener("click", () => startManagementEdit("tags", tag.id));
         remove.addEventListener("click", async () => {
@@ -500,7 +536,7 @@ globalThis[Symbol.for("nook.app.modules")].register("organize", (app) => {
             showError(error);
           }
         });
-        row.append(main, actions);
+        row.append(main, metadata, actions);
       }
       fragment.append(row);
     });
