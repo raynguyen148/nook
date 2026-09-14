@@ -8,6 +8,10 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
   let noteDetailTransitionSequence = 0;
   let notesContentAnimation = null;
   let sortPicker = null;
+  let tagFilterLayoutFrame = 0;
+  let tagFilterResizeObserver = null;
+  const TAG_FILTER_DESKTOP_QUERY = "(min-width: 821px)";
+  const TAG_FILTER_HEIGHT_RESERVE = 12;
   const SORT_LABELS = Object.freeze({
     "created-desc": "Newest created",
     "created-asc": "Oldest created",
@@ -206,6 +210,116 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
     return button;
   }
 
+  function tagFilterOptions() {
+    return [...elements.tagFilterList.querySelectorAll(".tag-filter-option")];
+  }
+
+  function setTagFilterToggle({ hiddenCount = 0, expanded = false } = {}) {
+    const visible = hiddenCount > 0 || expanded;
+    elements.tagFilterToggle.classList.toggle("is-hidden", !visible);
+    elements.tagFilterToggle.setAttribute("aria-expanded", String(expanded));
+    elements.tagFilterToggle.setAttribute(
+      "aria-label",
+      expanded ? "Show fewer tags" : `Show ${hiddenCount} more tags`,
+    );
+    elements.tagFilterToggleLabel.textContent = expanded
+      ? "Show less"
+      : `Show ${hiddenCount} more`;
+  }
+
+  function sidebarNeedsTagHeightReduction() {
+    const sidebarBounds = elements.sidebar.getBoundingClientRect();
+    const controlsBounds = elements.regularFilterControls.getBoundingClientRect();
+    const sidebarStyles = window.getComputedStyle(elements.sidebar);
+    const borderBottom = Number.parseFloat(sidebarStyles.borderBottomWidth) || 0;
+    const paddingBottom = Number.parseFloat(sidebarStyles.paddingBottom) || 0;
+    const availableBottom = sidebarBounds.bottom - borderBottom - paddingBottom - TAG_FILTER_HEIGHT_RESERVE;
+    const contentBottom = controlsBounds.bottom + elements.sidebar.scrollTop;
+    return contentBottom > availableBottom;
+  }
+
+  function applyTagFilterLayout() {
+    tagFilterLayoutFrame = 0;
+    const options = tagFilterOptions();
+    options.forEach((option) => option.classList.remove("is-tag-filter-hidden"));
+    elements.sidebar.classList.remove("is-tag-filter-constrained");
+    setTagFilterToggle();
+
+    const isDesktop = window.matchMedia(TAG_FILTER_DESKTOP_QUERY).matches;
+    const filtersUnavailable =
+      ui.trashOnly ||
+      ui.sidebarCollapsed ||
+      elements.regularFilterControls.classList.contains("is-hidden");
+    if (!options.length || !isDesktop || filtersUnavailable) {
+      if (!isDesktop) ui.tagFiltersExpanded = false;
+      return;
+    }
+
+    // Measure without a scrollbar taking width from the wrapping tag rows.
+    elements.sidebar.classList.add("is-measuring-tag-filter");
+    if (!sidebarNeedsTagHeightReduction()) {
+      ui.tagFiltersExpanded = false;
+      elements.sidebar.classList.remove("is-measuring-tag-filter");
+      return;
+    }
+
+    if (ui.tagFiltersExpanded) {
+      setTagFilterToggle({ expanded: true });
+      elements.sidebar.classList.remove("is-measuring-tag-filter");
+      return;
+    }
+
+    // The toggle consumes part of the available height, so include it before
+    // removing complete tag rows until the sidebar fits the actual viewport.
+    setTagFilterToggle({ hiddenCount: 1 });
+    const hideRowsUntilSidebarFits = () => {
+      let visibleCount = options.length;
+      while (visibleCount > 0 && sidebarNeedsTagHeightReduction()) {
+        const lastRowTop = options[visibleCount - 1].offsetTop;
+        do {
+          visibleCount -= 1;
+          options[visibleCount].classList.add("is-tag-filter-hidden");
+        } while (visibleCount > 0 && options[visibleCount - 1].offsetTop === lastRowTop);
+      }
+      return visibleCount;
+    };
+
+    let visibleCount = hideRowsUntilSidebarFits();
+    if (visibleCount === 0) {
+      // At short desktop heights the fixed navigation can consume the entire
+      // sidebar before Tags. Compact secondary chrome only when tags alone
+      // cannot remove the scrollbar, then measure the rows again.
+      elements.sidebar.classList.add("is-tag-filter-constrained");
+      options.forEach((option) => option.classList.remove("is-tag-filter-hidden"));
+      visibleCount = hideRowsUntilSidebarFits();
+    }
+
+    setTagFilterToggle({ hiddenCount: options.length - visibleCount });
+    elements.sidebar.classList.remove("is-measuring-tag-filter");
+  }
+
+  function scheduleTagFilterLayout() {
+    if (tagFilterLayoutFrame) return;
+    tagFilterLayoutFrame = window.requestAnimationFrame(applyTagFilterLayout);
+  }
+
+  function toggleTagFilterExpansion() {
+    ui.tagFiltersExpanded = !ui.tagFiltersExpanded;
+    const collapsed = !ui.tagFiltersExpanded;
+    scheduleTagFilterLayout();
+    if (collapsed) {
+      window.requestAnimationFrame(() => {
+        elements.sidebar.scrollTop = 0;
+      });
+    }
+  }
+
+  function observeTagFilterLayout() {
+    if (tagFilterResizeObserver || typeof ResizeObserver !== "function") return;
+    tagFilterResizeObserver = new ResizeObserver(scheduleTagFilterLayout);
+    tagFilterResizeObserver.observe(elements.sidebar);
+  }
+
   function renderSidebar() {
     const noteCountsByType = new Map();
     const noteCountsByTag = new Map();
@@ -300,6 +414,7 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
     elements.tagFilterCount.textContent = ui.tagIds.size ? `${ui.tagIds.size} selected` : "";
     syncMobileFilterToggle();
     syncClearFiltersState();
+    scheduleTagFilterLayout();
   }
 
   function createChipCloseIcon() {
@@ -1156,6 +1271,9 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
   Object.assign(api, {
     makeTypeBadge,
     makeTagButton,
+    scheduleTagFilterLayout,
+    toggleTagFilterExpansion,
+    observeTagFilterLayout,
     renderSidebar,
     createChipCloseIcon,
     makeFilterPill,

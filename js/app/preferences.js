@@ -29,6 +29,7 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
   // every installer has completed.
   const pluralize = (...args) => api.pluralize(...args);
   const usesMacKeyboardShortcuts = (...args) => api.usesMacKeyboardShortcuts(...args);
+  const scheduleTagFilterLayout = (...args) => api.scheduleTagFilterLayout?.(...args);
 
   function getNextTheme(currentTheme) {
     const currentIndex = THEMES.indexOf(currentTheme);
@@ -137,6 +138,7 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
       };
       themeColorMeta.content = themeColors[theme] || themeColors.light;
     }
+    scheduleTagFilterLayout();
   }
 
   function setTheme(theme, { animate = true, persist = true } = {}) {
@@ -180,6 +182,7 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
       elements.sidebarToggleTooltipText.textContent = actionLabel;
       elements.sidebarToggleShortcut.textContent = shortcutModifier;
     }
+    scheduleTagFilterLayout();
   }
 
   function persistSidebarCollapsedState(collapsed) {
@@ -426,6 +429,7 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
     const willExpand = elements.regularFilterControls.classList.contains("is-mobile-collapsed");
     elements.regularFilterControls.classList.toggle("is-mobile-collapsed", !willExpand);
     elements.mobileFilterToggle.setAttribute("aria-expanded", String(willExpand));
+    scheduleTagFilterLayout();
   }
 
   function persistSort() {

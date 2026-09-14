@@ -200,6 +200,18 @@
             </div>
             <p class="filter-help">Match all selected tags</p>
             <div id="tag-filter-list" class="tag-filter-list"></div>
+            <button
+              id="tag-filter-toggle"
+              class="text-button tag-filter-toggle is-hidden"
+              type="button"
+              aria-expanded="false"
+              aria-controls="tag-filter-list"
+            >
+              <span id="tag-filter-toggle-label">Show more</span>
+              <svg class="tag-filter-toggle__icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="m4 6 4 4 4-4" />
+              </svg>
+            </button>
             <p id="tag-filter-empty" class="sidebar-empty is-hidden">No tags yet.</p>
           </section>
         </div>

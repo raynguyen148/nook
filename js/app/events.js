@@ -50,6 +50,9 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
     showAllNotesSpace,
     showTrashSpace,
     clearFilters,
+    scheduleTagFilterLayout,
+    toggleTagFilterExpansion,
+    observeTagFilterLayout,
     renderQuickView,
     syncNotePreviewActions,
     isDetailWorkspaceOpen,
@@ -104,6 +107,7 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
   function bindEvents() {
     elements.mobileFilterToggle.addEventListener("click", toggleMobileFilters);
     elements.sidebarToggle?.addEventListener("click", () => toggleSidebar());
+    elements.tagFilterToggle.addEventListener("click", toggleTagFilterExpansion);
     elements.createdTodayFilter.addEventListener("click", toggleTodayFilter);
     elements.updatedTodayFilter.addEventListener("click", toggleUpdatedTodayFilter);
     elements.allNotesSpace.addEventListener("click", showAllNotesSpace);
@@ -228,6 +232,7 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
           : elements.noteContent,
       );
       scheduleTopbarActionsPinning();
+      scheduleTagFilterLayout();
       window.requestAnimationFrame(syncPinnedTopbarControlMetrics);
     });
     window.addEventListener("scroll", scheduleTopbarActionsPinning, { passive: true });
@@ -572,6 +577,7 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
       elements.newTypeColor.replaceChildren(createColorOptions(elements.newTypeColor.value));
       enhanceColorSelect(elements.newTypeColor);
       bindEvents();
+      observeTagFilterLayout();
       setupLibrarySync();
       syncThemeUI();
       syncSidebarUI();

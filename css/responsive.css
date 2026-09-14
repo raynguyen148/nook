@@ -400,6 +400,10 @@
     scrollbar-gutter: auto;
   }
 
+  .tag-filter-toggle {
+    display: none;
+  }
+
   .tag-filter-option {
     min-height: 1.48rem;
     padding: 0.16rem 0.48rem;
