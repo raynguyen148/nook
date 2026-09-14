@@ -11,6 +11,8 @@ globalThis[Symbol.for("nook.app.modules")].register("organize", (app) => {
   let appliedRefreshSequence = 0;
 
   const persistFilters = (...args) => api.persistFilters(...args);
+  const resetRegularFilters = (...args) => api.resetRegularFilters(...args);
+  const clearStoredNoteDraft = (...args) => api.clearStoredNoteDraft(...args);
   const recordBackupExport = (...args) => api.recordBackupExport(...args);
   const createElement = (...args) => api.createElement(...args);
   const typeFor = (...args) => api.typeFor(...args);
@@ -42,13 +44,18 @@ globalThis[Symbol.for("nook.app.modules")].register("organize", (app) => {
   const syncNoteEditorControls = (...args) => api.syncNoteEditorControls(...args);
   const isDeletedNote = (...args) => api.isDeletedNote(...args);
 
-  function setManagementTab(tab) {
-    const tabs = [
+  function managementTabs() {
+    return [
       ["types", elements.typesTab, elements.typesPanel],
       ["tags", elements.tagsTab, elements.tagsPanel],
       ["display", elements.displayTab, elements.displayPanel],
+      ["data", elements.dataTab, elements.dataPanel],
       ["shortcuts", elements.shortcutsTab, elements.shortcutsPanel],
     ];
+  }
+
+  function setManagementTab(tab) {
+    const tabs = managementTabs();
     const nextTab = tabs.some(([name]) => name === tab) ? tab : "types";
     const changed = ui.managementTab !== nextTab;
     ui.managementTab = nextTab;
@@ -84,10 +91,8 @@ globalThis[Symbol.for("nook.app.modules")].register("organize", (app) => {
     const showingTypes = ui.managementCreateKind === "types";
     const showingTags = ui.managementCreateKind === "tags";
 
-    elements.typesTabCount.textContent = String(typeCount);
-    elements.tagsTabCount.textContent = String(tagCount);
-    elements.typesTab.setAttribute("aria-label", `Note types, ${pluralize(typeCount, "type")}`);
-    elements.tagsTab.setAttribute("aria-label", `Tags, ${pluralize(tagCount, "tag")}`);
+    elements.typesPanelCount.textContent = pluralize(typeCount, "type");
+    elements.tagsPanelCount.textContent = pluralize(tagCount, "tag");
     elements.newTypeForm.classList.toggle("is-hidden", !showingTypes);
     elements.newTagForm.classList.toggle("is-hidden", !showingTags);
     elements.addTypeToggle.setAttribute("aria-expanded", String(showingTypes));
@@ -144,8 +149,8 @@ globalThis[Symbol.for("nook.app.modules")].register("organize", (app) => {
   }
 
   function handleManagementTabKeydown(event) {
-    const tabs = [elements.typesTab, elements.tagsTab, elements.displayTab, elements.shortcutsTab];
-    const currentIndex = tabs.indexOf(event.currentTarget);
+    const tabs = managementTabs();
+    const currentIndex = tabs.findIndex(([, tabElement]) => tabElement === event.currentTarget);
     if (currentIndex < 0) return;
 
     let nextIndex;
@@ -156,14 +161,7 @@ globalThis[Symbol.for("nook.app.modules")].register("organize", (app) => {
     else return;
 
     event.preventDefault();
-    const nextTab = tabs[nextIndex];
-    const nextTabName = nextTab === elements.typesTab
-      ? "types"
-      : nextTab === elements.tagsTab
-        ? "tags"
-        : nextTab === elements.displayTab
-          ? "display"
-          : "shortcuts";
+    const [nextTabName, nextTab] = tabs[nextIndex];
     setManagementTab(nextTabName);
     nextTab.focus();
   }
@@ -587,6 +585,95 @@ globalThis[Symbol.for("nook.app.modules")].register("organize", (app) => {
     if (elements.organizeDialog.open) elements.organizeDialog.close();
   }
 
+  function syncDeleteLibraryConfirmation() {
+    const confirmationMatches = elements.deleteLibraryConfirmation.value.trim() === "DELETE";
+    const busy = ui.deleteLibraryInFlight || ui.deleteLibraryBackupInFlight;
+    elements.deleteLibraryConfirmation.disabled = ui.deleteLibraryInFlight;
+    elements.deleteLibraryBackup.disabled = busy;
+    elements.confirmDeleteLibrary.disabled = !confirmationMatches || busy;
+    elements.confirmDeleteLibrary.textContent = ui.deleteLibraryInFlight ? "Deleting…" : "Delete all data";
+    elements.deleteLibraryDialog.setAttribute("aria-busy", String(busy));
+  }
+
+  function openDeleteLibraryDialog() {
+    if (elements.deleteLibraryDialog.open || ui.deleteLibraryInFlight) return;
+    const noteCount = library.notes.length;
+    const trashCount = library.notes.filter(isDeletedNote).length;
+    const trashDetail = trashCount ? `, including ${pluralize(trashCount, "note")} in Trash,` : "";
+    elements.deleteLibraryDescription.textContent =
+      `This permanently deletes ${pluralize(noteCount, "note")}${trashDetail} and ${pluralize(library.tags.length, "tag")}. ` +
+      `It resets ${pluralize(library.types.length, "note type")} to Nook’s defaults and removes any unfinished draft stored in this browser.`;
+    elements.deleteLibraryBackupStatus.textContent =
+      "Download a backup and close other Nook tabs before continuing. Downloaded backup files will not be deleted.";
+    elements.deleteLibraryConfirmation.value = "";
+    ui.deleteLibraryInvoker = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    ui.deleteLibraryBackupInFlight = false;
+    syncDeleteLibraryConfirmation();
+    elements.deleteLibraryDialog.showModal();
+    syncToastHost();
+    window.requestAnimationFrame(() => elements.cancelDeleteLibrary.focus());
+  }
+
+  function closeDeleteLibraryDialog() {
+    if (ui.deleteLibraryInFlight || !elements.deleteLibraryDialog.open) return;
+    elements.deleteLibraryDialog.close("cancelled");
+  }
+
+  function finishDeleteLibraryClose() {
+    const invoker = ui.deleteLibraryInvoker;
+    ui.deleteLibraryInvoker = null;
+    ui.deleteLibraryBackupInFlight = false;
+    ui.deleteLibraryInFlight = false;
+    elements.deleteLibraryConfirmation.value = "";
+    syncDeleteLibraryConfirmation();
+    if (invoker instanceof HTMLElement && invoker.isConnected && !invoker.disabled) {
+      window.requestAnimationFrame(() => invoker.focus());
+    }
+  }
+
+  async function exportBeforeDeleteLibrary() {
+    if (ui.deleteLibraryBackupInFlight || ui.deleteLibraryInFlight) return;
+    ui.deleteLibraryBackupInFlight = true;
+    elements.deleteLibraryBackup.textContent = "Exporting…";
+    syncDeleteLibraryConfirmation();
+    const backup = await exportLibrary();
+    if (backup) {
+      elements.deleteLibraryBackupStatus.textContent =
+        `Backup download started with ${pluralize(backup.data.notes.length, "note")}. Keep the file somewhere safe.`;
+    }
+    ui.deleteLibraryBackupInFlight = false;
+    elements.deleteLibraryBackup.textContent = "Export backup";
+    syncDeleteLibraryConfirmation();
+  }
+
+  async function deleteLibraryData() {
+    if (elements.deleteLibraryConfirmation.value.trim() !== "DELETE" || ui.deleteLibraryInFlight) return;
+    ui.deleteLibraryInFlight = true;
+    syncDeleteLibraryConfirmation();
+    try {
+      const counts = await storage.resetLibrary();
+      clearStoredNoteDraft();
+      resetRegularFilters();
+      ui.trashOnly = false;
+      ui.selectedNoteTagIds.clear();
+      ui.managementQueries.types = "";
+      ui.managementQueries.tags = "";
+      ui.managementEditing = null;
+      elements.typesManagementSearch.value = "";
+      elements.tagsManagementSearch.value = "";
+      setManagementCreateMode("");
+      persistFilters();
+      resetToFirstPage();
+      await refreshLibrary({ broadcast: true });
+      elements.deleteLibraryDialog.close("deleted");
+      showToast(`Deleted ${pluralize(counts.notes, "note")} and ${pluralize(counts.tags, "tag")}.`);
+    } catch (error) {
+      ui.deleteLibraryInFlight = false;
+      syncDeleteLibraryConfirmation();
+      showError(error, "We could not delete the local library. Your data was not changed.");
+    }
+  }
+
   async function addNewType(event) {
     event.preventDefault();
     try {
@@ -688,8 +775,10 @@ globalThis[Symbol.for("nook.app.modules")].register("organize", (app) => {
       downloadExport(backup);
       recordBackupExport();
       showToast(`Backup exported with ${pluralize(backup.data.notes.length, "note")}.`);
+      return backup;
     } catch (error) {
       showError(error, "We could not export this backup.");
+      return null;
     }
   }
 
@@ -748,6 +837,12 @@ globalThis[Symbol.for("nook.app.modules")].register("organize", (app) => {
     refreshLibrary,
     openOrganize,
     closeOrganize,
+    syncDeleteLibraryConfirmation,
+    openDeleteLibraryDialog,
+    closeDeleteLibraryDialog,
+    finishDeleteLibraryClose,
+    exportBeforeDeleteLibrary,
+    deleteLibraryData,
     addNewType,
     addNewTag,
     downloadExport,

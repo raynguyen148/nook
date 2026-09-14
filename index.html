@@ -906,6 +906,55 @@
       </div>
     </dialog>
 
+    <dialog
+      id="delete-library-dialog"
+      class="app-dialog confirmation-dialog delete-library-dialog"
+      aria-labelledby="delete-library-dialog-title"
+      aria-describedby="delete-library-dialog-description delete-library-backup-status"
+    >
+      <div class="dialog-header confirmation-dialog__header">
+        <div>
+          <p class="eyebrow">DANGER ZONE</p>
+          <h2 id="delete-library-dialog-title">Delete library data?</h2>
+        </div>
+        <button id="close-delete-library-dialog-btn" class="icon-button" type="button" aria-label="Cancel deletion" title="Cancel">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M18 6 6 18M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <div class="confirmation-dialog__body delete-library-dialog__body">
+        <p id="delete-library-dialog-description"></p>
+        <div class="delete-library-dialog__backup">
+          <div class="delete-library-dialog__backup-copy">
+            <strong>Back up before deleting</strong>
+            <p id="delete-library-backup-status">Download a backup and close other Nook tabs before continuing. Downloaded backup files will not be deleted.</p>
+          </div>
+          <button id="delete-library-backup-btn" class="button button-secondary" type="button">Export backup</button>
+        </div>
+        <label class="field delete-library-dialog__confirmation" for="delete-library-confirmation-input">
+          <span>Type <strong>DELETE</strong> to confirm</span>
+          <input
+            id="delete-library-confirmation-input"
+            type="text"
+            autocomplete="off"
+            autocapitalize="characters"
+            enterkeyhint="done"
+            spellcheck="false"
+            placeholder="DELETE"
+          />
+        </label>
+      </div>
+
+      <div class="dialog-footer confirmation-dialog__footer">
+        <div class="dialog-footer__actions">
+          <button id="cancel-delete-library-btn" class="button button-secondary" type="button">Cancel</button>
+          <button id="confirm-delete-library-btn" class="button button-danger confirmation-dialog__confirm" type="button" disabled>Delete all data</button>
+        </div>
+      </div>
+    </dialog>
+
     <dialog id="organize-dialog" class="app-dialog organize-dialog" aria-labelledby="organize-dialog-title">
       <div class="dialog-header">
         <div>
@@ -921,13 +970,16 @@
 
       <div class="organize-tabs" role="tablist" aria-label="Library settings">
         <button id="types-tab" class="organize-tab is-active" type="button" role="tab" aria-selected="true" aria-controls="types-panel" tabindex="0">
-          <span><span class="organize-tab__mobile-hidden">Note </span>Types</span><span id="types-tab-count" class="organize-tab__count" aria-hidden="true">0</span>
+          <span><span class="organize-tab__mobile-hidden">Note </span>Types</span>
         </button>
         <button id="tags-tab" class="organize-tab" type="button" role="tab" aria-selected="false" aria-controls="tags-panel" tabindex="-1">
-          <span>Tags</span><span id="tags-tab-count" class="organize-tab__count" aria-hidden="true">0</span>
+          <span>Tags</span>
         </button>
         <button id="display-tab" class="organize-tab" type="button" role="tab" aria-selected="false" aria-controls="display-panel" tabindex="-1">
           <span>Display</span>
+        </button>
+        <button id="data-tab" class="organize-tab" type="button" role="tab" aria-selected="false" aria-controls="data-panel" tabindex="-1">
+          <span>Data</span>
         </button>
         <button id="shortcuts-tab" class="organize-tab" type="button" role="tab" aria-selected="false" aria-controls="shortcuts-panel" tabindex="-1">
           <span>Shortcuts</span>
@@ -936,7 +988,10 @@
 
       <section id="types-panel" class="organize-panel" role="tabpanel" aria-labelledby="types-tab">
         <div class="organize-panel__intro">
-          <p class="dialog-description">Each note has one type. Deleting a type moves its notes to General.</p>
+          <div class="organize-panel__summary">
+            <p class="dialog-description">Each note has one type. Deleting a type moves its notes to General.</p>
+            <span id="types-panel-count" class="organize-panel__count">0 types</span>
+          </div>
           <div class="management-toolbar">
             <label class="management-search" for="types-management-search">
               <span class="sr-only">Search note types</span>
@@ -965,7 +1020,10 @@
 
       <section id="tags-panel" class="organize-panel is-hidden" role="tabpanel" aria-labelledby="tags-tab">
         <div class="organize-panel__intro">
-          <p class="dialog-description">Tags are optional labels you can reuse across many notes.</p>
+          <div class="organize-panel__summary">
+            <p class="dialog-description">Tags are optional labels you can reuse across many notes.</p>
+            <span id="tags-panel-count" class="organize-panel__count">0 tags</span>
+          </div>
           <div class="management-toolbar">
             <label class="management-search" for="tags-management-search">
               <span class="sr-only">Search tags</span>
@@ -992,52 +1050,68 @@
               <h3 id="theme-picker-title" class="management-row__name">Theme</h3>
               <p id="theme-picker-help" class="dialog-description display-setting__description">Choose a theme directly, or let Auto follow your system. Press <kbd>T</kbd> in the library to cycle.</p>
             </div>
-            <fieldset class="theme-picker" aria-labelledby="theme-picker-title" aria-describedby="theme-picker-help">
-              <legend class="sr-only">Choose a theme</legend>
-              <div class="theme-picker__options">
-                <label class="theme-option theme-option--auto">
-                  <input class="theme-option__input" type="radio" name="theme" value="auto" />
-                  <span class="theme-option__system-icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" fill="none">
-                      <rect x="3.5" y="4.5" width="17" height="12" rx="2.5"></rect>
-                      <path d="M9 20h6M12 16.5V20"></path>
-                    </svg>
-                  </span>
-                  <span class="theme-option__label">Auto</span>
-                  <span class="theme-option__meta">Follows system</span>
-                </label>
-                <label class="theme-option">
-                  <input class="theme-option__input" type="radio" name="theme" value="light" />
-                  <span class="theme-option__swatch theme-option__swatch--light" aria-hidden="true"></span>
-                  <span class="theme-option__label">Light</span>
-                </label>
-                <label class="theme-option">
-                  <input class="theme-option__input" type="radio" name="theme" value="coffee" />
-                  <span class="theme-option__swatch theme-option__swatch--coffee" aria-hidden="true"></span>
-                  <span class="theme-option__label">Coffee</span>
-                </label>
-                <label class="theme-option">
-                  <input class="theme-option__input" type="radio" name="theme" value="forest" />
-                  <span class="theme-option__swatch theme-option__swatch--forest" aria-hidden="true"></span>
-                  <span class="theme-option__label">Forest</span>
-                </label>
-                <label class="theme-option">
-                  <input class="theme-option__input" type="radio" name="theme" value="midnight" />
-                  <span class="theme-option__swatch theme-option__swatch--midnight" aria-hidden="true"></span>
-                  <span class="theme-option__label">Midnight</span>
-                </label>
-                <label class="theme-option">
-                  <input class="theme-option__input" type="radio" name="theme" value="dark" />
-                  <span class="theme-option__swatch theme-option__swatch--dark" aria-hidden="true"></span>
-                  <span class="theme-option__label">Dark</span>
-                </label>
-                <label class="theme-option">
-                  <input class="theme-option__input" type="radio" name="theme" value="retro" />
-                  <span class="theme-option__swatch theme-option__swatch--retro" aria-hidden="true"></span>
-                  <span class="theme-option__label">Retro</span>
-                </label>
+            <div id="theme-picker" class="theme-picker">
+              <select id="theme-select" class="theme-picker__native" aria-labelledby="theme-picker-title" aria-describedby="theme-picker-help">
+                <option value="auto">Auto (follows system)</option>
+                <option value="light">Light</option>
+                <option value="coffee">Coffee</option>
+                <option value="forest">Forest</option>
+                <option value="midnight">Midnight</option>
+                <option value="dark">Dark</option>
+                <option value="retro">Retro</option>
+              </select>
+              <button
+                id="theme-picker-trigger"
+                class="theme-picker__trigger"
+                type="button"
+                aria-label="Theme: Light. Choose a theme."
+                aria-haspopup="listbox"
+                aria-expanded="false"
+                aria-controls="theme-picker-menu"
+                hidden
+              >
+                <span id="theme-picker-current-preview" class="theme-preview" data-theme-preview="light" aria-hidden="true"></span>
+                <span class="theme-picker__selection">
+                  <span id="theme-picker-current-label" class="theme-picker__label">Light</span>
+                  <span id="theme-picker-current-meta" class="theme-picker__meta" hidden></span>
+                </span>
+              </button>
+              <div id="theme-picker-menu" class="theme-picker__menu" role="listbox" aria-labelledby="theme-picker-title" hidden>
+                <div class="theme-picker__options">
+                  <button class="theme-picker__option" type="button" role="option" aria-selected="false" data-theme-option="auto" tabindex="-1">
+                    <span class="theme-preview" data-theme-preview="auto" aria-hidden="true"></span>
+                    <span class="theme-picker__option-copy">
+                      <span class="theme-picker__option-label">Auto</span>
+                      <span class="theme-picker__option-meta">Follows system</span>
+                    </span>
+                  </button>
+                  <button class="theme-picker__option" type="button" role="option" aria-selected="false" data-theme-option="light" tabindex="-1">
+                    <span class="theme-preview" data-theme-preview="light" aria-hidden="true"></span>
+                    <span class="theme-picker__option-label">Light</span>
+                  </button>
+                  <button class="theme-picker__option" type="button" role="option" aria-selected="false" data-theme-option="coffee" tabindex="-1">
+                    <span class="theme-preview" data-theme-preview="coffee" aria-hidden="true"></span>
+                    <span class="theme-picker__option-label">Coffee</span>
+                  </button>
+                  <button class="theme-picker__option" type="button" role="option" aria-selected="false" data-theme-option="forest" tabindex="-1">
+                    <span class="theme-preview" data-theme-preview="forest" aria-hidden="true"></span>
+                    <span class="theme-picker__option-label">Forest</span>
+                  </button>
+                  <button class="theme-picker__option" type="button" role="option" aria-selected="false" data-theme-option="midnight" tabindex="-1">
+                    <span class="theme-preview" data-theme-preview="midnight" aria-hidden="true"></span>
+                    <span class="theme-picker__option-label">Midnight</span>
+                  </button>
+                  <button class="theme-picker__option" type="button" role="option" aria-selected="false" data-theme-option="dark" tabindex="-1">
+                    <span class="theme-preview" data-theme-preview="dark" aria-hidden="true"></span>
+                    <span class="theme-picker__option-label">Dark</span>
+                  </button>
+                  <button class="theme-picker__option" type="button" role="option" aria-selected="false" data-theme-option="retro" tabindex="-1">
+                    <span class="theme-preview" data-theme-preview="retro" aria-hidden="true"></span>
+                    <span class="theme-picker__option-label">Retro</span>
+                  </button>
+                </div>
               </div>
-            </fieldset>
+            </div>
           </div>
           <div class="management-row display-setting">
             <div class="display-setting__copy">
@@ -1056,6 +1130,41 @@
               </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      <section id="data-panel" class="organize-panel is-hidden" role="tabpanel" aria-labelledby="data-tab">
+        <div class="organize-panel__intro">
+          <p class="dialog-description">Back up, restore, or delete your local library.</p>
+        </div>
+        <div class="management-list data-settings">
+          <section class="management-row data-setting" aria-labelledby="data-backup-title">
+            <div class="data-setting__copy">
+              <h3 id="data-backup-title" class="management-row__name">Back up</h3>
+              <p class="dialog-description">Download a local JSON copy.</p>
+            </div>
+            <div class="data-setting__actions">
+              <button id="data-export-btn" class="button button-secondary" type="button">Export backup</button>
+            </div>
+          </section>
+          <section class="management-row data-setting" aria-labelledby="data-restore-title">
+            <div class="data-setting__copy">
+              <h3 id="data-restore-title" class="management-row__name">Restore backup</h3>
+              <p class="dialog-description">Replace your library from a Nook backup.</p>
+            </div>
+            <div class="data-setting__actions">
+              <button id="data-import-btn" class="button button-secondary" type="button">Import backup</button>
+            </div>
+          </section>
+          <section class="management-row data-setting data-setting--danger" aria-labelledby="data-danger-title">
+            <div class="data-setting__copy">
+              <h3 id="data-danger-title" class="management-row__name">Delete all data</h3>
+              <p class="dialog-description">Permanent. Export a backup first.</p>
+            </div>
+            <div class="data-setting__actions">
+              <button id="delete-library-btn" class="button button-danger" type="button">Delete data…</button>
+            </div>
+          </section>
         </div>
       </section>
 

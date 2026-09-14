@@ -963,6 +963,29 @@
     } };
   }
 
+  async function resetLibrary() {
+    const resetAt = nowIso();
+    const defaultTypes = createDefaultTypes(resetAt);
+    return mutateLibrary((snapshot, stores) => {
+      const counts = {
+        notes: snapshot.notes.length,
+        trashedNotes: snapshot.notes.filter((note) => note.deletedAt).length,
+        types: snapshot.types.length,
+        tags: snapshot.tags.length,
+      };
+      stores.notes.clear();
+      stores.types.clear();
+      stores.tags.clear();
+      stores.meta.clear();
+      defaultTypes.forEach((type) => stores.types.put(type));
+      stores.meta.put({
+        key: BOOTSTRAP_META_KEY,
+        value: { source: "library-reset", completedAt: resetAt },
+      });
+      return counts;
+    });
+  }
+
   function inspectBackup(value) {
     const parsed = parseBackup(value);
     return {
@@ -995,5 +1018,6 @@
     buildExport,
     inspectBackup,
     importBackup,
+    resetLibrary,
   });
 })();

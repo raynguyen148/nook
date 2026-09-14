@@ -5,7 +5,8 @@ globalThis[Symbol.for("nook.app.modules")].register("feedback", (app) => {
   const { api, elements, ui } = app;
 
   function activeModalDialog() {
-    return [elements.confirmationDialog, elements.organizeDialog].find((dialog) => dialog.open) || null;
+    return [elements.deleteLibraryDialog, elements.confirmationDialog, elements.organizeDialog]
+      .find((dialog) => dialog.open) || null;
   }
 
   function syncToastHost() {

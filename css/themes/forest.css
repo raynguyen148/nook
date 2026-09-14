@@ -292,7 +292,6 @@ html[data-theme="forest"] .color-picker__trigger:focus-visible {
 
 html[data-theme="forest"] .search-shortcut,
 html[data-theme="forest"] .notes-count,
-html[data-theme="forest"] .organize-tab__count,
 html[data-theme="forest"] .usage-count {
   border-color: #cbdccc;
   color: #496252;

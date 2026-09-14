@@ -1213,20 +1213,6 @@ html:not([data-theme]) .organize-tab.is-active {
   border-bottom-color: var(--primary-accent);
 }
 
-/* Tab counts in Organize dialog without cold blue/lavender */
-html[data-theme="coffee"] .organize-tab__count,
-html:not([data-theme]) .organize-tab__count {
-  background: #ebe1d2;
-  color: #5e4d41;
-}
-
-html[data-theme="coffee"] .organize-tab.is-active .organize-tab__count,
-html:not([data-theme]) .organize-tab.is-active .organize-tab__count {
-  background: var(--primary-accent-soft);
-  color: var(--primary-accent-text);
-  border: 1px solid var(--primary-accent-border);
-}
-
 html[data-theme="coffee"] .management-search input,
 html:not([data-theme]) .management-search input {
   background: #fdfbf7;

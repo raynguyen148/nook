@@ -24,6 +24,15 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
   let sidebarExpandStartTimer = 0;
   let sidebarExpandRevealTimer = 0;
   let sidebarExpandFinishTimer = 0;
+  const THEME_LABELS = Object.freeze({
+    auto: "Auto",
+    light: "Light",
+    coffee: "Coffee",
+    forest: "Forest",
+    midnight: "Midnight",
+    dark: "Dark",
+    retro: "Retro",
+  });
 
   // These core utilities are resolved only when an interaction occurs, after
   // every installer has completed.
@@ -95,28 +104,130 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
   // Automatically refresh when the system theme changes
   systemThemeQuery.addEventListener("change", refreshAutoTheme);
 
+  function syncThemePickerUI(mode, resolvedTheme) {
+    elements.themeSelect.value = mode;
+    elements.themePickerCurrentPreview.dataset.themePreview = mode === "auto" ? "auto" : resolvedTheme;
+    elements.themePickerCurrentLabel.textContent = THEME_LABELS[mode] || THEME_LABELS.light;
+    elements.themePickerCurrentMeta.hidden = mode !== "auto";
+    elements.themePickerCurrentMeta.textContent = mode === "auto"
+      ? `Follows system · ${THEME_LABELS[resolvedTheme]}`
+      : "";
+    const currentLabel = mode === "auto"
+      ? `Auto (${THEME_LABELS[resolvedTheme]})`
+      : THEME_LABELS[mode] || THEME_LABELS.light;
+    elements.themePickerTrigger.setAttribute("aria-label", `Theme: ${currentLabel}. Choose a theme.`);
+    elements.themePickerOptions.forEach((option) => {
+      const optionTheme = option.dataset.themeOption;
+      const selected = optionTheme === mode;
+      option.setAttribute("aria-selected", String(selected));
+      option.tabIndex = selected ? 0 : -1;
+    });
+  }
+
+  function enhanceThemePicker() {
+    if (elements.themePicker.classList.contains("is-enhanced")) return;
+    elements.themePicker.classList.add("is-enhanced");
+    elements.themeSelect.hidden = true;
+    elements.themeSelect.tabIndex = -1;
+    elements.themeSelect.setAttribute("aria-hidden", "true");
+    elements.themePickerTrigger.hidden = false;
+  }
+
+  function openThemePicker() {
+    if (!elements.themePickerMenu.hidden || elements.themePickerTrigger.disabled) return;
+    elements.themePickerMenu.hidden = false;
+    elements.themePicker.classList.add("is-open");
+    elements.themePickerTrigger.setAttribute("aria-expanded", "true");
+    window.requestAnimationFrame(() => {
+      const selected = elements.themePickerOptions.find(
+        (option) => option.getAttribute("aria-selected") === "true",
+      );
+      (selected || elements.themePickerOptions[0])?.focus({ preventScroll: true });
+    });
+  }
+
+  function closeThemePicker({ focusTrigger = false } = {}) {
+    if (elements.themePickerMenu.hidden) return;
+    elements.themePickerMenu.hidden = true;
+    elements.themePicker.classList.remove("is-open");
+    elements.themePickerTrigger.setAttribute("aria-expanded", "false");
+    if (focusTrigger) elements.themePickerTrigger.focus({ preventScroll: true });
+  }
+
+  function toggleThemePicker() {
+    if (elements.themePickerMenu.hidden) openThemePicker();
+    else closeThemePicker({ focusTrigger: true });
+  }
+
+  function setThemePickerValue(theme) {
+    if (!THEMES.includes(theme)) return;
+    closeThemePicker({ focusTrigger: true });
+    window.requestAnimationFrame(() => setTheme(theme));
+  }
+
+  function handleThemePickerTriggerKeydown(event) {
+    if (event.key === "Escape" && !elements.themePickerMenu.hidden) {
+      event.preventDefault();
+      closeThemePicker({ focusTrigger: true });
+      return;
+    }
+    if (!["ArrowDown", "ArrowUp", " ", "Enter"].includes(event.key)) return;
+    event.preventDefault();
+    openThemePicker();
+  }
+
+  function handleThemePickerMenuClick(event) {
+    const option = event.target.closest("[data-theme-option]");
+    if (option && elements.themePickerMenu.contains(option)) {
+      setThemePickerValue(option.dataset.themeOption);
+    }
+  }
+
+  function handleThemePickerMenuKeydown(event) {
+    const options = elements.themePickerOptions;
+    const selectedIndex = options.findIndex(
+      (option) => option.getAttribute("aria-selected") === "true",
+    );
+    const activeIndex = options.indexOf(document.activeElement);
+    const currentIndex = activeIndex >= 0 ? activeIndex : Math.max(selectedIndex, 0);
+    if (event.key === "Escape") {
+      event.preventDefault();
+      closeThemePicker({ focusTrigger: true });
+      return;
+    }
+    if (event.key === "Tab") {
+      closeThemePicker();
+      return;
+    }
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      document.activeElement?.click();
+      return;
+    }
+    let nextIndex;
+    if (event.key === "ArrowDown") nextIndex = (currentIndex + 1) % options.length;
+    else if (event.key === "ArrowUp") nextIndex = (currentIndex - 1 + options.length) % options.length;
+    else if (event.key === "Home") nextIndex = 0;
+    else if (event.key === "End") nextIndex = options.length - 1;
+    else return;
+    event.preventDefault();
+    options[nextIndex].focus({ preventScroll: true });
+  }
+
+  function handleThemePickerDocumentPointerdown(event) {
+    if (!elements.themePicker.contains(event.target)) closeThemePicker();
+  }
+
   function syncThemeUI() {
     const mode = ui.theme;
     const theme = mode === "auto" ? resolveAutoTheme() : mode;
     document.documentElement.dataset.theme = theme;
     document.documentElement.dataset.themeMode = mode;
-    elements.themeOptions.forEach((option) => {
-      option.checked = option.value === mode;
-    });
+    syncThemePickerUI(mode, theme);
 
-    const themeLabels = {
-      light: "Light",
-      coffee: "Coffee",
-      forest: "Forest",
-      "midnight": "Midnight",
-      dark: "Dark",
-      retro: "Retro",
-      auto: "Auto",
-    };
-
-    const label = themeLabels[mode] || "Light";
-    const nextLabel = themeLabels[getNextTheme(mode)];
-    const currentLabel = mode === "auto" ? `Auto (${themeLabels[theme]})` : label;
+    const label = THEME_LABELS[mode] || THEME_LABELS.light;
+    const nextLabel = THEME_LABELS[getNextTheme(mode)];
+    const currentLabel = mode === "auto" ? `Auto (${THEME_LABELS[theme]})` : label;
     elements.themeToggle.setAttribute(
       "aria-label",
       `Current theme: ${currentLabel}. Switch to ${nextLabel}`,
@@ -576,6 +687,15 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
     getNextTheme,
     prefersReducedMotion,
     runUiViewTransition,
+    enhanceThemePicker,
+    openThemePicker,
+    closeThemePicker,
+    toggleThemePicker,
+    setThemePickerValue,
+    handleThemePickerTriggerKeydown,
+    handleThemePickerMenuClick,
+    handleThemePickerMenuKeydown,
+    handleThemePickerDocumentPointerdown,
     syncThemeUI,
     clearAutoThemeTimer,
     refreshAutoTheme,

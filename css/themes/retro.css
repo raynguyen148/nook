@@ -221,7 +221,7 @@ html[data-theme="retro"] .type-badge {
 }
 html[data-theme="retro"] :where(.more-tags, .untagged) { color: var(--retro-muted); }
 
-html[data-theme="retro"] :where(.active-filter-pill, .notes-count, .organize-tab__count, .usage-count, .management-row__default) {
+html[data-theme="retro"] :where(.active-filter-pill, .notes-count, .usage-count, .management-row__default) {
   border: var(--retro-border-width) solid var(--retro-border);
   border-radius: 999px;
   color: var(--retro-ink);
@@ -230,7 +230,7 @@ html[data-theme="retro"] :where(.active-filter-pill, .notes-count, .organize-tab
   font-weight: 700;
 }
 
-html[data-theme="retro"] :where(.active-filter-pill, .notes-count, .organize-tab__count) { font-family: var(--font-mono); }
+html[data-theme="retro"] :where(.active-filter-pill, .notes-count) { font-family: var(--font-mono); }
 html[data-theme="retro"] .active-filter-pill { font-weight: 800; }
 html[data-theme="retro"] :where(.notes-count, .active-filter-pill.is-active) { background: var(--retro-yellow); }
 html[data-theme="retro"] :where(.text-button, .active-filter-clear-all, .active-filter-pill__clear) { color: var(--retro-link); font-weight: 700; text-decoration-color: currentColor; }
@@ -424,8 +424,6 @@ html[data-theme="retro"] .organize-tabs { border: var(--retro-border-width) soli
 html[data-theme="retro"] .organize-tab { color: var(--retro-muted); background: transparent; }
 html[data-theme="retro"] .organize-tab:is(:hover, :focus-visible, .is-active) { outline: none; color: var(--retro-ink); background: var(--retro-yellow); }
 html[data-theme="retro"] .organize-tab.is-active { box-shadow: var(--retro-shadow-xs); }
-html[data-theme="retro"] .organize-tab.is-active .organize-tab__count { color: var(--retro-ink); background: var(--retro-paper); }
-
 html[data-theme="retro"] :where(.management-create-row, .management-list) { border: var(--retro-border-width) solid var(--retro-border); border-radius: var(--retro-radius-card); color: var(--retro-ink); background: var(--retro-paper-muted); box-shadow: var(--retro-shadow-sm); }
 html[data-theme="retro"] .management-row { border-color: var(--retro-border); color: var(--retro-ink); background: var(--retro-paper); }
 html[data-theme="retro"] .management-row__name { color: var(--retro-ink); }

@@ -15,6 +15,14 @@
 
 
 
+.organize-dialog[open] {
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr);
+  overflow: hidden;
+}
+
+
+
 .organize-tabs {
   display: inline-flex;
   gap: 0.15rem;
@@ -59,7 +67,43 @@
 
 
 .organize-panel {
+  min-height: 0;
+  overflow: auto;
   padding: 1rem 1.25rem 1.25rem;
+  overscroll-behavior: contain;
+  scrollbar-color: var(--primary-accent-border) transparent;
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+}
+
+
+
+.organize-panel::-webkit-scrollbar {
+  width: 0.75rem;
+}
+
+
+
+.organize-panel::-webkit-scrollbar-track {
+  margin-block: 0.4rem;
+  background: transparent;
+}
+
+
+
+.organize-panel::-webkit-scrollbar-thumb {
+  border: 0.25rem solid transparent;
+  border-radius: 9999px;
+  background: var(--primary-accent-border);
+  background-clip: padding-box;
+}
+
+
+
+@media (hover: hover) and (pointer: fine) {
+  .organize-panel::-webkit-scrollbar-thumb:hover {
+    background-color: var(--primary-accent);
+  }
 }
 
 

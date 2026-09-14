@@ -691,18 +691,6 @@
     min-height: 2.75rem;
   }
 
-  .organize-dialog[open] {
-    display: grid;
-    grid-template-rows: auto auto minmax(0, 1fr);
-    overflow: hidden;
-  }
-
-  .organize-panel {
-    min-height: 0;
-    overflow: auto;
-    overscroll-behavior: contain;
-  }
-
   .management-list {
     max-height: none;
     overflow: visible;

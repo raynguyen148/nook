@@ -158,19 +158,39 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
     closeConfirmation: document.querySelector("#close-confirmation-dialog-btn"),
     cancelConfirmation: document.querySelector("#cancel-confirmation-btn"),
     confirmAction: document.querySelector("#confirm-action-btn"),
+    deleteLibraryDialog: document.querySelector("#delete-library-dialog"),
+    deleteLibraryDescription: document.querySelector("#delete-library-dialog-description"),
+    closeDeleteLibraryDialog: document.querySelector("#close-delete-library-dialog-btn"),
+    deleteLibraryBackup: document.querySelector("#delete-library-backup-btn"),
+    deleteLibraryBackupStatus: document.querySelector("#delete-library-backup-status"),
+    deleteLibraryConfirmation: document.querySelector("#delete-library-confirmation-input"),
+    cancelDeleteLibrary: document.querySelector("#cancel-delete-library-btn"),
+    confirmDeleteLibrary: document.querySelector("#confirm-delete-library-btn"),
     organizeDialog: document.querySelector("#organize-dialog"),
     closeOrganizeDialog: document.querySelector("#close-organize-dialog-btn"),
     typesTab: document.querySelector("#types-tab"),
     tagsTab: document.querySelector("#tags-tab"),
     displayTab: document.querySelector("#display-tab"),
+    dataTab: document.querySelector("#data-tab"),
     shortcutsTab: document.querySelector("#shortcuts-tab"),
-    typesTabCount: document.querySelector("#types-tab-count"),
-    tagsTabCount: document.querySelector("#tags-tab-count"),
+    typesPanelCount: document.querySelector("#types-panel-count"),
+    tagsPanelCount: document.querySelector("#tags-panel-count"),
     typesPanel: document.querySelector("#types-panel"),
     tagsPanel: document.querySelector("#tags-panel"),
     displayPanel: document.querySelector("#display-panel"),
+    dataPanel: document.querySelector("#data-panel"),
     shortcutsPanel: document.querySelector("#shortcuts-panel"),
-    themeOptions: [...document.querySelectorAll('.theme-option__input[name="theme"]')],
+    dataExport: document.querySelector("#data-export-btn"),
+    dataImport: document.querySelector("#data-import-btn"),
+    deleteLibrary: document.querySelector("#delete-library-btn"),
+    themePicker: document.querySelector("#theme-picker"),
+    themeSelect: document.querySelector("#theme-select"),
+    themePickerTrigger: document.querySelector("#theme-picker-trigger"),
+    themePickerCurrentPreview: document.querySelector("#theme-picker-current-preview"),
+    themePickerCurrentLabel: document.querySelector("#theme-picker-current-label"),
+    themePickerCurrentMeta: document.querySelector("#theme-picker-current-meta"),
+    themePickerMenu: document.querySelector("#theme-picker-menu"),
+    themePickerOptions: [...document.querySelectorAll("[data-theme-option]")],
     notePreviewLines: document.querySelector("#note-preview-lines"),
     notePreviewLinesValue: document.querySelector("#note-preview-lines-value"),
     settingsShortcutModifiers: [...document.querySelectorAll(".settings-shortcut-modifier")],
@@ -245,6 +265,9 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
     managementQueries: { types: "", tags: "" },
     managementCreateKind: "",
     managementEditing: null,
+    deleteLibraryInvoker: null,
+    deleteLibraryInFlight: false,
+    deleteLibraryBackupInFlight: false,
     toastTimer: 0,
     toastPopoverTimer: 0,
     toastAction: null,
@@ -491,7 +514,8 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
         ? "status-dot--backup-warning"
         : "status-dot--backup-good";
     elements.backupHealthDot.className = `status-dot ${statusClass}`;
-    elements.backupHealthMessage.textContent = backupHealthMessage(health, daysSinceReference);
+    const message = backupHealthMessage(health, daysSinceReference);
+    elements.backupHealthMessage.textContent = message;
   }
 
   function recordBackupExport() {

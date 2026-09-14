@@ -13,6 +13,14 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
   const { openColorPickers } = shared;
   const {
     getNextTheme,
+    enhanceThemePicker,
+    closeThemePicker,
+    toggleThemePicker,
+    setThemePickerValue,
+    handleThemePickerTriggerKeydown,
+    handleThemePickerMenuClick,
+    handleThemePickerMenuKeydown,
+    handleThemePickerDocumentPointerdown,
     syncThemeUI,
     clearAutoThemeTimer,
     refreshAutoTheme,
@@ -98,6 +106,12 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
     refreshLibrary,
     openOrganize,
     closeOrganize,
+    syncDeleteLibraryConfirmation,
+    openDeleteLibraryDialog,
+    closeDeleteLibraryDialog,
+    finishDeleteLibraryClose,
+    exportBeforeDeleteLibrary,
+    deleteLibraryData,
     addNewType,
     addNewTag,
     exportCurrentNote,
@@ -106,6 +120,14 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
   } = api;
 
   function bindEvents() {
+    const activateManagementTab = (tab) => {
+      closeThemePicker();
+      setManagementTab(tab);
+    };
+    const handleManagementTabNavigation = (event) => {
+      closeThemePicker();
+      handleManagementTabKeydown(event);
+    };
     elements.mobileFilterToggle.addEventListener("click", toggleMobileFilters);
     elements.sidebarToggle?.addEventListener("click", () => toggleSidebar());
     elements.sidebarToggle?.addEventListener("pointerenter", positionSidebarToggleTooltip);
@@ -142,11 +164,12 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
       }
     });
     elements.themeToggle.addEventListener("click", () => setTheme(getNextTheme(ui.theme)));
-    elements.themeOptions.forEach((option) => {
-      option.addEventListener("change", () => {
-        if (option.checked) setTheme(option.value);
-      });
-    });
+    elements.themeSelect.addEventListener("change", () => setThemePickerValue(elements.themeSelect.value));
+    elements.themePickerTrigger.addEventListener("click", toggleThemePicker);
+    elements.themePickerTrigger.addEventListener("keydown", handleThemePickerTriggerKeydown);
+    elements.themePickerMenu.addEventListener("click", handleThemePickerMenuClick);
+    elements.themePickerMenu.addEventListener("keydown", handleThemePickerMenuKeydown);
+    document.addEventListener("pointerdown", handleThemePickerDocumentPointerdown);
     document.addEventListener("visibilitychange", refreshAutoTheme);
     window.addEventListener("focus", refreshAutoTheme);
     window.addEventListener("pageshow", refreshAutoTheme);
@@ -285,17 +308,38 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
       addTagFromEditor();
     });
     elements.closeOrganizeDialog.addEventListener("click", closeOrganize);
-    [elements.confirmationDialog, elements.organizeDialog].forEach((dialog) => {
+    [elements.confirmationDialog, elements.deleteLibraryDialog, elements.organizeDialog].forEach((dialog) => {
       dialog.addEventListener("close", () => window.queueMicrotask(syncToastHost));
     });
-    elements.typesTab.addEventListener("click", () => setManagementTab("types"));
-    elements.tagsTab.addEventListener("click", () => setManagementTab("tags"));
-    elements.displayTab.addEventListener("click", () => setManagementTab("display"));
-    elements.shortcutsTab.addEventListener("click", () => setManagementTab("shortcuts"));
-    elements.typesTab.addEventListener("keydown", handleManagementTabKeydown);
-    elements.tagsTab.addEventListener("keydown", handleManagementTabKeydown);
-    elements.displayTab.addEventListener("keydown", handleManagementTabKeydown);
-    elements.shortcutsTab.addEventListener("keydown", handleManagementTabKeydown);
+    elements.organizeDialog.addEventListener("close", closeThemePicker);
+    elements.typesTab.addEventListener("click", () => activateManagementTab("types"));
+    elements.tagsTab.addEventListener("click", () => activateManagementTab("tags"));
+    elements.displayTab.addEventListener("click", () => activateManagementTab("display"));
+    elements.dataTab.addEventListener("click", () => activateManagementTab("data"));
+    elements.shortcutsTab.addEventListener("click", () => activateManagementTab("shortcuts"));
+    elements.typesTab.addEventListener("keydown", handleManagementTabNavigation);
+    elements.tagsTab.addEventListener("keydown", handleManagementTabNavigation);
+    elements.displayTab.addEventListener("keydown", handleManagementTabNavigation);
+    elements.dataTab.addEventListener("keydown", handleManagementTabNavigation);
+    elements.shortcutsTab.addEventListener("keydown", handleManagementTabNavigation);
+    elements.dataExport.addEventListener("click", () => exportLibrary());
+    elements.dataImport.addEventListener("click", () => elements.importInput.click());
+    elements.deleteLibrary.addEventListener("click", openDeleteLibraryDialog);
+    elements.closeDeleteLibraryDialog.addEventListener("click", closeDeleteLibraryDialog);
+    elements.cancelDeleteLibrary.addEventListener("click", closeDeleteLibraryDialog);
+    elements.deleteLibraryBackup.addEventListener("click", exportBeforeDeleteLibrary);
+    elements.deleteLibraryConfirmation.addEventListener("input", syncDeleteLibraryConfirmation);
+    elements.deleteLibraryConfirmation.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" && !elements.confirmDeleteLibrary.disabled) {
+        event.preventDefault();
+        deleteLibraryData();
+      }
+    });
+    elements.confirmDeleteLibrary.addEventListener("click", deleteLibraryData);
+    elements.deleteLibraryDialog.addEventListener("cancel", (event) => {
+      if (ui.deleteLibraryInFlight) event.preventDefault();
+    });
+    elements.deleteLibraryDialog.addEventListener("close", finishDeleteLibraryClose);
     elements.notePreviewLines.addEventListener("input", () => setNotePreviewLines(elements.notePreviewLines.value));
     elements.addTypeToggle.addEventListener("click", () => {
       setManagementCreateMode(ui.managementCreateKind === "types" ? "" : "types");
@@ -583,6 +627,7 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
       await refreshLibrary();
       enhanceNoteTypeSelect();
       enhanceSortSelect();
+      enhanceThemePicker();
       elements.newTypeColor.replaceChildren(createColorOptions(elements.newTypeColor.value));
       enhanceColorSelect(elements.newTypeColor);
       bindEvents();
