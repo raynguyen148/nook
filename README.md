@@ -1,5 +1,10 @@
 # Nook
 
+[![No Dependencies](https://img.shields.io/badge/dependencies-none-brightgreen.svg)](package.json)
+[![Vanilla JS](https://img.shields.io/badge/JavaScript-Vanilla-yellow.svg)](js/)
+[![Offline First](https://img.shields.io/badge/offline-first-blue.svg)](js/storage.js)
+[![License: Unlicense](https://img.shields.io/badge/license-Unlicense-blue.svg)](LICENSE)
+
 Nook is a private, offline-first personal notes workspace. It is a static web
 app made with vanilla HTML, CSS, and JavaScript. Notes stay in the current
 browser's IndexedDB; there is no account, backend, sync service, analytics,
@@ -7,6 +12,22 @@ CDN, or runtime dependency.
 
 Use it for work notes, learning material, research, project context, interview
 practice, and personal ideas in one calm, searchable local library.
+
+## Table of contents
+
+- [Highlights](#highlights)
+- [Screenshots](#screenshots)
+- [Quick start](#quick-start)
+- [Browser support](#browser-support)
+- [Using Nook](#using-nook)
+- [Markdown support](#markdown-support)
+- [Local data and privacy](#local-data-and-privacy)
+- [Limitations and FAQ](#limitations-and-faq)
+- [Backup, restore, and demo data](#backup-restore-and-demo-data)
+- [Project structure](#project-structure)
+- [Development and validation](#development-and-validation)
+- [Feedback and contributing](#feedback-and-contributing)
+- [License](#license)
 
 ## Highlights
 
@@ -48,7 +69,6 @@ the sidebar to 12 tags so the tag list fits without an internal scrollbar.
 
 ![Nook Dark theme library in a compact four-column layout](docs/screenshots/nook-library-dark.jpg)
 
-
 ### Note detail workspace
 
 ![Nook Quick View rendering a rich Markdown note in the detail workspace](docs/screenshots/nook-component-preview.jpg)
@@ -85,6 +105,17 @@ Then open <http://localhost:8000>. JavaScript is required in both modes.
 `file://`, `localhost`, and different ports are separate browser origins, so
 their IndexedDB and localStorage data do not transfer automatically. Export a
 JSON backup before moving between origins, browsers, or browser profiles.
+
+## Browser support
+
+Nook relies on modern Web APIs and runs without compilation. It requires a recent version of major browsers:
+
+- **IndexedDB**: For local data persistence.
+- **`<dialog>` element**: For native accessible modals.
+- **`BroadcastChannel`**: For multi-tab synchronization.
+- **ES Modules**: For native JavaScript module loading.
+
+*Tested and recommended on Chrome/Edge 114+, Firefox 115+, and Safari 16.4+.*
 
 ## Using Nook
 
@@ -225,6 +256,12 @@ Each note contains:
 The storage layer owns normalization and validation. Note content is trimmed and
 line endings are normalized before saving; the Markdown syntax is preserved.
 
+## Limitations and FAQ
+
+- **Will I lose my notes if I clear browser data?** Yes. Nook strictly relies on the browser's IndexedDB. If you clear "Site Data" or use strict anti-tracking modes that clear local data on exit, your notes will be permanently deleted. Regularly export JSON backups.
+- **Does it sync across my devices?** No. Nook is purely local to the current browser profile. To move data, export a backup on one device and import it on the other.
+- **Storage Limits**: Browsers may cap IndexedDB storage or automatically evict it if the OS runs out of disk space. For raw Markdown notes, you are highly unlikely to hit size limits, but eviction remains a risk on full disks.
+
 ## Backup, restore, and demo data
 
 ### Full library backup
@@ -315,6 +352,10 @@ permanent deletion, import/export, validation, and backward-compatible data.
 Keep changes focused and preserve the offline-only boundary. Do not add hosted
 fonts, CDNs, analytics, authentication, external APIs, or a framework without
 an explicit product decision.
+
+## Feedback and contributing
+
+Nook is built to serve a highly specific personal workflow. While major feature requests or large pull requests are generally not accepted to keep the app focused and dependency-free, bug reports are welcome. Feel free to open an issue if you encounter unexpected behavior.
 
 ## License
 
