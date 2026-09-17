@@ -82,6 +82,7 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
     scheduleNoteEditorScrollMap,
     scheduleNoteEditorPreview,
     setNoteEditorMode,
+    toggleNotePreviewHeader,
     scheduleNoteEditorHeight,
     scheduleNoteAutoSave,
     revalidateNoteEditorField,
@@ -242,6 +243,7 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
     elements.closeNoteDialog.addEventListener("click", requestNoteEditorClose);
     elements.cancelNote.addEventListener("click", requestNoteEditorClose);
     elements.quickSaveNote.addEventListener("click", () => saveNote({ preventDefault() {} }, { closeAfterSave: false }));
+    elements.quickViewHeaderToggle.addEventListener("click", toggleNotePreviewHeader);
     elements.deleteNote.addEventListener("click", () => {
       const note = library.notes.find(({ id }) => id === elements.noteId.value);
       deleteNoteWithConfirmation(note);

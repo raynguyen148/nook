@@ -864,10 +864,29 @@
 
       <div class="quick-view-body">
         <header class="quick-view-document-header">
-          <h1 id="quick-view-title"></h1>
-          <div class="quick-view-context">
-            <div id="quick-view-meta" class="quick-view-meta"></div>
-            <div id="quick-view-tags" class="quick-view-tags" aria-label="Note tags"></div>
+          <div class="quick-view-document-header__top">
+            <h1 id="quick-view-title"></h1>
+            <button
+              id="quick-view-header-toggle"
+              class="quick-view-header-toggle"
+              type="button"
+              aria-expanded="true"
+              aria-controls="quick-view-document-details"
+              aria-label="Collapse note details"
+              title="Collapse note details"
+            >
+              <svg class="quick-view-header-toggle__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="m5 14.5 7-7 7 7" />
+              </svg>
+            </button>
+          </div>
+          <div id="quick-view-document-details" class="quick-view-document-header__details" aria-hidden="false">
+            <div class="quick-view-document-header__details-inner">
+              <div class="quick-view-context">
+                <div id="quick-view-meta" class="quick-view-meta"></div>
+                <div id="quick-view-tags" class="quick-view-tags" aria-label="Note tags"></div>
+              </div>
+            </div>
           </div>
         </header>
         <article class="quick-view-content-card" aria-labelledby="quick-view-content-label">

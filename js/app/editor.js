@@ -580,6 +580,23 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
     });
   }
 
+  function syncNotePreviewHeader() {
+    const collapsed = Boolean(ui.notePreviewHeaderCollapsed);
+    elements.quickViewDocumentHeader?.classList.toggle("is-collapsed", collapsed);
+    elements.quickViewDocumentDetails?.setAttribute("aria-hidden", String(collapsed));
+    if (!elements.quickViewHeaderToggle) return;
+    const label = collapsed ? "Expand note details" : "Collapse note details";
+    elements.quickViewHeaderToggle.setAttribute("aria-expanded", String(!collapsed));
+    elements.quickViewHeaderToggle.setAttribute("aria-label", label);
+    elements.quickViewHeaderToggle.title = label;
+  }
+
+  function toggleNotePreviewHeader() {
+    if (ui.noteEditorMode !== "preview") return;
+    ui.notePreviewHeaderCollapsed = !ui.notePreviewHeaderCollapsed;
+    syncNotePreviewHeader();
+  }
+
   function setNoteEditorMode(mode) {
     if (!["edit", "split", "preview"].includes(mode)) return;
     const previousMode = ui.noteEditorMode;
@@ -601,6 +618,7 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
     elements.noteContentField.classList.toggle("is-preview", mode === "preview");
     elements.noteContentPreview.hidden = mode === "edit";
     elements.notePreviewPanel.classList.toggle("is-hidden", mode !== "preview");
+    syncNotePreviewHeader();
     elements.noteEditorModeButtons.forEach((button) => {
       button.setAttribute("aria-pressed", String(button.dataset.noteEditorMode === mode));
     });
@@ -1043,6 +1061,7 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
     ui.noteAutoSaveInFlight = false;
     ui.noteCloseAfterSaveRequested = false;
     ui.editingNoteId = note?.id || "";
+    ui.notePreviewHeaderCollapsed = false;
     ui.selectedNoteTagIds = new Set(note?.tagIds || []);
     elements.noteForm.reset();
     clearNoteEditorValidation();
@@ -1129,6 +1148,7 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
     ui.editingNoteId = "";
     ui.selectedNoteTagIds.clear();
     ui.noteEditorSnapshot = null;
+    ui.notePreviewHeaderCollapsed = false;
     closeNoteDetail();
     // Keep the currently visible surface intact for the exit animation. The
     // next editor open re-syncs the DOM classes before it becomes visible.
@@ -1354,6 +1374,7 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
     renderNoteEditorPreview,
     scheduleNoteEditorPreview,
     setNoteEditorMode,
+    toggleNotePreviewHeader,
     syncNoteEditorHeight,
     scheduleNoteEditorHeight,
     noteSubmitButton,

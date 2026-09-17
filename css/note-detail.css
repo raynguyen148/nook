@@ -989,6 +989,129 @@
 .quick-view-document-header {
   padding-bottom: 1.65rem;
   border-bottom: 1px solid #edf0f4;
+  transition: padding-bottom var(--motion-duration-short) var(--motion-ease-out);
+}
+
+
+
+.quick-view-document-header__top {
+  display: flex;
+  min-width: 0;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+
+
+.quick-view-document-header__top h1 {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+
+
+.quick-view-header-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 1.55rem;
+  height: 1.55rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 50%;
+  padding: 0;
+  color: #94a3b8;
+  background: #f8fafc;
+  opacity: 0;
+  pointer-events: none;
+  cursor: pointer;
+  transition:
+    color var(--motion-duration-short) var(--motion-ease-out),
+    background-color var(--motion-duration-short) var(--motion-ease-out),
+    border-color var(--motion-duration-short) var(--motion-ease-out),
+    opacity var(--motion-duration-short) var(--motion-ease-out);
+}
+
+
+
+.quick-view-document-header:hover .quick-view-header-toggle,
+.quick-view-header-toggle:focus-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+
+
+.quick-view-header-toggle:hover {
+  color: #0f172a;
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+
+
+.quick-view-header-toggle__icon {
+  width: 0.75rem;
+  height: 0.75rem;
+  transition: transform var(--motion-duration-medium) var(--motion-ease-in-out);
+}
+
+
+
+.quick-view-header-toggle svg {
+  pointer-events: none;
+}
+
+
+
+.quick-view-document-header__details {
+  display: grid;
+  grid-template-rows: 1fr;
+  opacity: 1;
+  transform: translateY(0);
+  transition:
+    grid-template-rows var(--motion-duration-short) var(--motion-ease-in-out),
+    opacity var(--motion-duration-micro) var(--motion-ease-out),
+    transform var(--motion-duration-short) var(--motion-ease-out);
+}
+
+
+
+.quick-view-document-header__details-inner {
+  min-height: 0;
+  overflow: hidden;
+}
+
+
+
+.quick-view-document-header.is-collapsed {
+  padding-bottom: 0.65rem;
+}
+
+
+
+.quick-view-document-header.is-collapsed .quick-view-document-header__details {
+  grid-template-rows: 0fr;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-0.35rem);
+}
+
+
+
+.quick-view-document-header.is-collapsed .quick-view-document-header__top h1 {
+  margin-bottom: 0;
+  overflow: hidden;
+  font-size: clamp(1rem, 1.65vw, 1.25rem);
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
+
+.quick-view-document-header.is-collapsed .quick-view-header-toggle svg {
+  transform: rotate(180deg);
 }
 
 
