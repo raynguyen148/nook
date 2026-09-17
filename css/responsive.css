@@ -261,8 +261,49 @@
     min-width: 0;
   }
 
+  .sidebar__body {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-rows: 1fr;
+    width: 100%;
+    min-width: 0;
+    opacity: 1;
+    transform: translateY(0);
+    transition:
+      grid-template-rows var(--motion-duration-short) var(--motion-ease-in-out),
+      opacity var(--motion-duration-micro) var(--motion-ease-out),
+      transform var(--motion-duration-short) var(--motion-ease-out);
+  }
+
+  .sidebar__body-inner {
+    display: flex;
+    min-width: 0;
+    min-height: 0;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .app-shell.is-sidebar-collapsed .sidebar__body,
+  html[data-sidebar-collapsed="true"] .app-shell .sidebar__body {
+    grid-template-rows: 0fr;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-0.35rem);
+  }
+
   .sidebar-toggle-btn {
-    display: none;
+    display: inline-flex;
+    pointer-events: none;
+  }
+
+  .sidebar:hover .sidebar-toggle-btn {
+    opacity: 0;
+  }
+
+  .sidebar__header:hover .sidebar-toggle-btn,
+  .sidebar-toggle-btn:focus-visible {
+    opacity: 1;
+    pointer-events: auto;
   }
 
   .sidebar {
@@ -283,6 +324,45 @@
 
   .sidebar > * {
     min-width: 0;
+  }
+
+  .sidebar__header {
+    position: relative;
+    grid-column: 1 / -1;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .sidebar-toggle {
+    position: absolute;
+    top: 50%;
+    inset-inline-end: 0;
+    transform: translateY(-50%);
+  }
+
+  .sidebar__body > * {
+    min-width: 0;
+  }
+
+  .sidebar__body-inner > * {
+    min-width: 0;
+  }
+
+  .app-shell.is-sidebar-collapsed .brand-text,
+  html[data-sidebar-collapsed="true"] .app-shell .brand-text {
+    display: none;
+  }
+
+  .app-shell.is-sidebar-collapsed .sidebar-toggle-btn__icon,
+  html[data-sidebar-collapsed="true"] .app-shell .sidebar-toggle-btn__icon {
+    transform: rotate(180deg);
+  }
+
+  @media (hover: none) {
+    .sidebar-toggle-btn {
+      opacity: 1;
+      pointer-events: auto;
+    }
   }
 
   .backup-health {

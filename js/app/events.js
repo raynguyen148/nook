@@ -266,6 +266,7 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
       );
       scheduleTopbarActionsPinning();
       scheduleTagFilterLayout();
+      syncSidebarUI();
       positionSidebarToggleTooltip();
       window.requestAnimationFrame(syncPinnedTopbarControlMetrics);
     });

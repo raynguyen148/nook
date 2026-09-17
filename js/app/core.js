@@ -215,6 +215,7 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
     backupHealthDot: document.querySelector("#backup-health-dot"),
     backupHealthMessage: document.querySelector("#backup-health-message"),
     sidebar: document.querySelector(".sidebar"),
+    sidebarBody: document.querySelector("#sidebar-body"),
     sidebarToggle: document.querySelector("#sidebar-toggle-btn"),
     sidebarToggleTooltip: document.querySelector("#sidebar-toggle-tooltip"),
     sidebarToggleTooltipText: document.querySelector("#sidebar-toggle-tooltip-text"),

@@ -339,11 +339,19 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
 
   function syncSidebarUI() {
     const isCollapsed = ui.sidebarCollapsed;
+    const isMobileHeader = window.matchMedia("(max-width: 820px)").matches;
     document.documentElement.dataset.sidebarCollapsed = String(isCollapsed);
     elements.appShell.classList.toggle("is-sidebar-collapsed", isCollapsed);
+    if (elements.sidebarBody) {
+      if (isMobileHeader) {
+        elements.sidebarBody.setAttribute("aria-hidden", String(isCollapsed));
+      } else {
+        elements.sidebarBody.removeAttribute("aria-hidden");
+      }
+    }
     if (elements.sidebarToggle) {
       const shortcutModifier = usesMacKeyboardShortcuts() ? "⌘\\" : "Ctrl+\\";
-      const actionLabel = isCollapsed ? "Expand sidebar" : "Collapse sidebar";
+      const actionLabel = `${isCollapsed ? "Expand" : "Collapse"} ${isMobileHeader ? "app header" : "sidebar"}`;
       elements.sidebarToggle.setAttribute("aria-expanded", String(!isCollapsed));
       elements.sidebarToggle.setAttribute("aria-label", actionLabel);
       elements.sidebarToggleTooltipText.textContent = actionLabel;
