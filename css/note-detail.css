@@ -63,9 +63,9 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
-  min-height: 4.25rem;
-  padding: 0.7rem 1rem;
+  gap: 0.75rem;
+  min-height: 2.85rem;
+  padding: 0.45rem 1rem;
   border-bottom: 1px solid #e8ebf0;
   border-radius: 1rem 1rem 0 0;
   background: #ffffff;
@@ -93,7 +93,7 @@
 .detail-commandbar__info {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
+  gap: 0.5rem;
   margin: 0 auto 0 0;
 }
 
@@ -109,10 +109,10 @@
 .detail-commandbar__info .note-save-status {
   display: inline-flex;
   align-items: center;
-  gap: 0.28rem;
-  padding: 0.12rem 0.52rem;
+  gap: 0.25rem;
+  padding: 0.1rem 0.45rem;
   border-radius: 999px;
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   font-weight: 550;
   line-height: 1.2;
   border: 1px solid transparent;
@@ -127,27 +127,27 @@
 
 
 .detail-commandbar__info .note-save-status__icon {
-  width: 0.8rem;
-  height: 0.8rem;
+  width: 0.65rem;
+  height: 0.65rem;
   flex: none;
 }
 
 
 
 .detail-commandbar__info .note-save-status.is-saved {
-  color: #047857;
-  padding-inline: 0;
-  background: transparent;
-  border-color: transparent;
+  color: #059669;
+  padding: 0.1rem 0.45rem;
+  background: rgba(16, 185, 129, 0.08);
+  border-color: rgba(16, 185, 129, 0.2);
 }
 
 
 
 .detail-commandbar__info .note-save-status.is-new {
   color: #64748b;
-  padding-inline: 0;
-  background: transparent;
-  border-color: transparent;
+  padding: 0.1rem 0.45rem;
+  background: rgba(100, 116, 139, 0.08);
+  border-color: rgba(100, 116, 139, 0.16);
 }
 
 
@@ -177,16 +177,25 @@
 
 
 .detail-commandbar__state {
-  margin: 0 auto 0 0;
-  color: #7a8495;
-  font-size: 0.78rem;
-  font-weight: 650;
+  margin: 0;
+  color: #64748b;
+  font-size: 0.76rem;
+  font-weight: 600;
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 
 
 .detail-back-button {
   flex: none;
+  min-height: 1.85rem;
+  height: 1.85rem;
+  padding: 0 0.65rem;
+  font-size: 0.78rem;
+  border-radius: 0.45rem;
 }
 
 
@@ -194,7 +203,7 @@
 .quick-view-header__utilities {
   display: flex;
   align-items: center;
-  gap: 0.65rem;
+  gap: 0.5rem;
 }
 
 
@@ -202,14 +211,29 @@
 .note-editor-commandbar__actions {
   display: flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.35rem;
   margin-left: auto;
 }
 
 
 
 .note-editor-commandbar__actions .note-editor-modes {
-  gap: 0.1rem;
+  gap: 0.12rem;
+  border-radius: 0.55rem;
+  padding: 0.14rem;
+}
+
+.note-editor-commandbar__actions .note-editor-mode__button {
+  height: 1.85rem;
+  padding: 0 0.55rem;
+  border-radius: 0.42rem;
+  font-size: 0.74rem;
+  gap: 0.28rem;
+}
+
+.note-editor-commandbar__actions .note-editor-mode__button svg {
+  width: 0.9rem;
+  height: 0.9rem;
 }
 
 
@@ -248,14 +272,14 @@
   overflow-x: hidden;
   overflow-y: auto;
   overscroll-behavior: contain;
-  padding: clamp(1rem, 2vw, 1.75rem) clamp(1rem, 2vw, 1.75rem) 0.5rem;
+  padding: clamp(0.75rem, 1.5vw, 1.25rem) clamp(0.85rem, 1.8vw, 1.4rem) 0.4rem;
 }
 
 
 
 .note-detail-surface .dialog-body {
   grid-template-rows: auto auto minmax(0, 1fr) auto;
-  gap: 1.1rem;
+  gap: 0.65rem;
   align-content: start;
   grid-auto-rows: max-content;
 }
@@ -326,10 +350,10 @@
   background-color: transparent;
   box-shadow: none;
   font-family: var(--font-display);
-  font-size: clamp(1.5rem, 2.8vw, 2.25rem);
-  font-weight: 700;
-  letter-spacing: -0.035em;
-  line-height: 1.2;
+  font-size: clamp(1.25rem, 1.8vw, 1.45rem);
+  font-weight: 650;
+  letter-spacing: -0.025em;
+  line-height: 1.25;
 }
 
 .note-dialog .field--title input::placeholder,
@@ -374,7 +398,7 @@
 .note-dialog .editor-grid {
   grid-template-columns: max-content minmax(0, 1fr);
   align-items: center;
-  gap: 0.8rem;
+  gap: 0.5rem;
   padding: 0;
 }
 
@@ -775,10 +799,11 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 0.65rem;
+  gap: 0.5rem;
   border-top: 1px solid #e8ebf0;
   border-radius: 0 0 1rem 1rem;
-  padding: 0.65rem 1.25rem max(0.65rem, env(safe-area-inset-bottom));
+  padding: 0.35rem 1rem max(0.35rem, env(safe-area-inset-bottom));
+  min-height: 2.35rem;
   background: #ffffff;
 }
 
@@ -883,12 +908,12 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 2rem;
-  min-width: 2rem;
-  height: 2rem;
+  width: 1.75rem;
+  min-width: 1.75rem;
+  height: 1.75rem;
   padding: 0;
   border: 1px solid transparent;
-  border-radius: 0.45rem;
+  border-radius: 0.4rem;
   color: #64748b;
   background: transparent;
   cursor: pointer;
@@ -929,8 +954,8 @@
 .note-detail-surface .note-delete-button svg,
 .note-detail-surface .note-save-shortcut__trigger svg,
 .note-detail-surface .note-markdown-help__trigger svg {
-  width: 1.05rem;
-  height: 1.05rem;
+  width: 0.92rem;
+  height: 0.92rem;
 }
 
 
@@ -982,10 +1007,10 @@
 
 
 .note-detail-surface .dialog-footer__actions .button {
-  min-height: 2.1rem;
-  padding: 0.35rem 0.95rem;
-  font-size: 0.82rem;
-  border-radius: 0.52rem;
+  min-height: 1.85rem;
+  padding: 0.22rem 0.75rem;
+  font-size: 0.78rem;
+  border-radius: 0.45rem;
   font-weight: 600;
 }
 
@@ -1147,13 +1172,13 @@
 
 
 .quick-view-document-header h1 {
-  margin: 0 0 1.1rem;
+  margin: 0 0 0.45rem;
   color: #0f172a;
   font-family: var(--font-display);
-  font-size: clamp(1.5rem, 2.8vw, 2.25rem);
-  font-weight: 700;
-  letter-spacing: -0.035em;
-  line-height: 1.2;
+  font-size: clamp(1.25rem, 1.8vw, 1.45rem);
+  font-weight: 650;
+  letter-spacing: -0.025em;
+  line-height: 1.25;
   overflow-wrap: anywhere;
 }
 
@@ -1298,7 +1323,7 @@
   }
 
   .note-dialog .field--title input {
-    font-size: clamp(1.35rem, 7vw, 1.75rem);
+    font-size: clamp(1.15rem, 4.5vw, 1.35rem);
   }
 
   .note-dialog .note-editor-pane {
@@ -1321,7 +1346,7 @@
   }
 
   .quick-view-document-header h1 {
-    font-size: clamp(1.35rem, 7vw, 1.75rem);
+    font-size: clamp(1.15rem, 4.5vw, 1.35rem);
   }
 
   .note-detail-surface .dialog-body,
@@ -1446,8 +1471,8 @@
   align-items: center;
   justify-content: space-between;
   gap: 0.75rem;
-  min-height: 4.25rem;
-  padding: 0.7rem 1rem;
+  min-height: 2.85rem;
+  padding: 0.45rem 1rem;
   border-bottom: 1px solid #e8ebf0;
   border-radius: 1rem 1rem 0 0;
   background: inherit;
@@ -1456,6 +1481,30 @@
 
 .secondary-close-btn {
   flex: none;
+  min-height: 1.85rem;
+  height: 1.85rem;
+  width: 1.85rem;
+  padding: 0;
+  border-radius: 0.45rem;
+}
+
+.secondary-commandbar .note-editor-modes {
+  gap: 0.12rem;
+  border-radius: 0.55rem;
+  padding: 0.14rem;
+}
+
+.secondary-commandbar .note-editor-mode__button {
+  height: 1.85rem;
+  padding: 0 0.55rem;
+  border-radius: 0.42rem;
+  font-size: 0.74rem;
+  gap: 0.28rem;
+}
+
+.secondary-commandbar .note-editor-mode__button svg {
+  width: 0.9rem;
+  height: 0.9rem;
 }
 
 .secondary-picker-body {
@@ -1505,7 +1554,7 @@
   height: 100%;
   min-height: 0;
   overflow: hidden;
-  padding: clamp(1rem, 2vw, 1.75rem) clamp(1rem, 2vw, 1.75rem) 0.5rem;
+  padding: clamp(0.75rem, 1.5vw, 1.25rem) clamp(0.85rem, 1.8vw, 1.4rem) 0.4rem;
 }
 
 #secondary-reader-view .dialog-body.is-preview {
@@ -1572,9 +1621,28 @@
   gap: 0;
 }
 
+.note-dialog .note-formatting-toolbar,
 #secondary-reader-view .note-formatting-toolbar {
   width: 100%;
   border-bottom: 1px solid #e5e9ef;
+  gap: 0.22rem;
+  min-height: 2.15rem;
+  padding: 0.15rem 0.1rem;
+}
+
+.note-dialog .note-formatting-tool__button,
+#secondary-reader-view .note-formatting-tool__button {
+  width: 1.75rem;
+  min-width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 0.35rem;
+  font-size: 0.74rem;
+}
+
+.note-dialog .note-formatting-tool__button svg,
+#secondary-reader-view .note-formatting-tool__button svg {
+  width: 0.95rem;
+  height: 0.95rem;
 }
 
 #secondary-reader-view #secondary-content-field.is-preview .note-formatting-toolbar {
