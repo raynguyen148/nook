@@ -93,6 +93,12 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
     requestNoteEditorClose,
     setTagInputExpanded,
     addTagFromEditor,
+    renderSecondarySelectedNoteTags,
+    renderSecondaryTagSuggestions,
+    normalizeSecondaryTagEditorInput,
+    setSecondaryTagInputExpanded,
+    selectSecondaryNoteTag,
+    addSecondaryTagFromEditor,
     saveNote,
     deleteNoteWithConfirmation,
     setManagementTab,
@@ -118,6 +124,16 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
     exportCurrentNote,
     exportLibrary,
     importLibrary,
+    toggleDualPane,
+    closeDualPane,
+    showSecondaryPicker,
+    renderSecondaryNotesList,
+    copySecondaryNoteContent,
+    exportSecondaryNoteMarkdown,
+    exportSecondaryNoteText,
+    setSecondaryNoteMode,
+    onSecondaryNoteInput,
+    saveSecondaryNote,
   } = api;
 
   function bindEvents() {
@@ -225,6 +241,12 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
         if (!ui.noteSaveInFlight) applyNoteFormatting(button.dataset.noteFormatting);
       });
     });
+    elements.secondaryNoteFormattingButtons?.forEach((button) => {
+      button.addEventListener("pointerdown", (event) => event.preventDefault());
+      button.addEventListener("click", () => {
+        applyNoteFormatting(button.dataset.secondaryNoteFormatting, elements.secondaryNoteContentEditor);
+      });
+    });
     elements.noteContentPreview.addEventListener("scroll", () => {
       syncNoteEditorScroll(elements.noteContentPreview, elements.noteContent);
     });
@@ -252,6 +274,104 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
     elements.copyNoteContent.addEventListener("click", copyQuickViewContent);
     elements.exportNoteMarkdown.addEventListener("click", () => exportCurrentNote("md"));
     elements.exportNoteText.addEventListener("click", () => exportCurrentNote("txt"));
+    elements.toggleDualPane?.addEventListener("click", toggleDualPane);
+    elements.closeSecondaryPane?.addEventListener("click", closeDualPane);
+    elements.secondaryReaderClose?.addEventListener("click", closeDualPane);
+    elements.secondaryFooterClose?.addEventListener("click", closeDualPane);
+    elements.secondaryFooterDone?.addEventListener("click", closeDualPane);
+    elements.secondarySurface?.addEventListener("pointerdown", (event) => {
+      ui.activePane = "secondary";
+      if (!event.target.closest("input, textarea, select, button, a, [tabindex]")) {
+        elements.secondarySurface.focus({ preventScroll: true });
+      }
+    });
+    elements.noteDialog?.addEventListener("pointerdown", () => {
+      ui.activePane = "primary";
+    });
+    elements.secondarySurface?.addEventListener("focusin", () => {
+      ui.activePane = "secondary";
+    });
+    elements.noteDialog?.addEventListener("focusin", () => {
+      ui.activePane = "primary";
+    });
+    elements.secondaryBackToPicker?.addEventListener("click", showSecondaryPicker);
+    elements.secondaryCopyContent?.addEventListener("click", copySecondaryNoteContent);
+    elements.secondaryExportMd?.addEventListener("click", exportSecondaryNoteMarkdown);
+    elements.secondaryExportText?.addEventListener("click", exportSecondaryNoteText);
+    elements.secondaryModeButtons?.forEach((button) => {
+      button.addEventListener("click", () => {
+        setSecondaryNoteMode(button.dataset.secondaryEditorMode);
+      });
+    });
+    elements.secondaryNoteContentEditor?.addEventListener("input", onSecondaryNoteInput);
+    elements.secondaryNoteContentEditor?.addEventListener("scroll", () => {
+      syncNoteEditorScroll(elements.secondaryNoteContentEditor, elements.secondarySplitPreview);
+    });
+    elements.secondarySplitPreview?.addEventListener("scroll", () => {
+      syncNoteEditorScroll(elements.secondarySplitPreview, elements.secondaryNoteContentEditor);
+    });
+    elements.secondarySplitPreview?.addEventListener("toggle", () => {
+      scheduleNoteEditorScrollMap(elements.secondarySplitPreview);
+    }, true);
+    elements.secondaryNoteTitleInput?.addEventListener("input", onSecondaryNoteInput);
+    elements.secondaryEditorTypeSelect?.addEventListener("change", () => {
+      onSecondaryNoteInput();
+    });
+    elements.secondaryTagInput?.addEventListener("input", normalizeSecondaryTagEditorInput);
+    elements.secondaryTagInput?.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        addSecondaryTagFromEditor();
+      }
+      if (event.key === "Escape") {
+        event.preventDefault();
+        event.stopPropagation();
+        setSecondaryTagInputExpanded(false);
+        elements.secondaryAddTag?.focus({ preventScroll: true });
+        return;
+      }
+      if (
+        event.key === "Backspace" &&
+        !event.isComposing &&
+        !elements.secondaryTagInput.value &&
+        ui.secondarySelectedNoteTagIds?.size
+      ) {
+        event.preventDefault();
+        const tagIds = [...ui.secondarySelectedNoteTagIds];
+        ui.secondarySelectedNoteTagIds.delete(tagIds[tagIds.length - 1]);
+        renderSecondarySelectedNoteTags();
+        renderSecondaryTagSuggestions();
+        onSecondaryNoteInput();
+      }
+    });
+    elements.secondaryAddTag?.addEventListener("click", () => {
+      if (!ui.secondaryTagInputExpanded) {
+        setSecondaryTagInputExpanded(true, { focus: true });
+        return;
+      }
+      if (!cleanTagInput(elements.secondaryTagInput.value)) {
+        setSecondaryTagInputExpanded(false);
+        return;
+      }
+      addSecondaryTagFromEditor();
+    });
+    elements.secondarySaveChanges?.addEventListener("click", () => {
+      void saveSecondaryNote({ isAutoSave: false });
+    });
+    elements.secondaryNoteSearch?.addEventListener("input", (event) => {
+      ui.secondarySearchQuery = event.target.value;
+      renderSecondaryNotesList();
+    });
+    elements.secondaryClearSearch?.addEventListener("click", () => {
+      ui.secondarySearchQuery = "";
+      if (elements.secondaryNoteSearch) elements.secondaryNoteSearch.value = "";
+      renderSecondaryNotesList();
+      elements.secondaryNoteSearch?.focus();
+    });
+    elements.secondarySort?.addEventListener("change", (event) => {
+      ui.secondarySort = event.target.value;
+      renderSecondaryNotesList();
+    });
     elements.closeConfirmation.addEventListener("click", () => closeConfirmation());
     elements.cancelConfirmation.addEventListener("click", () => closeConfirmation());
     elements.confirmAction.addEventListener("click", () => closeConfirmation(true));
@@ -264,10 +384,20 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
           ? elements.noteContentPreview
           : elements.noteContent,
       );
+      if (ui.dualPaneOpen && ui.secondaryNoteMode === "split" && elements.secondaryNoteContentEditor) {
+        scheduleNoteEditorScrollMap(
+          elements.secondarySplitPreview?.contains(document.activeElement)
+            ? elements.secondarySplitPreview
+            : elements.secondaryNoteContentEditor,
+        );
+      }
       scheduleTopbarActionsPinning();
       scheduleTagFilterLayout();
       syncSidebarUI();
       positionSidebarToggleTooltip();
+      if (window.innerWidth < 1024 && (ui.dualPaneOpen || ui.secondaryClosing)) {
+        closeDualPane({ immediate: true });
+      }
       window.requestAnimationFrame(syncPinnedTopbarControlMetrics);
     });
     window.addEventListener("scroll", scheduleTopbarActionsPinning, { passive: true });
@@ -367,10 +497,28 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
       openColorPickers.forEach((picker) => {
         if (!picker.select.parentElement.contains(event.target)) closeColorPicker(picker);
       });
-      if (shared.noteTypePicker && !shared.noteTypePicker.root.contains(event.target)) closeNoteTypePicker();
+      const inPrimaryTypePicker = shared.noteTypePicker && shared.noteTypePicker.root.contains(event.target);
+      const inSecondaryTypePicker = shared.secondaryNoteTypePicker && shared.secondaryNoteTypePicker.root.contains(event.target);
+      if (!inPrimaryTypePicker && !inSecondaryTypePicker) closeNoteTypePicker();
+      if (
+        ui.secondaryTagInputExpanded &&
+        elements.secondaryTagInput &&
+        !cleanTagInput(elements.secondaryTagInput.value) &&
+        !elements.secondaryTagInputRow?.contains(event.target) &&
+        !elements.secondaryAddTag?.contains(event.target) &&
+        !elements.secondaryTagSuggestions?.contains(event.target)
+      ) {
+        setSecondaryTagInputExpanded(false);
+      }
     });
     document.addEventListener("keydown", (event) => {
       if (event.key === "Tab") document.documentElement.dataset.inputModality = "keyboard";
+      if (event.key === "Escape" && !activeModalDialog() && ui.dualPaneOpen && elements.secondarySurface?.contains(document.activeElement)) {
+        event.preventDefault();
+        closeDualPane();
+        elements.toggleDualPane?.focus();
+        return;
+      }
       if (event.key === "Escape" && !activeModalDialog() && isNoteEditorOpen()) {
         event.preventDefault();
         requestNoteEditorClose();
@@ -387,16 +535,19 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
       const noteFormattingShortcut = !event.shiftKey
         ? { b: "bold", e: "inline-code", i: "italic", k: "link" }[formattingKey]
         : { Digit7: "ordered-list", Digit8: "bullet-list" }[event.code];
+      const targetTextarea = event.target === elements.noteContent
+        ? elements.noteContent
+        : (event.target === elements.secondaryNoteContentEditor ? elements.secondaryNoteContentEditor : null);
       const matchesNoteFormattingShortcut = Boolean(
-        event.target === elements.noteContent &&
+        targetTextarea &&
         noteFormattingShortcut &&
         !event.altKey &&
         hasSaveModifier,
       );
 
-      if (matchesNoteFormattingShortcut && isNoteEditorOpen()) {
+      if (matchesNoteFormattingShortcut) {
         event.preventDefault();
-        if (!event.repeat && !event.isComposing) applyNoteFormattingShortcut(noteFormattingShortcut);
+        if (!event.repeat && !event.isComposing) applyNoteFormattingShortcut(noteFormattingShortcut, targetTextarea);
         return;
       }
 
@@ -461,9 +612,8 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
         editingText ||
         target instanceof HTMLButtonElement ||
         target instanceof HTMLFormElement;
-      const matchesNoteEditorModeShortcut =
-        isNoteEditorOpen() &&
-        ["1", "2", "3"].includes(formattingKey) &&
+      const isModeKey = ["1", "2", "3"].includes(formattingKey);
+      const matchesModifierFree =
         !event.metaKey &&
         !event.ctrlKey &&
         !event.altKey &&
@@ -473,10 +623,30 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
         !event.defaultPrevented &&
         !editingText;
 
-      if (matchesNoteEditorModeShortcut && !ui.noteSaveInFlight) {
-        event.preventDefault();
-        setNoteEditorMode({ 1: "edit", 2: "split", 3: "preview" }[formattingKey]);
-        return;
+      if (isModeKey && matchesModifierFree) {
+        const isSecondaryReaderActive =
+          ui.dualPaneOpen &&
+          elements.secondaryReaderView &&
+          !elements.secondaryReaderView.classList.contains("is-hidden");
+        const focusInSecondary =
+          isSecondaryReaderActive &&
+          (elements.secondarySurface?.contains(document.activeElement) ||
+            elements.secondarySurface?.contains(target) ||
+            (ui.activePane === "secondary" && !elements.noteDialog?.contains(document.activeElement)));
+
+        if (focusInSecondary) {
+          event.preventDefault();
+          const mode = { 1: "edit", 2: "split", 3: "preview" }[formattingKey];
+          setSecondaryNoteMode(mode);
+          return;
+        }
+
+        if (isNoteEditorOpen() && !ui.noteSaveInFlight) {
+          event.preventDefault();
+          const mode = { 1: "edit", 2: "split", 3: "preview" }[formattingKey];
+          setNoteEditorMode(mode);
+          return;
+        }
       }
 
       const selection = window.getSelection();
@@ -610,7 +780,7 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
 
     // Preview and editor now share one document surface. Move the former
     // Quick View actions/content into it without dropping any existing action.
-    elements.noteEditorCommandActions.append(modes);
+    elements.noteEditorCommandActions.prepend(modes);
     const tools = elements.noteDialog.querySelector(".dialog-footer__tools") || elements.noteDialog.querySelector(".dialog-footer");
     const deleteAction = elements.deleteNote.closest(".note-detail-action-tooltip") || elements.deleteNote;
     tools?.insertBefore(elements.notePreviewActions, deleteAction.nextSibling);

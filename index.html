@@ -568,14 +568,33 @@
                     aria-keyshortcuts="3"
                   >
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                      <path d="M2.4 12s3.4-5.2 9.6-5.2 9.6 5.2 9.6 5.2-3.4 5.2-9.6 5.2S2.4 12 2.4 12Z" />
-                      <circle cx="12" cy="12" r="2.35" />
+                      <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+                      <circle cx="12" cy="12" r="3" />
                     </svg>
                     <span class="note-editor-mode__label">Preview</span>
                   </button>
                   <span id="note-editor-mode-preview-tooltip" class="shortcut-tooltip" role="tooltip">
                     <span>Preview rendered note</span>
                     <kbd>3</kbd>
+                  </span>
+                </div>
+                <div class="note-editor-mode note-editor-mode--side-note">
+                  <button
+                    id="toggle-dual-pane-btn"
+                    class="note-editor-mode__button"
+                    type="button"
+                    aria-pressed="false"
+                    aria-label="Open side note"
+                    aria-describedby="note-editor-mode-side-note-tooltip"
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <rect x="3" y="3" width="18" height="18" rx="3.5" />
+                      <rect x="13.5" y="6" width="4.5" height="12" rx="1.5" fill="currentColor" stroke="none" />
+                    </svg>
+                    <span class="note-editor-mode__label">Side Note</span>
+                  </button>
+                  <span id="note-editor-mode-side-note-tooltip" class="shortcut-tooltip" role="tooltip">
+                    <span>Open side note</span>
                   </span>
                 </div>
               </div>
@@ -901,6 +920,325 @@
         <div id="quick-view-dates" class="quick-view-dates"></div>
       </div>
           </section>
+          <aside id="note-secondary-surface" class="note-detail-surface note-secondary-surface is-hidden" tabindex="-1" aria-label="Side note">
+            <!-- Picker View -->
+            <div id="secondary-picker-view" class="secondary-surface-view">
+              <div class="dialog-header detail-commandbar secondary-commandbar">
+                <div class="detail-commandbar__info">
+                  <p class="detail-commandbar__state">Choose a side note</p>
+                </div>
+                <div class="note-editor-commandbar__actions">
+                  <button id="close-secondary-pane-btn" class="icon-button secondary-close-btn" type="button" aria-label="Close side note" title="Close side note">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M18 6 6 18M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <div class="dialog-body secondary-picker-body">
+                <div class="toolbar-slot secondary-toolbar-slot">
+                  <div class="toolbar secondary-toolbar">
+                    <div class="search-field secondary-search-field">
+                      <label class="sr-only" for="secondary-note-search">Search notes</label>
+                      <span class="search-icon" aria-hidden="true">⌕</span>
+                      <input
+                        id="secondary-note-search"
+                        type="search"
+                        autocomplete="off"
+                        placeholder="Search title or content…"
+                        aria-label="Search title or content"
+                      />
+                      <button id="secondary-clear-search-btn" class="clear-search is-hidden" type="button" aria-label="Clear search">
+                        <svg viewBox="0 0 16 16" aria-hidden="true">
+                          <path d="m4.75 4.75 6.5 6.5M11.25 4.75l-6.5 6.5" />
+                        </svg>
+                      </button>
+                    </div>
+                    <div class="sort-field secondary-sort-field">
+                      <span id="secondary-sort-select-label" class="sr-only">Sort notes by</span>
+                      <select id="secondary-sort-select" aria-label="Sort notes by">
+                        <option value="created-desc">Newest created</option>
+                        <option value="created-asc">Oldest created</option>
+                        <option value="updated-desc">Newest updated</option>
+                        <option value="updated-asc">Oldest updated</option>
+                        <option value="title-asc">Title A–Z</option>
+                        <option value="title-desc">Title Z–A</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                <div id="secondary-notes-list" class="secondary-notes-list notes-list" role="listbox" aria-label="Side notes to open"></div>
+              </div>
+            </div>
+
+            <!-- Reader View -->
+            <div id="secondary-reader-view" class="secondary-surface-view is-hidden">
+              <div class="dialog-header detail-commandbar">
+                <button id="secondary-back-to-picker-btn" class="button button-secondary detail-back-button" type="button" aria-label="Return to all notes" title="All notes">← <span>All notes</span></button>
+                <div class="detail-commandbar__info">
+                  <p id="secondary-commandbar-title" class="detail-commandbar__state">Side note</p>
+                  <span id="secondary-note-save-status" class="note-save-status is-saved" role="status" aria-atomic="true" title="This note is saved">
+                    <svg class="note-save-status__icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3.5 8.5 3 3 6-6"/></svg>
+                    <span id="secondary-note-save-status-label" class="note-save-status__label">Saved</span>
+                  </span>
+                </div>
+                <div class="note-editor-commandbar__actions">
+                  <div class="note-editor-modes" role="group" aria-label="Content display mode">
+                    <div class="note-editor-mode">
+                      <button
+                        class="note-editor-mode__button"
+                        type="button"
+                        data-secondary-editor-mode="edit"
+                        aria-pressed="false"
+                        aria-label="Edit Markdown"
+                        aria-describedby="secondary-editor-mode-edit-tooltip"
+                        aria-keyshortcuts="1"
+                      >
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                          <path d="m5.1 18.9 1-4.1L16.5 4.4a2.05 2.05 0 0 1 2.9 2.9L9 17.8l-3.9 1.1Z" />
+                          <path d="m14.8 6.1 3.1 3.1" />
+                        </svg>
+                        <span class="note-editor-mode__label">Edit</span>
+                      </button>
+                      <span id="secondary-editor-mode-edit-tooltip" class="shortcut-tooltip" role="tooltip">
+                        <span>Markdown editor</span>
+                        <kbd>1</kbd>
+                      </span>
+                    </div>
+                    <div class="note-editor-mode">
+                      <button
+                        class="note-editor-mode__button"
+                        type="button"
+                        data-secondary-editor-mode="split"
+                        aria-pressed="false"
+                        aria-label="Split edit and preview"
+                        aria-describedby="secondary-editor-mode-split-tooltip"
+                        aria-keyshortcuts="2"
+                      >
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                          <rect x="3.25" y="3.25" width="17.5" height="17.5" rx="2.25" />
+                          <path d="M12 3.75v16.5" />
+                        </svg>
+                        <span class="note-editor-mode__label">Split</span>
+                      </button>
+                      <span id="secondary-editor-mode-split-tooltip" class="shortcut-tooltip" role="tooltip">
+                        <span>Split editor and preview</span>
+                        <kbd>2</kbd>
+                      </span>
+                    </div>
+                    <div class="note-editor-mode">
+                      <button
+                        class="note-editor-mode__button"
+                        type="button"
+                        data-secondary-editor-mode="preview"
+                        aria-pressed="true"
+                        aria-label="Preview rendered note"
+                        aria-describedby="secondary-editor-mode-preview-tooltip"
+                        aria-keyshortcuts="3"
+                      >
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                          <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+                          <circle cx="12" cy="12" r="3" />
+                        </svg>
+                        <span class="note-editor-mode__label">Preview</span>
+                      </button>
+                      <span id="secondary-editor-mode-preview-tooltip" class="shortcut-tooltip" role="tooltip">
+                        <span>Preview rendered note</span>
+                        <kbd>3</kbd>
+                      </span>
+                    </div>
+                  </div>
+                  <button id="secondary-reader-close-btn" class="icon-button secondary-close-btn" type="button" aria-label="Close side note" title="Close side note">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M18 6 6 18M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <div id="secondary-reader-body" class="dialog-body secondary-reader-body is-preview">
+                <div id="secondary-editor-container" class="secondary-editor-container note-dialog is-hidden">
+                  <label class="field field--title" for="secondary-note-title-input">
+                    <span class="sr-only">Title</span>
+                    <input id="secondary-note-title-input" type="text" maxlength="160" placeholder="Give this note a clear title" />
+                  </label>
+                  <div class="editor-grid">
+                    <label class="field" for="secondary-note-type-select">
+                      <span class="sr-only">Note type <em aria-hidden="true">*</em></span>
+                      <select id="secondary-note-type-select" required aria-describedby="secondary-note-type-error"></select>
+                      <span id="secondary-note-type-error" class="field-error" aria-live="polite" aria-atomic="true"></span>
+                    </label>
+                    <div class="field tag-editor-field">
+                      <span id="secondary-note-tags-label" class="sr-only">Tags</span>
+                      <div class="tag-picker" aria-labelledby="secondary-note-tags-label">
+                        <div id="secondary-selected-note-tags" class="selected-tags" aria-live="polite"></div>
+                        <div id="secondary-tag-input-row" class="tag-picker__input-row" hidden>
+                          <input id="secondary-tag-input" type="text" maxlength="48" autocomplete="off" placeholder="Search or create a tag" aria-label="Search or create a tag" />
+                        </div>
+                        <button id="secondary-add-tag-btn" class="tag-add-button" type="button" aria-label="Add tag" aria-controls="secondary-tag-input-row" aria-expanded="false" title="Add tag">+</button>
+                      </div>
+                      <div id="secondary-tag-suggestions" class="tag-suggestions" aria-live="polite"></div>
+                      <p class="field-help">Press Enter to add a tag, or choose a suggestion.</p>
+                    </div>
+                  </div>
+                  <div id="secondary-content-field" class="field note-content-field">
+                    <div class="note-formatting-toolbar" role="toolbar" aria-label="Markdown formatting">
+                      <div class="note-formatting-tool">
+                        <button class="note-formatting-tool__button note-formatting-tool__button--heading" type="button" data-secondary-note-formatting="heading" aria-label="Toggle heading"><span aria-hidden="true">H</span></button>
+                        <span class="note-formatting-tool__tooltip" role="tooltip">Heading</span>
+                      </div>
+                      <div class="note-formatting-tool">
+                        <button class="note-formatting-tool__button note-formatting-tool__button--bold" type="button" data-secondary-note-formatting="bold" aria-label="Toggle bold"><span aria-hidden="true">B</span></button>
+                        <span class="note-formatting-tool__tooltip" role="tooltip">Bold</span>
+                      </div>
+                      <div class="note-formatting-tool">
+                        <button class="note-formatting-tool__button note-formatting-tool__button--italic" type="button" data-secondary-note-formatting="italic" aria-label="Toggle italic"><span aria-hidden="true">I</span></button>
+                        <span class="note-formatting-tool__tooltip" role="tooltip">Italic</span>
+                      </div>
+                      <div class="note-formatting-tool">
+                        <button class="note-formatting-tool__button note-formatting-tool__button--strike" type="button" data-secondary-note-formatting="strikethrough" aria-label="Toggle strikethrough"><span aria-hidden="true">S</span></button>
+                        <span class="note-formatting-tool__tooltip" role="tooltip">Strikethrough</span>
+                      </div>
+                      <div class="note-formatting-tool">
+                        <button class="note-formatting-tool__button" type="button" data-secondary-note-formatting="inline-code" aria-label="Toggle inline code"><span aria-hidden="true">&lt;/&gt;</span></button>
+                        <span class="note-formatting-tool__tooltip" role="tooltip">Inline code</span>
+                      </div>
+                      <div class="note-formatting-tool">
+                        <button class="note-formatting-tool__button" type="button" data-secondary-note-formatting="code-block" aria-label="Insert code block"><span aria-hidden="true">{ }</span></button>
+                        <span class="note-formatting-tool__tooltip" role="tooltip">Code block</span>
+                      </div>
+                      <div class="note-formatting-tool">
+                        <button class="note-formatting-tool__button" type="button" data-secondary-note-formatting="bullet-list" aria-label="Toggle bullet list"><span aria-hidden="true">•≡</span></button>
+                        <span class="note-formatting-tool__tooltip" role="tooltip">Bullet list</span>
+                      </div>
+                      <div class="note-formatting-tool">
+                        <button class="note-formatting-tool__button" type="button" data-secondary-note-formatting="ordered-list" aria-label="Toggle numbered list"><span aria-hidden="true">1≡</span></button>
+                        <span class="note-formatting-tool__tooltip" role="tooltip">Numbered list</span>
+                      </div>
+                      <div class="note-formatting-tool">
+                        <button class="note-formatting-tool__button" type="button" data-secondary-note-formatting="task-list" aria-label="Toggle task list">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <rect x="4" y="4" width="16" height="16" rx="2.2" />
+                            <path d="m7.8 12.1 2.65 2.65 5.75-6.1" />
+                          </svg>
+                        </button>
+                        <span class="note-formatting-tool__tooltip" role="tooltip">Task list</span>
+                      </div>
+                      <div class="note-formatting-tool">
+                        <button class="note-formatting-tool__button" type="button" data-secondary-note-formatting="table" aria-label="Insert table">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <rect x="3.75" y="4.25" width="16.5" height="15.5" rx="1.8" />
+                            <path d="M4.25 9.5h15.5M9.25 4.75v14.5M14.75 4.75v14.5" />
+                          </svg>
+                        </button>
+                        <span class="note-formatting-tool__tooltip" role="tooltip">Table</span>
+                      </div>
+                      <div class="note-formatting-tool">
+                        <button class="note-formatting-tool__button" type="button" data-secondary-note-formatting="alert" aria-label="Insert note alert">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
+                            <path d="M12 9v4M12 17h.01" />
+                          </svg>
+                        </button>
+                        <span class="note-formatting-tool__tooltip" role="tooltip">Alert</span>
+                      </div>
+                      <div class="note-formatting-tool">
+                        <button class="note-formatting-tool__button" type="button" data-secondary-note-formatting="footnote" aria-label="Insert footnote">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M5 3.75h9l5 5V20.25H5z" />
+                            <path d="M14 3.75v5h5M10.1 13.35l1.45-1.2v5.1" />
+                          </svg>
+                        </button>
+                        <span class="note-formatting-tool__tooltip" role="tooltip">Footnote</span>
+                      </div>
+                    </div>
+                    <div class="note-content-editor">
+                      <div class="note-editor-pane note-editor-pane--source">
+                        <span class="note-editor-pane__label">Markdown</span>
+                        <textarea id="secondary-note-content-editor" rows="14" maxlength="50000" placeholder="Write anything you want to keep…"></textarea>
+                      </div>
+                      <div class="note-editor-pane note-editor-pane--preview">
+                        <span class="note-editor-pane__label">Preview</span>
+                        <div id="secondary-split-preview" class="quick-view-content note-content-preview" tabindex="0" aria-label="Rendered note preview" hidden></div>
+                      </div>
+                    </div>
+                  </div>
+                  <div id="secondary-editor-dates" class="note-meta quick-view-dates"></div>
+                </div>
+
+                <div id="secondary-preview-panel" class="detail-preview-panel">
+                  <div class="quick-view-body">
+                    <header class="quick-view-document-header">
+                      <div class="quick-view-document-header__top">
+                        <h1 id="secondary-note-title"></h1>
+                      </div>
+                      <div class="quick-view-document-header__details" aria-hidden="false">
+                        <div class="quick-view-document-header__details-inner">
+                          <div class="quick-view-context">
+                            <div id="secondary-note-type" class="quick-view-meta"></div>
+                            <div id="secondary-note-tags" class="quick-view-tags" aria-label="Note tags"></div>
+                          </div>
+                        </div>
+                      </div>
+                    </header>
+                    <article class="quick-view-content-card" aria-labelledby="secondary-content-label">
+                      <p id="secondary-content-label" class="quick-view-content-label sr-only">Content</p>
+                      <div id="secondary-note-content" class="quick-view-content" tabindex="0"></div>
+                    </article>
+                    <div id="secondary-note-dates" class="quick-view-dates"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="dialog-footer">
+                <div class="dialog-footer__tools">
+                  <div class="dialog-footer__preview-actions">
+                    <div class="quick-view-header__utilities">
+                      <span class="note-detail-action-tooltip">
+                        <button id="secondary-copy-content-btn" class="icon-button quick-view-copy-button" type="button" aria-label="Copy note content" aria-describedby="secondary-copy-tooltip">
+                          <svg class="copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <rect x="8.25" y="8.25" width="11.5" height="11.5" rx="2"></rect>
+                            <path d="M15.75 8.25V6.5a2.25 2.25 0 0 0-2.25-2.25H6.5A2.25 2.25 0 0 0 4.25 6.5v7A2.25 2.25 0 0 0 6.5 15.75h1.75"></path>
+                          </svg>
+                          <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                          </svg>
+                        </button>
+                        <span id="secondary-copy-tooltip" class="note-detail-action-tooltip__content" role="tooltip">Copy content</span>
+                      </span>
+                      <div class="quick-view-export-group" role="group" aria-label="Export note">
+                        <span class="note-detail-action-tooltip">
+                          <button id="secondary-export-md-btn" class="icon-button quick-view-export-button" type="button" aria-label="Export note as Markdown" aria-describedby="secondary-export-md-tooltip">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                              <path d="M6.5 3.75h7.2l4.3 4.3v12.2H6.5a2 2 0 0 1-2-2v-12.5a2 2 0 0 1 2-2Z"></path>
+                              <path d="M13.5 3.95v4.4h4.3M8 13.2l1.6-1.7 1.6 1.7 1.6-1.7 1.6 1.7M9.6 11.6v3.1M14.4 11.6v3.1"></path>
+                            </svg>
+                          </button>
+                          <span id="secondary-export-md-tooltip" class="note-detail-action-tooltip__content" role="tooltip">Export .md</span>
+                        </span>
+                        <span class="note-detail-action-tooltip">
+                          <button id="secondary-export-text-btn" class="icon-button quick-view-export-button" type="button" aria-label="Export note as plain text" aria-describedby="secondary-export-text-tooltip">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                              <path d="M6.5 3.75h7.2l4.3 4.3v12.2H6.5a2 2 0 0 1-2-2v-12.5a2 2 0 0 1 2-2Z"></path>
+                              <path d="M13.5 3.95v4.4h4.3M8 12h7.5M8 15h7.5"></path>
+                            </svg>
+                          </button>
+                          <span id="secondary-export-text-tooltip" class="note-detail-action-tooltip__content" role="tooltip">Export .txt</span>
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="dialog-footer__actions">
+                  <button id="secondary-save-changes-btn" class="button button-secondary quick-save-note-button is-hidden" type="button" aria-label="Save changes" title="Save changes">Save changes</button>
+                  <button id="secondary-footer-close-btn" class="button button-secondary" type="button">Close</button>
+                  <button id="secondary-footer-done-btn" class="button button-primary is-hidden" type="button">Done</button>
+                </div>
+              </div>
+            </div>
+          </aside>
         </section>
       </section>
     </main>

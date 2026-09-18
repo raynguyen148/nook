@@ -7,6 +7,7 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
   const { openColorPickers } = shared;
   const NOTE_EDITOR_SCROLL_MAP_MAX_ANCHORS = 320;
   let noteTypePicker = shared.noteTypePicker;
+  let secondaryNoteTypePicker = shared.secondaryNoteTypePicker;
   let noteEditorModeAnimation = null;
 
   const clearStoredNoteDraft = (...args) => api.clearStoredNoteDraft(...args);
@@ -32,71 +33,10 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
   const resetCopyButtonFeedback = (...args) => api.resetCopyButtonFeedback(...args);
   const closeColorPicker = (...args) => api.closeColorPicker(...args);
   const refreshLibrary = (...args) => api.refreshLibrary(...args);
+  const onSecondaryNoteInput = (...args) => api.onSecondaryNoteInput(...args);
 
-  function renderNoteTypeOptions(preferredTypeId = elements.noteType.value) {
-    const currentValue = preferredTypeId || storage.FALLBACK_TYPE_ID;
-    const fragment = document.createDocumentFragment();
-    library.types.forEach((type) => {
-      const option = createElement("option", { value: type.id, text: type.name });
-      option.selected = type.id === currentValue;
-      fragment.append(option);
-    });
-    elements.noteType.replaceChildren(fragment);
-    if (![...elements.noteType.options].some((option) => option.value === currentValue)) {
-      elements.noteType.value = storage.FALLBACK_TYPE_ID;
-    }
-    renderNoteTypePickerOptions();
-  }
-
-  function closeNoteTypePicker() {
-    if (!noteTypePicker) return;
-    noteTypePicker.menu.hidden = true;
-    noteTypePicker.trigger.setAttribute("aria-expanded", "false");
-  }
-
-  function setNoteTypePickerValue(typeId, { focusTrigger = false } = {}) {
-    if (!noteTypePicker) return;
-    const type = typeFor(typeId) || typeFor(storage.FALLBACK_TYPE_ID);
-    if (!type) return;
-
-    elements.noteType.value = type.id;
-    if (noteTypePicker.colorClass) {
-      noteTypePicker.trigger.classList.remove(noteTypePicker.colorClass);
-    }
-    noteTypePicker.colorClass = `type-badge--${safeTypeColor(type)}`;
-    noteTypePicker.trigger.classList.add(noteTypePicker.colorClass);
-    noteTypePicker.dot.className = `type-dot type-dot--${safeTypeColor(type)}`;
-    noteTypePicker.label.textContent = type.name;
-    noteTypePicker.options.forEach((option) => {
-      const selected = option.dataset.typeId === type.id;
-      option.setAttribute("aria-selected", String(selected));
-      option.tabIndex = selected ? 0 : -1;
-    });
-    if (focusTrigger) noteTypePicker.trigger.focus();
-  }
-
-  function renderNoteTypePickerOptions() {
-    if (!noteTypePicker) return;
-    const currentTypeId = elements.noteType.value || storage.FALLBACK_TYPE_ID;
-    const fragment = document.createDocumentFragment();
-    noteTypePicker.options = library.types.map((type) => {
-      const option = createElement("button", {
-        className: "note-type-picker__option",
-        type: "button",
-        text: type.name,
-        dataset: { typeId: type.id },
-        attributes: { role: "option", "aria-selected": "false" },
-      });
-      option.prepend(createElement("span", { className: `type-dot type-dot--${safeTypeColor(type)}`, attributes: { "aria-hidden": "true" } }));
-      return option;
-    });
-    fragment.append(...noteTypePicker.options);
-    noteTypePicker.menu.replaceChildren(fragment);
-    setNoteTypePickerValue(currentTypeId);
-  }
-
-  function enhanceNoteTypeSelect() {
-    if (noteTypePicker) return noteTypePicker;
+  function createCustomTypePicker(selectElement, { ariaDescribedBy = "note-type-error", onSelect = null } = {}) {
+    if (!selectElement) return null;
 
     const picker = createElement("div", { className: "note-type-picker" });
     const trigger = createElement("button", {
@@ -104,7 +44,7 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
       type: "button",
       attributes: {
         "aria-label": "Note type",
-        "aria-describedby": "note-type-error",
+        "aria-describedby": ariaDescribedBy,
         "aria-haspopup": "listbox",
         "aria-expanded": "false",
       },
@@ -115,61 +55,197 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
     const menu = createElement("div", { className: "note-type-picker__menu", attributes: { role: "listbox", "aria-label": "Note type options" } });
     menu.hidden = true;
 
-    elements.noteType.classList.add("note-type-picker__native");
-    elements.noteType.tabIndex = -1;
-    elements.noteType.setAttribute("aria-hidden", "true");
-    elements.noteType.hidden = true;
-    elements.noteType.parentElement?.insertBefore(picker, elements.noteType);
-    picker.append(elements.noteType, trigger, menu);
+    selectElement.classList.add("note-type-picker__native");
+    selectElement.tabIndex = -1;
+    selectElement.setAttribute("aria-hidden", "true");
+    selectElement.hidden = true;
+    selectElement.parentElement?.insertBefore(picker, selectElement);
+    picker.append(selectElement, trigger, menu);
 
-    noteTypePicker = { root: picker, trigger, dot, label, menu, options: [] };
-    shared.noteTypePicker = noteTypePicker;
+    const pickerInstance = {
+      select: selectElement,
+      root: picker,
+      trigger,
+      dot,
+      label,
+      menu,
+      options: [],
+      colorClass: "",
+      close() {
+        menu.hidden = true;
+        trigger.setAttribute("aria-expanded", "false");
+      },
+      setValue(typeId, { focusTrigger = false } = {}) {
+        const type = typeFor(typeId) || typeFor(storage.FALLBACK_TYPE_ID);
+        if (!type) return;
+
+        selectElement.value = type.id;
+        if (pickerInstance.colorClass) {
+          trigger.classList.remove(pickerInstance.colorClass);
+        }
+        pickerInstance.colorClass = `type-badge--${safeTypeColor(type)}`;
+        trigger.classList.add(pickerInstance.colorClass);
+        dot.className = `type-dot type-dot--${safeTypeColor(type)}`;
+        label.textContent = type.name;
+        pickerInstance.options.forEach((option) => {
+          const selected = option.dataset.typeId === type.id;
+          option.setAttribute("aria-selected", String(selected));
+          option.tabIndex = selected ? 0 : -1;
+        });
+        if (focusTrigger) trigger.focus();
+      },
+      renderOptions() {
+        const currentTypeId = selectElement.value || storage.FALLBACK_TYPE_ID;
+        const fragment = document.createDocumentFragment();
+        pickerInstance.options = library.types.map((type) => {
+          const option = createElement("button", {
+            className: "note-type-picker__option",
+            type: "button",
+            text: type.name,
+            dataset: { typeId: type.id },
+            attributes: { role: "option", "aria-selected": "false" },
+          });
+          option.prepend(createElement("span", { className: `type-dot type-dot--${safeTypeColor(type)}`, attributes: { "aria-hidden": "true" } }));
+          return option;
+        });
+        fragment.append(...pickerInstance.options);
+        menu.replaceChildren(fragment);
+        pickerInstance.setValue(currentTypeId);
+      },
+    };
+
     trigger.addEventListener("click", () => {
       if (menu.hidden) {
         openColorPickers.forEach((openPicker) => closeColorPicker(openPicker));
+        if (noteTypePicker && noteTypePicker !== pickerInstance) noteTypePicker.close();
+        if (secondaryNoteTypePicker && secondaryNoteTypePicker !== pickerInstance) secondaryNoteTypePicker.close();
         menu.hidden = false;
         trigger.setAttribute("aria-expanded", "true");
-        noteTypePicker.options.find((option) => option.dataset.typeId === elements.noteType.value)?.focus();
+        pickerInstance.options.find((option) => option.dataset.typeId === selectElement.value)?.focus();
       } else {
-        closeNoteTypePicker();
+        pickerInstance.close();
       }
     });
+
     trigger.addEventListener("keydown", (event) => {
       if (["ArrowDown", "ArrowUp", " ", "Enter"].includes(event.key)) {
         event.preventDefault();
         if (menu.hidden) trigger.click();
       }
     });
+
     menu.addEventListener("click", (event) => {
       const option = event.target.closest(".note-type-picker__option");
       if (!option) return;
-      setNoteTypePickerValue(option.dataset.typeId, { focusTrigger: true });
-      elements.noteType.dispatchEvent(new Event("change", { bubbles: true }));
-      closeNoteTypePicker();
+      pickerInstance.setValue(option.dataset.typeId, { focusTrigger: true });
+      selectElement.dispatchEvent(new Event("change", { bubbles: true }));
+      pickerInstance.close();
+      if (typeof onSelect === "function") {
+        onSelect(option.dataset.typeId);
+      }
     });
+
     menu.addEventListener("keydown", (event) => {
-      const currentIndex = noteTypePicker.options.indexOf(document.activeElement);
+      const currentIndex = pickerInstance.options.indexOf(document.activeElement);
       if (event.key === "Escape") {
         event.preventDefault();
-        closeNoteTypePicker();
+        pickerInstance.close();
         trigger.focus();
         return;
       }
       if (event.key === "Tab") {
-        closeNoteTypePicker();
+        pickerInstance.close();
         return;
       }
       let nextIndex = currentIndex;
-      if (event.key === "ArrowDown") nextIndex = (currentIndex + 1) % noteTypePicker.options.length;
-      else if (event.key === "ArrowUp") nextIndex = (currentIndex - 1 + noteTypePicker.options.length) % noteTypePicker.options.length;
+      if (event.key === "ArrowDown") nextIndex = (currentIndex + 1) % pickerInstance.options.length;
+      else if (event.key === "ArrowUp") nextIndex = (currentIndex - 1 + pickerInstance.options.length) % pickerInstance.options.length;
       else if (event.key === "Home") nextIndex = 0;
-      else if (event.key === "End") nextIndex = noteTypePicker.options.length - 1;
+      else if (event.key === "End") nextIndex = pickerInstance.options.length - 1;
       else return;
       event.preventDefault();
-      noteTypePicker.options[nextIndex].focus();
+      pickerInstance.options[nextIndex].focus();
     });
-    elements.noteType.addEventListener("change", () => setNoteTypePickerValue(elements.noteType.value));
-    renderNoteTypePickerOptions();
+
+    selectElement.addEventListener("change", () => pickerInstance.setValue(selectElement.value));
+    pickerInstance.renderOptions();
+    return pickerInstance;
+  }
+
+  function closeNoteTypePicker() {
+    noteTypePicker?.close();
+    secondaryNoteTypePicker?.close();
+  }
+
+  function setNoteTypePickerValue(typeId, options) {
+    noteTypePicker?.setValue(typeId, options);
+  }
+
+  function setSecondaryNoteTypePickerValue(typeId, options) {
+    secondaryNoteTypePicker?.setValue(typeId, options);
+  }
+
+  function renderNoteTypePickerOptions() {
+    noteTypePicker?.renderOptions();
+    secondaryNoteTypePicker?.renderOptions();
+  }
+
+  function populateTypeSelectOptions(selectElement, preferredTypeId) {
+    if (!selectElement) return;
+    const currentValue = preferredTypeId || storage.FALLBACK_TYPE_ID;
+    const fragment = document.createDocumentFragment();
+    library.types.forEach((type) => {
+      const option = createElement("option", { value: type.id, text: type.name });
+      option.selected = type.id === currentValue;
+      fragment.append(option);
+    });
+    selectElement.replaceChildren(fragment);
+    if (![...selectElement.options].some((option) => option.value === currentValue)) {
+      selectElement.value = storage.FALLBACK_TYPE_ID;
+    }
+  }
+
+  function renderNoteTypeOptions(preferredTypeId = elements.noteType?.value) {
+    populateTypeSelectOptions(elements.noteType, preferredTypeId);
+    noteTypePicker?.renderOptions();
+    if (elements.secondaryEditorTypeSelect) {
+      populateTypeSelectOptions(
+        elements.secondaryEditorTypeSelect,
+        ui.secondaryNoteTypeId || elements.secondaryEditorTypeSelect.value,
+      );
+      secondaryNoteTypePicker?.renderOptions();
+    }
+  }
+
+  function renderSecondaryNoteTypeOptions(preferredTypeId) {
+    if (!elements.secondaryEditorTypeSelect) return;
+    populateTypeSelectOptions(elements.secondaryEditorTypeSelect, preferredTypeId);
+    if (secondaryNoteTypePicker) {
+      secondaryNoteTypePicker.renderOptions();
+      secondaryNoteTypePicker.setValue(preferredTypeId);
+    }
+  }
+
+  function enhanceNoteTypeSelect() {
+    if (!noteTypePicker && elements.noteType) {
+      noteTypePicker = createCustomTypePicker(elements.noteType, {
+        ariaDescribedBy: "note-type-error",
+      });
+      shared.noteTypePicker = noteTypePicker;
+    }
+    if (!secondaryNoteTypePicker && elements.secondaryEditorTypeSelect) {
+      secondaryNoteTypePicker = createCustomTypePicker(elements.secondaryEditorTypeSelect, {
+        ariaDescribedBy: "secondary-note-type-error",
+        onSelect: (typeId) => {
+          ui.secondaryNoteTypeId = typeId;
+          if (elements.secondaryNoteType) {
+            elements.secondaryNoteType.replaceChildren(makeTypeBadge(typeFor(typeId)));
+          }
+          onSecondaryNoteInput();
+        },
+      });
+      shared.secondaryNoteTypePicker = secondaryNoteTypePicker;
+    }
     return noteTypePicker;
   }
 
@@ -246,6 +322,130 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
     renderTagSuggestions();
   }
 
+  function renderSecondarySelectedNoteTags() {
+    if (!elements.secondarySelectedNoteTags) return;
+    elements.secondarySelectedNoteTags.replaceChildren();
+    const selectedTags = [...(ui.secondarySelectedNoteTagIds || [])].map(tagFor).filter(Boolean);
+    selectedTags.forEach((tag) => {
+      const chip = createElement("span", {
+        className: "selected-tag",
+        attributes: { title: tagLabel(tag) },
+      });
+      chip.append(createElement("span", { text: tagLabel(tag) }));
+      const remove = createElement("button", {
+        type: "button",
+        attributes: { "aria-label": `Remove tag ${tagLabel(tag)}` },
+      });
+      remove.append(createChipCloseIcon());
+      remove.addEventListener("click", () => {
+        ui.secondarySelectedNoteTagIds.delete(tag.id);
+        renderSecondarySelectedNoteTags();
+        renderSecondaryTagSuggestions();
+        onSecondaryNoteInput();
+      });
+      chip.append(remove);
+      elements.secondarySelectedNoteTags.append(chip);
+    });
+  }
+
+  function renderSecondaryTagSuggestions() {
+    if (!elements.secondaryTagSuggestions || !elements.secondaryTagInput) return;
+    if (!ui.secondaryTagInputExpanded) {
+      elements.secondaryTagSuggestions.replaceChildren();
+      return;
+    }
+    const queryText = cleanTagInput(elements.secondaryTagInput.value);
+    const query = queryText.toLocaleLowerCase();
+    const available = library.tags
+      .filter((tag) => !ui.secondarySelectedNoteTagIds?.has(tag.id))
+      .filter((tag) => !query || tagLabel(tag).toLocaleLowerCase().includes(query))
+      .slice(0, 5);
+    const hasExactMatch = library.tags.some((tag) => tagLabel(tag).toLocaleLowerCase() === query);
+    elements.secondaryTagSuggestions.replaceChildren();
+    if (!query) return;
+    if (available.length) {
+      elements.secondaryTagSuggestions.append(createElement("span", { className: "tag-suggestions__label", text: "Suggested" }));
+    }
+    available.forEach((tag) => {
+      const button = createElement("button", {
+        className: "tag-suggestion",
+        type: "button",
+        text: tagLabel(tag),
+        attributes: { "aria-label": `Add tag ${tagLabel(tag)}` },
+      });
+      button.addEventListener("click", () => selectSecondaryNoteTag(tag.id));
+      elements.secondaryTagSuggestions.append(button);
+    });
+    if (!hasExactMatch) {
+      const create = createElement("button", {
+        className: "tag-suggestion tag-suggestion--create",
+        type: "button",
+        text: `Create “${queryText}”`,
+      });
+      create.addEventListener("click", addSecondaryTagFromEditor);
+      elements.secondaryTagSuggestions.append(create);
+    }
+  }
+
+  function normalizeSecondaryTagEditorInput() {
+    if (!elements.secondaryTagInput) return;
+    const withoutPrefix = elements.secondaryTagInput.value.replace(/^\s*#+\s*/, "");
+    if (withoutPrefix !== elements.secondaryTagInput.value) elements.secondaryTagInput.value = withoutPrefix;
+    renderSecondaryTagSuggestions();
+  }
+
+  function setSecondaryTagInputExpanded(expanded, { focus = false } = {}) {
+    if (!elements.secondaryTagInputRow || !elements.secondaryAddTag) return;
+    ui.secondaryTagInputExpanded = Boolean(expanded);
+    elements.secondaryTagInputRow.hidden = !ui.secondaryTagInputExpanded;
+    elements.secondaryAddTag.setAttribute("aria-expanded", String(ui.secondaryTagInputExpanded));
+    if (!ui.secondaryTagInputExpanded) {
+      if (elements.secondaryTagInput) elements.secondaryTagInput.value = "";
+      renderSecondaryTagSuggestions();
+    }
+    if (focus && elements.secondaryTagInput) {
+      window.requestAnimationFrame(() => {
+        if (ui.secondaryTagInputExpanded) elements.secondaryTagInput.focus();
+      });
+    }
+  }
+
+  function selectSecondaryNoteTag(tagId) {
+    if (!tagFor(tagId)) return;
+    if (!ui.secondarySelectedNoteTagIds) ui.secondarySelectedNoteTagIds = new Set();
+    ui.secondarySelectedNoteTagIds.add(tagId);
+    if (elements.secondaryTagInput) elements.secondaryTagInput.value = "";
+    renderSecondarySelectedNoteTags();
+    setSecondaryTagInputExpanded(false);
+    onSecondaryNoteInput();
+  }
+
+  async function addSecondaryTagFromEditor() {
+    if (!elements.secondaryTagInput) return;
+    const rawName = cleanTagInput(elements.secondaryTagInput.value);
+    if (!rawName) return;
+    const existing = library.tags.find(
+      (tag) => tagLabel(tag).toLocaleLowerCase() === rawName.toLocaleLowerCase(),
+    );
+    if (existing) {
+      selectSecondaryNoteTag(existing.id);
+      return;
+    }
+    try {
+      const tag = await storage.addTag({ name: rawName });
+      await refreshLibrary({ broadcast: true });
+      if (!ui.secondarySelectedNoteTagIds) ui.secondarySelectedNoteTagIds = new Set();
+      ui.secondarySelectedNoteTagIds.add(tag.id);
+      if (elements.secondaryTagInput) elements.secondaryTagInput.value = "";
+      renderSecondarySelectedNoteTags();
+      setSecondaryTagInputExpanded(false);
+      onSecondaryNoteInput();
+      showToast(`Tag “${tagLabel(tag)}” created.`);
+    } catch (error) {
+      showError(error);
+    }
+  }
+
   function renderNoteMetadata(note) {
     elements.noteMeta.replaceChildren();
     if (!note) {
@@ -275,8 +475,8 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
     return offsets;
   }
 
-  function createNoteEditorSourceMirror(source) {
-    const textarea = elements.noteContent;
+  function createNoteEditorSourceMirror(source, textarea = elements.noteContent) {
+    if (!textarea) return null;
     const styles = window.getComputedStyle(textarea);
     const mirror = document.createElement("div");
     const horizontalPadding = Number.parseFloat(styles.paddingLeft) + Number.parseFloat(styles.paddingRight);
@@ -354,12 +554,14 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
     return 0;
   }
 
-  function measureNoteEditorSourceLineOffsets(source, lineStarts, sourceLines, sourceMaximum) {
-    const { mirror, textNode } = createNoteEditorSourceMirror(source);
+  function measureNoteEditorSourceLineOffsets(source, lineStarts, sourceLines, sourceMaximum, textarea = elements.noteContent) {
+    const mirrorResult = createNoteEditorSourceMirror(source, textarea);
+    if (!mirrorResult) return new Map();
+    const { mirror, textNode } = mirrorResult;
     try {
       const mirrorTop = mirror.getBoundingClientRect().top;
       const origin = getNoteEditorMirrorCaretTop(textNode, 0) - mirrorTop;
-      const mirrorMaximum = Math.max(0, mirror.scrollHeight - elements.noteContent.clientHeight);
+      const mirrorMaximum = Math.max(0, mirror.scrollHeight - textarea.clientHeight);
       const scale = mirrorMaximum > 0 && sourceMaximum > 0 ? sourceMaximum / mirrorMaximum : 1;
       const offsets = new Map();
       sourceLines.forEach((line) => {
@@ -374,11 +576,12 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
     }
   }
 
-  function getPreviewContentOffset(element, maximum) {
-    const previewBounds = elements.noteContentPreview.getBoundingClientRect();
+  function getPreviewContentOffset(element, maximum, preview = elements.noteContentPreview) {
+    if (!preview) return 0;
+    const previewBounds = preview.getBoundingClientRect();
     const elementBounds = element.getBoundingClientRect();
     return clampScrollPosition(
-      elementBounds.top - previewBounds.top + elements.noteContentPreview.scrollTop,
+      elementBounds.top - previewBounds.top + preview.scrollTop,
       maximum,
     );
   }
@@ -421,16 +624,85 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
     });
   }
 
-  function buildNoteEditorScrollMap() {
-    const source = elements.noteContent;
-    const preview = elements.noteContentPreview;
+  function getSplitScrollSession(element) {
     if (
-      ui.noteEditorMode !== "split" ||
+      (elements.secondaryNoteContentEditor && element === elements.secondaryNoteContentEditor) ||
+      (elements.secondarySplitPreview && element === elements.secondarySplitPreview)
+    ) {
+      return {
+        isSplit: ui.secondaryNoteMode === "split" && Boolean(ui.dualPaneOpen),
+        source: elements.secondaryNoteContentEditor,
+        preview: elements.secondarySplitPreview,
+        getScrollMap: () => ui.secondaryScrollMap,
+        setScrollMap: (map) => {
+          ui.secondaryScrollMap = map;
+        },
+        getSyncTarget: () => ui.secondaryScrollSyncTarget,
+        getSyncTargetTop: () => ui.secondaryScrollSyncTargetTop,
+        setSyncTarget: (target, top) => {
+          ui.secondaryScrollSyncTarget = target;
+          ui.secondaryScrollSyncTargetTop = top;
+        },
+        resetSyncTarget: () => {
+          ui.secondaryScrollSyncTarget = null;
+          ui.secondaryScrollSyncTargetTop = 0;
+          ui.secondaryScrollSyncResetFrame = 0;
+        },
+        cancelResetFrame: () => window.cancelAnimationFrame(ui.secondaryScrollSyncResetFrame),
+        scheduleResetFrame: (callback) => {
+          ui.secondaryScrollSyncResetFrame = window.requestAnimationFrame(callback);
+        },
+        getMapFrame: () => ui.secondaryScrollMapFrame,
+        setMapFrame: (frame) => {
+          ui.secondaryScrollMapFrame = frame;
+        },
+      };
+    }
+
+    return {
+      isSplit: ui.noteEditorMode === "split",
+      source: elements.noteContent,
+      preview: elements.noteContentPreview,
+      getScrollMap: () => ui.noteScrollMap,
+      setScrollMap: (map) => {
+        ui.noteScrollMap = map;
+      },
+      getSyncTarget: () => ui.noteScrollSyncTarget,
+      getSyncTargetTop: () => ui.noteScrollSyncTargetTop,
+      setSyncTarget: (target, top) => {
+        ui.noteScrollSyncTarget = target;
+        ui.noteScrollSyncTargetTop = top;
+      },
+      resetSyncTarget: () => {
+        ui.noteScrollSyncTarget = null;
+        ui.noteScrollSyncTargetTop = 0;
+        ui.noteScrollSyncResetFrame = 0;
+      },
+      cancelResetFrame: () => window.cancelAnimationFrame(ui.noteScrollSyncResetFrame),
+      scheduleResetFrame: (callback) => {
+        ui.noteScrollSyncResetFrame = window.requestAnimationFrame(callback);
+      },
+      getMapFrame: () => ui.noteScrollMapFrame,
+      setMapFrame: (frame) => {
+        ui.noteScrollMapFrame = frame;
+      },
+    };
+  }
+
+  function buildSplitScrollMap(session) {
+    if (!session || !session.isSplit) {
+      if (session) session.setScrollMap(null);
+      return null;
+    }
+    const { source, preview } = session;
+    if (
+      !source ||
+      !preview ||
       preview.hidden ||
       source.clientWidth <= 0 ||
       preview.clientWidth <= 0
     ) {
-      ui.noteScrollMap = null;
+      session.setScrollMap(null);
       return null;
     }
 
@@ -447,7 +719,7 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
     const anchors = sampleNoteEditorScrollAnchors(renderedAnchors);
     const sourceLines = new Set(anchors.map(({ sourceLine }) => sourceLine));
     const sourceOffsets = sourceLines.size
-      ? measureNoteEditorSourceLineOffsets(source.value, lineStarts, sourceLines, sourceMaximum)
+      ? measureNoteEditorSourceLineOffsets(source.value, lineStarts, sourceLines, sourceMaximum, source)
       : new Map();
     const points = [{ source: 0, preview: 0 }];
     anchors.forEach(({ element, sourceLine }) => {
@@ -455,14 +727,14 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
       if (!Number.isFinite(sourceOffset) || sourceOffset <= 0.5 || sourceOffset >= sourceMaximum - 0.5) return;
       points.push({
         source: sourceOffset,
-        preview: getPreviewContentOffset(element, previewMaximum),
+        preview: getPreviewContentOffset(element, previewMaximum, preview),
       });
     });
     points.push({ source: sourceMaximum, preview: previewMaximum });
 
     const sourceToPreview = createMonotonicScrollMap(points, "source", "preview");
     const previewToSource = createMonotonicScrollMap(sourceToPreview, "to", "from", "max");
-    ui.noteScrollMap = {
+    const scrollMap = {
       sourceToPreview,
       previewToSource,
       sourceMaximum,
@@ -472,13 +744,17 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
       previewClientWidth: preview.clientWidth,
       previewClientHeight: preview.clientHeight,
     };
-    return ui.noteScrollMap;
+    session.setScrollMap(scrollMap);
+    return scrollMap;
   }
 
-  function isNoteEditorScrollMapCurrent(scrollMap) {
-    if (!scrollMap) return false;
-    const source = elements.noteContent;
-    const preview = elements.noteContentPreview;
+  function buildNoteEditorScrollMap(source = elements.noteContent) {
+    const session = getSplitScrollSession(source);
+    return buildSplitScrollMap(session);
+  }
+
+  function isNoteEditorScrollMapCurrent(scrollMap, source = elements.noteContent, preview = elements.noteContentPreview) {
+    if (!scrollMap || !source || !preview) return false;
     return (
       scrollMap.sourceMaximum === getNoteEditorMaximumScrollTop(source) &&
       scrollMap.previewMaximum === getNoteEditorMaximumScrollTop(preview) &&
@@ -515,20 +791,23 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
   }
 
   function syncNoteEditorScroll(source, target) {
-    if (ui.noteEditorMode !== "split" || !source || !target) return;
-    if (source === ui.noteScrollSyncTarget) {
-      window.cancelAnimationFrame(ui.noteScrollSyncResetFrame);
-      if (Math.abs(source.scrollTop - ui.noteScrollSyncTargetTop) < 1) {
-        resetNoteEditorScrollSyncTarget();
+    if (!source || !target) return;
+    const session = getSplitScrollSession(source);
+    if (!session || !session.isSplit) return;
+    if (source === session.getSyncTarget()) {
+      session.cancelResetFrame();
+      if (Math.abs(source.scrollTop - session.getSyncTargetTop()) < 1) {
+        session.resetSyncTarget();
         return;
       }
-      resetNoteEditorScrollSyncTarget();
+      session.resetSyncTarget();
     }
-    const scrollMap = isNoteEditorScrollMapCurrent(ui.noteScrollMap)
-      ? ui.noteScrollMap
-      : buildNoteEditorScrollMap();
+    const currentMap = session.getScrollMap();
+    const scrollMap = isNoteEditorScrollMapCurrent(currentMap, session.source, session.preview)
+      ? currentMap
+      : buildSplitScrollMap(session);
     if (!scrollMap) return;
-    const map = source === elements.noteContent
+    const map = source === session.source
       ? scrollMap.sourceToPreview
       : scrollMap.previewToSource;
     const targetPosition = clampScrollPosition(
@@ -536,24 +815,25 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
       getNoteEditorMaximumScrollTop(target),
     );
     if (Math.abs(target.scrollTop - targetPosition) < 0.5) return;
-    ui.noteScrollSyncTarget = target;
-    ui.noteScrollSyncTargetTop = targetPosition;
+    session.setSyncTarget(target, targetPosition);
     target.scrollTop = targetPosition;
-    window.cancelAnimationFrame(ui.noteScrollSyncResetFrame);
-    ui.noteScrollSyncResetFrame = window.requestAnimationFrame(() => {
-      resetNoteEditorScrollSyncTarget();
+    session.cancelResetFrame();
+    session.scheduleResetFrame(() => {
+      session.resetSyncTarget();
     });
   }
 
   function scheduleNoteEditorScrollMap(source = elements.noteContent) {
-    if (ui.noteEditorMode !== "split") return;
-    window.cancelAnimationFrame(ui.noteScrollMapFrame);
-    ui.noteScrollMapFrame = window.requestAnimationFrame(() => {
-      ui.noteScrollMapFrame = 0;
-      if (buildNoteEditorScrollMap()) {
-        syncNoteEditorScroll(source, source === elements.noteContent ? elements.noteContentPreview : elements.noteContent);
+    const session = getSplitScrollSession(source);
+    if (!session || !session.isSplit) return;
+    window.cancelAnimationFrame(session.getMapFrame());
+    session.setMapFrame(window.requestAnimationFrame(() => {
+      session.setMapFrame(0);
+      if (buildSplitScrollMap(session)) {
+        const other = source === session.source ? session.preview : session.source;
+        syncNoteEditorScroll(source, other);
       }
-    });
+    }));
   }
 
   function renderNoteEditorPreview() {
@@ -858,16 +1138,18 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
     }, NOTE_AUTO_SAVE_DELAY);
   }
 
-  function replaceNoteContentSelection(replacement, selectionStart, selectionEnd, nextSelectionStart, nextSelectionEnd) {
-    const textarea = elements.noteContent;
+  function replaceNoteContentSelection(replacement, selectionStart, selectionEnd, nextSelectionStart, nextSelectionEnd, targetTextarea = elements.noteContent) {
+    const textarea = targetTextarea || elements.noteContent;
+    if (!textarea) return;
     textarea.focus();
     textarea.setRangeText(replacement, selectionStart, selectionEnd, "preserve");
     textarea.setSelectionRange(nextSelectionStart, nextSelectionEnd);
     textarea.dispatchEvent(new Event("input", { bubbles: true }));
   }
 
-  function toggleNoteContentWrapper(marker) {
-    const textarea = elements.noteContent;
+  function toggleNoteContentWrapper(marker, targetTextarea = elements.noteContent) {
+    const textarea = targetTextarea || elements.noteContent;
+    if (!textarea) return;
     const value = textarea.value;
     const selectionStart = textarea.selectionStart;
     const selectionEnd = textarea.selectionEnd;
@@ -884,6 +1166,7 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
         selectionEnd + marker.length,
         selectionStart - marker.length,
         selectionEnd - marker.length,
+        textarea,
       );
       return;
     }
@@ -894,11 +1177,13 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
       selectionEnd,
       selectionStart + marker.length,
       selectionEnd + marker.length,
+      textarea,
     );
   }
 
-  function insertNoteLink() {
-    const textarea = elements.noteContent;
+  function insertNoteLink(targetTextarea = elements.noteContent) {
+    const textarea = targetTextarea || elements.noteContent;
+    if (!textarea) return;
     const value = textarea.value;
     const selectionStart = textarea.selectionStart;
     const selectionEnd = textarea.selectionEnd;
@@ -911,47 +1196,52 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
       selectionEnd,
       urlStart,
       urlStart + urlPlaceholder.length,
+      textarea,
     );
   }
 
-  function applyNoteFormattingShortcut(formatting) {
-    if (formatting === "link") return insertNoteLink();
-    applyNoteFormatting(formatting);
+  function applyNoteFormattingShortcut(formatting, targetTextarea = elements.noteContent) {
+    if (formatting === "link") return insertNoteLink(targetTextarea);
+    applyNoteFormatting(formatting, targetTextarea);
   }
 
-  function selectedNoteContentLineRange() {
-    const value = elements.noteContent.value;
-    const selectionStart = elements.noteContent.selectionStart;
-    const selectionEnd = elements.noteContent.selectionEnd;
+  function selectedNoteContentLineRange(targetTextarea = elements.noteContent) {
+    const textarea = targetTextarea || elements.noteContent;
+    const value = textarea ? textarea.value : "";
+    const selectionStart = textarea ? textarea.selectionStart : 0;
+    const selectionEnd = textarea ? textarea.selectionEnd : 0;
     const start = value.lastIndexOf("\n", Math.max(0, selectionStart - 1)) + 1;
     const nextLineBreak = value.indexOf("\n", selectionEnd);
     const end = nextLineBreak === -1 ? value.length : nextLineBreak;
     return { start, end, text: value.slice(start, end) };
   }
 
-  function toggleNoteContentLinePrefix(prefix, expression) {
-    const { start, end, text } = selectedNoteContentLineRange();
+  function toggleNoteContentLinePrefix(prefix, expression, targetTextarea = elements.noteContent) {
+    const textarea = targetTextarea || elements.noteContent;
+    const { start, end, text } = selectedNoteContentLineRange(textarea);
     const lines = text.split("\n");
     const removePrefix = lines.every((line) => expression.test(line));
     const replacement = lines
       .map((line) => removePrefix ? line.replace(expression, "") : `${prefix}${line}`)
       .join("\n");
-    replaceNoteContentSelection(replacement, start, end, start, start + replacement.length);
+    replaceNoteContentSelection(replacement, start, end, start, start + replacement.length, textarea);
   }
 
-  function toggleNoteContentOrderedList() {
-    const { start, end, text } = selectedNoteContentLineRange();
+  function toggleNoteContentOrderedList(targetTextarea = elements.noteContent) {
+    const textarea = targetTextarea || elements.noteContent;
+    const { start, end, text } = selectedNoteContentLineRange(textarea);
     const lines = text.split("\n");
     const expression = /^\d+\.\s+/;
     const removePrefix = lines.every((line) => expression.test(line));
     const replacement = lines
       .map((line, index) => removePrefix ? line.replace(expression, "") : `${index + 1}. ${line}`)
       .join("\n");
-    replaceNoteContentSelection(replacement, start, end, start, start + replacement.length);
+    replaceNoteContentSelection(replacement, start, end, start, start + replacement.length, textarea);
   }
 
-  function insertNoteContentTemplate(template, selectionOffset, selectionLength = () => 0) {
-    const textarea = elements.noteContent;
+  function insertNoteContentTemplate(template, selectionOffset, selectionLength = () => 0, targetTextarea = elements.noteContent) {
+    const textarea = targetTextarea || elements.noteContent;
+    if (!textarea) return;
     const selectionStart = textarea.selectionStart;
     const selectionEnd = textarea.selectionEnd;
     const selectedText = textarea.value.slice(selectionStart, selectionEnd);
@@ -963,30 +1253,35 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
       selectionEnd,
       nextSelectionStart,
       nextSelectionStart + selectionLength(selectedText, replacement),
+      textarea,
     );
   }
 
-  function nextFootnoteNumber() {
-    const references = [...elements.noteContent.value.matchAll(/\[\^(\d+)\]/g)]
+  function nextFootnoteNumber(targetTextarea = elements.noteContent) {
+    const textarea = targetTextarea || elements.noteContent;
+    if (!textarea) return 1;
+    const references = [...textarea.value.matchAll(/\[\^(\d+)\]/g)]
       .map((match) => Number.parseInt(match[1], 10))
       .filter(Number.isFinite);
     return references.length ? Math.max(...references) + 1 : 1;
   }
 
-  function applyNoteFormatting(formatting) {
-    if (formatting === "bold") return toggleNoteContentWrapper("**");
-    if (formatting === "italic") return toggleNoteContentWrapper("*");
-    if (formatting === "strikethrough") return toggleNoteContentWrapper("~~");
-    if (formatting === "inline-code") return toggleNoteContentWrapper("`");
-    if (formatting === "heading") return toggleNoteContentLinePrefix("## ", /^#{1,6}\s+/);
-    if (formatting === "bullet-list") return toggleNoteContentLinePrefix("- ", /^[-*+]\s+/);
-    if (formatting === "task-list") return toggleNoteContentLinePrefix("- [ ] ", /^-\s\[[ xX]\]\s+/);
-    if (formatting === "ordered-list") return toggleNoteContentOrderedList();
+  function applyNoteFormatting(formatting, targetTextarea = elements.noteContent) {
+    const textarea = targetTextarea || elements.noteContent;
+    if (formatting === "bold") return toggleNoteContentWrapper("**", textarea);
+    if (formatting === "italic") return toggleNoteContentWrapper("*", textarea);
+    if (formatting === "strikethrough") return toggleNoteContentWrapper("~~", textarea);
+    if (formatting === "inline-code") return toggleNoteContentWrapper("`", textarea);
+    if (formatting === "heading") return toggleNoteContentLinePrefix("## ", /^#{1,6}\s+/, textarea);
+    if (formatting === "bullet-list") return toggleNoteContentLinePrefix("- ", /^[-*+]\s+/, textarea);
+    if (formatting === "task-list") return toggleNoteContentLinePrefix("- [ ] ", /^-\s\[[ xX]\]\s+/, textarea);
+    if (formatting === "ordered-list") return toggleNoteContentOrderedList(textarea);
     if (formatting === "code-block") {
       return insertNoteContentTemplate(
         (selectedText) => `\`\`\`\n${selectedText}\n\`\`\``,
         () => 4,
         (selectedText) => selectedText.length,
+        textarea,
       );
     }
     if (formatting === "table") {
@@ -994,6 +1289,7 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
         () => "| Column 1 | Column 2 |\n| --- | --- |\n| Cell 1 | Cell 2 |",
         () => 2,
         () => "Column 1".length,
+        textarea,
       );
     }
     if (formatting === "alert") {
@@ -1001,13 +1297,16 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
         (selectedText) => `> [!NOTE]\n> ${selectedText || "Add a note"}`,
         () => 12,
         (selectedText) => (selectedText || "Add a note").length,
+        textarea,
       );
     }
     if (formatting === "footnote") {
-      const number = nextFootnoteNumber();
+      const number = nextFootnoteNumber(textarea);
       return insertNoteContentTemplate(
         (selectedText) => `${selectedText}[^${number}]\n\n[^${number}]: `,
         (selectedText, replacement) => replacement.length,
+        () => 0,
+        textarea,
       );
     }
   }
@@ -1361,13 +1660,21 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
 
   Object.assign(api, {
     renderNoteTypeOptions,
+    renderSecondaryNoteTypeOptions,
     closeNoteTypePicker,
     setNoteTypePickerValue,
+    setSecondaryNoteTypePickerValue,
     renderNoteTypePickerOptions,
     enhanceNoteTypeSelect,
     renderSelectedNoteTags,
+    renderSecondarySelectedNoteTags,
     renderTagSuggestions,
+    renderSecondaryTagSuggestions,
     normalizeTagEditorInput,
+    normalizeSecondaryTagEditorInput,
+    setSecondaryTagInputExpanded,
+    selectSecondaryNoteTag,
+    addSecondaryTagFromEditor,
     renderNoteMetadata,
     syncNoteEditorScroll,
     scheduleNoteEditorScrollMap,

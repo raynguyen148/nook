@@ -121,15 +121,34 @@
 .note-detail-surface .quick-view-content:focus-visible,
 .note-dialog .field--title input:focus,
 .note-dialog .field--title input:focus-visible,
+.note-secondary-surface .field--title input:focus,
+.note-secondary-surface .field--title input:focus-visible,
+.note-secondary-surface #secondary-note-title-input:focus,
+.note-secondary-surface #secondary-note-title-input:focus-visible,
 .note-dialog #note-content:focus,
 .note-dialog #note-content:focus-visible,
+.note-secondary-surface #secondary-note-content-editor:focus,
+.note-secondary-surface #secondary-note-content-editor:focus-visible,
 .note-dialog .note-content-preview:focus,
 .note-dialog .note-content-preview:focus-visible,
+.note-secondary-surface #secondary-split-preview:focus,
+.note-secondary-surface #secondary-split-preview:focus-visible,
 .quick-view-document-header h1:focus,
 .quick-view-document-header h1:focus-visible {
   outline: none !important;
   outline-offset: 0 !important;
   box-shadow: none !important;
+}
+
+.note-dialog #note-content:focus,
+.note-dialog #note-content:focus-visible,
+.note-secondary-surface #secondary-note-content-editor:focus,
+.note-secondary-surface #secondary-note-content-editor:focus-visible,
+.note-dialog .note-content-preview:focus,
+.note-dialog .note-content-preview:focus-visible,
+.note-secondary-surface #secondary-split-preview:focus,
+.note-secondary-surface #secondary-split-preview:focus-visible {
+  border-color: transparent !important;
 }
 
 

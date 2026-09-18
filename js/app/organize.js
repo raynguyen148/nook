@@ -40,6 +40,9 @@ globalThis[Symbol.for("nook.app.modules")].register("organize", (app) => {
   const renderNoteTypeOptions = (...args) => api.renderNoteTypeOptions(...args);
   const renderSelectedNoteTags = (...args) => api.renderSelectedNoteTags(...args);
   const renderTagSuggestions = (...args) => api.renderTagSuggestions(...args);
+  const renderSecondaryNoteTypeOptions = (...args) => api.renderSecondaryNoteTypeOptions(...args);
+  const renderSecondarySelectedNoteTags = (...args) => api.renderSecondarySelectedNoteTags(...args);
+  const renderSecondaryTagSuggestions = (...args) => api.renderSecondaryTagSuggestions(...args);
   const hasUnsavedNoteChanges = (...args) => api.hasUnsavedNoteChanges(...args);
   const syncNoteEditorControls = (...args) => api.syncNoteEditorControls(...args);
   const isDeletedNote = (...args) => api.isDeletedNote(...args);
@@ -570,6 +573,13 @@ globalThis[Symbol.for("nook.app.modules")].register("organize", (app) => {
       renderSelectedNoteTags();
       renderTagSuggestions();
       syncNoteEditorControls();
+    }
+    if (ui.dualPaneOpen && ui.secondaryNoteId) {
+      if (elements.secondaryEditorTypeSelect) {
+        renderSecondaryNoteTypeOptions(ui.secondaryNoteTypeId);
+      }
+      renderSecondarySelectedNoteTags();
+      renderSecondaryTagSuggestions();
     }
     if (isQuickViewOpen()) {
       const note = noteForQuickView();

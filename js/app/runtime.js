@@ -20,6 +20,7 @@
     api: Object.create(null),
     shared: {
       noteTypePicker: null,
+      secondaryNoteTypePicker: null,
       openColorPickers: new Set(),
     },
   };
