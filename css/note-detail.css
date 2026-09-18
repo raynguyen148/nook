@@ -1866,8 +1866,61 @@ html[data-theme="retro"] #secondary-reader-view .note-formatting-toolbar {
   border: var(--retro-border-width, 2px) solid var(--retro-border, #4a3e36) !important;
 }
 
+html[data-theme="retro"] .note-dialog .note-content-field.is-split .note-editor-pane--preview,
 html[data-theme="retro"] #secondary-reader-view #secondary-content-field.is-split .note-editor-pane--preview {
   border-left: 2px solid var(--retro-border, #4a3e36) !important;
+}
+
+/* Retro theme: editor textareas remain completely clean and never shift background/borders on focus */
+html[data-theme="retro"] #note-content,
+html[data-theme="retro"] #secondary-note-content-editor,
+html[data-theme="retro"] .note-dialog #note-content,
+html[data-theme="retro"] .note-secondary-surface #secondary-note-content-editor,
+html[data-theme="retro"] #secondary-reader-view #secondary-note-content-editor,
+html[data-theme="retro"] .note-dialog .note-content-preview,
+html[data-theme="retro"] .note-secondary-surface #secondary-split-preview,
+html[data-theme="retro"] #secondary-reader-view #secondary-split-preview {
+  border: 0 !important;
+  border-color: transparent !important;
+  border-radius: 0 !important;
+  outline: none !important;
+  outline-offset: 0 !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  color: var(--retro-ink, #2d241e) !important;
+}
+
+html[data-theme="retro"] #note-content:focus,
+html[data-theme="retro"] #note-content:focus-visible,
+html[data-theme="retro"] #note-content:active,
+html[data-theme="retro"] #secondary-note-content-editor:focus,
+html[data-theme="retro"] #secondary-note-content-editor:focus-visible,
+html[data-theme="retro"] #secondary-note-content-editor:active,
+html[data-theme="retro"] .note-dialog #note-content:focus,
+html[data-theme="retro"] .note-dialog #note-content:focus-visible,
+html[data-theme="retro"] .note-dialog #note-content:active,
+html[data-theme="retro"] .note-secondary-surface #secondary-note-content-editor:focus,
+html[data-theme="retro"] .note-secondary-surface #secondary-note-content-editor:focus-visible,
+html[data-theme="retro"] .note-secondary-surface #secondary-note-content-editor:active,
+html[data-theme="retro"] #secondary-reader-view #secondary-note-content-editor:focus,
+html[data-theme="retro"] #secondary-reader-view #secondary-note-content-editor:focus-visible,
+html[data-theme="retro"] #secondary-reader-view #secondary-note-content-editor:active,
+html[data-theme="retro"] .note-dialog .note-content-preview:focus,
+html[data-theme="retro"] .note-dialog .note-content-preview:focus-visible,
+html[data-theme="retro"] .note-secondary-surface #secondary-split-preview:focus,
+html[data-theme="retro"] .note-secondary-surface #secondary-split-preview:focus-visible,
+html[data-theme="retro"] #secondary-reader-view #secondary-split-preview:focus,
+html[data-theme="retro"] #secondary-reader-view #secondary-split-preview:focus-visible {
+  border: 0 !important;
+  border-color: transparent !important;
+  border-radius: 0 !important;
+  outline: none !important;
+  outline-offset: 0 !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  color: var(--retro-ink, #2d241e) !important;
 }
 
 /* Coffee theme refinements */
