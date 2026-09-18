@@ -83,6 +83,7 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
     scheduleNoteEditorPreview,
     setNoteEditorMode,
     toggleNotePreviewHeader,
+    toggleSecondaryNotePreviewHeader,
     scheduleNoteEditorHeight,
     scheduleNoteAutoSave,
     revalidateNoteEditorField,
@@ -298,6 +299,7 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
     elements.secondaryCopyContent?.addEventListener("click", copySecondaryNoteContent);
     elements.secondaryExportMd?.addEventListener("click", exportSecondaryNoteMarkdown);
     elements.secondaryExportText?.addEventListener("click", exportSecondaryNoteText);
+    elements.secondaryQuickViewHeaderToggle?.addEventListener("click", toggleSecondaryNotePreviewHeader);
     elements.secondaryModeButtons?.forEach((button) => {
       button.addEventListener("click", () => {
         setSecondaryNoteMode(button.dataset.secondaryEditorMode);

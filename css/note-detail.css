@@ -1246,8 +1246,8 @@
   align-self: end;
   gap: 0.3rem 1.1rem;
   margin-inline: auto;
-  padding-top: 0.6rem;
-  padding-bottom: 0.6rem;
+  padding-top: 0.3rem;
+  padding-bottom: 0.3rem;
   color: #8994a6;
   font-size: 0.72rem;
   font-weight: 500;
@@ -1399,7 +1399,11 @@
 
 @media (min-width: 1024px) {
   .workspace.is-note-detail-open.is-side-by-side-open,
-  .workspace.is-note-detail-open:has(.is-side-by-side) {
+  .workspace.is-note-detail-open:has(.is-side-by-side),
+  .app-shell.is-sidebar-collapsed .workspace.is-note-detail-open.is-side-by-side-open,
+  html[data-sidebar-collapsed="true"] .app-shell .workspace.is-note-detail-open.is-side-by-side-open,
+  .app-shell.is-sidebar-collapsed .workspace.is-note-detail-open:has(.is-side-by-side),
+  html[data-sidebar-collapsed="true"] .app-shell .workspace.is-note-detail-open:has(.is-side-by-side) {
     width: 100%;
     max-width: none;
     margin: 0;

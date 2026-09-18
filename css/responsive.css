@@ -246,8 +246,8 @@
   }
 
   /* ── Content area expansion when sidebar is collapsed ── */
-  .app-shell.is-sidebar-collapsed .workspace,
-  html[data-sidebar-collapsed="true"] .app-shell .workspace {
+  .app-shell.is-sidebar-collapsed .workspace:not(.is-side-by-side-open),
+  html[data-sidebar-collapsed="true"] .app-shell .workspace:not(.is-side-by-side-open) {
     width: min(100%, 1720px);
   }
 

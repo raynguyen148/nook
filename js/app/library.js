@@ -951,6 +951,8 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
       ui.secondaryScrollSyncTarget = null;
       ui.secondaryScrollSyncTargetTop = 0;
       ui.secondaryScrollSyncResetFrame = 0;
+      ui.secondaryNotePreviewHeaderCollapsed = false;
+      syncSecondaryNotePreviewHeader();
       elements.secondarySurface?.classList.add("is-hidden");
       elements.noteDetailWorkspace?.classList.remove("is-side-by-side");
       elements.workspace?.classList.remove("is-side-by-side-open");
@@ -1033,6 +1035,8 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
     }
     clearTimeout(ui.secondaryAutoSaveTimer);
     ui.secondaryAutoSaveTimer = 0;
+    ui.secondaryNotePreviewHeaderCollapsed = false;
+    syncSecondaryNotePreviewHeader();
     elements.secondaryReaderView?.classList.add("is-hidden");
     elements.secondaryPickerView?.classList.remove("is-hidden");
     renderSecondaryNotesList();
@@ -1213,6 +1217,23 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
     });
   }
 
+  function syncSecondaryNotePreviewHeader() {
+    const collapsed = Boolean(ui.secondaryNotePreviewHeaderCollapsed);
+    elements.secondaryQuickViewDocumentHeader?.classList.toggle("is-collapsed", collapsed);
+    elements.secondaryQuickViewDocumentDetails?.setAttribute("aria-hidden", String(collapsed));
+    if (!elements.secondaryQuickViewHeaderToggle) return;
+    const label = collapsed ? "Expand note details" : "Collapse note details";
+    elements.secondaryQuickViewHeaderToggle.setAttribute("aria-expanded", String(!collapsed));
+    elements.secondaryQuickViewHeaderToggle.setAttribute("aria-label", label);
+    elements.secondaryQuickViewHeaderToggle.title = label;
+  }
+
+  function toggleSecondaryNotePreviewHeader() {
+    if (ui.secondaryNoteMode !== "preview") return;
+    ui.secondaryNotePreviewHeaderCollapsed = !ui.secondaryNotePreviewHeaderCollapsed;
+    syncSecondaryNotePreviewHeader();
+  }
+
   function setSecondaryNoteMode(mode) {
     if (!["edit", "split", "preview"].includes(mode)) return;
     if (!elements.secondaryReaderView) return;
@@ -1279,6 +1300,7 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
       }
     }
 
+    syncSecondaryNotePreviewHeader();
     syncSecondaryFooterActions();
 
     if (previousMode !== mode && !secondarySurfaceAnimation) {
@@ -1409,6 +1431,7 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
 
   function selectSecondaryNote(noteId) {
     ui.secondaryNoteId = noteId;
+    ui.secondaryNotePreviewHeaderCollapsed = false;
     const note = library.notes.find((n) => n.id === noteId);
     if (!note) return;
     showSecondaryReader(note);
@@ -1463,6 +1486,7 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
 
     setSecondarySaveStatus("saved");
     setSecondaryNoteMode(ui.secondaryNoteMode || "preview");
+    syncSecondaryNotePreviewHeader();
     if (ui.secondaryNoteMode === "split" && elements.secondaryNoteContentEditor) {
       ui.secondaryScrollMap = null;
       scheduleNoteEditorScrollMap(elements.secondaryNoteContentEditor);
@@ -2029,6 +2053,8 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
     exportSecondaryNoteMarkdown,
     exportSecondaryNoteText,
     setSecondaryNoteMode,
+    syncSecondaryNotePreviewHeader,
+    toggleSecondaryNotePreviewHeader,
     onSecondaryNoteInput,
     saveSecondaryNote,
     syncSecondaryFooterActions,
