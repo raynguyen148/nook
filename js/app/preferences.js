@@ -221,6 +221,7 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
   function handleThemePickerTriggerKeydown(event) {
     if (event.key === "Escape" && !elements.themePickerMenu.hidden) {
       event.preventDefault();
+      event.stopPropagation();
       closeThemePicker({ focusTrigger: true });
       return;
     }
@@ -245,6 +246,7 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
     const currentIndex = activeIndex >= 0 ? activeIndex : Math.max(selectedIndex, 0);
     if (event.key === "Escape") {
       event.preventDefault();
+      event.stopPropagation();
       closeThemePicker({ focusTrigger: true });
       return;
     }

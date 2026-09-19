@@ -8,6 +8,10 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
   let noteDetailTransitionSequence = 0;
   let secondarySurfaceAnimation = null;
   let secondarySurfaceTransitionSequence = 0;
+  let dualPaneOperationSequence = 0;
+  let secondaryEditorSession = null;
+  const secondaryDraftRecoveryStore = api.createDraftRecoveryStore();
+  const SECONDARY_RESULT_LIMIT = 50;
   let notesContentAnimation = null;
   let sortPicker = null;
   let tagFilterLayoutFrame = 0;
@@ -38,6 +42,7 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
   const formatFullDate = (...args) => api.formatFullDate(...args);
   const showToast = (...args) => api.showToast(...args);
   const requestConfirmation = (...args) => api.requestConfirmation(...args);
+  const requestConflictResolution = (...args) => api.requestConflictResolution(...args);
   const showError = (...args) => api.showError(...args);
   const resetToFirstPage = (...args) => api.resetToFirstPage(...args);
   const setTypeFilter = (...args) => api.setTypeFilter(...args);
@@ -157,6 +162,7 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
       const currentIndex = options.indexOf(document.activeElement);
       if (event.key === "Escape") {
         event.preventDefault();
+        event.stopPropagation();
         close({ focusTrigger: true });
         return;
       }
@@ -208,18 +214,23 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
   }
 
   function makeTypeBadge(type, { isFilter = false } = {}) {
-    const selected = ui.typeId === type.id;
+    const resolvedType = type || typeFor(storage.FALLBACK_TYPE_ID) || {
+      id: storage.FALLBACK_TYPE_ID,
+      name: "General",
+      color: "slate",
+    };
+    const selected = ui.typeId === resolvedType.id;
     const badge = createElement(isFilter ? "button" : "span", {
-      className: `type-badge type-badge--${safeTypeColor(type)}${isFilter ? " type-badge--filter" : ""}`,
+      className: `type-badge type-badge--${safeTypeColor(resolvedType)}${isFilter ? " type-badge--filter" : ""}`,
       type: isFilter ? "button" : undefined,
-      text: type.name,
+      text: resolvedType.name,
       attributes: {
-        "aria-label": isFilter ? `Filter by note type ${type.name}` : type.name,
+        "aria-label": isFilter ? `Filter by note type ${resolvedType.name}` : resolvedType.name,
         "aria-pressed": isFilter ? String(selected) : undefined,
-        title: isFilter ? `Filter by ${type.name}` : type.name,
+        title: isFilter ? `Filter by ${resolvedType.name}` : resolvedType.name,
       },
     });
-    if (isFilter) badge.addEventListener("click", () => setTypeFilter(type.id));
+    if (isFilter) badge.addEventListener("click", () => setTypeFilter(resolvedType.id));
     return badge;
   }
 
@@ -685,7 +696,6 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
       ui.detailClosing = false;
       elements.noteDetailWorkspace.inert = false;
       elements.noteDialog.classList.add("is-hidden");
-      elements.quickViewDialog.classList.add("is-hidden");
       elements.noteDetailWorkspace.classList.add("is-hidden");
       elements.workspace.classList.remove("is-note-detail-open");
       closeDualPane({ immediate: true });
@@ -923,16 +933,72 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
     );
   }
 
-  function closeDualPane(options = {}) {
-    const immediate = Boolean(options && typeof options === "object" && options.immediate);
+  function getSecondaryEditorDraft(note = null) {
+    return {
+      id: ui.secondaryNoteId || note?.id || "",
+      title: elements.secondaryNoteTitleInput?.value || note?.title || "Untitled note",
+      typeId: elements.secondaryEditorTypeSelect?.value || ui.secondaryNoteTypeId || note?.typeId || storage.FALLBACK_TYPE_ID,
+      tagIds: Array.from(ui.secondarySelectedNoteTagIds || note?.tagIds || []),
+      content: elements.secondaryNoteContentEditor?.value ?? note?.content ?? "",
+    };
+  }
 
-    if (ui.secondaryNoteDirty) {
-      void saveSecondaryNote({ isAutoSave: true });
+  function createSecondaryEditorSession(note, draft = getSecondaryEditorDraft(note), baseRevision = note?.revision || 0) {
+    secondaryEditorSession?.dispose();
+    secondaryEditorSession = api.createEditorSession({
+      storage,
+      pane: "secondary",
+      noteId: note?.id || draft.id,
+      baseRevision,
+      committed: note,
+      currentDraft: draft,
+      recoveryStore: secondaryDraftRecoveryStore,
+    });
+    ui.secondaryNoteDirty = secondaryEditorSession.hasUnsavedChanges();
+    return secondaryEditorSession;
+  }
+
+  function syncSecondaryEditorDraft() {
+    if (!secondaryEditorSession || !ui.secondaryNoteId) return null;
+    const state = secondaryEditorSession.updateDraft(getSecondaryEditorDraft());
+    ui.secondaryNoteDirty = state.state.dirty;
+    return state.state;
+  }
+
+  function hasUnsavedSecondaryChanges() {
+    if (!secondaryEditorSession) return false;
+    syncSecondaryEditorDraft();
+    return secondaryEditorSession.hasUnsavedChanges();
+  }
+
+  function disposeSecondaryEditorSession({ discardDraft = false } = {}) {
+    const identity = secondaryEditorSession
+      ? { pane: secondaryEditorSession.pane, sessionId: secondaryEditorSession.sessionId }
+      : null;
+    secondaryEditorSession?.dispose();
+    if (discardDraft && identity) secondaryDraftRecoveryStore.remove(identity);
+    secondaryEditorSession = null;
+    ui.secondaryNoteDirty = false;
+  }
+
+  async function closeDualPane(options = {}) {
+    dualPaneOperationSequence += 1;
+    const immediate = Boolean(options && typeof options === "object" && options.immediate);
+    const restoreToggleFocus = !immediate && Boolean(elements.secondarySurface?.contains(document.activeElement));
+
+    if (!immediate && secondaryEditorSession?.hasUnsavedChanges()) {
+      const saved = await saveSecondaryNote({ isAutoSave: true });
+      if (!saved) return false;
     }
     clearTimeout(ui.secondaryAutoSaveTimer);
     ui.secondaryAutoSaveTimer = 0;
 
-    if (!ui.dualPaneOpen && !ui.secondaryClosing) return;
+    if (!ui.dualPaneOpen && !ui.secondaryClosing) return true;
+
+    if (immediate && secondaryEditorSession?.hasUnsavedChanges()) {
+      syncSecondaryEditorDraft();
+      showToast("Side note draft kept for recovery.");
+    }
 
     ui.dualPaneOpen = false;
     ui.activePane = "primary";
@@ -956,6 +1022,10 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
       elements.secondarySurface?.classList.add("is-hidden");
       elements.noteDetailWorkspace?.classList.remove("is-side-by-side");
       elements.workspace?.classList.remove("is-side-by-side-open");
+      disposeSecondaryEditorSession({ discardDraft: !ui.secondaryNoteDirty });
+      if (restoreToggleFocus && elements.toggleDualPane?.isConnected) {
+        window.requestAnimationFrame(() => elements.toggleDualPane.focus({ preventScroll: true }));
+      }
     };
 
     if (
@@ -966,7 +1036,7 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
       ui.detailClosing
     ) {
       finishClose();
-      return;
+      return true;
     }
 
     const transitionSequence = ++secondarySurfaceTransitionSequence;
@@ -996,10 +1066,63 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
         if (transitionSequence !== secondarySurfaceTransitionSequence) return;
         finishClose();
       });
+    return true;
   }
 
-  function openDualPane() {
+  async function restoreSecondaryDraft(recovery) {
+    const note = library.notes.find((item) => item.id === recovery.draft.id && !isDeletedNote(item));
+    if (!note) {
+      secondaryDraftRecoveryStore.remove(recovery.key);
+      return false;
+    }
+    ui.secondaryNoteId = note.id;
+    showSecondaryReader(note);
+    const typeId = library.types.some((type) => type.id === recovery.draft.typeId)
+      ? recovery.draft.typeId
+      : storage.FALLBACK_TYPE_ID;
+    elements.secondaryNoteTitleInput.value = recovery.draft.title;
+    elements.secondaryNoteContentEditor.value = recovery.draft.content;
+    ui.secondaryNoteTypeId = typeId;
+    ui.secondarySelectedNoteTagIds = new Set(recovery.draft.tagIds.filter((tagId) => tagFor(tagId)));
+    renderSecondaryNoteTypeOptions(typeId);
+    renderSecondarySelectedNoteTags();
+    secondaryEditorSession?.dispose();
+    secondaryDraftRecoveryStore.remove(recovery.key);
+    createSecondaryEditorSession(note, getSecondaryEditorDraft(note), recovery.baseRevision || note.revision || 0);
+    syncSecondaryEditorDraft();
+    ui.secondaryNoteDirty = true;
+    setSecondarySaveStatus("dirty");
+    syncSecondaryFooterActions();
+    showToast("Side note draft restored. Save when you are ready.");
+    return true;
+  }
+
+  async function offerSecondaryDraftRecovery({ isCurrent = () => true } = {}) {
+    const recovery = secondaryDraftRecoveryStore.enumerate()
+      .filter((record) => record.tabId === secondaryDraftRecoveryStore.tabId && record.pane === "secondary")
+      .sort((left, right) => right.savedAt.localeCompare(left.savedAt))[0];
+    if (!recovery) return false;
+    const recovered = await requestConfirmation({
+      title: "Recover unfinished side note?",
+      description: "Nook found a side-note draft that was not fully saved. Recover it or discard only this draft.",
+      confirmLabel: "Recover draft",
+      cancelLabel: "Discard draft",
+      tone: "primary",
+      initialFocus: "confirm",
+    });
+    if (!isCurrent()) return false;
+    if (!recovered) {
+      secondaryDraftRecoveryStore.remove(recovery.key);
+      showToast("Unfinished side-note draft discarded.");
+      return false;
+    }
+    return restoreSecondaryDraft(recovery);
+  }
+
+  async function openDualPane() {
     if (!isDetailWorkspaceOpen()) return;
+    const operationSequence = ++dualPaneOperationSequence;
+    const isCurrent = () => operationSequence === dualPaneOperationSequence && ui.dualPaneOpen && !ui.secondaryClosing;
     ui.dualPaneOpen = true;
     ui.secondaryClosing = false;
     ui.activePane = "secondary";
@@ -1009,6 +1132,13 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
     elements.toggleDualPane?.setAttribute("aria-pressed", "true");
     elements.toggleDualPane?.classList.add("is-active");
 
+    if (!secondaryEditorSession && await offerSecondaryDraftRecovery({ isCurrent })) {
+      if (!isCurrent()) return;
+      animateSecondarySurfaceIn();
+      return;
+    }
+    if (!isCurrent()) return;
+
     if (ui.secondaryNoteId) {
       const note = library.notes.find((n) => n.id === ui.secondaryNoteId && !isDeletedNote(n));
       if (note && note.id !== ui.editingNoteId) {
@@ -1017,7 +1147,8 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
         return;
       }
     }
-    showSecondaryPicker();
+    await showSecondaryPicker({ isCurrent });
+    if (!isCurrent()) return;
     animateSecondarySurfaceIn();
   }
 
@@ -1029,10 +1160,12 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
     }
   }
 
-  function showSecondaryPicker() {
-    if (ui.secondaryNoteDirty) {
-      void saveSecondaryNote({ isAutoSave: true });
+  async function showSecondaryPicker({ isCurrent = () => true } = {}) {
+    if (secondaryEditorSession?.hasUnsavedChanges()) {
+      const saved = await saveSecondaryNote({ isAutoSave: true });
+      if (!saved) return false;
     }
+    if (!isCurrent()) return false;
     clearTimeout(ui.secondaryAutoSaveTimer);
     ui.secondaryAutoSaveTimer = 0;
     ui.secondaryNotePreviewHeaderCollapsed = false;
@@ -1044,6 +1177,7 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
     window.requestAnimationFrame(() => {
       elements.secondaryNoteSearch?.focus();
     });
+    return true;
   }
 
   const noteCollator = new Intl.Collator(undefined, { numeric: true, sensitivity: "base" });
@@ -1062,17 +1196,15 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
       secondarySortPicker?.sync();
     }
 
-    const availableNotes = library.notes.filter((note) => {
+    const allAvailableNotes = library.notes.filter((note) => {
       if (isDeletedNote(note)) return false;
       if (note.id === currentNoteId) return false;
       if (!query) return true;
-      const titleMatch = (note.title || "").toLowerCase().includes(query);
-      const contentMatch = (note.content || "").toLowerCase().includes(query);
-      return titleMatch || contentMatch;
+      return (library.searchIndex.get(note.id) || `${note.title}\n${note.content}`.toLocaleLowerCase()).includes(query);
     });
 
     const sortMode = ui.secondarySort || "updated-desc";
-    availableNotes.sort((left, right) => {
+    allAvailableNotes.sort((left, right) => {
       if (sortMode === "title-asc" || sortMode === "title-desc") {
         const direction = sortMode === "title-asc" ? 1 : -1;
         const titleComparison = noteCollator.compare(left.title || "", right.title || "");
@@ -1095,7 +1227,7 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
 
     elements.secondaryNotesList.replaceChildren();
 
-    if (!availableNotes.length) {
+    if (!allAvailableNotes.length) {
       const empty = createElement("div", {
         className: "secondary-notes-empty",
         text: query ? `No notes matching “${query}”.` : "No other notes available to open as side note.",
@@ -1105,6 +1237,7 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
     }
 
     const fragment = document.createDocumentFragment();
+    const availableNotes = allAvailableNotes.slice(0, SECONDARY_RESULT_LIMIT);
     availableNotes.forEach((note) => {
       const type = typeFor(note.typeId);
       const card = createElement("article", {
@@ -1155,6 +1288,12 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
     });
 
     elements.secondaryNotesList.append(fragment);
+    if (allAvailableNotes.length > availableNotes.length) {
+      elements.secondaryNotesList.append(createElement("p", {
+        className: "secondary-notes-limit dialog-description",
+        text: `Showing the first ${SECONDARY_RESULT_LIMIT} of ${allAvailableNotes.length} notes. Refine your search to narrow the list.`,
+      }));
+    }
   }
 
   function setSecondarySaveStatus(status) {
@@ -1319,14 +1458,12 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
   }
 
   function onSecondaryNoteInput() {
-    ui.secondaryNoteDirty = true;
+    syncSecondaryEditorDraft();
+    ui.secondaryNoteDirty = secondaryEditorSession?.hasUnsavedChanges() || false;
     setSecondarySaveStatus("dirty");
 
     if (ui.secondaryNoteMode === "split") {
       scheduleSecondarySplitPreview();
-    }
-    if (elements.secondaryNoteContent && elements.secondaryNoteContentEditor) {
-      globalThis.NookMarkdown.renderInto(elements.secondaryNoteContent, elements.secondaryNoteContentEditor.value);
     }
     if (elements.secondaryNoteTitle && elements.secondaryNoteTitleInput) {
       elements.secondaryNoteTitle.textContent = elements.secondaryNoteTitleInput.value.trim() || "Untitled note";
@@ -1341,52 +1478,122 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
   }
 
   async function saveSecondaryNote({ isAutoSave = false } = {}) {
-    if (!ui.secondaryNoteId) return;
-    const note = library.notes.find((n) => n.id === ui.secondaryNoteId);
-    if (!note) return;
-
-    const newTitle = elements.secondaryNoteTitleInput
-      ? elements.secondaryNoteTitleInput.value.trim() || "Untitled note"
-      : note.title;
-    const newContent = elements.secondaryNoteContentEditor
-      ? elements.secondaryNoteContentEditor.value
-      : note.content;
-    const newTypeId = elements.secondaryEditorTypeSelect?.value || ui.secondaryNoteTypeId || note.typeId || storage.FALLBACK_TYPE_ID;
-    const newTagIds = Array.from(ui.secondarySelectedNoteTagIds || note.tagIds || []);
+    if (!ui.secondaryNoteId || !secondaryEditorSession) return true;
+    const session = secondaryEditorSession;
+    syncSecondaryEditorDraft();
 
     setSecondarySaveStatus("saving");
     try {
-      const saved = await storage.saveNote({
-        id: note.id,
-        title: newTitle,
-        typeId: newTypeId,
-        tagIds: newTagIds,
-        content: newContent,
-      });
+      let result = await session.save();
+      if (secondaryEditorSession !== session) return false;
+      while (result.status === "conflict") {
+        setSecondarySaveStatus("error", "Newer version found");
+        const choice = await requestConflictResolution({
+          localDraft: session.currentDraft,
+          latestNote: result.latestNote || (result.deleted ? null : { ...result.latest, revision: result.latestRevision }),
+          deleted: result.deleted === true,
+          invoker: elements.secondarySaveChanges,
+        });
+        if (secondaryEditorSession !== session) return false;
+        if (choice === "keep-mine") {
+          setSecondarySaveStatus("saving");
+          result = await session.keepMine();
+          if (secondaryEditorSession !== session) return false;
+        } else {
+          session.keepEditing();
+          if (choice === "view-latest" && !result.deleted) {
+            api.openConflictLatestPreview?.(
+              result.latestNote || { ...result.latest, revision: result.latestRevision },
+              elements.secondarySaveChanges,
+            );
+          }
+          ui.secondaryNoteDirty = true;
+          setSecondarySaveStatus("dirty");
+          syncSecondaryFooterActions();
+          return false;
+        }
+      }
+      if (result.status === "error") throw result.error;
+      if (result.status === "stale") return false;
+      if (result.status === "noop") {
+        ui.secondaryNoteDirty = false;
+        setSecondarySaveStatus("saved");
+        syncSecondaryFooterActions();
+        return true;
+      }
+      if (result.status !== "saved") return false;
 
-      const index = library.notes.findIndex((n) => n.id === saved.id);
-      if (index >= 0) library.notes[index] = saved;
-      else library.notes.push(saved);
-
-      ui.secondaryNoteDirty = false;
-      setSecondarySaveStatus("saved");
+      const saved = result.savedNote;
+      await refreshLibrary({ broadcast: true });
+      if (secondaryEditorSession !== session) return false;
+      ui.secondaryNoteDirty = session.hasUnsavedChanges();
+      setSecondarySaveStatus(ui.secondaryNoteDirty ? "dirty" : "saved");
       syncSecondaryFooterActions();
 
-      if (elements.secondaryNoteTitle) elements.secondaryNoteTitle.textContent = saved.title || "Untitled note";
-      if (elements.secondaryNoteType) {
-        elements.secondaryNoteType.replaceChildren(makeTypeBadge(typeFor(saved.typeId)));
+      if (result.currentMatchesCapture) {
+        if (elements.secondaryNoteTitleInput && elements.secondaryNoteTitleInput.value !== saved.title) {
+          elements.secondaryNoteTitleInput.value = saved.title;
+        }
+        if (elements.secondaryNoteContentEditor && elements.secondaryNoteContentEditor.value !== saved.content) {
+          elements.secondaryNoteContentEditor.value = saved.content;
+        }
+        ui.secondaryNoteTypeId = saved.typeId;
+        ui.secondarySelectedNoteTagIds = new Set(saved.tagIds || []);
+        renderSecondaryNoteTypeOptions(saved.typeId);
+        renderSecondarySelectedNoteTags();
+        if (elements.secondaryNoteTitle) elements.secondaryNoteTitle.textContent = saved.title || "Untitled note";
+        if (elements.secondaryNoteType) elements.secondaryNoteType.replaceChildren(makeTypeBadge(typeFor(saved.typeId)));
+        renderSecondaryPreviewTags(saved.tagIds);
       }
-      renderSecondaryPreviewTags(saved.tagIds);
       renderSecondaryTimestamps(saved.createdAt, saved.updatedAt);
-
-      await refreshLibrary({ broadcast: true });
 
       if (!isAutoSave) {
         showToast("Side note saved.");
       }
+      if (ui.secondaryNoteDirty) {
+        clearTimeout(ui.secondaryAutoSaveTimer);
+        ui.secondaryAutoSaveTimer = setTimeout(() => void saveSecondaryNote({ isAutoSave: true }), 1200);
+      }
+      return !ui.secondaryNoteDirty;
     } catch (error) {
+      if (secondaryEditorSession !== session) return false;
+      ui.secondaryNoteDirty = true;
       setSecondarySaveStatus("error");
       showError(error, "Could not save side note.");
+      return false;
+    }
+  }
+
+  function reconcileSecondaryEditorAfterLibraryRefresh({ external = false } = {}) {
+    if (!secondaryEditorSession || !ui.secondaryNoteId) {
+      if (ui.dualPaneOpen && !elements.secondaryPickerView?.classList.contains("is-hidden")) {
+        renderSecondaryNotesList();
+      }
+      return;
+    }
+    const session = secondaryEditorSession;
+    const latest = library.notes.find((note) => note.id === session.noteId && !isDeletedNote(note));
+    if (!latest) {
+      if (session.hasUnsavedChanges()) {
+        ui.secondaryNoteDirty = true;
+        setSecondarySaveStatus("error");
+        showToast("This side note changed or was removed elsewhere. Its draft is still kept locally.", "error");
+        return;
+      }
+      disposeSecondaryEditorSession({ discardDraft: true });
+      ui.secondaryNoteId = "";
+      if (ui.dualPaneOpen) void showSecondaryPicker();
+      return;
+    }
+    const result = session.applyExternalSnapshot(latest);
+    if (result.conflict) {
+      ui.secondaryNoteDirty = true;
+      setSecondarySaveStatus("error");
+      if (external) showToast("A newer side-note version was saved in another tab. Your draft was kept.", "error");
+      return;
+    }
+    if (result.applied && secondaryEditorSession === session) {
+      renderSecondaryReader(latest);
     }
   }
 
@@ -1429,12 +1636,17 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
     elements.secondaryEditorDates?.replaceChildren(makeSpans());
   }
 
-  function selectSecondaryNote(noteId) {
+  async function selectSecondaryNote(noteId) {
+    if (secondaryEditorSession && ui.secondaryNoteId !== noteId && secondaryEditorSession.hasUnsavedChanges()) {
+      const saved = await saveSecondaryNote({ isAutoSave: true });
+      if (!saved) return false;
+    }
+    const note = library.notes.find((n) => n.id === noteId);
+    if (!note) return false;
     ui.secondaryNoteId = noteId;
     ui.secondaryNotePreviewHeaderCollapsed = false;
-    const note = library.notes.find((n) => n.id === noteId);
-    if (!note) return;
     showSecondaryReader(note);
+    return true;
   }
 
   function showSecondaryReader(note) {
@@ -1442,10 +1654,18 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
     elements.secondaryReaderView?.classList.remove("is-hidden");
     renderSecondaryReader(note);
     animateSecondaryViewSwitch(elements.secondaryReaderView);
+    window.requestAnimationFrame(() => elements.secondarySurface?.focus({ preventScroll: true }));
   }
 
   function renderSecondaryReader(note) {
     if (!elements.secondaryReaderView) return;
+    if (
+      secondaryEditorSession &&
+      secondaryEditorSession.noteId === note.id &&
+      secondaryEditorSession.hasUnsavedChanges()
+    ) {
+      return;
+    }
     const type = typeFor(note.typeId);
 
     ui.secondaryNoteDirty = false;
@@ -1491,6 +1711,9 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
       ui.secondaryScrollMap = null;
       scheduleNoteEditorScrollMap(elements.secondaryNoteContentEditor);
     }
+
+    createSecondaryEditorSession(note, getSecondaryEditorDraft(note), note.revision || 0);
+    elements.secondaryNoteHistory?.classList.remove("is-hidden");
 
     const scrollContainer = elements.secondaryReaderView.querySelector(".quick-view-content-card");
     if (scrollContainer) scrollContainer.scrollTop = 0;
@@ -1982,18 +2205,6 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
     pageNotes.forEach((note) => fragment.append(createNoteCard(note)));
     elements.notesList.replaceChildren(fragment);
     renderPagination(totalPages);
-    if (ui.dualPaneOpen) {
-      if (ui.secondaryNoteId) {
-        const secondaryNote = library.notes.find((n) => n.id === ui.secondaryNoteId && !isDeletedNote(n));
-        if (secondaryNote && secondaryNote.id !== ui.editingNoteId) {
-          renderSecondaryReader(secondaryNote);
-        } else {
-          showSecondaryPicker();
-        }
-      } else {
-        renderSecondaryNotesList();
-      }
-    }
     animateNotesContent(motion);
   }
 
@@ -2057,6 +2268,9 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
     toggleSecondaryNotePreviewHeader,
     onSecondaryNoteInput,
     saveSecondaryNote,
+    syncSecondaryEditorDraft,
+    hasUnsavedSecondaryChanges,
+    reconcileSecondaryEditorAfterLibraryRefresh,
     syncSecondaryFooterActions,
   });
 });

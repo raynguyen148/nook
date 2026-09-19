@@ -5,6 +5,8 @@
 
 :root,
 html[data-theme="light"] {
+  --theme-surface-page: #f8fafc;
+  --theme-danger-border: #eccbd0;
   --font-sans: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
   --font-display: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
   --primary-accent: #9e6b02;

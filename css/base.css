@@ -29,10 +29,62 @@
   --motion-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --motion-ease-in: cubic-bezier(0.7, 0, 0.84, 0);
   --motion-ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  /* Ownership: foundation semantic aliases. Themes override their source
+   * tokens, so existing component variables remain backwards compatible. */
+  --surface-page: var(--theme-surface-page, #f8fafc);
+  --surface-panel: var(--note-card-surface, #ffffff);
+  --surface-muted: var(--note-card-actions-surface, var(--note-card-action-hover-surface, #f8fafc));
+  --surface-raised: var(--surface-panel);
+  --text-strong: var(--note-card-title, #0f172a);
+  --text-default: var(--note-card-preview, #334155);
+  --text-muted: var(--note-card-muted, #64748b);
+  --text-on-accent: var(--primary-button-text, #ffffff);
+  --border-subtle: var(--note-card-border, #e2e8f0);
+  --border-strong: var(--theme-border-strong, var(--note-card-border, #cbd5e1));
+  --border-focus: var(--primary-accent, #9e6b02);
+  --focus-ring: var(--focus-color, var(--primary-accent, #9e6b02));
+  --focus-ring-soft: var(--primary-accent-focus, rgb(158 107 2 / 24%));
+  --selected-surface: var(--primary-accent-soft, #fdf5db);
+  --selected-surface-hover: var(--primary-accent-soft-hover, #fcebc2);
+  --selected-text: var(--primary-accent-text, #805600);
+  --selected-border: var(--primary-accent-border, #f2d184);
+  --danger-surface: var(--note-card-action-danger-surface, #fef2f2);
+  --danger-text: var(--note-card-action-danger, #dc2626);
+  --danger-border: var(--theme-danger-border, #fecaca);
+  --status-success-text: #047857;
+  --status-success-surface: #ecfdf5;
+  --status-success-border: #a7f3d0;
+  --status-warning-text: #b45309;
+  --status-warning-surface: #fffbeb;
+  --status-warning-border: #fde68a;
+  --status-error-text: #b91c1c;
+  --status-error-surface: #fef2f2;
+  --status-error-border: #fecaca;
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --spacing-control: var(--control-height);
+  --radius-control: var(--control-radius);
+  --radius-card: var(--surface-radius);
+  --radius-dialog: 1rem;
+  --radius-pill: 999px;
+  --motion-duration-state: var(--motion-duration-short);
+  --motion-ease-state: var(--motion-ease-out);
+  --component-surface: var(--surface-panel);
+  --component-surface-muted: var(--surface-muted);
+  --component-text: var(--text-default);
+  --component-text-muted: var(--text-muted);
+  --component-border: var(--border-subtle);
+  --component-border-strong: var(--border-strong);
+  --component-focus: var(--focus-ring);
+  --component-selected: var(--selected-surface);
+  --component-danger: var(--danger-text);
   color-scheme: light;
   font-family: var(--font-sans);
-  color: #0f172a;
-  background: #f8fafc;
+  color: var(--text-strong);
+  background: var(--surface-page);
   font-synthesis: none;
 }
 
@@ -46,7 +98,7 @@
 
 html {
   min-width: 320px;
-  background: #f8fafc;
+  background: var(--surface-page);
 }
 
 
@@ -55,7 +107,7 @@ body {
   min-width: 320px;
   min-height: 100vh;
   margin: 0;
-  background: #f8fafc;
+  background: var(--surface-page);
 }
 
 
@@ -1096,9 +1148,9 @@ h2 {
 
 
 .button-primary {
-  border-color: #805600;
-  color: #fff;
-  background: #9e6b02;
+  border-color: var(--selected-text);
+  color: var(--text-on-accent);
+  background: var(--border-focus);
   box-shadow: 0 2px 6px rgb(158 107 2 / 20%);
   font-weight: 600;
 }
@@ -1114,9 +1166,9 @@ h2 {
 
 
 .button-secondary {
-  border-color: #cbd5e1;
-  color: #334155;
-  background: #fff;
+  border-color: var(--component-border-strong);
+  color: var(--component-text);
+  background: var(--component-surface);
   box-shadow: 0 1px 2px rgb(0 0 0 / 4%);
 }
 
@@ -1132,9 +1184,9 @@ h2 {
 
 
 .button-danger {
-  border-color: #fecaca;
-  color: #dc2626;
-  background: #fef2f2;
+  border-color: var(--danger-border);
+  color: var(--danger-text);
+  background: var(--danger-surface);
 }
 
 

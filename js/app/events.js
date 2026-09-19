@@ -32,7 +32,6 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
     scheduleTopbarActionsPinning,
     toggleMobileFilters,
     persistSort,
-    syncStoredNoteDraft,
     getStoredBackupHealth,
     storeBackupHealth,
     syncBackupHealth,
@@ -50,6 +49,8 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
     dismissToast,
     closeConfirmation,
     finishConfirmationClose,
+    closeConflictResolution,
+    finishConflictResolution,
     showError,
     resetToFirstPage,
     clearSearchRenderTimer,
@@ -135,6 +136,12 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
     setSecondaryNoteMode,
     onSecondaryNoteInput,
     saveSecondaryNote,
+    openNoteHistory,
+    closeNoteHistory,
+    handleHistoryListKeydown,
+    finishNoteHistoryClose,
+    restoreSelectedNoteVersion,
+    setupStorageAndOfflineCapabilities,
   } = api;
 
   function bindEvents() {
@@ -266,12 +273,14 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
     elements.closeNoteDialog.addEventListener("click", requestNoteEditorClose);
     elements.cancelNote.addEventListener("click", requestNoteEditorClose);
     elements.quickSaveNote.addEventListener("click", () => saveNote({ preventDefault() {} }, { closeAfterSave: false }));
+    elements.noteHistory?.addEventListener("click", () => {
+      if (elements.noteId.value) openNoteHistory(elements.noteId.value, elements.noteHistory);
+    });
     elements.quickViewHeaderToggle.addEventListener("click", toggleNotePreviewHeader);
     elements.deleteNote.addEventListener("click", () => {
       const note = library.notes.find(({ id }) => id === elements.noteId.value);
       deleteNoteWithConfirmation(note);
     });
-    elements.closeQuickView.addEventListener("click", () => closeQuickView());
     elements.copyNoteContent.addEventListener("click", copyQuickViewContent);
     elements.exportNoteMarkdown.addEventListener("click", () => exportCurrentNote("md"));
     elements.exportNoteText.addEventListener("click", () => exportCurrentNote("txt"));
@@ -300,6 +309,9 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
     elements.secondaryExportMd?.addEventListener("click", exportSecondaryNoteMarkdown);
     elements.secondaryExportText?.addEventListener("click", exportSecondaryNoteText);
     elements.secondaryQuickViewHeaderToggle?.addEventListener("click", toggleSecondaryNotePreviewHeader);
+    elements.secondaryNoteHistory?.addEventListener("click", () => {
+      if (ui.secondaryNoteId) openNoteHistory(ui.secondaryNoteId, elements.secondaryNoteHistory);
+    });
     elements.secondaryModeButtons?.forEach((button) => {
       button.addEventListener("click", () => {
         setSecondaryNoteMode(button.dataset.secondaryEditorMode);
@@ -378,6 +390,16 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
     elements.cancelConfirmation.addEventListener("click", () => closeConfirmation());
     elements.confirmAction.addEventListener("click", () => closeConfirmation(true));
     elements.confirmationDialog.addEventListener("close", finishConfirmationClose);
+    elements.closeConflictDialog?.addEventListener("click", () => closeConflictResolution("keep-editing"));
+    elements.conflictKeepEditing?.addEventListener("click", () => closeConflictResolution("keep-editing"));
+    elements.conflictViewLatest?.addEventListener("click", () => closeConflictResolution("view-latest"));
+    elements.conflictKeepMine?.addEventListener("click", () => closeConflictResolution("keep-mine"));
+    elements.conflictDialog?.addEventListener("close", finishConflictResolution);
+    elements.closeHistoryDialog?.addEventListener("click", closeNoteHistory);
+    elements.historyCancel?.addEventListener("click", closeNoteHistory);
+    elements.historyRestore?.addEventListener("click", restoreSelectedNoteVersion);
+    elements.historyList?.addEventListener("keydown", handleHistoryListKeydown);
+    elements.historyDialog?.addEventListener("close", finishNoteHistoryClose);
     window.addEventListener("resize", () => {
       scheduleQuickViewHeightSync();
       scheduleNoteEditorHeight();
@@ -397,13 +419,13 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
       scheduleTagFilterLayout();
       syncSidebarUI();
       positionSidebarToggleTooltip();
-      if (window.innerWidth < 1024 && (ui.dualPaneOpen || ui.secondaryClosing)) {
+      if (window.innerWidth < 960 && (ui.dualPaneOpen || ui.secondaryClosing)) {
         closeDualPane({ immediate: true });
       }
       window.requestAnimationFrame(syncPinnedTopbarControlMetrics);
     });
     window.addEventListener("scroll", scheduleTopbarActionsPinning, { passive: true });
-    window.addEventListener("pagehide", syncStoredNoteDraft);
+    window.addEventListener("pagehide", () => api.syncEditorDraftRecovery?.());
     elements.tagInput.addEventListener("input", normalizeTagEditorInput);
     elements.tagInput.addEventListener("keydown", (event) => {
       if (event.key === "Enter") {
@@ -517,8 +539,9 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
       if (event.key === "Tab") document.documentElement.dataset.inputModality = "keyboard";
       if (event.key === "Escape" && !activeModalDialog() && ui.dualPaneOpen && elements.secondarySurface?.contains(document.activeElement)) {
         event.preventDefault();
-        closeDualPane();
-        elements.toggleDualPane?.focus();
+        void closeDualPane().then((closed) => {
+          if (closed) elements.toggleDualPane?.focus();
+        });
         return;
       }
       if (event.key === "Escape" && !activeModalDialog() && isNoteEditorOpen()) {
@@ -531,6 +554,7 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
         closeQuickView();
         return;
       }
+      if (activeModalDialog()) return;
       const usesCommandKey = usesMacKeyboardShortcuts();
       const hasSaveModifier = usesCommandKey ? event.metaKey && !event.ctrlKey : event.ctrlKey && !event.metaKey;
       const formattingKey = event.key.toLowerCase();
@@ -559,10 +583,19 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
         event.shiftKey &&
         hasSaveModifier;
 
-      if (matchesQuickSaveNoteShortcut && isNoteEditorOpen()) {
+      const secondaryEditorActive = Boolean(
+        ui.dualPaneOpen &&
+        !elements.secondaryReaderView?.classList.contains("is-hidden") &&
+        (elements.secondarySurface?.contains(event.target) ||
+          elements.secondarySurface?.contains(document.activeElement) ||
+          ui.activePane === "secondary"),
+      );
+
+      if (matchesQuickSaveNoteShortcut && (isNoteEditorOpen() || secondaryEditorActive)) {
         event.preventDefault();
-        if (!event.repeat && !event.isComposing && !ui.noteSaveInFlight) {
-          saveNote({ preventDefault() {} }, { closeAfterSave: false });
+        if (!event.repeat && !event.isComposing) {
+          if (secondaryEditorActive) void saveSecondaryNote({ isAutoSave: false });
+          else if (!ui.noteSaveInFlight) saveNote({ preventDefault() {} }, { closeAfterSave: false });
         }
         return;
       }
@@ -573,9 +606,12 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
         !event.shiftKey &&
         hasSaveModifier;
 
-      if (matchesSaveNoteShortcut && isNoteEditorOpen()) {
+      if (matchesSaveNoteShortcut && (isNoteEditorOpen() || secondaryEditorActive)) {
         event.preventDefault();
-        if (!event.repeat && !event.isComposing) elements.noteForm.requestSubmit();
+        if (!event.repeat && !event.isComposing) {
+          if (secondaryEditorActive) void saveSecondaryNote({ isAutoSave: false });
+          else elements.noteForm.requestSubmit();
+        }
         return;
       }
 
@@ -776,23 +812,7 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
     elements.startupErrorMessage.textContent = `${message} Your existing browser data was not changed.`;
   }
 
-  function arrangeNoteEditorWorkspace() {
-    const modes = elements.noteContentField.querySelector(".note-editor-modes");
-    if (!modes) return;
-
-    // Preview and editor now share one document surface. Move the former
-    // Quick View actions/content into it without dropping any existing action.
-    elements.noteEditorCommandActions.prepend(modes);
-    const tools = elements.noteDialog.querySelector(".dialog-footer__tools") || elements.noteDialog.querySelector(".dialog-footer");
-    const deleteAction = elements.deleteNote.closest(".note-detail-action-tooltip") || elements.deleteNote;
-    tools?.insertBefore(elements.notePreviewActions, deleteAction.nextSibling);
-    elements.notePreviewPanel.append(elements.quickViewBody);
-    elements.noteDialog.querySelector(".dialog-header")?.append(elements.closeQuickView);
-    elements.quickViewDialog.remove();
-  }
-
   async function bootstrap() {
-    arrangeNoteEditorWorkspace();
     if (!storage) {
       showStartupError(new Error("The local storage module could not be loaded."));
       return;
@@ -806,6 +826,7 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
       elements.newTypeColor.replaceChildren(createColorOptions(elements.newTypeColor.value));
       enhanceColorSelect(elements.newTypeColor);
       bindEvents();
+      setupStorageAndOfflineCapabilities();
       observeTagFilterLayout();
       setupLibrarySync();
       syncThemeUI();

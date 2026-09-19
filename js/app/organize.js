@@ -316,6 +316,7 @@ globalThis[Symbol.for("nook.app.modules")].register("organize", (app) => {
       const currentIndex = options.indexOf(document.activeElement);
       if (event.key === "Escape") {
         event.preventDefault();
+        event.stopPropagation();
         closeColorPicker(pickerState);
         trigger.focus();
         return;
@@ -597,20 +598,9 @@ globalThis[Symbol.for("nook.app.modules")].register("organize", (app) => {
   async function refreshLibrary({ broadcast = false, external = false } = {}) {
     // Broadcast the committed mutation even if this refresh is superseded.
     if (broadcast) notifyLibraryMutation();
-    if (external && isNoteEditorOpen() && hasUnsavedNoteChanges()) {
-      ui.externalRefreshPending = true;
-      showToast("The library changed in another tab. Save or close this note to refresh.", "error");
-      return;
-    }
     const sequence = ++refreshSequence;
     const snapshot = await storage.getSnapshot();
     if (sequence < appliedRefreshSequence) return;
-    // The user may have started typing while IndexedDB was being read.
-    if (external && isNoteEditorOpen() && hasUnsavedNoteChanges()) {
-      ui.externalRefreshPending = true;
-      showToast("The library changed in another tab. Save or close this note to refresh.", "error");
-      return;
-    }
     appliedRefreshSequence = sequence;
     const previousNotes = new Map(library.notes.map((note) => [note.id, note]));
     const searchIndex = new Map(snapshot.notes.map((note) => {
@@ -624,6 +614,7 @@ globalThis[Symbol.for("nook.app.modules")].register("organize", (app) => {
     library.types = snapshot.types;
     library.tags = snapshot.tags;
     library.searchIndex = searchIndex;
+    api.reconcileEditorSessionsAfterLibraryRefresh?.({ external });
     renderLibrary();
   }
 
@@ -692,7 +683,7 @@ globalThis[Symbol.for("nook.app.modules")].register("organize", (app) => {
     const backup = await exportLibrary();
     if (backup) {
       elements.deleteLibraryBackupStatus.textContent =
-        `Backup download started with ${pluralize(backup.data.notes.length, "note")}. Keep the file somewhere safe.`;
+        `Browser download requested for ${pluralize(backup.data.notes.length, "note")}. Confirm the file appears in Downloads before deleting data.`;
     }
     ui.deleteLibraryBackupInFlight = false;
     elements.deleteLibraryBackup.textContent = "Export backup";
@@ -706,6 +697,7 @@ globalThis[Symbol.for("nook.app.modules")].register("organize", (app) => {
     try {
       const counts = await storage.resetLibrary();
       clearStoredNoteDraft();
+      api.clearAllDraftRecoveryRecords?.();
       resetRegularFilters();
       ui.trashOnly = false;
       ui.selectedNoteTagIds.clear();
@@ -827,7 +819,7 @@ globalThis[Symbol.for("nook.app.modules")].register("organize", (app) => {
       const backup = await storage.buildExport();
       downloadExport(backup);
       recordBackupExport();
-      showToast(`Backup exported with ${pluralize(backup.data.notes.length, "note")}.`);
+      showToast(`Backup prepared with ${pluralize(backup.data.notes.length, "note")}; browser download requested.`);
       return backup;
     } catch (error) {
       showError(error, "We could not export this backup.");
@@ -839,12 +831,19 @@ globalThis[Symbol.for("nook.app.modules")].register("organize", (app) => {
     const file = elements.importInput.files?.[0];
     if (!file) return;
     try {
+      if (hasUnsavedNoteChanges() || api.hasUnsavedSecondaryChanges?.()) {
+        showToast("Save or close unfinished editor drafts before replacing the library.", "error");
+        return;
+      }
       const value = JSON.parse(await file.text());
       const preview = storage.inspectBackup(value);
-      const { notes, types, tags } = preview.counts;
+      const { notes, types, tags, noteVersions } = preview.counts;
+      const formatLabel = preview.format === "legacy"
+        ? "legacy backup"
+        : `Nook schema v${preview.schemaVersion}`;
       const confirmed = await requestConfirmation({
         title: "Replace library?",
-        description: `Import ${pluralize(notes, "note")}, ${pluralize(types, "type")}, and ${pluralize(tags, "tag")}? This will replace the current library.`,
+        description: `Validated ${formatLabel}: ${pluralize(notes, "note")}, ${pluralize(types, "type")}, ${pluralize(tags, "tag")}, and ${pluralize(noteVersions, "saved version")}. Import will atomically replace the current library; recovery drafts are not part of this file.`,
         confirmLabel: "Import backup",
         cancelLabel: "Keep library",
       });

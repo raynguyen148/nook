@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Nook Markdown contract harness</title>
+    <style>
+      :root { color-scheme: light dark; font: 16px/1.5 system-ui, sans-serif; }
+      body { margin: 2rem auto; max-width: 72rem; padding: 0 1rem; }
+      #report { white-space: pre-wrap; }
+      .case { border: 1px solid #888; margin-block: 1rem; padding: 1rem; }
+      .markdown-fallback { white-space: pre-wrap; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Nook Markdown contract harness</h1>
+      <p id="status">Running…</p>
+      <pre id="report" aria-live="polite"></pre>
+      <div id="cases" hidden></div>
+    </main>
+    <script src="../../js/markdown.js"></script>
+    <script>
+      (() => {
+        "use strict";
+
+        const cases = document.querySelector("#cases");
+        const report = document.querySelector("#report");
+        const status = document.querySelector("#status");
+        const results = [];
+
+        function assert(condition, message) {
+          if (!condition) throw new Error(message);
+        }
+
+        function render(source, options) {
+          const container = document.createElement("div");
+          cases.append(container);
+          NookMarkdown.renderInto(container, source, "Empty", options);
+          return container;
+        }
+
+        function idsWithin(container) {
+          return [...container.querySelectorAll("[id]")].map((element) => element.id);
+        }
+
+        function assertFootnoteLinksStayLocal(container) {
+          container.querySelectorAll("a[href^='#']").forEach((link) => {
+            const target = document.getElementById(link.getAttribute("href").slice(1));
+            assert(target && container.contains(target), `link target escaped its container: ${link.href}`);
+          });
+        }
+
+        function run(name, callback) {
+          try {
+            callback();
+            results.push(`PASS  ${name}`);
+          } catch (error) {
+            results.push(`FAIL  ${name}: ${error.message}`);
+          }
+        }
+
+        const footnoteSource = "See[^same] once and again[^same].\n\n[^same]: Shared body.";
+        run("four renders get unique scoped IDs", () => {
+          const containers = Array.from({ length: 4 }, () => render(footnoteSource));
+          const ids = containers.flatMap(idsWithin);
+          assert(new Set(ids).size === ids.length, "duplicate IDs across render containers");
+          containers.forEach((container) => assertFootnoteLinksStayLocal(container));
+        });
+
+        run("repeated references get one backlink each", () => {
+          const container = render(footnoteSource, { idPrefix: "preview" });
+          const item = container.querySelector(".markdown-footnotes li");
+          const backs = item.querySelectorAll(".markdown-footnote-backref");
+          assert(item.id.startsWith("fn-preview-"), "explicit idPrefix was not applied");
+          assert(backs.length === 2, `expected 2 backlinks, got ${backs.length}`);
+          assertFootnoteLinksStayLocal(container);
+        });
+
+        run("collision-prone labels remain distinct", () => {
+          const source = [
+            "[^a b] [^a-b] [^!!!]",
+            "",
+            "[^a b]: first",
+            "[^a-b]: second",
+            "[^!!!]: third",
+          ].join("\n");
+          const container = render(source);
+          const items = container.querySelectorAll(".markdown-footnotes li");
+          assert(items.length === 3, `expected 3 footnotes, got ${items.length}`);
+          assert(new Set([...items].map((item) => item.id)).size === 3, "footnote IDs collided");
+          assertFootnoteLinksStayLocal(container);
+        });
+
+        run("deep block nesting falls back without executing HTML", () => {
+          const nestedQuotes = `${"> ".repeat(25)}deep`;
+          const nestedDetails = [
+            ...Array.from({ length: 25 }, () => "<details>\n<summary>level</summary>"),
+            "deep",
+            ...Array.from({ length: 25 }, () => "</details>"),
+          ].join("\n");
+          const nestedList = Array.from({ length: 25 }, (_, index) => `${"  ".repeat(index)}- level ${index + 1}`).join("\n");
+          [nestedQuotes, nestedDetails, nestedList].forEach((source) => {
+            const container = render(source);
+            const fallback = container.querySelector("pre.markdown-fallback");
+            assert(fallback && fallback.textContent === source, "deep input was not preserved exactly");
+            assert(!container.querySelector("script"), "fallback created executable HTML");
+          });
+        });
+
+        run("more than 5000 lines falls back exactly", () => {
+          const source = Array.from({ length: 5001 }, (_, index) => `line ${index + 1}`).join("\n");
+          const container = render(source);
+          const fallback = container.querySelector("pre.markdown-fallback");
+          assert(fallback && fallback.textContent === source, "large input was not preserved exactly");
+        });
+
+        run("normal rendering and raw HTML safety remain intact", () => {
+          const source = "# Heading\n\n**bold** <script>window.__nookTest = true</" + "script>";
+          const container = render(source);
+          assert(container.querySelector("h1")?.textContent === "Heading", "heading changed");
+          assert(container.querySelector("strong")?.textContent === "bold", "strong text changed");
+          assert(!container.querySelector("script"), "raw HTML became executable");
+          assert(container.textContent.includes("<script>"), "raw HTML text was lost");
+        });
+
+        report.textContent = results.join("\n");
+        const failed = results.some((result) => result.startsWith("FAIL"));
+        status.textContent = failed ? "Contract failures" : "All contract checks passed";
+        status.dataset.status = failed ? "fail" : "pass";
+      })();
+    </script>
+  </body>
+</html>

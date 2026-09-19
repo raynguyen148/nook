@@ -19,6 +19,8 @@ html[data-theme="midnight"] .note-content-preview .markdown-task-item > input {
 
 html[data-theme="midnight"] {
   color-scheme: dark;
+  --theme-surface-page: #0f1b2d;
+  --theme-danger-border: rgb(239 68 68 / 38%);
   background: #0f1b2d;
   color: #c1d3e8;
   --management-search-resting-border: #3d5a78;

@@ -2,18 +2,15 @@ globalThis[Symbol.for("nook.app.modules")].register("sync", (app) => {
   "use strict";
 
   // Same-origin tab coordination. Note data remains owned by the storage API.
-  const { api, ui } = app;
+  const { api } = app;
   const LIBRARY_CHANNEL_NAME = "nook:library";
   let libraryChannel = null;
   let refreshTimer = 0;
   let refreshInFlight = false;
   let refreshRequested = false;
 
-  const hasUnsavedNoteChanges = (...args) => api.hasUnsavedNoteChanges(...args);
-  const isNoteEditorOpen = (...args) => api.isNoteEditorOpen(...args);
   const refreshLibrary = (...args) => api.refreshLibrary(...args);
   const showError = (...args) => api.showError(...args);
-  const showToast = (...args) => api.showToast(...args);
 
   function notifyLibraryMutation() {
     libraryChannel?.postMessage({ type: "library-mutated" });
@@ -29,13 +26,6 @@ globalThis[Symbol.for("nook.app.modules")].register("sync", (app) => {
     refreshTimer = 0;
     if (document.hidden) return;
     refreshRequested = false;
-    if (isNoteEditorOpen() && hasUnsavedNoteChanges()) {
-      if (!ui.externalRefreshPending) {
-        showToast("The library changed in another tab. Save or close this note to refresh.", "error");
-      }
-      ui.externalRefreshPending = true;
-      return;
-    }
     refreshInFlight = true;
     try {
       await refreshLibrary({ external: true });

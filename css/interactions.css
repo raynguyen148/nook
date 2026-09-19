@@ -1266,3 +1266,100 @@ html:not([data-input-modality="keyboard"]) body .note-dialog .tag-picker:focus-w
     outline-color: Highlight !important;
   }
 }
+
+
+
+/* Ownership: shared control contract. Feature sheets may tighten geometry,
+ * but color, focus, selection, and disabled behavior stay semantic here. */
+.button:focus-visible,
+.icon-button:focus-visible,
+.note-editor-mode__button:focus-visible,
+.view-mode-button:focus-visible,
+.note-formatting-tool__button:focus-visible,
+.tag-add-button:focus-visible,
+.clear-search:focus-visible,
+.quick-view-header-toggle:focus-visible,
+.note-type-picker__trigger:focus-visible,
+.color-picker__trigger:focus-visible,
+.theme-picker__trigger:focus-visible,
+.sort-field__trigger:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+
+
+.search-field input:focus-visible,
+.sort-field select:focus-visible,
+.field input:focus-visible,
+.field select:focus-visible,
+.field textarea:focus-visible,
+.create-row input:focus-visible,
+.create-row select:focus-visible,
+.management-row input:focus-visible,
+.management-row select:focus-visible,
+.management-search input:focus-visible {
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px var(--focus-ring-soft);
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+
+
+.note-editor-modes,
+.view-mode-control__choices {
+  border-color: var(--component-border);
+  border-radius: var(--radius-pill);
+  background: var(--component-surface-muted);
+}
+
+
+
+.note-editor-mode__button[aria-pressed="true"],
+.view-mode-button.is-active,
+.view-mode-button[aria-pressed="true"] {
+  color: var(--selected-text);
+  background: var(--selected-surface);
+}
+
+
+
+.note-card {
+  border-color: var(--component-border);
+  background: var(--component-surface);
+}
+
+
+
+.note-card__action:focus-visible,
+.note-card__pin-toggle:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+
+
+.note-card__action--danger:hover:not(:disabled),
+.note-card__action--danger:focus-visible {
+  color: var(--danger-text);
+  background: var(--danger-surface);
+}
+
+
+
+.button-danger:hover:not(:disabled) {
+  border-color: var(--danger-text);
+  color: var(--text-on-accent);
+  background: var(--danger-text);
+}
+
+
+
+.button:disabled,
+.icon-button:disabled,
+.note-editor-mode__button:disabled,
+.note-formatting-tool__button:disabled,
+.tag-add-button:disabled {
+  cursor: not-allowed;
+}

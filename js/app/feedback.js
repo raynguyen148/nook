@@ -5,7 +5,13 @@ globalThis[Symbol.for("nook.app.modules")].register("feedback", (app) => {
   const { api, elements, ui } = app;
 
   function activeModalDialog() {
-    return [elements.deleteLibraryDialog, elements.confirmationDialog, elements.organizeDialog]
+    return [
+      elements.conflictDialog,
+      elements.historyDialog,
+      elements.deleteLibraryDialog,
+      elements.confirmationDialog,
+      elements.organizeDialog,
+    ]
       .find((dialog) => dialog.open) || null;
   }
 
@@ -85,6 +91,64 @@ globalThis[Symbol.for("nook.app.modules")].register("feedback", (app) => {
     }
   }
 
+  function conflictSummary(value, fallback) {
+    const title = typeof value?.title === "string" && value.title.trim()
+      ? `“${value.title.trim()}”`
+      : fallback;
+    const timestamp = value?.updatedAt || value?.savedAt;
+    if (!timestamp || Number.isNaN(Date.parse(timestamp))) return title;
+    return `${title} · ${new Date(timestamp).toLocaleString()}`;
+  }
+
+  function requestConflictResolution({ localDraft, latestNote, deleted = false, invoker = null } = {}) {
+    if (elements.conflictDialog.open || ui.pendingConflictResolution) {
+      return Promise.resolve("keep-editing");
+    }
+    const focusReturn = invoker || (document.activeElement instanceof HTMLElement ? document.activeElement : null);
+    elements.conflictDialog.querySelector(".eyebrow").textContent = deleted ? "SAVED NOTE DELETED" : "NEWER VERSION FOUND";
+    elements.conflictDialog.querySelector("h2").textContent = deleted
+      ? "This note was deleted elsewhere"
+      : "This note changed elsewhere";
+    elements.conflictDialog.querySelector("#conflict-dialog-description").textContent = deleted
+      ? "Your draft is safe. Keep editing it or save it as a new note."
+      : "Your draft is safe. Choose which version to inspect or save.";
+    elements.conflictLocalSummary.textContent = conflictSummary(localDraft, "Unsaved local changes");
+    elements.conflictLatestSummary.textContent = deleted
+      ? "The previously saved note no longer exists"
+      : conflictSummary(latestNote, "A newer saved version");
+    elements.conflictViewLatest.classList.toggle("is-hidden", deleted);
+    elements.conflictKeepMine.textContent = deleted ? "Save as new" : "Keep mine";
+    elements.conflictDialog.returnValue = "";
+    return new Promise((resolve) => {
+      ui.pendingConflictResolution = { resolve, invoker: focusReturn };
+      elements.conflictDialog.showModal();
+      syncToastHost();
+      window.requestAnimationFrame(() => elements.conflictKeepEditing.focus());
+    });
+  }
+
+  function closeConflictResolution(choice = "keep-editing") {
+    if (elements.conflictDialog.open) elements.conflictDialog.close(choice);
+  }
+
+  function finishConflictResolution() {
+    const pending = ui.pendingConflictResolution;
+    const choice = ["keep-mine", "view-latest"].includes(elements.conflictDialog.returnValue)
+      ? elements.conflictDialog.returnValue
+      : "keep-editing";
+    ui.pendingConflictResolution = null;
+    if (!pending) return;
+    pending.resolve(choice);
+    if (
+      choice === "keep-editing" &&
+      pending.invoker instanceof HTMLElement &&
+      pending.invoker.isConnected &&
+      !pending.invoker.disabled
+    ) {
+      window.requestAnimationFrame(() => pending.invoker.focus({ preventScroll: true }));
+    }
+  }
+
   function showError(error, fallback = "Something went wrong. Please try again.") {
     const message = error instanceof Error && error.message ? error.message : fallback;
     showToast(message, "error");
@@ -98,6 +162,9 @@ globalThis[Symbol.for("nook.app.modules")].register("feedback", (app) => {
     requestConfirmation,
     closeConfirmation,
     finishConfirmationClose,
+    requestConflictResolution,
+    closeConflictResolution,
+    finishConflictResolution,
     showError,
   });
 });

@@ -116,25 +116,17 @@
 
 
 
-/* Document writing and reading surfaces must remain completely seamless and borderless when focused. */
-.note-detail-surface .quick-view-content:focus,
-.note-detail-surface .quick-view-content:focus-visible,
-.note-dialog .field--title input:focus,
-.note-dialog .field--title input:focus-visible,
-.note-secondary-surface .field--title input:focus,
-.note-secondary-surface .field--title input:focus-visible,
-.note-secondary-surface #secondary-note-title-input:focus,
-.note-secondary-surface #secondary-note-title-input:focus-visible,
-.note-dialog #note-content:focus,
-.note-dialog #note-content:focus-visible,
-.note-secondary-surface #secondary-note-content-editor:focus,
-.note-secondary-surface #secondary-note-content-editor:focus-visible,
-.note-dialog .note-content-preview:focus,
-.note-dialog .note-content-preview:focus-visible,
-.note-secondary-surface #secondary-split-preview:focus,
-.note-secondary-surface #secondary-split-preview:focus-visible,
-.quick-view-document-header h1:focus,
-.quick-view-document-header h1:focus-visible {
+/* Pointer focus keeps document surfaces seamless; keyboard focus is owned by
+ * the detail sheet so editors and rendered previews retain a semantic ring. */
+.note-detail-surface .quick-view-content:focus:not(:focus-visible),
+.note-dialog .field--title input:focus:not(:focus-visible),
+.note-secondary-surface .field--title input:focus:not(:focus-visible),
+.note-secondary-surface #secondary-note-title-input:focus:not(:focus-visible),
+.note-dialog #note-content:focus:not(:focus-visible),
+.note-secondary-surface #secondary-note-content-editor:focus:not(:focus-visible),
+.note-dialog .note-content-preview:focus:not(:focus-visible),
+.note-secondary-surface #secondary-split-preview:focus:not(:focus-visible),
+.quick-view-document-header h1:focus:not(:focus-visible) {
   outline: none !important;
   outline-offset: 0 !important;
   box-shadow: none !important;

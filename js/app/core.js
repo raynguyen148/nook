@@ -108,7 +108,6 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
     noteDetailWorkspace: document.querySelector("#note-detail-workspace"),
     noteDialog: document.querySelector("#note-dialog"),
     noteForm: document.querySelector("#note-form"),
-    noteEditorCommandActions: document.querySelector("#note-editor-command-actions"),
     toggleDualPane: document.querySelector("#toggle-dual-pane-btn"),
     secondarySurface: document.querySelector("#note-secondary-surface"),
     secondaryPickerView: document.querySelector("#secondary-picker-view"),
@@ -153,6 +152,7 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
     secondarySaveChanges: document.querySelector("#secondary-save-changes-btn"),
     secondaryFooterClose: document.querySelector("#secondary-footer-close-btn"),
     secondaryFooterDone: document.querySelector("#secondary-footer-done-btn"),
+    secondaryNoteHistory: document.querySelector("#secondary-note-history-btn"),
     noteDialogTitle: document.querySelector("#note-dialog-title"),
     closeNoteDialog: document.querySelector("#close-note-dialog-btn"),
     cancelNote: document.querySelector("#cancel-note-btn"),
@@ -161,6 +161,7 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
     noteEditorStats: document.querySelector("#note-editor-stats"),
     noteSaveStatus: document.querySelector("#note-save-status"),
     noteSaveStatusLabel: document.querySelector("#note-save-status-label"),
+    noteHistory: document.querySelector("#note-history-btn"),
     noteQuickSaveShortcutModifier: document.querySelector("#note-quick-save-shortcut-modifier"),
     noteSaveShortcutModifier: document.querySelector("#note-save-shortcut-modifier"),
     noteFormattingShortcutModifiers: [...document.querySelectorAll(".note-formatting-shortcut-modifier")],
@@ -184,9 +185,6 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
     tagInputRow: document.querySelector("#tag-input-row"),
     addTag: document.querySelector("#add-tag-btn"),
     tagSuggestions: document.querySelector("#tag-suggestions"),
-    quickViewDialog: document.querySelector("#quick-view-dialog"),
-    quickViewHeader: document.querySelector(".quick-view-header"),
-    quickViewBody: document.querySelector(".quick-view-body"),
     quickViewDocumentHeader: document.querySelector(".quick-view-document-header"),
     quickViewHeaderToggle: document.querySelector("#quick-view-header-toggle"),
     quickViewDocumentDetails: document.querySelector("#quick-view-document-details"),
@@ -197,7 +195,6 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
     quickViewDates: document.querySelector("#quick-view-dates"),
     exportNoteMarkdown: document.querySelector("#export-note-markdown-btn"),
     exportNoteText: document.querySelector("#export-note-text-btn"),
-    closeQuickView: document.querySelector("#close-quick-view-btn"),
     copyNoteContent: document.querySelector("#copy-note-content-btn"),
     confirmationDialog: document.querySelector("#confirmation-dialog"),
     confirmationTitle: document.querySelector("#confirmation-dialog-title"),
@@ -205,6 +202,21 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
     closeConfirmation: document.querySelector("#close-confirmation-dialog-btn"),
     cancelConfirmation: document.querySelector("#cancel-confirmation-btn"),
     confirmAction: document.querySelector("#confirm-action-btn"),
+    conflictDialog: document.querySelector("#conflict-dialog"),
+    closeConflictDialog: document.querySelector("#close-conflict-dialog-btn"),
+    conflictKeepEditing: document.querySelector("#conflict-keep-editing-btn"),
+    conflictViewLatest: document.querySelector("#conflict-view-latest-btn"),
+    conflictKeepMine: document.querySelector("#conflict-keep-mine-btn"),
+    conflictLocalSummary: document.querySelector("#conflict-local-summary"),
+    conflictLatestSummary: document.querySelector("#conflict-latest-summary"),
+    historyDialog: document.querySelector("#history-dialog"),
+    closeHistoryDialog: document.querySelector("#close-history-dialog-btn"),
+    historyCancel: document.querySelector("#history-cancel-btn"),
+    historyList: document.querySelector("#history-list"),
+    historyPreviewTitle: document.querySelector("#history-preview-title"),
+    historyPreviewMeta: document.querySelector("#history-preview-meta"),
+    historyPreviewContent: document.querySelector("#history-preview-content"),
+    historyRestore: document.querySelector("#history-restore-btn"),
     deleteLibraryDialog: document.querySelector("#delete-library-dialog"),
     deleteLibraryDescription: document.querySelector("#delete-library-dialog-description"),
     closeDeleteLibraryDialog: document.querySelector("#close-delete-library-dialog-btn"),
@@ -230,6 +242,10 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
     dataExport: document.querySelector("#data-export-btn"),
     dataImport: document.querySelector("#data-import-btn"),
     deleteLibrary: document.querySelector("#delete-library-btn"),
+    storageHealthMessage: document.querySelector("#storage-health-message"),
+    requestPersistence: document.querySelector("#request-persistence-btn"),
+    offlineAppMessage: document.querySelector("#offline-app-message"),
+    applyOfflineUpdate: document.querySelector("#apply-offline-update-btn"),
     themePicker: document.querySelector("#theme-picker"),
     themeSelect: document.querySelector("#theme-select"),
     themePickerTrigger: document.querySelector("#theme-picker-trigger"),
@@ -327,7 +343,11 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
     restoreViewFocus: true,
     afterQuickViewClose: null,
     pendingConfirmation: null,
-    externalRefreshPending: false,
+    pendingConflictResolution: null,
+    historyInvoker: null,
+    historyNoteId: "",
+    historySelectedVersionId: "",
+    waitingServiceWorker: null,
     managementTab: "types",
     managementQueries: { types: "", tags: "" },
     managementCreateKind: "",
@@ -351,9 +371,6 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
 
   // Cross-module calls stay late-bound so installers can expose cohesive APIs
   // while preserving direct file:// usage.
-  const getNoteEditorDraftData = (...args) => api.getNoteEditorDraftData(...args);
-  const hasUnsavedNoteChanges = (...args) => api.hasUnsavedNoteChanges(...args);
-  const isNoteEditorOpen = (...args) => api.isNoteEditorOpen(...args);
   const persistFilters = (...args) => api.persistFilters(...args);
   const persistSort = (...args) => api.persistSort(...args);
   const renderLibrary = (...args) => api.renderLibrary(...args);
@@ -497,29 +514,10 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
     }
   }
 
-  function syncStoredNoteDraft() {
-    if (!isNoteEditorOpen() || !hasUnsavedNoteChanges()) {
-      clearStoredNoteDraft();
-      return;
-    }
-    try {
-      window.localStorage.setItem(
-        DRAFT_RECOVERY_STORAGE_KEY,
-        JSON.stringify({
-          version: DRAFT_RECOVERY_VERSION,
-          savedAt: nowIso(),
-          draft: getNoteEditorDraftData(),
-        }),
-      );
-    } catch {
-      // The existing editor and IndexedDB autosave remain available.
-    }
-  }
-
   function createDefaultBackupHealth() {
     return {
       trackingStartedAt: nowIso(),
-      lastExportedAt: "",
+      lastDownloadRequestedAt: "",
     };
   }
 
@@ -532,7 +530,9 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
       if (!isValidTimestamp(value?.trackingStartedAt)) return fallback;
       return {
         trackingStartedAt: value.trackingStartedAt,
-        lastExportedAt: isValidTimestamp(value.lastExportedAt) ? value.lastExportedAt : "",
+        lastDownloadRequestedAt: isValidTimestamp(value.lastDownloadRequestedAt)
+          ? value.lastDownloadRequestedAt
+          : (isValidTimestamp(value.lastExportedAt) ? value.lastExportedAt : ""),
       };
     } catch {
       return fallback;
@@ -548,7 +548,7 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
   }
 
   function backupHealthReferenceDate(health) {
-    return new Date(health.lastExportedAt || health.trackingStartedAt);
+    return new Date(health.lastDownloadRequestedAt || health.trackingStartedAt);
   }
 
   function backupAgeInDays(health) {
@@ -561,21 +561,21 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
   }
 
   function backupHealthMessage(health, daysSinceReference) {
-    const hasRecordedExport = Boolean(health.lastExportedAt);
-    if (!hasRecordedExport) return formatBackupStatus("no backup yet");
-    if (daysSinceReference === 0) return formatBackupStatus("backed up today");
+    const hasDownloadRequest = Boolean(health.lastDownloadRequestedAt);
+    if (!hasDownloadRequest) return formatBackupStatus("no backup download requested yet");
+    if (daysSinceReference === 0) return formatBackupStatus("backup download requested today");
     if (daysSinceReference >= BACKUP_REMINDER_AGE_MS / 86400000) {
-      return formatBackupStatus(`no backup for ${daysSinceReference} ${daysSinceReference === 1 ? "day" : "days"}`);
+      return formatBackupStatus(`no download request for ${daysSinceReference} ${daysSinceReference === 1 ? "day" : "days"}`);
     }
-    return formatBackupStatus(`backed up ${daysSinceReference} ${daysSinceReference === 1 ? "day" : "days"} ago`);
+    return formatBackupStatus(`download requested ${daysSinceReference} ${daysSinceReference === 1 ? "day" : "days"} ago`);
   }
 
   function syncBackupHealth() {
     const health = getStoredBackupHealth();
     const daysSinceReference = backupAgeInDays(health);
     const dueToAge = daysSinceReference >= BACKUP_REMINDER_AGE_MS / 86400000;
-    const hasRecordedExport = Boolean(health.lastExportedAt);
-    const statusClass = !hasRecordedExport
+    const hasDownloadRequest = Boolean(health.lastDownloadRequestedAt);
+    const statusClass = !hasDownloadRequest
       ? "status-dot--backup-never"
       : dueToAge
         ? "status-dot--backup-warning"
@@ -589,7 +589,7 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
     const timestamp = nowIso();
     storeBackupHealth({
       trackingStartedAt: timestamp,
-      lastExportedAt: timestamp,
+      lastDownloadRequestedAt: timestamp,
     });
     syncBackupHealth();
   }
@@ -973,7 +973,6 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
     isValidTimestamp,
     clearStoredNoteDraft,
     getStoredNoteDraft,
-    syncStoredNoteDraft,
     createDefaultBackupHealth,
     getStoredBackupHealth,
     storeBackupHealth,

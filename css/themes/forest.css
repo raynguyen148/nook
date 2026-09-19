@@ -6,6 +6,8 @@
 
 html[data-theme="forest"] {
   color-scheme: light;
+  --theme-surface-page: #f3f7f1;
+  --theme-danger-border: #e6bfc1;
   background: #f3f7f1;
   color: #1e2d24;
   --management-search-resting-border: #cbdccc;

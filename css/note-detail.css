@@ -198,6 +198,12 @@
   border-radius: 0.45rem;
 }
 
+.detail-back-button::before {
+  content: "←";
+  font-size: 1rem;
+  line-height: 1;
+}
+
 
 
 .quick-view-header__utilities {
@@ -234,15 +240,6 @@
 .note-editor-commandbar__actions .note-editor-mode__button svg {
   width: 0.9rem;
   height: 0.9rem;
-}
-
-
-
-/* The shared All notes command replaces the duplicate legacy Preview close
- * control. Keep the original button in the combined DOM until its action set
- * is reviewed, without presenting two identical exits. */
-.note-dialog #close-quick-view-btn {
-  display: none;
 }
 
 
@@ -777,16 +774,30 @@
 
 
 .note-dialog #note-content:focus,
-.note-dialog #note-content:focus-visible,
 .note-secondary-surface #secondary-note-content-editor:focus,
+.note-secondary-surface #secondary-split-preview:focus {
+  border: 0;
+  border-color: transparent;
+  outline: none;
+  outline-offset: 0;
+  box-shadow: none;
+}
+
+
+
+/* Keyboard focus is intentionally distinct from pointer focus on editor and
+ * rendered-preview surfaces; this keeps the clean canvas without hiding the
+ * active editing target. */
+.note-dialog #note-content:focus-visible,
+.note-dialog .note-content-preview:focus-visible,
+.note-detail-surface .quick-view-content:focus-visible,
 .note-secondary-surface #secondary-note-content-editor:focus-visible,
-.note-secondary-surface #secondary-split-preview:focus,
 .note-secondary-surface #secondary-split-preview:focus-visible {
-  border: 0 !important;
-  border-color: transparent !important;
-  outline: none !important;
-  outline-offset: 0 !important;
-  box-shadow: none !important;
+  border: 0;
+  border-color: transparent;
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 3px var(--focus-ring-soft);
 }
 
 
@@ -1397,7 +1408,9 @@
    Dual Pane (Side-by-side Note View)
    ========================================================================== */
 
-@media (min-width: 1024px) {
+/* Keep the dual-pane contract active above the desktop safety floor. The
+ * runtime keeps side notes open at 960px+, while mobile remains single-pane. */
+@media (min-width: 960px) {
   .workspace.is-note-detail-open.is-side-by-side-open,
   .workspace.is-note-detail-open:has(.is-side-by-side),
   .app-shell.is-sidebar-collapsed .workspace.is-note-detail-open.is-side-by-side-open,
@@ -1432,7 +1445,7 @@
   border-left: 1px solid rgba(0, 0, 0, 0.08);
 }
 
-@media (max-width: 1023px) {
+@media (max-width: 959px) {
   .note-editor-mode--side-note,
   .note-editor-mode--compare {
     display: none !important;
@@ -1954,4 +1967,321 @@ html[data-theme="coffee"] #secondary-reader-view .note-formatting-toolbar {
 html[data-theme="coffee"] .note-dialog .note-content-field.is-split .note-editor-pane--preview,
 html[data-theme="coffee"] #secondary-reader-view #secondary-content-field.is-split .note-editor-pane--preview {
   border-left-color: #d8cfc4 !important;
+}
+
+
+
+/* Ownership: note-detail state and geometry contract. Keep local scrollers
+ * inside each pane so the page never has to scroll to reach Preview, Close,
+ * or Done at the supported desktop widths. */
+.note-detail-surface {
+  min-width: 0;
+  border-color: var(--component-border);
+  background: var(--component-surface);
+}
+
+
+
+.note-detail-surface .dialog-footer,
+.note-detail-surface .dialog-footer__tools,
+.note-detail-surface .dialog-footer__help,
+.note-detail-surface .dialog-footer__stats,
+.note-detail-surface .dialog-footer__actions,
+.note-detail-surface .dialog-footer__preview-actions,
+.note-detail-surface .quick-view-header__utilities,
+.note-detail-surface .note-editor-commandbar__actions,
+.note-detail-surface .note-editor-modes,
+.note-detail-surface .dialog-body,
+.note-detail-surface .quick-view-body,
+.note-detail-surface .quick-view-content-card,
+.note-detail-surface .quick-view-content,
+.note-secondary-surface,
+.secondary-surface-view,
+.secondary-commandbar,
+.secondary-toolbar,
+.secondary-picker-body,
+.secondary-notes-list,
+#secondary-reader-view .dialog-body,
+#secondary-reader-view #secondary-content-field,
+#secondary-reader-view #secondary-editor-container,
+.note-detail-surface.note-dialog form,
+.note-content-editor,
+.note-editor-pane {
+  min-width: 0;
+}
+
+
+
+.note-detail-surface .detail-commandbar__info,
+.note-detail-surface .detail-commandbar__state,
+.note-detail-surface .note-save-status,
+.note-detail-surface .note-save-status__label,
+.note-detail-surface .dialog-footer__stats {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
+
+.note-detail-surface .detail-commandbar__info {
+  flex: 1 1 8rem;
+}
+
+
+
+.note-detail-surface .note-save-status__label,
+.note-detail-surface .detail-commandbar__state {
+  max-width: 100%;
+  white-space: nowrap;
+}
+
+
+
+.note-detail-surface .note-save-status.is-saved {
+  color: var(--status-success-text);
+  background: var(--status-success-surface);
+  border-color: var(--status-success-border);
+}
+
+
+
+.note-detail-surface .note-save-status.is-new {
+  color: var(--text-muted);
+  background: var(--component-surface-muted);
+  border-color: var(--component-border);
+}
+
+
+
+.note-detail-surface .note-save-status.is-saving {
+  color: var(--selected-text);
+  background: var(--selected-surface);
+  border-color: var(--selected-border);
+}
+
+
+
+.note-detail-surface .note-save-status.is-dirty {
+  color: var(--status-warning-text);
+  background: var(--status-warning-surface);
+  border-color: var(--status-warning-border);
+}
+
+
+
+.note-detail-surface .note-save-status.is-error {
+  color: var(--status-error-text);
+  background: var(--status-error-surface);
+  border-color: var(--status-error-border);
+}
+
+
+
+/* The retro reset intentionally uses priority overrides for its borderless
+ * editor; this narrow exception restores the semantic keyboard ring without
+ * changing the resting retro canvas. */
+html[data-theme="retro"] .note-dialog #note-content:focus-visible,
+html[data-theme="retro"] .note-dialog .note-content-preview:focus-visible,
+html[data-theme="retro"] .note-detail-surface .quick-view-content:focus-visible,
+html[data-theme="retro"] .note-secondary-surface #secondary-note-content-editor:focus-visible,
+html[data-theme="retro"] .note-secondary-surface #secondary-split-preview:focus-visible,
+html[data-theme="retro"] #secondary-reader-view #secondary-note-content-editor:focus-visible,
+html[data-theme="retro"] #secondary-reader-view #secondary-split-preview:focus-visible {
+  outline: var(--retro-border-width, 2px) solid var(--focus-ring) !important;
+  outline-offset: 3px !important;
+  box-shadow: 0 0 0 3px var(--focus-ring-soft) !important;
+}
+
+
+
+@media (min-width: 960px) {
+  /* Final horizontal safety net: content has explicit local scrollers below. */
+  html,
+  body {
+    overflow-x: clip;
+  }
+
+  .app-shell,
+  .workspace,
+  .workspace.is-note-detail-open,
+  .note-detail-workspace,
+  .note-detail-workspace.is-side-by-side,
+  .note-detail-workspace > .note-detail-surface,
+  .note-secondary-surface {
+    min-width: 0;
+  }
+
+  .workspace.is-note-detail-open {
+    overflow-x: clip;
+  }
+
+  .workspace.is-note-detail-open.is-side-by-side-open,
+  .workspace.is-note-detail-open:has(.is-side-by-side),
+  .app-shell.is-sidebar-collapsed .workspace.is-note-detail-open.is-side-by-side-open,
+  html[data-sidebar-collapsed="true"] .app-shell .workspace.is-note-detail-open.is-side-by-side-open,
+  .app-shell.is-sidebar-collapsed .workspace.is-note-detail-open:has(.is-side-by-side),
+  html[data-sidebar-collapsed="true"] .app-shell .workspace.is-note-detail-open:has(.is-side-by-side) {
+    padding-inline: clamp(0.7rem, 1.25vw, 1.25rem);
+  }
+
+  .note-detail-workspace.is-side-by-side {
+    gap: clamp(0.65rem, 1.2vw, 1.25rem);
+  }
+
+  .note-detail-surface .dialog-header,
+  .note-detail-surface .dialog-header > *,
+  .secondary-commandbar,
+  .secondary-commandbar > *,
+  .note-editor-commandbar__actions,
+  .note-editor-commandbar__actions > *,
+  .note-editor-mode__button,
+  .note-detail-surface .dialog-footer__tools,
+  .note-detail-surface .dialog-footer__help,
+  .note-detail-surface .dialog-footer__actions,
+  .note-detail-surface .dialog-footer__preview-actions,
+  .note-detail-surface .quick-view-header__utilities {
+    min-width: 0;
+  }
+
+  .note-detail-surface .dialog-header,
+  .secondary-commandbar {
+    flex-wrap: wrap;
+  }
+
+  .note-detail-surface .note-editor-commandbar__actions {
+    display: flex;
+    max-width: 100%;
+    flex: 0 1 auto;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .note-detail-surface .note-editor-commandbar__actions::-webkit-scrollbar {
+    display: none;
+  }
+
+  .note-detail-surface .note-editor-modes {
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  .note-detail-surface .note-editor-mode__button {
+    flex: 0 1 auto;
+  }
+
+  .note-detail-surface .dialog-footer {
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .note-detail-surface .dialog-footer__tools,
+  .note-detail-surface .dialog-footer__help,
+  .note-detail-surface .dialog-footer__preview-actions,
+  .note-detail-surface .dialog-footer__actions {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .note-detail-surface .dialog-footer__stats {
+    flex: 1 1 6rem;
+  }
+
+  .note-detail-surface .dialog-footer__actions {
+    flex: 0 1 auto;
+    max-width: 100%;
+  }
+
+  .note-detail-surface .dialog-footer__actions .button {
+    min-width: 0;
+    flex: 0 1 auto;
+  }
+
+  .note-detail-surface .quick-view-content-card {
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-gutter: stable;
+  }
+
+  .note-detail-surface .quick-view-content,
+  .note-detail-surface .quick-view-content > *,
+  .note-detail-surface .note-editor-pane,
+  .note-detail-surface .note-content-editor,
+  #secondary-reader-view #secondary-note-content-editor,
+  #secondary-reader-view #secondary-split-preview {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
+}
+
+
+
+@media (min-width: 960px) and (max-width: 1179px) {
+  /* At the desktop floor labels yield to the existing accessible names. */
+  .note-detail-surface .note-editor-commandbar__actions .note-editor-mode__label {
+    display: none;
+  }
+
+  .note-detail-surface .note-editor-commandbar__actions .note-editor-mode__button {
+    width: 1.9rem;
+    min-width: 1.9rem;
+    padding-inline: 0;
+  }
+
+  .note-detail-surface .note-editor-mode--side-note,
+  .note-detail-surface .note-editor-mode--compare {
+    margin-left: 0.08rem;
+    padding-left: 0.12rem;
+  }
+
+  .note-detail-surface .detail-back-button {
+    position: relative;
+    width: 1.9rem;
+    min-width: 1.9rem;
+    padding-inline: 0;
+    font-size: 0;
+  }
+
+  .note-detail-surface .detail-back-button > span {
+    display: none;
+  }
+
+  .note-detail-surface .dialog-header,
+  .secondary-commandbar {
+    gap: 0.45rem;
+    padding-inline: 0.65rem;
+  }
+
+  .note-detail-surface .dialog-footer {
+    gap: 0.35rem;
+    padding-inline: 0.65rem;
+  }
+
+  .note-detail-surface .note-save-status__label {
+    max-width: 4.5rem;
+  }
+}
+
+
+
+@media (min-width: 960px) and (max-height: 650px) {
+  .workspace.is-note-detail-open {
+    padding-block: 0.75rem;
+  }
+
+  .note-detail-surface .dialog-header,
+  .secondary-commandbar {
+    min-height: 2.4rem;
+    padding-block: 0.28rem;
+  }
+
+  .note-detail-surface .dialog-body,
+  .note-detail-surface .quick-view-body,
+  #secondary-reader-view .dialog-body {
+    padding-block: 0.55rem 0.3rem;
+  }
+
+  .note-detail-surface .dialog-footer {
+    padding-block: 0.25rem;
+  }
 }

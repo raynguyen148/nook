@@ -46,6 +46,11 @@
     rdquo: "”",
     rsquo: "’",
   });
+  const MAX_SOURCE_LINES = 5000;
+  const MAX_BLOCK_DEPTH = 24;
+  let renderSequence = 0;
+
+  class MarkdownSafetyError extends Error {}
 
   function createElement(tagName, className = "") {
     const element = document.createElement(tagName);
@@ -118,6 +123,20 @@
 
   function normalizeLines(source) {
     return String(source ?? "").replace(/\r\n?/g, "\n").split("\n");
+  }
+
+  function createRenderScope(options) {
+    renderSequence += 1;
+    let prefix = String(options?.idPrefix ?? "markdown").trim().replace(/[^a-z\d_-]+/gi, "-");
+    prefix = prefix.replace(/^-+|-+$/g, "") || "markdown";
+    if (!/^[a-z_]/i.test(prefix)) prefix = `md-${prefix}`;
+    return `${prefix}-${renderSequence}`;
+  }
+
+  function assertBlockDepth(depth) {
+    if (depth > MAX_BLOCK_DEPTH) {
+      throw new MarkdownSafetyError("Markdown block nesting exceeds the safety limit.");
+    }
   }
 
   function withSourceLineNumbers(lines, sourceLineNumbers) {
@@ -281,7 +300,10 @@
     return null;
   }
 
-  function appendInline(parent, source, context) {
+  function appendInline(parent, source, context, depth = 0) {
+    if (depth > MAX_BLOCK_DEPTH) {
+      throw new MarkdownSafetyError("Markdown inline nesting exceeds the safety limit.");
+    }
     let index = 0;
     let textStart = 0;
 
@@ -291,7 +313,7 @@
 
     const appendNested = (tagName, content, className = "") => {
       const element = createElement(tagName, className);
-      appendInline(element, content, context);
+      appendInline(element, content, context, depth + 1);
       parent.append(element);
     };
 
@@ -344,11 +366,16 @@
             const normalizedLabel = normalizeReferenceLabel(footnoteLabel);
             const number = registerFootnote(context, normalizedLabel);
             const referenceCount = context.footnoteReferenceCounts.get(normalizedLabel) || 0;
-            context.footnoteReferenceCounts.set(normalizedLabel, referenceCount + 1);
+            const referenceNumber = referenceCount + 1;
+            context.footnoteReferenceCounts.set(normalizedLabel, referenceNumber);
+            const referenceId = getFootnoteReferenceId(context, number, referenceNumber);
+            const references = context.footnoteReferences.get(normalizedLabel) || [];
+            references.push(referenceId);
+            context.footnoteReferences.set(normalizedLabel, references);
             const sup = createElement("sup", "markdown-footnote-ref");
             const link = createElement("a");
-            link.href = `#fn-${footnoteSlug(normalizedLabel)}`;
-            link.id = `fnref-${footnoteSlug(normalizedLabel)}-${referenceCount + 1}`;
+            link.href = `#${getFootnoteId(context, number)}`;
+            link.id = referenceId;
             link.textContent = `[${number}]`;
             sup.append(link);
             parent.append(sup);
@@ -1122,7 +1149,7 @@
     };
   }
 
-  function parseList(lines, startIndex, context) {
+  function parseList(lines, startIndex, context, depth) {
     const first = getListMarker(lines[startIndex]);
     const items = [];
     let index = startIndex;
@@ -1165,7 +1192,7 @@
         checked: task ? task[1].toLocaleLowerCase() === "x" : null,
         spacedBefore: itemHasBlankBefore,
         ...sourceLineRange(lines, itemStartIndex, index, context),
-        children: parseBlocks(withSourceLineNumbers(itemLines, itemSourceLineNumbers), context),
+        children: parseBlocks(withSourceLineNumbers(itemLines, itemSourceLineNumbers), context, depth + 1),
       });
       itemHasBlankBefore = sawBlank;
     }
@@ -1359,7 +1386,8 @@
     );
   }
 
-  function parseBlocks(lines, context) {
+  function parseBlocks(lines, context, depth = 0) {
+    assertBlockDepth(depth);
     const blocks = [];
     const pushBlock = (block, startIndex, endIndex) => {
       blocks.push(addSourceLineRange(block, lines, startIndex, endIndex, context));
@@ -1404,12 +1432,19 @@
         const body = [];
         const bodySourceLineNumbers = [];
         let end = index + 1;
-        while (end < lines.length && !/^\s{0,3}<\/details>\s*$/i.test(lines[end])) {
+        let detailsDepth = 1;
+        while (end < lines.length && detailsDepth > 0) {
+          if (isDetailsStart(lines[end])) {
+            detailsDepth += 1;
+          } else if (/^\s{0,3}<\/details>\s*$/i.test(lines[end])) {
+            detailsDepth -= 1;
+            if (detailsDepth === 0) break;
+          }
           body.push(lines[end]);
           bodySourceLineNumbers.push(sourceLineAt(lines, end, context));
           end += 1;
         }
-        if (end < lines.length) {
+        if (detailsDepth === 0) {
           let summary = "Details";
           if (/^\s*<summary>[\s\S]*<\/summary>\s*$/i.test(body[0] || "")) {
             summary = body.shift().replace(/^\s*<summary>/i, "").replace(/<\/summary>\s*$/i, "");
@@ -1419,7 +1454,7 @@
             type: "details",
             open: /\sopen(?:\s|>)/i.test(line),
             summary,
-            children: parseBlocks(withSourceLineNumbers(body, bodySourceLineNumbers), context),
+            children: parseBlocks(withSourceLineNumbers(body, bodySourceLineNumbers), context, depth + 1),
           }, blockStart, end + 1);
           index = end + 1;
           continue;
@@ -1483,19 +1518,19 @@
           pushBlock({
             type: "alert",
             kind: alert[1].toLowerCase(),
-            children: parseBlocks(withSourceLineNumbers(quoteLines.slice(1), quoteSourceLineNumbers.slice(1)), context),
+            children: parseBlocks(withSourceLineNumbers(quoteLines.slice(1), quoteSourceLineNumbers.slice(1)), context, depth + 1),
           }, blockStart, index);
         } else {
           pushBlock({
             type: "blockquote",
-            children: parseBlocks(withSourceLineNumbers(quoteLines, quoteSourceLineNumbers), context),
+            children: parseBlocks(withSourceLineNumbers(quoteLines, quoteSourceLineNumbers), context, depth + 1),
           }, blockStart, index);
         }
         continue;
       }
 
       if (getListMarker(line)) {
-        const list = parseList(lines, index, context);
+        const list = parseList(lines, index, context, depth);
         index = list.nextIndex;
         pushBlock(list.block, blockStart, index);
         continue;
@@ -1528,13 +1563,21 @@
     return blocks;
   }
 
-  function footnoteSlug(label) {
-    return label.replace(/[^a-z\d_-]+/gi, "-").replace(/^-+|-+$/g, "") || "note";
+  function getFootnoteId(context, number) {
+    return `fn-${context.scope}-${number}`;
+  }
+
+  function getFootnoteReferenceId(context, number, referenceNumber) {
+    return `fnref-${context.scope}-${number}-${referenceNumber}`;
   }
 
   function registerFootnote(context, label) {
-    if (!context.footnoteOrder.includes(label)) context.footnoteOrder.push(label);
-    return context.footnoteOrder.indexOf(label) + 1;
+    const existingNumber = context.footnoteNumbers.get(label);
+    if (existingNumber) return existingNumber;
+    const number = context.footnoteOrder.length + 1;
+    context.footnoteOrder.push(label);
+    context.footnoteNumbers.set(label, number);
+    return number;
   }
 
   function applySourceMapAttributes(element, sourceStart, sourceEnd, options) {
@@ -1623,20 +1666,32 @@
     const list = createElement("ol");
     let sourceStart = Number.POSITIVE_INFINITY;
     let sourceEnd = 0;
-    context.footnoteOrder.forEach((label) => {
+    const renderedItems = [];
+    for (let footnoteIndex = 0; footnoteIndex < context.footnoteOrder.length; footnoteIndex += 1) {
+      const label = context.footnoteOrder[footnoteIndex];
+      const number = footnoteIndex + 1;
       const item = createElement("li");
-      item.id = `fn-${footnoteSlug(label)}`;
+      item.id = getFootnoteId(context, number);
       const footnote = context.footnotes.get(label);
       renderBlocks(item, parseBlocks(footnote?.lines || [], context), context, options);
-      const back = createElement("a", "markdown-footnote-backref");
-      back.href = `#fnref-${footnoteSlug(label)}-1`;
-      back.textContent = " ↩";
-      back.setAttribute("aria-label", "Back to footnote reference");
-      item.append(back);
       applySourceMapAttributes(item, footnote?.sourceStart, footnote?.sourceEnd, options);
       if (Number.isInteger(footnote?.sourceStart)) sourceStart = Math.min(sourceStart, footnote.sourceStart);
       if (Number.isInteger(footnote?.sourceEnd)) sourceEnd = Math.max(sourceEnd, footnote.sourceEnd);
       list.append(item);
+      renderedItems.push({ item, label });
+    }
+    renderedItems.forEach(({ item, label }) => {
+      const references = context.footnoteReferences.get(label) || [];
+      references.forEach((referenceId, referenceIndex) => {
+        const back = createElement("a", "markdown-footnote-backref");
+        back.href = `#${referenceId}`;
+        back.textContent = references.length > 1 ? ` ↩ ${referenceIndex + 1}` : " ↩";
+        back.setAttribute(
+          "aria-label",
+          references.length > 1 ? `Back to footnote reference ${referenceIndex + 1}` : "Back to footnote reference",
+        );
+        item.append(back);
+      });
     });
     section.append(list);
     applySourceMapAttributes(section, Number.isFinite(sourceStart) ? sourceStart : undefined, sourceEnd, options);
@@ -1698,6 +1753,14 @@
     blocks.forEach((block) => renderBlock(parent, block, context, options));
   }
 
+  function renderFallback(container, text, sourceLineCount, options) {
+    container.replaceChildren();
+    const fallback = createElement("pre", "markdown-fallback");
+    appendText(fallback, text);
+    applySourceMapAttributes(fallback, 0, sourceLineCount, options);
+    container.append(fallback);
+  }
+
   function renderInto(container, source, emptyText = "No content yet.", options = {}) {
     container.replaceChildren();
     const text = String(source ?? "");
@@ -1707,17 +1770,32 @@
       container.append(empty);
       return;
     }
+    const sourceLines = normalizeLines(text);
+    if (sourceLines.length > MAX_SOURCE_LINES) {
+      renderFallback(container, text, sourceLines.length, options);
+      return;
+    }
     const context = {
       footnoteOrder: [],
       footnoteReferenceCounts: new Map(),
+      footnoteNumbers: new Map(),
+      footnoteReferences: new Map(),
       footnotes: new Map(),
       references: new Map(),
+      scope: createRenderScope(options),
     };
-    const sourceLines = normalizeLines(text);
     context.sourceLineCount = sourceLines.length;
-    const lines = extractDefinitions(sourceLines, context);
-    renderBlocks(container, parseBlocks(lines, context), context, options);
-    renderFootnotes(container, context, options);
+    try {
+      const lines = extractDefinitions(sourceLines, context);
+      renderBlocks(container, parseBlocks(lines, context), context, options);
+      renderFootnotes(container, context, options);
+    } catch (error) {
+      if (error instanceof MarkdownSafetyError || error instanceof RangeError) {
+        renderFallback(container, text, sourceLines.length, options);
+        return;
+      }
+      throw error;
+    }
   }
 
   function toPlainText(source) {

@@ -877,3 +877,29 @@
   font-size: 0.72rem;
 }
 
+
+
+/* Safety fallback owns unparsed source presentation; source remains selectable
+ * and local to the reading surface instead of creating page-level overflow. */
+.markdown-fallback {
+  max-width: 100%;
+  margin: 0;
+  border: 1px solid var(--component-border);
+  border-radius: var(--radius-control);
+  padding: var(--space-3);
+  color: var(--component-text);
+  background: var(--component-surface-muted);
+  font-family: var(--font-mono);
+  font-size: 0.88rem;
+  line-height: 1.6;
+  overflow: auto;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+
+
+.markdown-footnote-ref,
+.markdown-footnote-backref {
+  scroll-margin-block-start: 1rem;
+}

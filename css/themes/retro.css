@@ -57,6 +57,8 @@ html[data-theme="retro"] {
   --retro-icon-filter: drop-shadow(1px 1px 0 rgb(244 91 58 / 42%));
   --retro-transition-duration: 80ms;
   --retro-transition-easing: ease-out;
+  --theme-surface-page: var(--retro-canvas);
+  --theme-danger-border: var(--retro-border);
   --select-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='m3.5 5.5 4.5 4.5 4.5-4.5' stroke='%232b241e' stroke-width='2.1' stroke-linecap='square' stroke-linejoin='miter'/%3E%3C/svg%3E");
   --management-search-resting-border: var(--retro-border);
   --management-search-resting-shadow: var(--retro-shadow-sm);

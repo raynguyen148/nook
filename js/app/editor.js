@@ -9,20 +9,23 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
   let noteTypePicker = shared.noteTypePicker;
   let secondaryNoteTypePicker = shared.secondaryNoteTypePicker;
   let noteEditorModeAnimation = null;
+  const draftRecoveryStore = api.createDraftRecoveryStore();
+  let primaryEditorSession = null;
 
   const clearStoredNoteDraft = (...args) => api.clearStoredNoteDraft(...args);
   const getStoredNoteDraft = (...args) => api.getStoredNoteDraft(...args);
-  const syncStoredNoteDraft = (...args) => api.syncStoredNoteDraft(...args);
   const createElement = (...args) => api.createElement(...args);
   const typeFor = (...args) => api.typeFor(...args);
   const tagFor = (...args) => api.tagFor(...args);
   const tagLabel = (...args) => api.tagLabel(...args);
   const cleanTagInput = (...args) => api.cleanTagInput(...args);
   const safeTypeColor = (...args) => api.safeTypeColor(...args);
+  const makeTypeBadge = (...args) => api.makeTypeBadge(...args);
   const formatFullDate = (...args) => api.formatFullDate(...args);
   const syncToastHost = (...args) => api.syncToastHost(...args);
   const showToast = (...args) => api.showToast(...args);
   const requestConfirmation = (...args) => api.requestConfirmation(...args);
+  const requestConflictResolution = (...args) => api.requestConflictResolution(...args);
   const showError = (...args) => api.showError(...args);
   const createChipCloseIcon = (...args) => api.createChipCloseIcon(...args);
   const renderQuickView = (...args) => api.renderQuickView(...args);
@@ -149,6 +152,7 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
       const currentIndex = pickerInstance.options.indexOf(document.activeElement);
       if (event.key === "Escape") {
         event.preventDefault();
+        event.stopPropagation();
         pickerInstance.close();
         trigger.focus();
         return;
@@ -1042,7 +1046,39 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
     });
   }
 
+  function createPrimaryEditorSession(note = null, draft = getNoteEditorDraftData(), baseRevision = note?.revision || 0) {
+    primaryEditorSession?.dispose();
+    const committed = note ? {
+      id: note.id,
+      title: note.title,
+      typeId: note.typeId,
+      tagIds: note.tagIds,
+      content: note.content,
+    } : null;
+    primaryEditorSession = api.createEditorSession({
+      storage,
+      pane: "primary",
+      noteId: note?.id || draft.id || "",
+      baseRevision,
+      committed,
+      currentDraft: draft,
+      recoveryStore: draftRecoveryStore,
+    });
+    shared.primaryEditorSession = primaryEditorSession;
+    return primaryEditorSession;
+  }
+
+  function syncPrimaryEditorSessionDraft() {
+    if (!primaryEditorSession) return null;
+    primaryEditorSession.updateDraft(getNoteEditorDraftData());
+    return primaryEditorSession.getState();
+  }
+
   function hasUnsavedNoteChanges() {
+    if (primaryEditorSession) {
+      syncPrimaryEditorSessionDraft();
+      return primaryEditorSession.hasUnsavedChanges();
+    }
     return ui.noteEditorSnapshot !== null && getNoteEditorDraft() !== ui.noteEditorSnapshot;
   }
 
@@ -1114,7 +1150,7 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
   }
 
   function scheduleNoteAutoSave() {
-    syncStoredNoteDraft();
+    syncPrimaryEditorSessionDraft();
     clearNoteAutoSave();
     if (!isNoteEditorOpen() || ui.noteSaveInFlight) return;
 
@@ -1376,9 +1412,10 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
     renderTagSuggestions();
     renderNoteMetadata(note);
     setNoteEditorMode(initialMode);
-    elements.quickViewDialog.classList.add("is-hidden");
     openNoteDetail(elements.noteDialog, preserveDetail ? null : invoker || elements.newNote);
     ui.noteEditorSnapshot = getNoteEditorDraft();
+    createPrimaryEditorSession(note, getNoteEditorDraftData(), note?.revision || 0);
+    elements.noteHistory?.classList.toggle("is-hidden", !note);
     syncToastHost();
     syncNoteEditorControls();
     setNoteSaveStatus(note ? "saved" : "new");
@@ -1403,13 +1440,31 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
     renderTagSuggestions();
     renderNoteEditorPreview();
     scheduleNoteEditorHeight({ allowShrink: true });
-    syncStoredNoteDraft();
+    primaryEditorSession?.dispose();
+    draftRecoveryStore.remove(recovery.key);
+    createPrimaryEditorSession(note, getNoteEditorDraftData(), recovery.baseRevision || note?.revision || 0);
     scheduleNoteAutoSave();
     showToast("Unfinished draft restored. Save when you are ready.");
   }
 
   async function offerStoredNoteDraftRecovery() {
-    const recovery = getStoredNoteDraft();
+    let recovery = draftRecoveryStore.enumerate()
+      .filter((record) => record.tabId === draftRecoveryStore.tabId && record.pane === "primary")
+      .sort((left, right) => right.savedAt.localeCompare(left.savedAt))[0];
+    let legacy = false;
+    if (!recovery) {
+      const legacyDraft = getStoredNoteDraft();
+      if (legacyDraft) {
+        legacy = true;
+        recovery = {
+          key: "",
+          pane: "primary",
+          savedAt: legacyDraft.savedAt,
+          baseRevision: library.notes.find((note) => note.id === legacyDraft.draft.id)?.revision || 0,
+          draft: legacyDraft.draft,
+        };
+      }
+    }
     if (!recovery) return;
     const recovered = await requestConfirmation({
       title: "Recover unfinished note?",
@@ -1420,11 +1475,58 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
       initialFocus: "confirm",
     });
     if (!recovered) {
-      clearStoredNoteDraft();
+      if (legacy) clearStoredNoteDraft();
+      else draftRecoveryStore.remove(recovery.key);
       showToast("Unfinished draft discarded.");
       return;
     }
+    if (legacy) clearStoredNoteDraft();
     restoreStoredNoteDraft(recovery);
+  }
+
+  function syncEditorDraftRecovery() {
+    if (primaryEditorSession && isNoteEditorOpen()) syncPrimaryEditorSessionDraft();
+    api.syncSecondaryEditorDraft?.();
+  }
+
+  function hydratePrimaryEditorFromCommittedNote(note) {
+    elements.noteId.value = note.id;
+    elements.noteTitle.value = note.title;
+    elements.noteContent.value = note.content;
+    ui.editingNoteId = note.id;
+    ui.selectedNoteTagIds = new Set(note.tagIds || []);
+    renderNoteTypeOptions(note.typeId || storage.FALLBACK_TYPE_ID);
+    renderSelectedNoteTags();
+    renderTagSuggestions();
+    renderNoteMetadata(note);
+    ui.noteEditorSnapshot = getNoteEditorDraft();
+    setNoteSaveStatus("saved");
+    if (ui.noteEditorMode !== "edit") renderNoteEditorPreview();
+    scheduleNoteEditorHeight({ allowShrink: true });
+  }
+
+  function reconcileEditorSessionsAfterLibraryRefresh({ external = false } = {}) {
+    if (primaryEditorSession && isNoteEditorOpen() && primaryEditorSession.noteId) {
+      const session = primaryEditorSession;
+      const latest = library.notes.find((note) => note.id === session.noteId && !note.deletedAt);
+      if (!latest) {
+        if (session.hasUnsavedChanges()) {
+          setNoteSaveStatus("error", "Saved note changed elsewhere");
+          showToast("This note changed or was removed elsewhere. Your draft was kept locally.", "error");
+        } else {
+          closeNoteEditor({ discardStoredDraft: true });
+        }
+      } else {
+        const result = session.applyExternalSnapshot(latest);
+        if (result.conflict) {
+          setNoteSaveStatus("error", "Newer version found");
+          if (external) showToast("A newer version was saved in another tab. Your draft was kept.", "error");
+        } else if (result.applied && primaryEditorSession === session) {
+          hydratePrimaryEditorFromCommittedNote(latest);
+        }
+      }
+    }
+    api.reconcileSecondaryEditorAfterLibraryRefresh?.({ external });
   }
 
   function closeNoteEditor({ discardStoredDraft = false } = {}) {
@@ -1436,7 +1538,13 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
     ui.noteScrollMapFrame = 0;
     ui.noteScrollMap = null;
     resetNoteEditorScrollSyncTarget();
-    if (discardStoredDraft) clearStoredNoteDraft();
+    const recoveryIdentity = primaryEditorSession
+      ? { pane: primaryEditorSession.pane, sessionId: primaryEditorSession.sessionId }
+      : null;
+    primaryEditorSession?.dispose();
+    if (discardStoredDraft && recoveryIdentity) draftRecoveryStore.remove(recoveryIdentity);
+    primaryEditorSession = null;
+    shared.primaryEditorSession = null;
     ui.noteEditorSession += 1;
     ui.pendingTagCreation = null;
     ui.noteSaveInFlight = false;
@@ -1453,16 +1561,26 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
     // next editor open re-syncs the DOM classes before it becomes visible.
     ui.noteEditorMode = "edit";
     ui.viewInvoker = null;
-    if (ui.externalRefreshPending) {
-      ui.externalRefreshPending = false;
-      refreshLibrary().catch((error) => showError(error, "We could not refresh the local library."));
+  }
+
+  async function closeEditorAfterProtectedSaves({ discardStoredDraft = false } = {}) {
+    if (ui.dualPaneOpen) {
+      const sideClosed = await api.closeDualPane?.();
+      if (!sideClosed || ui.dualPaneOpen) return false;
     }
+    if (!isNoteEditorOpen()) return false;
+    closeNoteEditor({ discardStoredDraft });
+    return true;
   }
 
   async function requestNoteEditorClose({ afterClose = null } = {}) {
     if (ui.noteSaveInFlight) {
       ui.noteCloseAfterSaveRequested = true;
       return;
+    }
+    if (ui.dualPaneOpen) {
+      const sideClosed = await api.closeDualPane?.();
+      if (!sideClosed || ui.dualPaneOpen || !isNoteEditorOpen()) return;
     }
     if (!hasUnsavedNoteChanges()) {
       closeNoteEditor();
@@ -1471,7 +1589,7 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
     }
     if (elements.noteTitle.value.trim()) {
       await saveNote({ preventDefault() {} }, { closeAfterSave: true });
-      afterClose?.();
+      if (!isNoteEditorOpen()) afterClose?.();
       return;
     }
     const confirmed = await requestConfirmation({
@@ -1570,39 +1688,88 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
       if (!isCurrentNoteEditorSession(session)) return;
     }
 
+    const editorSession = primaryEditorSession;
+    if (!editorSession) return;
+    syncPrimaryEditorSessionDraft();
+
     ui.noteSaveInFlight = true;
     ui.noteAutoSaveInFlight = isAutoSave;
     setNoteSaveStatus("saving");
     syncNoteEditorControls();
-    const input = {
-      id: elements.noteId.value || undefined,
-      title: elements.noteTitle.value,
-      typeId: elements.noteType.value,
-      tagIds: [...ui.selectedNoteTagIds],
-      content: elements.noteContent.value,
-    };
     let didSave = false;
     try {
-      const isEditing = Boolean(input.id);
-      const savedNote = await storage.saveNote(input);
-      await refreshLibrary({ broadcast: true });
-      didSave = true;
-      if (isCurrentNoteEditorSession(session)) {
-        elements.noteId.value = savedNote.id;
-        ui.editingNoteId = savedNote.id;
-        elements.noteDialogTitle.textContent = "Edit note";
-        elements.deleteNote.classList.remove("is-hidden");
-        renderNoteMetadata(savedNote);
-        ui.noteEditorSnapshot = createNoteEditorDraft({ ...input, id: savedNote.id });
-        syncStoredNoteDraft();
+      const isEditing = Boolean(editorSession.noteId);
+      let result = await editorSession.save();
+      if (!isCurrentNoteEditorSession(session) || primaryEditorSession !== editorSession) return;
+
+      while (result.status === "conflict") {
+        setNoteSaveStatus("error", "Newer version found");
+        const choice = await requestConflictResolution({
+          localDraft: editorSession.currentDraft,
+          latestNote: result.latestNote || (result.deleted ? null : { ...result.latest, revision: result.latestRevision }),
+          deleted: result.deleted === true,
+          invoker: noteSubmitButton(),
+        });
+        if (!isCurrentNoteEditorSession(session) || primaryEditorSession !== editorSession) return;
+        if (choice === "keep-mine") {
+          setNoteSaveStatus("saving");
+          result = await editorSession.keepMine();
+          if (!isCurrentNoteEditorSession(session) || primaryEditorSession !== editorSession) return;
+        } else {
+          editorSession.keepEditing();
+          if (choice === "view-latest" && !result.deleted) {
+            api.openConflictLatestPreview?.(
+              result.latestNote || { ...result.latest, revision: result.latestRevision },
+              noteSubmitButton(),
+            );
+          }
+          setNoteSaveStatus("dirty", "Conflict · draft kept");
+          return;
+        }
+      }
+
+      if (result.status === "error") throw result.error;
+      if (result.status === "stale") return;
+      if (result.status === "noop") {
         setNoteSaveStatus("saved");
-        if (closeAfterSave) closeNoteEditor();
+        if (closeAfterSave) await closeEditorAfterProtectedSaves({ discardStoredDraft: true });
+        return;
+      }
+      if (result.status !== "saved") return;
+
+      didSave = true;
+      const savedNote = result.savedNote;
+      elements.noteId.value = savedNote.id;
+      if (result.currentMatchesCapture) {
+        if (elements.noteTitle.value !== savedNote.title) elements.noteTitle.value = savedNote.title;
+        if (elements.noteContent.value !== savedNote.content) elements.noteContent.value = savedNote.content;
+        ui.selectedNoteTagIds = new Set(savedNote.tagIds || []);
+        renderNoteTypeOptions(savedNote.typeId);
+        renderSelectedNoteTags();
+      }
+      ui.editingNoteId = savedNote.id;
+      elements.noteDialogTitle.textContent = "Edit note";
+      elements.deleteNote.classList.remove("is-hidden");
+      elements.noteHistory?.classList.remove("is-hidden");
+      renderNoteMetadata(savedNote);
+      ui.noteEditorSnapshot = createNoteEditorDraft(savedNote);
+      await refreshLibrary({ broadcast: true });
+      if (!isCurrentNoteEditorSession(session) || primaryEditorSession !== editorSession) return;
+
+      if (result.currentMatchesCapture && !editorSession.hasUnsavedChanges()) {
+        setNoteSaveStatus("saved");
+        if (closeAfterSave) await closeEditorAfterProtectedSaves({ discardStoredDraft: true });
+      } else {
+        setNoteSaveStatus("dirty");
+        scheduleNoteAutoSave();
       }
       if (!isAutoSave) {
-        showToast(closeAfterSave ? (isEditing ? "Note updated." : "Note saved.") : "Changes saved. Keep editing.");
+        showToast(closeAfterSave && !editorSession.hasUnsavedChanges()
+          ? (isEditing ? "Note updated." : "Note saved.")
+          : "Changes saved. Keep editing.");
       }
     } catch (error) {
-      if (isCurrentNoteEditorSession(session)) {
+      if (isCurrentNoteEditorSession(session) && primaryEditorSession === editorSession) {
         ui.noteCloseAfterSaveRequested = false;
         setNoteSaveStatus("error");
         if (!handleNoteSaveFieldError(error, { focus: !isAutoSave })) {
@@ -1610,19 +1777,14 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
         }
       }
     } finally {
-      if (isCurrentNoteEditorSession(session)) {
+      if (isCurrentNoteEditorSession(session) && primaryEditorSession === editorSession) {
         ui.noteSaveInFlight = false;
         ui.noteAutoSaveInFlight = false;
         syncNoteEditorControls();
-        if (isAutoSave && didSave && hasUnsavedNoteChanges()) scheduleNoteAutoSave();
+        if (didSave && hasUnsavedNoteChanges()) scheduleNoteAutoSave();
         if (ui.noteCloseAfterSaveRequested) {
           ui.noteCloseAfterSaveRequested = false;
-          if (didSave && hasUnsavedNoteChanges()) {
-            void saveNote({ preventDefault() {} }, { closeAfterSave: true });
-          } else if (didSave) {
-            closeNoteEditor();
-            showToast("Note saved.");
-          }
+          void requestNoteEditorClose();
         }
       }
     }
@@ -1637,6 +1799,10 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
       cancelLabel: "Keep note",
     });
     if (!confirmed) return;
+    if (ui.dualPaneOpen) {
+      const sideClosed = await api.closeDualPane?.();
+      if (!sideClosed || ui.dualPaneOpen) return;
+    }
     try {
       await storage.deleteNote(note.id);
       await refreshLibrary({ broadcast: true });
@@ -1710,6 +1876,8 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
     openNoteEditor,
     restoreStoredNoteDraft,
     offerStoredNoteDraftRecovery,
+    syncEditorDraftRecovery,
+    reconcileEditorSessionsAfterLibraryRefresh,
     closeNoteEditor,
     requestNoteEditorClose,
     setTagInputExpanded,

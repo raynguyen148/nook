@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Nook storage harness</title>
+    <style>
+      body { font: 16px/1.5 system-ui, sans-serif; margin: 2rem; }
+      pre { white-space: pre-wrap; }
+      .pass { color: #176b3a; }
+      .fail { color: #a31d1d; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Nook storage harness</h1>
+      <p id="status">Running on this isolated origin…</p>
+      <pre id="results"></pre>
+    </main>
+    <script>
+      "use strict";
+
+      const DB_NAME = "personal-notes";
+      const results = document.querySelector("#results");
+      const status = document.querySelector("#status");
+
+      function write(message, className = "") {
+        const line = document.createElement("div");
+        line.textContent = message;
+        if (className) line.className = className;
+        results.append(line);
+      }
+
+      function assert(condition, message) {
+        if (!condition) throw new Error(message);
+        write(`PASS ${message}`, "pass");
+      }
+
+      function requestResult(request) {
+        return new Promise((resolve, reject) => {
+          request.onsuccess = () => resolve(request.result);
+          request.onerror = () => reject(request.error || new Error("IndexedDB request failed."));
+        });
+      }
+
+      function transactionDone(transaction) {
+        return new Promise((resolve, reject) => {
+          transaction.oncomplete = resolve;
+          transaction.onabort = () => reject(transaction.error || new Error("IndexedDB transaction aborted."));
+          transaction.onerror = () => {};
+        });
+      }
+
+      async function deleteDatabase() {
+        const request = indexedDB.deleteDatabase(DB_NAME);
+        await new Promise((resolve, reject) => {
+          request.onsuccess = resolve;
+          request.onblocked = () => reject(new Error("Harness database deletion was blocked."));
+          request.onerror = () => reject(request.error || new Error("Could not reset harness database."));
+        });
+      }
+
+      function makeTypes() {
+        const timestamp = "2026-09-19T00:00:00.000Z";
+        return [
+          { id: "type-general", name: "General", normalizedName: "general", color: "slate", isFallback: true, createdAt: timestamp, updatedAt: timestamp },
+        ];
+      }
+
+      function createLegacyDatabase(version, note) {
+        return new Promise((resolve, reject) => {
+          const request = indexedDB.open(DB_NAME, version);
+          request.onupgradeneeded = () => {
+            const database = request.result;
+            const notes = database.createObjectStore("notes", { keyPath: "id" });
+            notes.createIndex("by-type-id", "typeId");
+            notes.createIndex("by-tag-ids", "tagIds", { multiEntry: true });
+            notes.createIndex("by-created-at", "createdAt");
+            notes.createIndex("by-updated-at", "updatedAt");
+            const types = database.createObjectStore("types", { keyPath: "id" });
+            types.createIndex("by-normalized-name", "normalizedName", { unique: true });
+            const tags = database.createObjectStore("tags", { keyPath: "id" });
+            tags.createIndex("by-normalized-name", "normalizedName", { unique: true });
+            database.createObjectStore("meta", { keyPath: "key" });
+            const transaction = request.transaction;
+            transaction.objectStore("types").put(makeTypes()[0]);
+            transaction.objectStore("notes").put(note);
+          };
+          request.onsuccess = () => {
+            request.result.close();
+            resolve();
+          };
+          request.onerror = () => reject(request.error || new Error("Could not create legacy database."));
+        });
+      }
+
+      function loadStorage() {
+        return new Promise((resolve, reject) => {
+          const script = document.createElement("script");
+          script.src = "../../js/storage.js";
+          script.onload = resolve;
+          script.onerror = () => reject(new Error("Could not load js/storage.js."));
+          document.body.append(script);
+        });
+      }
+
+      async function freshStorage() {
+        await deleteDatabase();
+        localStorage.clear();
+        await loadStorage();
+        await PersonalNotesStorage.initialize();
+        return PersonalNotesStorage;
+      }
+
+      function baseNote(content = "initial") {
+        return {
+          title: "Harness note",
+          content,
+          typeId: "type-general",
+          tagIds: [],
+        };
+      }
+
+      async function assertV2Migration() {
+        await deleteDatabase();
+        await createLegacyDatabase(2, {
+          id: "note-v2",
+          title: "Old v2 note",
+          content: "old",
+          typeId: "type-general",
+          tagIds: [],
+          createdAt: "2026-09-18T00:00:00.000Z",
+          updatedAt: "2026-09-18T00:00:00.000Z",
+          isPinned: true,
+          deletedAt: null,
+        });
+        await loadStorage();
+        const storage = PersonalNotesStorage;
+        await storage.initialize();
+        const database = await requestResult(indexedDB.open(DB_NAME));
+        assert(database.version === 3, "v2 database migrates to schema version 3");
+        assert(database.objectStoreNames.contains("noteVersions"), "v3 creates noteVersions store");
+        database.close();
+        const note = await storage.getNote("note-v2");
+        assert(note?.revision === 1, "migrated v2 note starts at revision 1");
+        assert(note?.isPinned === true && note?.deletedAt === null, "migrated v2 fields are preserved");
+      }
+
+      async function assertV1Migration() {
+        await deleteDatabase();
+        await createLegacyDatabase(1, {
+          id: "note-v1",
+          title: "Old v1 note",
+          content: "old",
+          typeId: "type-general",
+          tagIds: [],
+          createdAt: "2026-09-18T00:00:00.000Z",
+          updatedAt: "2026-09-18T00:00:00.000Z",
+        });
+        await loadStorage();
+        const storage = PersonalNotesStorage;
+        await storage.initialize();
+        const note = await storage.getNote("note-v1");
+        assert(note?.revision === 1, "v1 database migrates with revision 1");
+        assert(note?.isPinned === false && note?.deletedAt === null, "v1 defaults are normalized");
+      }
+
+      async function assertSaveHistoryAndConflict() {
+        const storage = await freshStorage();
+        let note = await storage.saveNote(baseNote("initial"));
+        assert(note.revision === 1, "new notes start at revision 1");
+        note = await storage.saveNote({ ...baseNote("one"), id: note.id, expectedRevision: note.revision });
+        assert(note.revision === 2, "actual editor save increments revision");
+        const noOp = await storage.saveNote({ ...baseNote("one"), id: note.id, expectedRevision: note.revision });
+        assert(noOp.revision === note.revision, "no-op save keeps revision");
+        assert((await storage.listNoteVersions(note.id)).length === 1, "no-op save creates no history");
+        let conflict = false;
+        try {
+          await storage.saveNote({ ...baseNote("stale"), id: note.id, expectedRevision: 1 });
+        } catch (error) {
+          conflict = error.code === "NOTE_CONFLICT" && error.latestNote?.revision === 2;
+        }
+        assert(conflict, "stale save returns NOTE_CONFLICT and latestNote");
+
+        for (let index = 0; index < 60; index += 1) {
+          note = await storage.saveNote({ ...baseNote(`version-${index}`), id: note.id, expectedRevision: note.revision });
+        }
+        const versions = await storage.listNoteVersions(note.id, { limit: 100 });
+        assert(versions.length === 50, "history retains at most 50 versions");
+        const oldest = versions[versions.length - 1];
+        const restored = await storage.restoreNoteVersion(note.id, oldest.revision, { expectedRevision: note.revision });
+        assert(restored.revision === note.revision + 1, "history restore creates a new revision");
+        assert(restored.content === oldest.content, "history restore restores content");
+      }
+
+      async function assertHistoryByteCap() {
+        const storage = await freshStorage();
+        let note = await storage.saveNote(baseNote("seed"));
+        const largeContent = "界".repeat(49990);
+        for (let index = 0; index < 40; index += 1) {
+          note = await storage.saveNote({
+            ...baseNote(`${String(index).padStart(2, "0")}${largeContent}`),
+            id: note.id,
+            expectedRevision: note.revision,
+          });
+        }
+        const versions = await storage.listNoteVersions(note.id, { limit: 100 });
+        const bytes = versions.reduce((total, version) => total + new TextEncoder().encode(version.content).byteLength, 0);
+        assert(versions.length <= 50 && bytes <= storage.HISTORY_MAX_CONTENT_BYTES, "history respects the 5 MiB content cap");
+      }
+
+      async function assertBackupCompatibilityAndAtomicity() {
+        const storage = await freshStorage();
+        let note = await storage.saveNote(baseNote("round trip"));
+        note = await storage.saveNote({ ...baseNote("round trip with history"), id: note.id, expectedRevision: note.revision });
+        const v3 = await storage.buildExport();
+        assert(v3.schemaVersion === 3 && v3.data.noteVersions.length === 1, "v3 export contains note history");
+        const v1 = { ...v3, schemaVersion: 1, data: { noteTypes: v3.data.noteTypes, tags: v3.data.tags, notes: v3.data.notes } };
+        const v2 = { ...v1, schemaVersion: 2 };
+        assert(storage.inspectBackup(v1).counts.noteVersions === 0, "v1 backup remains readable");
+        assert(storage.inspectBackup(v2).counts.noteVersions === 0, "v2 backup remains readable");
+        const before = await storage.getSnapshot();
+        const invalid = structuredClone(v3);
+        invalid.data.notes[0].typeId = "missing-type";
+        let rejected = false;
+        try {
+          await storage.importBackup(invalid);
+        } catch {
+          rejected = true;
+        }
+        const after = await storage.getSnapshot();
+        assert(rejected, "invalid import is rejected before replacement");
+        assert(after.notes.length === before.notes.length && after.notes[0].id === note.id, "invalid import leaves current library unchanged");
+        await storage.importBackup(v3);
+        const roundTrip = await storage.getSnapshot({ includeHistory: true });
+        assert(roundTrip.notes.length === 1 && roundTrip.notes[0].id === note.id, "v3 backup round trip preserves note");
+        assert(roundTrip.noteVersions.length === 1 && roundTrip.noteVersions[0].content === "round trip", "v3 backup round trip preserves history");
+      }
+
+      async function run() {
+        const scenario = new URLSearchParams(location.search).get("scenario") || "save";
+        if (scenario === "v1") return assertV1Migration();
+        if (scenario === "v2") return assertV2Migration();
+        if (scenario === "save") return assertSaveHistoryAndConflict();
+        if (scenario === "bytes") return assertHistoryByteCap();
+        if (scenario === "backup") return assertBackupCompatibilityAndAtomicity();
+        throw new Error("Use ?scenario=v1, ?scenario=v2, ?scenario=save, ?scenario=bytes, or ?scenario=backup in a fresh tab.");
+      }
+
+      run()
+        .then(() => {
+          status.textContent = "All requested storage checks passed.";
+          status.className = "pass";
+        })
+        .catch((error) => {
+          status.textContent = `Harness failed: ${error.message}`;
+          status.className = "fail";
+          write(error.stack || String(error), "fail");
+        });
+    </script>
+  </body>
+</html>

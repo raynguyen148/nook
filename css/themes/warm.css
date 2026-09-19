@@ -1,0 +1,34 @@
+/* Compatibility alias for older static previews. The application theme name
+ * is `coffee`; this file keeps legacy preview links on the same token family
+ * without adding a second runtime theme or changing the app manifest. */
+html[data-theme="warm"] {
+  color-scheme: light;
+  --theme-surface-page: #f5efe6;
+  --theme-danger-border: #e1b9b2;
+  --primary-accent: #a35616;
+  --primary-accent-hover: #88430a;
+  --primary-accent-text: #88430a;
+  --primary-accent-soft: #fcf4e8;
+  --primary-accent-soft-hover: #f7e8d4;
+  --primary-accent-border: #edd5bc;
+  --primary-accent-focus: rgb(163 86 22 / 24%);
+  --primary-accent-shadow: rgb(163 86 22 / 18%);
+  --primary-button-text: #ffffff;
+  --focus-color: var(--primary-accent);
+  --focus-radius: 0.5rem;
+  --note-card-surface: #fdfbf7;
+  --note-card-border: #e5dacb;
+  --note-card-title: #261e18;
+  --note-card-preview: #5e4d41;
+  --note-card-muted: #8c7766;
+  --note-card-actions-surface: #f0e6d6;
+  --note-card-action-danger: #a83232;
+  --note-card-action-danger-surface: #fbf0ee;
+  color: #261e18;
+  background: #f5efe6;
+}
+
+html[data-theme="warm"] body {
+  color: #261e18;
+  background: #f5efe6;
+}

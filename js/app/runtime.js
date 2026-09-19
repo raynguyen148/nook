@@ -9,10 +9,13 @@
     "core",
     "preferences",
     "feedback",
+    "editor-session",
     "library",
     "editor",
+    "history",
     "organize",
     "sync",
+    "offline",
     "events",
   ]);
   const installers = new Map();
