@@ -11,8 +11,12 @@ globalThis[Symbol.for("nook.app.modules")].register("feedback", (app) => {
       elements.deleteLibraryDialog,
       elements.confirmationDialog,
       elements.organizeDialog,
+      elements.mobileFilterDialog,
+      elements.mobileNoteActionsDialog,
+      elements.mobileSpaceDialog,
+      elements.mobileCardDialog,
     ]
-      .find((dialog) => dialog.open) || null;
+      .find((dialog) => dialog?.open) || null;
   }
 
   function syncToastHost() {

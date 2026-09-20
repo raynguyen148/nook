@@ -169,6 +169,7 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
   }
 
   function bindEvents() {
+    api.bindMobileEvents();
     const activateManagementTab = (tab) => {
       closeThemePicker();
       setManagementTab(tab);
@@ -665,7 +666,7 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
 
       if (matchesSearchShortcut && !activeModalDialog() && !isDetailWorkspaceOpen()) {
         event.preventDefault();
-        elements.search.focus({ preventScroll: true });
+        api.focusMobileSearch();
         return;
       }
 
@@ -805,7 +806,7 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
         !isDetailWorkspaceOpen()
       ) {
         event.preventDefault();
-        elements.search.focus();
+        api.focusMobileSearch();
         return;
       }
 

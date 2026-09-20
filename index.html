@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta
       name="description"
       content="Nook is a private, offline-first workspace stored in this browser."
@@ -382,6 +382,36 @@
             </div>
           </div>
 
+          <header class="mobile-library-header mobile-only">
+            <h1>
+              <button id="mobile-space-picker" class="button button-secondary mobile-space-picker" type="button" aria-haspopup="dialog" aria-controls="mobile-space-dialog">
+                <span class="mobile-space-icon" aria-hidden="true">
+                  <svg class="mobile-space-icon__notes" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="3" width="18" height="18" rx="2" />
+                    <path d="M7 8h10M7 12h10M7 16h6" />
+                  </svg>
+                  <svg class="mobile-space-icon__trash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7m4-7v7" />
+                  </svg>
+                </span>
+                <span id="mobile-library-title">All notes</span>
+                <svg class="mobile-space-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="m6 9 6 6 6-6"/>
+                </svg>
+              </button>
+            </h1>
+            <div class="mobile-library-header__actions">
+              <button id="mobile-theme-btn" class="icon-button" type="button" aria-label="Change theme" title="Change theme">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></svg>
+              </button>
+              <button id="mobile-open-filters" class="icon-button" type="button" aria-label="Filters and sort" aria-haspopup="dialog" aria-controls="mobile-filter-dialog">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M7 12h10m-7 5h4"/></svg>
+                <span id="mobile-active-filter-count" class="mobile-filter-count is-hidden"></span>
+              </button>
+            </div>
+          </header>
+          <div id="mobile-type-chips" class="mobile-type-chips mobile-only" role="group" aria-label="Quick filter by note type"></div>
+          <div id="mobile-trash-actions" class="mobile-trash-actions mobile-only"></div>
           <div class="toolbar-slot">
             <div class="toolbar">
             <div class="search-field">
@@ -501,6 +531,12 @@
       <form id="note-form" novalidate>
         <div class="dialog-header detail-commandbar note-editor-commandbar">
           <button id="close-note-dialog-btn" class="button button-secondary detail-back-button" type="button" aria-label="Return to all notes" title="All notes"><span>All notes</span></button>
+          <div class="mobile-editor-actions mobile-only">
+            <button id="mobile-note-actions-btn" class="icon-button" type="button" aria-label="Note actions" aria-haspopup="dialog" aria-controls="mobile-note-actions-dialog">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="19" cy="12" r="1.7"/></svg>
+            </button>
+            <button id="mobile-note-done" class="button button-primary" type="button">Done</button>
+          </div>
           <div class="detail-commandbar__info">
             <p id="note-dialog-title" class="detail-commandbar__state">New note</p>
             <span id="note-save-status" class="note-save-status is-new" role="status" aria-atomic="true" title="This note has not been saved yet">
@@ -1463,6 +1499,17 @@
         </button>
       </div>
 
+      <button id="mobile-settings-back" class="text-button mobile-only mobile-settings-back" type="button">← All settings</button>
+      <section id="mobile-settings-home" class="mobile-settings-home mobile-only" aria-label="Settings overview">
+        <div class="mobile-storage-summary"><h3>Stored on this device</h3><p id="mobile-settings-backup"></p><p>Your notes stay in this browser. Keep a JSON backup somewhere safe.</p><button class="button button-primary" type="button" data-mobile-settings-tab="data">Backup & storage</button></div>
+        <div class="mobile-settings-links">
+          <button class="button button-secondary" type="button" data-mobile-settings-tab="display"><span><strong>Appearance</strong><small id="mobile-settings-theme"></small></span><span aria-hidden="true">›</span></button>
+          <button class="button button-secondary" type="button" data-mobile-settings-tab="types"><span><strong>Note types</strong><small id="mobile-settings-types"></small></span><span aria-hidden="true">›</span></button>
+          <button class="button button-secondary" type="button" data-mobile-settings-tab="tags"><span><strong>Tags</strong><small id="mobile-settings-tags"></small></span><span aria-hidden="true">›</span></button>
+          <button id="mobile-settings-trash" class="button button-secondary" type="button"><span><strong>Trash</strong><small id="mobile-settings-trash-count"></small></span><span aria-hidden="true">›</span></button>
+          <button class="button button-secondary" type="button" data-mobile-settings-tab="shortcuts"><span><strong>Keyboard shortcuts</strong><small>For a connected keyboard</small></span><span aria-hidden="true">›</span></button>
+        </div>
+      </section>
       <div class="organize-tabs" role="tablist" aria-label="Library settings">
         <button id="types-tab" class="organize-tab is-active" type="button" role="tab" aria-selected="true" aria-controls="types-panel" tabindex="0">
           <span><span class="organize-tab__mobile-hidden">Note </span>Types</span>
@@ -1792,6 +1839,55 @@
       </section>
     </dialog>
 
+    <nav id="mobile-navigation" class="mobile-navigation mobile-only" aria-label="Mobile navigation">
+      <button id="mobile-nav-notes" class="mobile-navigation__item" type="button" aria-current="page">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8m-8 4h8m-8 4h5"/></svg><span>Notes</span>
+      </button>
+      <button id="mobile-nav-search" class="mobile-navigation__item" type="button" aria-label="Search notes">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg><span>Search</span>
+      </button>
+      <button id="mobile-nav-new" class="button button-primary mobile-navigation__new" type="button" aria-label="New note">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+      </button>
+      <button id="mobile-nav-trash" class="mobile-navigation__item" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7m4-7v7"/></svg><span>Trash</span>
+      </button>
+      <button id="mobile-nav-settings" class="mobile-navigation__item" type="button" aria-haspopup="dialog">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/><circle cx="9" cy="6" r="2" fill="var(--surface-panel)"/><circle cx="15" cy="12" r="2" fill="var(--surface-panel)"/><circle cx="9" cy="18" r="2" fill="var(--surface-panel)"/></svg><span>Settings</span>
+      </button>
+    </nav>
+    <dialog id="mobile-filter-dialog" class="mobile-sheet" aria-labelledby="mobile-filter-title">
+      <header class="mobile-sheet__header"><h2 id="mobile-filter-title">Search & filters</h2><button id="mobile-close-filters" class="icon-button" type="button" aria-label="Close search and filters">×</button></header>
+      <div id="mobile-filter-body" class="mobile-sheet__body"><div id="mobile-search-slot"></div><div id="mobile-sort-slot"><h3>Sort notes</h3></div></div>
+      <footer class="mobile-sheet__footer"><div><span id="mobile-filter-results" role="status"></span><button id="mobile-reset-filters" class="text-button" type="button">Reset all</button></div><button id="mobile-filters-done" class="button button-primary" type="button">Show notes</button></footer>
+    </dialog>
+    <dialog id="mobile-space-dialog" class="mobile-sheet" aria-labelledby="mobile-space-title">
+      <header class="mobile-sheet__header"><h2 id="mobile-space-title">Your library</h2><button class="icon-button" type="button" data-mobile-close aria-label="Close library menu">×</button></header>
+      <div class="mobile-sheet__body mobile-space-menu">
+        <button id="mobile-space-notes" class="mobile-space-option" type="button">
+          <span class="mobile-space-option__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>
+          </span>
+          <span class="mobile-space-option__copy"><strong>All notes</strong><small>Browse your complete library</small></span>
+          <span class="mobile-space-option__trailing"><span id="mobile-space-notes-count" class="mobile-space-option__count">0</span><svg class="mobile-space-option__check" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 10 3 3 7-7"/></svg></span>
+        </button>
+        <button id="mobile-space-trash" class="mobile-space-option" type="button">
+          <span class="mobile-space-option__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7m4-7v7"/></svg>
+          </span>
+          <span class="mobile-space-option__copy"><strong>Trash</strong><small>Restore or permanently delete notes</small></span>
+          <span class="mobile-space-option__trailing"><span id="mobile-space-trash-count" class="mobile-space-option__count">0</span><svg class="mobile-space-option__check" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 10 3 3 7-7"/></svg></span>
+        </button>
+      </div>
+    </dialog>
+    <dialog id="mobile-card-dialog" class="mobile-sheet" aria-labelledby="mobile-card-title">
+      <header class="mobile-sheet__header"><h2 id="mobile-card-title">Note actions</h2><button class="icon-button" type="button" data-mobile-close aria-label="Close card actions">×</button></header>
+      <div id="mobile-card-actions" class="mobile-sheet__body mobile-menu-list"></div>
+    </dialog>
+    <dialog id="mobile-note-actions-dialog" class="mobile-sheet" aria-labelledby="mobile-note-actions-title">
+      <header class="mobile-sheet__header"><h2 id="mobile-note-actions-title">Note actions</h2><button id="mobile-close-note-actions" class="icon-button" type="button" aria-label="Close note actions">×</button></header>
+      <div id="mobile-note-actions-body" class="mobile-sheet__body"></div>
+    </dialog>
     <input id="import-input" type="file" accept="application/json,.json" hidden />
     <div id="toast" class="toast" popover="manual" role="status" aria-live="polite" aria-atomic="true">
       <span class="toast__indicator" aria-hidden="true">
@@ -1832,5 +1928,6 @@
     <script src="js/app/preferences.js"></script>
     <script src="js/app/sync.js"></script>
     <script src="js/app/offline.js"></script>
+    <script src="js/app/mobile.js"></script>
   </body>
 </html>

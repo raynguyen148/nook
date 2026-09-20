@@ -582,6 +582,12 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
   }
 
   function updateTopbarActionsPinning() {
+    if (window.matchMedia("(max-width: 820px)").matches) {
+      window.clearTimeout(ui.topbarActionsUnpinTimer);
+      finishTopbarActionsUnpin();
+      setToolbarPinned(false);
+      return;
+    }
     const scrollTop = window.scrollY;
 
     if (!ui.topbarActionsPinned) {

@@ -873,6 +873,10 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
 
   function setNoteEditorMode(mode) {
     if (!["edit", "split", "preview"].includes(mode)) return;
+    if (window.matchMedia("(max-width: 820px)").matches) {
+      if (mode === "split") mode = "edit";
+      if (library.notes.find((note) => note.id === elements.noteId.value)?.deletedAt) mode = "preview";
+    }
     const previousMode = ui.noteEditorMode;
     resetCopyButtonFeedback(elements.copyNoteContent);
     if (mode !== "split") {
@@ -1369,6 +1373,16 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
     if (submitButton) {
       submitButton.disabled = disabled || isCreatingTag;
       submitButton.textContent = disabled ? "Saving…" : "Done";
+    }
+    if (elements.mobileNoteDone) {
+      elements.mobileNoteDone.disabled = disabled || isCreatingTag;
+      elements.mobileNoteActions.disabled = disabled;
+      if (window.matchMedia("(max-width: 820px)").matches && library.notes.find((note) => note.id === elements.noteId.value)?.deletedAt) {
+        elements.noteEditorModeButtons.forEach((button) => {
+          if (button.dataset.noteEditorMode !== "preview") button.disabled = true;
+        });
+        elements.deleteNote.disabled = true;
+      }
     }
   }
 

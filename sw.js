@@ -1,6 +1,6 @@
 "use strict";
 
-const CACHE_VERSION = "nook-app-v30";
+const CACHE_VERSION = "nook-app-v65";
 const APP_ASSETS = [
   "./",
   "./index.html",
@@ -9,6 +9,7 @@ const APP_ASSETS = [
   "./icons/nook-192-v2.png",
   "./icons/nook-512-v2.png",
   "./css/app.css",
+  "./css/mobile.css",
   "./css/accessibility.css",
   "./css/base.css",
   "./css/dialogs.css",
@@ -41,6 +42,7 @@ const APP_ASSETS = [
   "./js/app/sync.js",
   "./js/app/offline.js",
   "./js/app/events.js",
+  "./js/app/mobile.js",
 ];
 
 self.addEventListener("install", (event) => {

@@ -370,6 +370,8 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
   }
 
   function renderSidebar() {
+    const mobileFilterFocus = elements.mobileFilterDialog?.open
+      ? document.activeElement?.getAttribute("aria-label") : null;
     const noteCountsByType = new Map();
     const noteCountsByTag = new Map();
     const collectionNotes = notesInActiveCollection();
@@ -468,6 +470,10 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
     syncMobileFilterToggle();
     syncClearFiltersState();
     scheduleTagFilterLayout();
+    if (mobileFilterFocus) {
+      [...elements.regularFilterControls.querySelectorAll("[aria-label]")]
+        .find((control) => control.getAttribute("aria-label") === mobileFilterFocus)?.focus({ preventScroll: true });
+    }
   }
 
   function createChipCloseIcon() {
@@ -648,13 +654,14 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
   function animateNoteDetailIn() {
     cancelNoteDetailAnimation();
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const mobile = window.matchMedia("(max-width: 820px)").matches;
     elements.noteDetailWorkspace.style.willChange = "opacity, transform";
     const animation = elements.noteDetailWorkspace.animate(
       reducedMotion
         ? [{ opacity: 0 }, { opacity: 1 }]
         : [
-            { opacity: 0, transform: "translateY(8px)" },
-            { opacity: 1, transform: "translateY(0)" },
+            { opacity: 0, transform: mobile ? "translateX(32px)" : "translateY(8px)" },
+            { opacity: 1, transform: "translate(0)" },
           ],
       {
         duration: reducedMotion ? MOTION.micro : MOTION.medium,
@@ -681,8 +688,10 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
       window.scrollTo(0, 0);
     }
     surface.classList.remove("is-hidden");
+    api.rememberMobileDetail?.();
     if (opensWorkspace) animateNoteDetailIn();
     window.requestAnimationFrame(() => {
+      if (window.matchMedia("(max-width: 820px)").matches) surface.focus({ preventScroll: true });
       const scrollSurface = ui.noteEditorMode === "preview"
         ? surface.querySelector(".quick-view-content-card")
         : surface.querySelector(".dialog-body");
@@ -711,6 +720,7 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
       elements.noteDialog.classList.add("is-hidden");
       elements.noteDetailWorkspace.classList.add("is-hidden");
       elements.workspace.classList.remove("is-note-detail-open");
+      api.releaseMobileDetail?.();
       closeDualPane({ immediate: true });
       ui.detailSourceCard?.classList.remove("is-detail-source");
       ui.detailSourceCard = null;
@@ -727,7 +737,7 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
         ? [{ opacity: 1 }, { opacity: 0 }]
         : [
             { opacity: 1, transform: "translateY(0)" },
-            { opacity: 0, transform: "translateY(4px)" },
+            { opacity: 0, transform: window.matchMedia("(max-width: 820px)").matches ? "translateX(32px)" : "translateY(4px)" },
           ],
       {
         duration: reducedMotion ? MOTION.micro : MOTION.short,
@@ -1859,6 +1869,17 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
     const card = createElement("article", {
       className: `note-card${secondary ? " secondary-note-card" : note.isPinned ? " note-card--pinned" : ""}`,
     });
+    const more = createElement("button", {
+      className: "icon-button mobile-only mobile-card-more", type: "button",
+      attributes: { "aria-label": `Actions for ${note.title}`, "aria-haspopup": "dialog" },
+    });
+    more.append(createNoteCardActionIcon([
+      ["circle", { cx: "5", cy: "12", r: "1" }],
+      ["circle", { cx: "12", cy: "12", r: "1" }],
+      ["circle", { cx: "19", cy: "12", r: "1" }],
+    ]));
+    more.addEventListener("click", () => api.openMobileCardActions(card, more));
+    const actionInvoker = (fallback) => !secondary && window.matchMedia("(max-width: 820px)").matches ? more : fallback;
     const content = createElement("div", { className: "note-card__content" });
     const meta = createElement("div", { className: "note-card__meta" });
     meta.append(makeTypeBadge(type, { isFilter: !secondary && !ui.trashOnly }));
@@ -1914,7 +1935,7 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
         ["circle", { cx: "12", cy: "12", r: "3" }],
       ]),
     );
-    view.addEventListener("click", () => secondary ? selectSecondaryNote(note.id) : openQuickView(note, view));
+    view.addEventListener("click", () => secondary ? selectSecondaryNote(note.id) : openQuickView(note, actionInvoker(view)));
     const copy = createElement("button", {
       className: "note-card__action",
       type: "button",
@@ -1947,7 +1968,7 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
         ["path", { d: "M4.5 19.5 6 14l9.6-9.6a1.65 1.65 0 0 1 2.35 0l1.65 1.65a1.65 1.65 0 0 1 0 2.35L10 18l-5.5 1.5Z" }],
       ]),
     );
-    edit.addEventListener("click", () => secondary ? selectSecondaryNote(note.id, "edit") : openNoteEditor(note, { invoker: edit }));
+    edit.addEventListener("click", () => secondary ? selectSecondaryNote(note.id, "edit") : openNoteEditor(note, { invoker: actionInvoker(edit) }));
     const remove = createElement("button", {
       className: `note-card__action ${isDeleted ? "note-card__action--restore" : "note-card__action--danger"}`,
       type: "button",
@@ -1968,6 +1989,7 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
           ]),
     );
     remove.addEventListener("click", () => (isDeleted ? restoreNoteWithFeedback(note) : deleteNoteWithConfirmation(note, { preserveSidePicker: secondary })));
+    if (isDeleted) remove.append(createElement("span", { className: "mobile-only", text: "Restore" }));
     actions.append(copy, view);
     if (!isDeleted) actions.append(edit);
     actions.append(remove);
@@ -2008,6 +2030,7 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
       card.append(pin);
     }
     card.append(content, footer);
+    if (!secondary) card.append(more);
     if (secondary) card.addEventListener("click", (event) => {
       if (!event.target.closest("button")) void selectSecondaryNote(note.id);
     });
@@ -2236,6 +2259,7 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
   }
 
   function renderNotes({ motion = "none" } = {}) {
+    api.syncMobileLibrary?.();
     syncViewModeUI();
     syncPaginationMetrics();
     elements.sort.value = ui.sort;
@@ -2274,6 +2298,7 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
   }
 
   Object.assign(api, {
+    closeSortPicker,
     makeTypeBadge,
     makeTagButton,
     scheduleTagFilterLayout,

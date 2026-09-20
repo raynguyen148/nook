@@ -16,6 +16,7 @@
     "organize",
     "sync",
     "offline",
+    "mobile",
     "events",
   ]);
   const installers = new Map();

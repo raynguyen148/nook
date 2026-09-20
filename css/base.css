@@ -834,6 +834,8 @@ select:focus-visible {
 
 
 .sidebar.is-tag-filter-constrained .space-navigation {
+  /* The optional backup row normally supplies this visual separation. */
+  margin-top: 1.2rem;
   margin-bottom: 0.65rem;
   padding-bottom: 0.65rem;
 }
