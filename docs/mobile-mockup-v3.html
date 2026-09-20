@@ -1,0 +1,1215 @@
+<!doctype html>
+<html lang="vi" data-theme="coffee">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Nook — Mobile UI Proposal (Version 3: Tactile Editorial & Zen Canvas)</title>
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="../css/app.css" />
+    <style>
+      /* ==========================================================================
+         Nook Mobile Mockup V3: "Tactile Editorial & Zen Canvas"
+         Design Philosophy: Sensory Refinement, Zero-Distraction, Sheet Stacking,
+         Typewriter Focus, Frosted Pebble Controls, Tactile Living Markdown.
+         ========================================================================== */
+
+      :root {
+        --phone-w: 393px;
+        --phone-h: 852px;
+        --phone-radius: 50px;
+        --phone-border: 11px solid #181f2c;
+        --phone-shadow: 0 35px 80px -15px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.06);
+        --font-serif: "Charter", "Bitstream Charter", "Sitka Text", "Cambria", Georgia, serif;
+        --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+        --font-mono: "SF Mono", Menlo, Consolas, Monaco, monospace;
+      }
+
+      body {
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+        min-height: 100dvh;
+        background: #080b12;
+        color: #f1f5f9;
+        font-family: var(--font-sans);
+        -webkit-font-smoothing: antialiased;
+      }
+
+      /* Presenter Control Bar */
+      .v3-presenter-bar {
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 0.75rem 1.5rem;
+        background: rgba(8, 11, 18, 0.94);
+        backdrop-filter: blur(16px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+      }
+
+      .v3-brand-group {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+
+      .v3-pill-badge {
+        padding: 0.2rem 0.65rem;
+        border-radius: 999px;
+        background: rgba(217, 119, 6, 0.15);
+        border: 1px solid rgba(217, 119, 6, 0.4);
+        color: #fbbf24;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+      }
+
+      .v3-controls {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.65rem;
+      }
+
+      .v3-control-group {
+        display: inline-flex;
+        align-items: center;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 0.65rem;
+        padding: 0.2rem;
+        gap: 0.2rem;
+      }
+
+      .v3-control-btn {
+        appearance: none;
+        border: none;
+        background: transparent;
+        color: #94a3b8;
+        font-size: 0.8rem;
+        font-weight: 500;
+        padding: 0.35rem 0.75rem;
+        border-radius: 0.45rem;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+      }
+
+      .v3-control-btn:hover {
+        background: rgba(255, 255, 255, 0.07);
+        color: #fff;
+      }
+
+      .v3-control-btn.is-active {
+        background: #d97706;
+        color: #fff;
+        font-weight: 600;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+      }
+
+      .v3-theme-swatch {
+        width: 1.5rem;
+        height: 1.5rem;
+        border-radius: 999px;
+        border: 2px solid transparent;
+        cursor: pointer;
+        padding: 0;
+        transition: transform 0.15s ease;
+      }
+
+      .v3-theme-swatch:hover {
+        transform: scale(1.15);
+      }
+
+      .v3-theme-swatch.is-active {
+        border-color: #fff;
+        transform: scale(1.15);
+      }
+
+      /* Viewport */
+      .v3-viewport {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        padding: 2.5rem 1.5rem 4rem;
+        gap: 2.5rem;
+      }
+
+      /* Phone Frame */
+      .v3-phone-frame {
+        position: relative;
+        width: var(--phone-w);
+        height: var(--phone-h);
+        border: var(--phone-border);
+        border-radius: var(--phone-radius);
+        box-shadow: var(--phone-shadow);
+        background: var(--surface-page);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        flex-shrink: 0;
+        color: var(--text-strong);
+        transition: all 0.25s ease;
+      }
+
+      body.mode-responsive .v3-phone-frame {
+        width: 100%;
+        max-width: 440px;
+        height: 870px;
+        border: none;
+        border-radius: 1.75rem;
+        box-shadow: 0 12px 50px rgba(0,0,0,0.5);
+      }
+
+      /* Status Bar */
+      .v3-status-bar {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 1.75rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--text-strong);
+        z-index: 999;
+        pointer-events: none;
+      }
+
+      .v3-island {
+        width: 116px;
+        height: 28px;
+        background: #000;
+        border-radius: 999px;
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        top: 10px;
+      }
+
+      .v3-home-indicator {
+        position: absolute;
+        bottom: 8px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 138px;
+        height: 5px;
+        background: var(--text-muted);
+        opacity: 0.35;
+        border-radius: 999px;
+        z-index: 999;
+        pointer-events: none;
+      }
+
+      /* Mobile App Container */
+      .v3-app {
+        position: relative;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        padding-top: 48px;
+        overflow: hidden;
+        background: var(--surface-page);
+      }
+
+      .v3-screen {
+        display: none;
+        flex-direction: column;
+        flex: 1;
+        height: 100%;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        position: relative;
+      }
+
+      .v3-screen.is-active {
+        display: flex;
+      }
+
+      /* ==========================================================================
+         V3 INNOVATION 1: Tactile Shelf & Editorial Feed
+         ========================================================================== */
+
+      .v3-shelf-header {
+        padding: 0.85rem 1.25rem 0.5rem;
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+      }
+
+      .v3-shelf-meta {
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-weight: 700;
+        color: var(--primary-accent);
+        margin-bottom: 0.2rem;
+      }
+
+      .v3-shelf-title {
+        font-family: var(--font-serif);
+        font-size: 1.65rem;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        margin: 0;
+        color: var(--text-strong);
+        line-height: 1.15;
+      }
+
+      .v3-shelf-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.45rem;
+      }
+
+      .v3-tactile-btn {
+        width: 2.25rem;
+        height: 2.25rem;
+        border-radius: 0.75rem;
+        border: 1px solid var(--border-subtle);
+        background: var(--surface-panel);
+        color: var(--text-strong);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: transform 0.15s ease, background 0.15s ease;
+      }
+
+      .v3-tactile-btn:active {
+        transform: scale(0.92);
+        background: var(--surface-muted);
+      }
+
+      .v3-tactile-btn svg {
+        width: 1.15rem;
+        height: 1.15rem;
+      }
+
+      /* "Quick Thought" Scratchpad Bar */
+      .v3-scratchpad-trigger {
+        margin: 0.5rem 1.25rem 1rem;
+        background: var(--surface-panel);
+        border: 1px dashed var(--border-strong);
+        border-radius: 1rem;
+        padding: 0.75rem 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        cursor: pointer;
+        transition: all 0.15s ease;
+      }
+
+      .v3-scratchpad-trigger:active {
+        background: var(--surface-muted);
+        transform: scale(0.985);
+      }
+
+      .v3-scratchpad-prompt {
+        display: flex;
+        align-items: center;
+        gap: 0.55rem;
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        font-style: italic;
+      }
+
+      .v3-scratchpad-shortcut {
+        font-size: 0.72rem;
+        font-weight: 600;
+        color: var(--primary-accent);
+        background: var(--selected-surface);
+        padding: 0.2rem 0.5rem;
+        border-radius: 0.4rem;
+      }
+
+      /* Tactile Note Cards */
+      .v3-cards-stream {
+        padding: 0 1.25rem 4rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.95rem;
+      }
+
+      .v3-note-sheet {
+        background: var(--surface-panel);
+        border: 1px solid var(--border-subtle);
+        border-radius: 1.25rem;
+        padding: 1.15rem 1.2rem;
+        box-shadow: 0 3px 10px -2px rgba(15, 23, 42, 0.04);
+        cursor: pointer;
+        position: relative;
+        transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.18s ease;
+      }
+
+      .v3-note-sheet:active {
+        transform: scale(0.98);
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+      }
+
+      .v3-note-sheet.is-pinned {
+        border-left: 4px solid var(--primary-accent);
+        background: linear-gradient(135deg, var(--selected-surface) 0%, var(--surface-panel) 45%);
+      }
+
+      .v3-sheet-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 0.72rem;
+        color: var(--text-muted);
+        margin-bottom: 0.45rem;
+      }
+
+      .v3-sheet-spine {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+
+      .v3-sheet-spine-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 999px;
+      }
+
+      .v3-sheet-title {
+        font-family: var(--font-serif);
+        font-size: 1.18rem;
+        font-weight: 700;
+        line-height: 1.32;
+        color: var(--text-strong);
+        margin: 0 0 0.45rem;
+      }
+
+      .v3-sheet-excerpt {
+        font-family: var(--font-sans);
+        font-size: 0.86rem;
+        color: var(--text-default);
+        line-height: 1.55;
+        margin: 0 0 0.85rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+
+      .v3-sheet-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 0.72rem;
+        color: var(--text-muted);
+      }
+
+      .v3-sheet-tags {
+        display: flex;
+        gap: 0.35rem;
+      }
+
+      .v3-tag-leaf {
+        background: var(--surface-muted);
+        color: var(--text-muted);
+        padding: 0.18rem 0.45rem;
+        border-radius: 0.45rem;
+        font-weight: 500;
+      }
+
+      /* ==========================================================================
+         V3 INNOVATION 2: Zen Canvas & Typewriter Focus Mode
+         ========================================================================== */
+
+      .v3-zen-canvas {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        background: var(--surface-panel);
+      }
+
+      .v3-zen-topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.65rem 1.15rem;
+        border-bottom: 1px solid transparent;
+        transition: border-color 0.2s ease;
+      }
+
+      .v3-zen-topbar.is-scrolled {
+        border-bottom-color: var(--border-subtle);
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(10px);
+      }
+
+      .v3-zen-body {
+        flex: 1;
+        overflow-y: auto;
+        padding: 1rem 1.35rem 6rem;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .v3-zen-title {
+        font-family: var(--font-serif);
+        font-size: 1.75rem;
+        font-weight: 800;
+        line-height: 1.25;
+        color: var(--text-strong);
+        border: none;
+        outline: none;
+        background: transparent;
+        margin-bottom: 0.65rem;
+        width: 100%;
+      }
+
+      .v3-zen-prose {
+        font-family: var(--font-serif);
+        font-size: 1.05rem;
+        line-height: 1.75;
+        color: var(--text-default);
+      }
+
+      body.font-sans-mode .v3-zen-prose,
+      body.font-sans-mode .v3-zen-title {
+        font-family: var(--font-sans);
+      }
+
+      body.font-mono-mode .v3-zen-prose,
+      body.font-mono-mode .v3-zen-title {
+        font-family: var(--font-mono);
+      }
+
+      /* Typewriter Focus Mode: Inactive paragraphs dim slightly */
+      .v3-zen-prose p,
+      .v3-zen-prose h2,
+      .v3-zen-prose ul {
+        margin: 0 0 1.25rem;
+        transition: opacity 0.2s ease;
+      }
+
+      body.typewriter-mode .v3-zen-prose > *:not(.is-active-paragraph) {
+        opacity: 0.35;
+      }
+
+      body.typewriter-mode .v3-zen-prose > .is-active-paragraph {
+        opacity: 1;
+        position: relative;
+      }
+
+      body.typewriter-mode .v3-zen-prose > .is-active-paragraph::before {
+        content: "";
+        position: absolute;
+        left: -1rem;
+        top: 0;
+        bottom: 0;
+        width: 3px;
+        background: var(--primary-accent);
+        border-radius: 999px;
+      }
+
+      /* Interactive Checklist */
+      .v3-task-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.65rem;
+        margin-bottom: 0.65rem;
+        cursor: pointer;
+        user-select: none;
+      }
+
+      .v3-task-checkbox {
+        width: 1.15rem;
+        height: 1.15rem;
+        border-radius: 0.35rem;
+        border: 1.7px solid var(--border-strong);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 0.25rem;
+        flex-shrink: 0;
+        transition: all 0.15s ease;
+      }
+
+      .v3-task-item.is-completed .v3-task-checkbox {
+        background: var(--primary-accent);
+        border-color: var(--primary-accent);
+        color: #fff;
+      }
+
+      .v3-task-item.is-completed .v3-task-label {
+        text-decoration: line-through;
+        color: var(--text-muted);
+      }
+
+      /* ==========================================================================
+         V3 INNOVATION 3: The Frosted Pebble (Minimalist Floating Menu)
+         ========================================================================== */
+
+      .v3-pebble-container {
+        position: absolute;
+        bottom: 1.5rem;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 95;
+        transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      /* Collapsed: Tiny Minimalist Pebble */
+      .v3-pebble {
+        background: rgba(24, 31, 44, 0.88);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(20px);
+        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.35);
+        border-radius: 999px;
+        padding: 0.4rem 0.85rem;
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        color: #fff;
+        cursor: pointer;
+        transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      .v3-pebble:active {
+        transform: scale(0.96);
+      }
+
+      .v3-pebble-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 999px;
+        background: #10b981;
+      }
+
+      .v3-pebble-text {
+        font-size: 0.75rem;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+      }
+
+      /* Expanded State of the Pebble */
+      .v3-pebble.is-expanded {
+        padding: 0.45rem 0.75rem;
+        gap: 0.35rem;
+      }
+
+      .v3-pebble-action {
+        width: 2.15rem;
+        height: 2.15rem;
+        border-radius: 999px;
+        border: none;
+        background: transparent;
+        color: #cbd5e1;
+        font-size: 0.85rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+      }
+
+      .v3-pebble-action:hover,
+      .v3-pebble-action:active {
+        background: rgba(255, 255, 255, 0.15);
+        color: #fff;
+      }
+
+      .v3-pebble-divider {
+        width: 1px;
+        height: 1.25rem;
+        background: rgba(255, 255, 255, 0.18);
+        margin: 0 0.2rem;
+      }
+
+      /* ==========================================================================
+         V3 INNOVATION 4: Tactile Stack Sheet (Layered Spatial Dismissal)
+         ========================================================================== */
+
+      .v3-stack-overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(10, 14, 23, 0.65);
+        backdrop-filter: blur(8px);
+        z-index: 100;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+      }
+
+      .v3-stack-sheet {
+        height: 92%;
+        background: var(--surface-panel);
+        border-radius: 2rem 2rem 0 0;
+        box-shadow: 0 -15px 50px rgba(0, 0, 0, 0.4);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        animation: sheetStackUp 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      @keyframes sheetStackUp {
+        from { transform: translateY(100%); }
+        to { transform: translateY(0); }
+      }
+
+      .v3-stack-grab-handle {
+        width: 42px;
+        height: 5px;
+        background: var(--border-strong);
+        border-radius: 999px;
+        margin: 0.75rem auto 0.25rem;
+        cursor: grab;
+      }
+
+      /* ==========================================================================
+         V3 INNOVATION 5: Quick Thought Scratchpad
+         ========================================================================== */
+
+      .v3-scratchpad-sheet {
+        position: absolute;
+        inset: 0;
+        background: rgba(8, 11, 18, 0.6);
+        backdrop-filter: blur(8px);
+        z-index: 110;
+        display: flex;
+        flex-direction: column;
+        padding: 2.5rem 1.25rem 2rem;
+      }
+
+      .v3-scratchpad-card {
+        background: var(--surface-panel);
+        border: 1px solid var(--border-subtle);
+        border-radius: 1.5rem;
+        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.35);
+        padding: 1.35rem;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        max-height: 480px;
+        animation: popScale 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      @keyframes popScale {
+        from { transform: scale(0.94); opacity: 0; }
+        to { transform: scale(1); opacity: 1; }
+      }
+
+      .v3-scratchpad-textarea {
+        flex: 1;
+        border: none;
+        outline: none;
+        background: transparent;
+        font-family: var(--font-serif);
+        font-size: 1.15rem;
+        line-height: 1.6;
+        color: var(--text-strong);
+        resize: none;
+      }
+
+      /* Annotation Panel */
+      .v3-annotation-panel {
+        width: 410px;
+        background: #111726;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 1.5rem;
+        padding: 1.75rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+        color: #cbd5e1;
+        box-shadow: 0 25px 50px -10px rgba(0, 0, 0, 0.5);
+      }
+
+      .v3-annotation-panel h2 {
+        margin: 0;
+        font-size: 1.2rem;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .v3-anno-card {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.07);
+        border-radius: 0.85rem;
+        padding: 1rem;
+      }
+
+      .v3-anno-tag {
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: #f59e0b;
+        display: inline-block;
+        margin-bottom: 0.35rem;
+      }
+
+      .v3-anno-title {
+        font-size: 0.94rem;
+        font-weight: 700;
+        color: #fff;
+        margin: 0 0 0.35rem;
+      }
+
+      .v3-anno-desc {
+        font-size: 0.82rem;
+        color: #94a3b8;
+        line-height: 1.55;
+        margin: 0;
+      }
+
+      .v3-anno-desc em {
+        color: #fcd34d;
+        font-style: normal;
+      }
+
+      @media (max-width: 950px) {
+        .v3-viewport {
+          flex-direction: column;
+          align-items: center;
+        }
+        .v3-annotation-panel {
+          width: 100%;
+          max-width: var(--phone-w);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Top Presenter Bar -->
+    <header class="v3-presenter-bar">
+      <div class="v3-brand-group">
+        <svg width="24" height="24" viewBox="0 0 64 64" fill="none">
+          <rect x="2" y="2" width="60" height="60" rx="16" fill="#a35616" />
+          <path d="M 38,15 L 46,15 L 46,49 L 38,49 Z" fill="#e1ebf4" />
+          <path d="M 18,15 L 26,15 L 46,49 L 38,49 L 26,28.5 L 26,49 L 18,49 Z" fill="#ffffff" />
+        </svg>
+        <strong>Nook Mobile v3</strong>
+        <span class="v3-pill-badge">Tactile Editorial & Zen</span>
+      </div>
+
+      <div class="v3-controls">
+        <!-- Screen Switcher -->
+        <div class="v3-control-group">
+          <span style="font-size:0.75rem; color:#94a3b8; padding:0 0.35rem;">Màn hình:</span>
+          <button class="v3-control-btn is-active" data-v3-screen="shelf">📖 Kệ sách & Ghi chú</button>
+          <button class="v3-control-btn" data-v3-screen="zen">✍️ Zen Canvas</button>
+          <button class="v3-control-btn" data-v3-screen="stack">📑 Xếp lớp (Stack)</button>
+          <button class="v3-control-btn" data-v3-screen="scratchpad">⚡ Ghi chép nhanh</button>
+        </div>
+
+        <!-- Typography selector -->
+        <div class="v3-control-group">
+          <span style="font-size:0.75rem; color:#94a3b8; padding:0 0.35rem;">Font:</span>
+          <button class="v3-control-btn is-active" id="btn-font-serif">Serif</button>
+          <button class="v3-control-btn" id="btn-font-sans">Sans</button>
+          <button class="v3-control-btn" id="btn-font-mono">Mono</button>
+        </div>
+
+        <!-- Theme Swatches -->
+        <div class="v3-control-group">
+          <button class="v3-theme-swatch" style="background: #9e6b02;" title="Light" data-theme="light"></button>
+          <button class="v3-theme-swatch is-active" style="background: #a35616;" title="Coffee" data-theme="coffee"></button>
+          <button class="v3-theme-swatch" style="background: #2f6b4f;" title="Forest" data-theme="forest"></button>
+          <button class="v3-theme-swatch" style="background: #18263f;" title="Midnight" data-theme="midnight"></button>
+          <button class="v3-theme-swatch" style="background: #0b0f19;" title="Dark" data-theme="dark"></button>
+          <button class="v3-theme-swatch" style="background: #fff4dd; border-color: #888;" title="Retro" data-theme="retro"></button>
+        </div>
+
+        <!-- Frame Mode -->
+        <div class="v3-control-group">
+          <button id="v3-toggle-frame-btn" class="v3-control-btn">
+            <span>📐 Khung viền</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Viewport -->
+    <main class="v3-viewport">
+      <!-- Phone Frame -->
+      <div class="v3-phone-frame">
+        <!-- Status Bar -->
+        <div class="v3-status-bar">
+          <span>9:41</span>
+          <div class="v3-island"></div>
+          <div style="display:flex; align-items:center; gap:0.4rem; font-size:0.75rem;">
+            <span>5G</span>
+            <svg width="18" height="10" viewBox="0 0 24 14" fill="currentColor">
+              <rect x="1" y="1" width="19" height="12" rx="3" fill="none" stroke="currentColor" stroke-width="2"/>
+              <rect x="3" y="3" width="13" height="8" rx="1.5" fill="currentColor"/>
+              <path d="M22 5v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </div>
+        </div>
+
+        <!-- App Container -->
+        <div class="v3-app">
+          <!-- ==============================================================
+               SCREEN 1 (V3): The Tactile Shelf & Journal View
+               ============================================================== -->
+          <div id="v3-screen-shelf" class="v3-screen is-active">
+            <header class="v3-shelf-header">
+              <div>
+                <div class="v3-shelf-meta">Không gian cá nhân</div>
+                <h1 class="v3-shelf-title">Nook Journal</h1>
+              </div>
+              <div class="v3-shelf-actions">
+                <button class="v3-tactile-btn" id="v3-shelf-search-btn" title="Tìm kiếm">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8" />
+                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                  </svg>
+                </button>
+                <button class="v3-tactile-btn" id="v3-shelf-filter-btn" title="Bộ lọc & Nhãn">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="4" y1="6" x2="20" y2="6" />
+                    <line x1="7" y1="12" x2="17" y2="12" />
+                    <line x1="10" y1="18" x2="14" y2="18" />
+                  </svg>
+                </button>
+              </div>
+            </header>
+
+            <!-- Quick Thought Scratchpad Trigger -->
+            <div class="v3-scratchpad-trigger" id="v3-open-scratchpad-btn">
+              <span class="v3-scratchpad-prompt">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+                </svg>
+                Ghi nhanh một ý nghĩ chớp nhoáng…
+              </span>
+              <span class="v3-scratchpad-shortcut">Chạm để viết</span>
+            </div>
+
+            <!-- Tactile Notes Stream -->
+            <div class="v3-cards-stream">
+              <!-- Pinned Card -->
+              <article class="v3-note-sheet is-pinned" data-v3-action="open-zen">
+                <div class="v3-sheet-header">
+                  <span class="v3-sheet-spine" style="color:var(--primary-accent);">
+                    <span class="v3-sheet-spine-dot" style="background:#38bdf8;"></span>
+                    Công việc · Đã ghim
+                  </span>
+                  <span>10:30 sáng</span>
+                </div>
+                <h2 class="v3-sheet-title">Kiến trúc Protobloc & Quyết định kỹ thuật</h2>
+                <p class="v3-sheet-excerpt">Bất đồng bộ (asynchronous processing), chiến lược chịu lỗi (fault tolerance), và cơ chế lưu trữ offline-first bền vững với IndexedDB...</p>
+                <div class="v3-sheet-footer">
+                  <div class="v3-sheet-tags">
+                    <span class="v3-tag-leaf">#architecture</span>
+                    <span class="v3-tag-leaf">#indexeddb</span>
+                  </div>
+                  <span>480 từ · 2 phút</span>
+                </div>
+              </article>
+
+              <!-- Card 2 -->
+              <article class="v3-note-sheet" data-v3-action="open-zen">
+                <div class="v3-sheet-header">
+                  <span class="v3-sheet-spine">
+                    <span class="v3-sheet-spine-dot" style="background:#a855f7;"></span>
+                    Ý tưởng
+                  </span>
+                  <span>Hôm qua</span>
+                </div>
+                <h2 class="v3-sheet-title">Nook v3: Trải nghiệm tĩnh lặng (Zen Canvas)</h2>
+                <p class="v3-sheet-excerpt">Loại bỏ hoàn toàn các thanh công cụ chiếm diện tích. Thay bằng viên sỏi nổi (Frosted Pebble) và chế độ đèn chiếu Typewriter...</p>
+                <div class="v3-sheet-footer">
+                  <div class="v3-sheet-tags">
+                    <span class="v3-tag-leaf">#ux</span>
+                    <span class="v3-tag-leaf">#craftsman</span>
+                  </div>
+                  <span>260 từ</span>
+                </div>
+              </article>
+
+              <!-- Card 3 -->
+              <article class="v3-note-sheet" data-v3-action="open-zen">
+                <div class="v3-sheet-header">
+                  <span class="v3-sheet-spine">
+                    <span class="v3-sheet-spine-dot" style="background:#f59e0b;"></span>
+                    Cá nhân
+                  </span>
+                  <span>18/09</span>
+                </div>
+                <h2 class="v3-sheet-title">Chuẩn bị sinh con (Om 2026)</h2>
+                <p class="v3-sheet-excerpt">Danh sách đồ sơ sinh cần mua sớm cho Iris và bé Om. Bình sữa chống sặc, máy tiệt trùng UV, giấy tờ bệnh viện...</p>
+                <div class="v3-sheet-footer">
+                  <div class="v3-sheet-tags">
+                    <span class="v3-tag-leaf">#family</span>
+                  </div>
+                  <span>3/8 mục xong</span>
+                </div>
+              </article>
+            </div>
+          </div>
+
+          <!-- ==============================================================
+               SCREEN 2 (V3): Zen Canvas & Typewriter Focus Mode
+               ============================================================== -->
+          <div id="v3-screen-zen" class="v3-screen">
+            <div class="v3-zen-canvas">
+              <header class="v3-zen-topbar">
+                <button class="v3-tactile-btn" id="v3-zen-back-btn" style="border:none;">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="19" y1="12" x2="5" y2="12" />
+                    <polyline points="12 19 5 12 12 5" />
+                  </svg>
+                </button>
+                <div style="display:flex; align-items:center; gap:0.4rem;">
+                  <button class="v3-tactile-btn" id="v3-toggle-typewriter-btn" title="Bật/Tắt chế độ Typewriter (Làm mờ đoạn khác)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                      <circle cx="12" cy="12" r="5" />
+                      <line x1="12" y1="1" x2="12" y2="3" />
+                      <line x1="12" y1="21" x2="12" y2="23" />
+                    </svg>
+                  </button>
+                  <button class="v3-tactile-btn" id="v3-open-stack-btn" title="Xem dạng xếp lớp">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                      <rect x="4" y="4" width="16" height="16" rx="2" />
+                      <rect x="8" y="2" width="8" height="2" rx="1" />
+                    </svg>
+                  </button>
+                </div>
+              </header>
+
+              <div class="v3-zen-body">
+                <input class="v3-zen-title" type="text" value="Kiến trúc Protobloc & Quyết định kỹ thuật" />
+
+                <div class="v3-zen-prose">
+                  <p>Hệ thống sử dụng <strong>IndexedDB</strong> làm bộ lưu trữ cục bộ chính, cho phép đọc ghi mượt mà ngay cả khi không có mạng (<em>zero network latency</em>).</p>
+
+                  <h2 style="font-size:1.25rem; font-weight:700; margin:1.5rem 0 0.75rem;">Các quyết định kỹ thuật quan trọng</h2>
+
+                  <!-- Active paragraph demonstration for Typewriter Mode -->
+                  <div class="is-active-paragraph" style="margin-bottom:1.25rem;">
+                    <div class="v3-task-item is-completed" data-task="1">
+                      <div class="v3-task-checkbox">✓</div>
+                      <span class="v3-task-label">Xử lý bất đồng bộ (<em>Asynchronous processing</em>)</span>
+                    </div>
+                    <div class="v3-task-item is-completed" data-task="2">
+                      <div class="v3-task-checkbox">✓</div>
+                      <span class="v3-task-label">Chiến lược chịu lỗi (<em>Fault tolerance</em>)</span>
+                    </div>
+                    <div class="v3-task-item" data-task="3">
+                      <div class="v3-task-checkbox"></div>
+                      <span class="v3-task-label">Phạm vi ảnh hưởng (<em>Blast radius</em>) qua strict IIFE</span>
+                    </div>
+                  </div>
+
+                  <p>Các tác vụ sao lưu và nén dữ liệu được xử lý trong nền, không làm gián đoạn trải nghiệm gõ phím của người dùng.</p>
+                </div>
+              </div>
+
+              <!-- Floating Pebble Menu -->
+              <div class="v3-pebble-container">
+                <div class="v3-pebble" id="v3-frosted-pebble">
+                  <span class="v3-pebble-dot"></span>
+                  <span class="v3-pebble-text">480 từ · Đã lưu</span>
+                  <div class="v3-pebble-divider"></div>
+                  <button class="v3-pebble-action" title="Định dạng">Aa</button>
+                  <button class="v3-pebble-action" title="Thêm Task">☑</button>
+                  <button class="v3-pebble-action" title="Chia sẻ">↑</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ==============================================================
+               SCREEN 3 (V3): Stacked Sheet Gesture (Xếp lớp chiều sâu)
+               ============================================================== -->
+          <div id="v3-screen-stack" class="v3-screen">
+            <div class="v3-stack-overlay">
+              <div class="v3-stack-sheet">
+                <div class="v3-stack-grab-handle" id="v3-dismiss-stack-btn"></div>
+                <div style="padding:1rem 1.35rem; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--border-subtle);">
+                  <span style="font-size:0.75rem; font-weight:700; text-transform:uppercase; color:var(--text-muted);">Đang mở thẻ 1/3</span>
+                  <button class="v3-tactile-btn" id="v3-close-stack-icon" style="width:2rem; height:2rem; border:none;">✕</button>
+                </div>
+                <div style="padding:1.35rem; flex:1; overflow-y:auto;">
+                  <h2 style="font-family:var(--font-serif); font-size:1.4rem; margin:0 0 0.5rem;">Kiến trúc Protobloc & Quyết định kỹ thuật</h2>
+                  <p style="color:var(--text-muted); font-size:0.85rem; line-height:1.6;">
+                    Thẻ này đang được xếp lớp trên kệ sách chính. Vuốt nhẹ thanh kéo xuống dưới để đóng và trở về kệ sách mà không làm mất vị trí đang đọc.
+                  </p>
+                  <div style="margin-top:1.5rem; display:flex; gap:0.65rem;">
+                    <button class="v3-control-btn is-active" style="flex:1; justify-content:center; padding:0.75rem;">Mở toàn màn hình</button>
+                    <button class="v3-control-btn" style="border:1px solid var(--border-subtle); padding:0.75rem; color:var(--text-strong);">Đóng thẻ</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ==============================================================
+               SCREEN 4 (V3): Quick Thought Scratchpad Sheet
+               ============================================================== -->
+          <div id="v3-screen-scratchpad" class="v3-screen">
+            <div class="v3-scratchpad-sheet">
+              <div class="v3-scratchpad-card">
+                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:0.85rem;">
+                  <span style="font-size:0.75rem; font-weight:700; text-transform:uppercase; color:var(--primary-accent);">Ghi chú chớp nhoáng</span>
+                  <button class="v3-tactile-btn" id="v3-close-scratchpad-btn" style="width:1.85rem; height:1.85rem; border:none;">✕</button>
+                </div>
+                <textarea class="v3-scratchpad-textarea" placeholder="Nảy ra ý tưởng gì đó? Hãy ghi ngay vào đây, hệ thống sẽ tự gắn nhãn #scratchpad và thời gian hiện tại..." autofocus>Cần kiểm tra lại cấu hình IndexedDB max storage quota trên Safari mobile...</textarea>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:0.75rem; padding-top:0.65rem; border-top:1px solid var(--border-subtle);">
+                  <span style="font-size:0.72rem; color:var(--text-muted);">Tự lưu lúc 07:35</span>
+                  <button class="v3-control-btn is-active" id="v3-save-scratchpad-btn" style="padding:0.45rem 1rem;">Lưu vào sổ</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="v3-home-indicator"></div>
+      </div>
+
+      <!-- Design Annotations Panel -->
+      <aside class="v3-annotation-panel">
+        <h2>
+          <span>🖋️ Triết lý thiết kế Version 3</span>
+        </h2>
+
+        <div class="v3-anno-card">
+          <span class="v3-anno-tag">Triết lý 1 · Xúc giác & Nghệ thuật chữ</span>
+          <h3 class="v3-anno-title">Tactile Editorial & Sheet Spine</h3>
+          <p class="v3-anno-desc">
+            Không còn cảm giác một phần mềm khô cứng. Giao diện tái hiện cảm giác <em>cuốn sổ tay cao cấp</em>: kiểu chữ Serif trang nhã, gáy sổ (<em>Spine</em>) có màu nhận diện loại ghi chú, các cạnh thẻ mềm mại như trang giấy thật.
+          </p>
+        </div>
+
+        <div class="v3-anno-card">
+          <span class="v3-anno-tag">Triết lý 2 · Tập trung tuyệt đối (Zen)</span>
+          <h3 class="v3-anno-title">Typewriter Mode & Frosted Pebble</h3>
+          <p class="v3-anno-desc">
+            Bỏ mọi thanh công cụ chiếm diện tích. Khi bật <em>Typewriter Mode</em>, các đoạn văn khác mờ đi, chỉ đoạn Ray đang gõ được làm nổi bật. Mọi tính năng thu gọn vào <em>Viên sỏi kính mờ (Frosted Pebble)</em> dưới đáy.
+          </p>
+        </div>
+
+        <div class="v3-anno-card">
+          <span class="v3-anno-tag">Triết lý 3 · Tương tác vật lý</span>
+          <h3 class="v3-anno-title">Sheet Stacking (Xếp lớp chiều sâu)</h3>
+          <p class="v3-anno-desc">
+            Ghi chú không mở tràn màn hình giật cục, mà mở dạng một <em>tấm thẻ xếp lớp</em> trượt lên từ đáy. Người dùng có thể vuốt nhẹ xuống để thấy kệ sách bên dưới, giữ trọn cảm giác không gian (*spatial sense*).
+          </p>
+        </div>
+
+        <div class="v3-anno-card">
+          <span class="v3-anno-tag">Triết lý 4 · Bắt giữ suy nghĩ</span>
+          <h3 class="v3-anno-title">Quick Thought Scratchpad</h3>
+          <p class="v3-anno-desc">
+            Khi bất chợt nảy ra một ý tưởng, không cần qua các bước đặt tiêu đề hay chọn folder. Chạm vào <em>Scratchpad</em> để gõ ngay, hệ thống tự đánh dấu timestamp và tag <code>#scratchpad</code>.
+          </p>
+        </div>
+      </aside>
+    </main>
+
+    <!-- Interactive Script -->
+    <script>
+      (() => {
+        const screens = {
+          shelf: document.getElementById("v3-screen-shelf"),
+          zen: document.getElementById("v3-screen-zen"),
+          stack: document.getElementById("v3-screen-stack"),
+          scratchpad: document.getElementById("v3-screen-scratchpad")
+        };
+
+        const screenBtns = document.querySelectorAll("[data-v3-screen]");
+
+        function switchScreen(name) {
+          Object.entries(screens).forEach(([sName, el]) => {
+            if (el) el.classList.toggle("is-active", sName === name);
+          });
+          screenBtns.forEach(b => b.classList.toggle("is-active", b.dataset.v3Screen === name));
+        }
+
+        screenBtns.forEach(b => b.addEventListener("click", () => switchScreen(b.dataset.v3Screen)));
+
+        // In-mockup triggers
+        document.querySelectorAll("[data-v3-action='open-zen']").forEach(card => {
+          card.addEventListener("click", () => switchScreen("zen"));
+        });
+
+        document.getElementById("v3-zen-back-btn")?.addEventListener("click", () => switchScreen("shelf"));
+        document.getElementById("v3-open-stack-btn")?.addEventListener("click", () => switchScreen("stack"));
+        document.getElementById("v3-dismiss-stack-btn")?.addEventListener("click", () => switchScreen("zen"));
+        document.getElementById("v3-close-stack-icon")?.addEventListener("click", () => switchScreen("zen"));
+
+        document.getElementById("v3-open-scratchpad-btn")?.addEventListener("click", () => switchScreen("scratchpad"));
+        document.getElementById("v3-close-scratchpad-btn")?.addEventListener("click", () => switchScreen("shelf"));
+        document.getElementById("v3-save-scratchpad-btn")?.addEventListener("click", () => switchScreen("shelf"));
+
+        // Interactive Tasks Checkbox
+        document.querySelectorAll(".v3-task-item").forEach(item => {
+          item.addEventListener("click", () => {
+            item.classList.toggle("is-completed");
+            const box = item.querySelector(".v3-task-checkbox");
+            if (box) {
+              box.textContent = item.classList.contains("is-completed") ? "✓" : "";
+            }
+          });
+        });
+
+        // Typewriter Mode Toggle
+        const typewriterBtn = document.getElementById("v3-toggle-typewriter-btn");
+        typewriterBtn?.addEventListener("click", () => {
+          document.body.classList.toggle("typewriter-mode");
+          typewriterBtn.classList.toggle("is-active", document.body.classList.contains("typewriter-mode"));
+        });
+
+        // Typography Mode Switchers
+        const fontSerifBtn = document.getElementById("btn-font-serif");
+        const fontSansBtn = document.getElementById("btn-font-sans");
+        const fontMonoBtn = document.getElementById("btn-font-mono");
+
+        function setFontMode(mode) {
+          document.body.classList.remove("font-sans-mode", "font-mono-mode");
+          fontSerifBtn?.classList.toggle("is-active", mode === "serif");
+          fontSansBtn?.classList.toggle("is-active", mode === "sans");
+          fontMonoBtn?.classList.toggle("is-active", mode === "mono");
+
+          if (mode === "sans") document.body.classList.add("font-sans-mode");
+          if (mode === "mono") document.body.classList.add("font-mono-mode");
+        }
+
+        fontSerifBtn?.addEventListener("click", () => setFontMode("serif"));
+        fontSansBtn?.addEventListener("click", () => setFontMode("sans"));
+        fontMonoBtn?.addEventListener("click", () => setFontMode("mono"));
+
+        // Frosted Pebble Expand Toggle
+        const pebble = document.getElementById("v3-frosted-pebble");
+        pebble?.addEventListener("click", () => {
+          pebble.classList.toggle("is-expanded");
+        });
+
+        // Themes
+        const themeSwatches = document.querySelectorAll("[data-theme]");
+        themeSwatches.forEach(btn => {
+          btn.addEventListener("click", () => {
+            document.documentElement.dataset.theme = btn.dataset.theme;
+            themeSwatches.forEach(b => b.classList.toggle("is-active", b === btn));
+          });
+        });
+
+        // Frame Toggle
+        document.getElementById("v3-toggle-frame-btn")?.addEventListener("click", () => {
+          document.body.classList.toggle("mode-responsive");
+        });
+      })();
+    </script>
+  </body>
+</html>

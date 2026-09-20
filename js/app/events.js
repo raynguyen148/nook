@@ -144,6 +144,29 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
     setupStorageAndOfflineCapabilities,
   } = api;
 
+  function isThemeShortcutTypingTarget(target) {
+    return (
+      target instanceof HTMLInputElement ||
+      target instanceof HTMLTextAreaElement ||
+      target instanceof HTMLSelectElement ||
+      (target instanceof HTMLElement && target.isContentEditable)
+    );
+  }
+
+  function matchesGlobalThemeShortcut(event) {
+    return (
+      event.key.toLowerCase() === "t" &&
+      !event.metaKey &&
+      !event.ctrlKey &&
+      !event.altKey &&
+      !event.shiftKey &&
+      !event.repeat &&
+      !event.isComposing &&
+      !event.defaultPrevented &&
+      !isThemeShortcutTypingTarget(event.target)
+    );
+  }
+
   function bindEvents() {
     const activateManagementTab = (tab) => {
       closeThemePicker();
@@ -554,6 +577,11 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
         closeQuickView();
         return;
       }
+      if (matchesGlobalThemeShortcut(event)) {
+        event.preventDefault();
+        setTheme(getNextTheme(ui.theme));
+        return;
+      }
       if (activeModalDialog()) return;
       const usesCommandKey = usesMacKeyboardShortcuts();
       const hasSaveModifier = usesCommandKey ? event.metaKey && !event.ctrlKey : event.ctrlKey && !event.metaKey;
@@ -646,10 +674,6 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
         target instanceof HTMLTextAreaElement ||
         target instanceof HTMLSelectElement ||
         (target instanceof HTMLElement && target.isContentEditable);
-      const blocksThemeShortcut =
-        editingText ||
-        target instanceof HTMLButtonElement ||
-        target instanceof HTMLFormElement;
       const isModeKey = ["1", "2", "3"].includes(formattingKey);
       const matchesModifierFree =
         !event.metaKey &&
@@ -759,25 +783,6 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
       ) {
         event.preventDefault();
         elements.search.focus();
-        return;
-      }
-
-      const matchesThemeShortcut =
-        event.key.toLowerCase() === "t" &&
-        !event.metaKey &&
-        !event.ctrlKey &&
-        !event.altKey &&
-        !event.shiftKey &&
-        !event.repeat &&
-        !event.isComposing;
-
-      if (
-        matchesThemeShortcut &&
-        !blocksThemeShortcut &&
-        !activeModalDialog()
-      ) {
-        event.preventDefault();
-        setTheme(getNextTheme(ui.theme));
         return;
       }
 

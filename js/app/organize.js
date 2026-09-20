@@ -129,10 +129,6 @@ globalThis[Symbol.for("nook.app.modules")].register("organize", (app) => {
     return !query || value.toLocaleLowerCase().includes(query);
   }
 
-  function formatUsageCounts(total, active) {
-    return `${total} total · ${active} active`;
-  }
-
   function createTrashUsageIcon() {
     const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     svg.setAttribute("viewBox", "0 0 24 24");
@@ -360,7 +356,6 @@ globalThis[Symbol.for("nook.app.modules")].register("organize", (app) => {
     visibleTypes.forEach((type) => {
       const totalUsage = totalUsageCounts.get(type.id) || 0;
       const activeUsage = activeUsageCounts.get(type.id) || 0;
-      const usageLabel = formatUsageCounts(totalUsage, activeUsage);
       const isEditing = ui.managementEditing?.kind === "types" && ui.managementEditing.id === type.id;
       const row = isEditing
         ? createElement("form", { className: "management-row management-row--type", dataset: { managementEditId: type.id } })
@@ -384,7 +379,7 @@ globalThis[Symbol.for("nook.app.modules")].register("organize", (app) => {
         const cancel = createElement("button", { className: "button button-secondary button-compact", type: "button", text: "Cancel" });
         const save = createElement("button", { className: "button button-primary button-compact", type: "submit", text: "Save" });
         main.append(nameInput);
-        controls.append(colorPicker.root, createElement("span", { className: "usage-count", text: usageLabel }), cancel, save);
+        controls.append(colorPicker.root, cancel, save);
         row.append(main, controls);
         cancel.addEventListener("click", cancelManagementEdit);
         row.addEventListener("submit", async (event) => {
@@ -476,7 +471,6 @@ globalThis[Symbol.for("nook.app.modules")].register("organize", (app) => {
     visibleTags.forEach((tag) => {
       const totalUsage = totalUsageCounts.get(tag.id) || 0;
       const activeUsage = activeUsageCounts.get(tag.id) || 0;
-      const usageLabel = formatUsageCounts(totalUsage, activeUsage);
       const label = tagLabel(tag);
       const isEditing = ui.managementEditing?.kind === "tags" && ui.managementEditing.id === tag.id;
       const row = isEditing
@@ -495,7 +489,7 @@ globalThis[Symbol.for("nook.app.modules")].register("organize", (app) => {
         const cancel = createElement("button", { className: "button button-secondary button-compact", type: "button", text: "Cancel" });
         const save = createElement("button", { className: "button button-primary button-compact", type: "submit", text: "Save" });
         main.append(nameInput);
-        controls.append(createElement("span", { className: "usage-count", text: usageLabel }), cancel, save);
+        controls.append(cancel, save);
         row.append(main, controls);
         cancel.addEventListener("click", cancelManagementEdit);
         row.addEventListener("submit", async (event) => {

@@ -1,0 +1,1372 @@
+<!doctype html>
+<html lang="vi" data-theme="coffee">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Nook — Mobile UI Proposal (Version 2: Bottom Dock & Focus Stream)</title>
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="../css/app.css" />
+    <style>
+      /* ==========================================================================
+         Nook Mobile Mockup V2: "Bottom Dock & Focused Stream"
+         Ergonomics: 100% Thumb Zone Reachability, Contextual Islands, Date Stream
+         ========================================================================== */
+
+      :root {
+        --phone-w: 393px;
+        --phone-h: 852px;
+        --phone-radius: 48px;
+        --phone-border: 11px solid #1c2434;
+        --phone-shadow: 0 30px 70px -15px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.05);
+        --dock-height: 4rem;
+      }
+
+      body {
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+        min-height: 100dvh;
+        background: #090d16;
+        color: #f8fafc;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      /* Top Presenter Bar */
+      .v2-presenter-bar {
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 0.75rem 1.5rem;
+        background: rgba(9, 13, 22, 0.94);
+        backdrop-filter: blur(14px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      }
+
+      .v2-presenter-brand {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+
+      .v2-badge {
+        padding: 0.2rem 0.6rem;
+        border-radius: 999px;
+        background: rgba(56, 189, 248, 0.15);
+        border: 1px solid rgba(56, 189, 248, 0.4);
+        color: #38bdf8;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+      }
+
+      .v2-controls {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.65rem;
+      }
+
+      .v2-control-group {
+        display: inline-flex;
+        align-items: center;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.09);
+        border-radius: 0.65rem;
+        padding: 0.2rem;
+        gap: 0.2rem;
+      }
+
+      .v2-control-btn {
+        appearance: none;
+        border: none;
+        background: transparent;
+        color: #94a3b8;
+        font-size: 0.8rem;
+        font-weight: 500;
+        padding: 0.35rem 0.75rem;
+        border-radius: 0.45rem;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+      }
+
+      .v2-control-btn:hover {
+        background: rgba(255, 255, 255, 0.07);
+        color: #fff;
+      }
+
+      .v2-control-btn.is-active {
+        background: #0284c7;
+        color: #fff;
+        font-weight: 600;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+      }
+
+      .v2-theme-btn {
+        width: 1.5rem;
+        height: 1.5rem;
+        border-radius: 999px;
+        border: 2px solid transparent;
+        cursor: pointer;
+        padding: 0;
+        transition: transform 0.15s ease;
+      }
+
+      .v2-theme-btn:hover {
+        transform: scale(1.15);
+      }
+
+      .v2-theme-btn.is-active {
+        border-color: #fff;
+        transform: scale(1.15);
+      }
+
+      /* Viewport */
+      .v2-viewport {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        padding: 2.5rem 1.5rem 4rem;
+        gap: 2.5rem;
+      }
+
+      /* Phone Frame */
+      .v2-phone-frame {
+        position: relative;
+        width: var(--phone-w);
+        height: var(--phone-h);
+        border: var(--phone-border);
+        border-radius: var(--phone-radius);
+        box-shadow: var(--phone-shadow);
+        background: var(--surface-page);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        flex-shrink: 0;
+        color: var(--text-strong);
+        transition: all 0.25s ease;
+      }
+
+      body.mode-responsive .v2-phone-frame {
+        width: 100%;
+        max-width: 440px;
+        height: 870px;
+        border: none;
+        border-radius: 1.75rem;
+        box-shadow: 0 12px 50px rgba(0,0,0,0.5);
+      }
+
+      /* Phone Status Bar */
+      .v2-status-bar {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 1.75rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--text-strong);
+        z-index: 999;
+        pointer-events: none;
+      }
+
+      .v2-island {
+        width: 116px;
+        height: 28px;
+        background: #000;
+        border-radius: 999px;
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        top: 10px;
+      }
+
+      .v2-home-bar {
+        position: absolute;
+        bottom: 8px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 138px;
+        height: 5px;
+        background: var(--text-muted);
+        opacity: 0.4;
+        border-radius: 999px;
+        z-index: 999;
+        pointer-events: none;
+      }
+
+      /* Mobile App Shell */
+      .v2-app {
+        position: relative;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        padding-top: 48px;
+        overflow: hidden;
+        background: var(--surface-page);
+      }
+
+      .v2-screen {
+        display: none;
+        flex-direction: column;
+        flex: 1;
+        height: 100%;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        position: relative;
+        padding-bottom: calc(var(--dock-height) + 1.5rem);
+      }
+
+      .v2-screen.is-active {
+        display: flex;
+      }
+
+      /* ==========================================================================
+         V2 INNOVATION 1: Floating Bottom Dock (Action Island)
+         ========================================================================== */
+
+      .v2-dock-container {
+        position: absolute;
+        bottom: 1.15rem;
+        left: 1rem;
+        right: 1rem;
+        z-index: 80;
+        pointer-events: none;
+      }
+
+      .v2-dock {
+        pointer-events: auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 3.65rem;
+        padding: 0 0.5rem;
+        background: var(--surface-panel);
+        border: 1px solid var(--border-subtle);
+        border-radius: 1.25rem;
+        box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.16), 0 2px 6px rgba(0, 0, 0, 0.04);
+        backdrop-filter: blur(16px);
+      }
+
+      .v2-dock-item {
+        flex: 1;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.15rem;
+        background: transparent;
+        border: none;
+        color: var(--text-muted);
+        cursor: pointer;
+        padding: 0;
+        border-radius: 0.85rem;
+        transition: all 0.15s ease;
+      }
+
+      .v2-dock-item:active {
+        transform: scale(0.92);
+        background: var(--surface-muted);
+      }
+
+      .v2-dock-item.is-active {
+        color: var(--primary-accent);
+      }
+
+      .v2-dock-item svg {
+        width: 1.35rem;
+        height: 1.35rem;
+      }
+
+      .v2-dock-item span {
+        font-size: 0.65rem;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+      }
+
+      /* Center Quick-Add Button */
+      .v2-dock-add-btn {
+        width: 2.9rem;
+        height: 2.9rem;
+        border-radius: 999px;
+        background: var(--primary-accent);
+        color: #fff;
+        border: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 14px rgba(163, 86, 22, 0.4);
+        cursor: pointer;
+        margin: 0 0.25rem;
+        transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      .v2-dock-add-btn:active {
+        transform: scale(0.9);
+      }
+
+      .v2-dock-add-btn svg {
+        width: 1.45rem;
+        height: 1.45rem;
+      }
+
+      /* ==========================================================================
+         SCREEN 1 (V2): Stream & Timeline Feed
+         ========================================================================== */
+
+      .v2-header-stream {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.85rem 1.25rem 0.45rem;
+      }
+
+      .v2-header-title {
+        font-size: 1.4rem;
+        font-weight: 800;
+        letter-spacing: -0.025em;
+        margin: 0;
+        color: var(--text-strong);
+      }
+
+      .v2-header-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.45rem;
+      }
+
+      .v2-icon-circle {
+        width: 2.2rem;
+        height: 2.2rem;
+        border-radius: 999px;
+        border: 1px solid var(--border-subtle);
+        background: var(--surface-panel);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-strong);
+        cursor: pointer;
+      }
+
+      .v2-icon-circle svg {
+        width: 1.1rem;
+        height: 1.1rem;
+      }
+
+      /* Pinned Highlight Card (Hero Note) */
+      .v2-hero-note {
+        margin: 0.65rem 1.25rem 1.25rem;
+        background: linear-gradient(145deg, var(--selected-surface) 0%, var(--surface-panel) 100%);
+        border: 1.5px solid var(--selected-border);
+        border-radius: 1.25rem;
+        padding: 1.15rem;
+        box-shadow: 0 4px 15px -3px rgba(163, 86, 22, 0.08);
+        cursor: pointer;
+        position: relative;
+      }
+
+      .v2-hero-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+      }
+
+      .v2-pin-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: var(--selected-text);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      .v2-hero-title {
+        font-size: 1.12rem;
+        font-weight: 800;
+        margin: 0 0 0.5rem;
+        line-height: 1.3;
+        color: var(--text-strong);
+      }
+
+      .v2-hero-preview {
+        font-size: 0.85rem;
+        line-height: 1.5;
+        color: var(--text-default);
+        margin: 0 0 0.85rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+
+      .v2-hero-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 0.75rem;
+        color: var(--text-muted);
+      }
+
+      /* Stream Timeline Sections */
+      .v2-stream-group {
+        margin-bottom: 1.25rem;
+        padding: 0 1.25rem;
+      }
+
+      .v2-stream-date-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 0.65rem;
+        padding: 0 0.25rem;
+      }
+
+      .v2-stream-date-label {
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+      }
+
+      .v2-stream-count {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        opacity: 0.8;
+      }
+
+      .v2-stream-cards {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+
+      /* Stream Note Card with Task Progress Indicator */
+      .v2-stream-card {
+        background: var(--surface-panel);
+        border: 1px solid var(--border-subtle);
+        border-radius: 1.1rem;
+        padding: 1rem;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+        cursor: pointer;
+        transition: transform 0.15s ease, background 0.15s ease;
+      }
+
+      .v2-stream-card:active {
+        transform: scale(0.98);
+        background: var(--surface-muted);
+      }
+
+      .v2-card-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 0.5rem;
+        margin-bottom: 0.4rem;
+      }
+
+      .v2-card-title {
+        font-size: 0.96rem;
+        font-weight: 700;
+        color: var(--text-strong);
+        margin: 0;
+        line-height: 1.35;
+      }
+
+      .v2-card-preview {
+        font-size: 0.84rem;
+        color: var(--text-default);
+        line-height: 1.48;
+        margin: 0 0 0.65rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+
+      /* Task Progress Pill */
+      .v2-task-progress {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        font-size: 0.72rem;
+        font-weight: 600;
+        color: #059669;
+        background: #ecfdf5;
+        border: 1px solid #a7f3d0;
+        padding: 0.15rem 0.45rem;
+        border-radius: 0.4rem;
+      }
+
+      .v2-card-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 0.72rem;
+        color: var(--text-muted);
+      }
+
+      .v2-card-meta-left {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+      }
+
+      /* ==========================================================================
+         SCREEN 2 (V2): Editor with Floating Capsule & Document Outline (TOC)
+         ========================================================================== */
+
+      .v2-editor-screen {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        background: var(--surface-panel);
+      }
+
+      .v2-editor-nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.65rem 1.15rem;
+        border-bottom: 1px solid var(--border-subtle);
+      }
+
+      .v2-editor-body {
+        flex: 1;
+        overflow-y: auto;
+        padding: 1.25rem 1.25rem 5rem;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .v2-editor-title-area {
+        margin-bottom: 0.85rem;
+      }
+
+      .v2-editor-title {
+        width: 100%;
+        border: none;
+        outline: none;
+        font-size: 1.55rem;
+        font-weight: 800;
+        color: var(--text-strong);
+        background: transparent;
+        line-height: 1.25;
+        font-family: inherit;
+      }
+
+      .v2-editor-stats-row {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-size: 0.72rem;
+        color: var(--text-muted);
+        margin-top: 0.35rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid var(--border-subtle);
+      }
+
+      .v2-editor-textarea {
+        flex: 1;
+        min-height: 380px;
+        border: none;
+        outline: none;
+        background: transparent;
+        font-size: 0.98rem;
+        line-height: 1.68;
+        color: var(--text-default);
+        font-family: var(--font-sans);
+        resize: none;
+      }
+
+      /* Floating Markdown Capsule (Contextual Formatting) */
+      .v2-format-capsule {
+        position: absolute;
+        bottom: 1.25rem;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        align-items: center;
+        gap: 0.2rem;
+        background: rgba(15, 23, 42, 0.92);
+        color: #fff;
+        backdrop-filter: blur(14px);
+        padding: 0.35rem 0.55rem;
+        border-radius: 999px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
+        z-index: 70;
+      }
+
+      .v2-capsule-btn {
+        width: 2.1rem;
+        height: 2.1rem;
+        border-radius: 999px;
+        border: none;
+        background: transparent;
+        color: #cbd5e1;
+        font-size: 0.85rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+      }
+
+      .v2-capsule-btn:active {
+        background: rgba(255, 255, 255, 0.15);
+        color: #fff;
+      }
+
+      .v2-capsule-divider {
+        width: 1px;
+        height: 1.15rem;
+        background: rgba(255, 255, 255, 0.2);
+        margin: 0 0.15rem;
+      }
+
+      /* Document Outline Drawer (TOC) */
+      .v2-toc-sheet {
+        position: absolute;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.5);
+        backdrop-filter: blur(4px);
+        z-index: 90;
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .v2-toc-panel {
+        width: 78%;
+        max-width: 300px;
+        height: 100%;
+        background: var(--surface-panel);
+        box-shadow: -10px 0 30px rgba(0, 0, 0, 0.2);
+        padding: 1.25rem;
+        display: flex;
+        flex-direction: column;
+        animation: tocSlide 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      @keyframes tocSlide {
+        from { transform: translateX(100%); }
+        to { transform: translateX(0); }
+      }
+
+      .v2-toc-item {
+        padding: 0.5rem 0;
+        font-size: 0.85rem;
+        color: var(--text-default);
+        cursor: pointer;
+        display: block;
+        text-decoration: none;
+        border-bottom: 1px dashed var(--border-subtle);
+      }
+
+      .v2-toc-item.h1 { font-weight: 700; color: var(--text-strong); }
+      .v2-toc-item.h2 { padding-left: 0.85rem; font-size: 0.8rem; }
+      .v2-toc-item.h3 { padding-left: 1.5rem; font-size: 0.75rem; color: var(--text-muted); }
+
+      /* ==========================================================================
+         SCREEN 3 (V2): Command Palette & Quick Switcher
+         ========================================================================== */
+
+      .v2-command-overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.55);
+        backdrop-filter: blur(6px);
+        z-index: 85;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        padding-top: 1.5rem;
+      }
+
+      .v2-command-modal {
+        margin: 0 1rem;
+        background: var(--surface-panel);
+        border: 1px solid var(--border-subtle);
+        border-radius: 1.25rem;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .v2-command-input-row {
+        display: flex;
+        align-items: center;
+        padding: 0.85rem 1rem;
+        border-bottom: 1px solid var(--border-subtle);
+        gap: 0.65rem;
+      }
+
+      .v2-command-input {
+        width: 100%;
+        border: none;
+        outline: none;
+        background: transparent;
+        font-size: 1rem;
+        color: var(--text-strong);
+      }
+
+      .v2-command-list {
+        padding: 0.5rem;
+        max-height: 380px;
+        overflow-y: auto;
+      }
+
+      .v2-command-section-title {
+        font-size: 0.68rem;
+        font-weight: 700;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        padding: 0.45rem 0.65rem 0.25rem;
+      }
+
+      .v2-command-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.65rem 0.75rem;
+        border-radius: 0.65rem;
+        cursor: pointer;
+        color: var(--text-strong);
+        font-size: 0.85rem;
+      }
+
+      .v2-command-row:hover,
+      .v2-command-row.is-selected {
+        background: var(--surface-muted);
+      }
+
+      /* ==========================================================================
+         SCREEN 4 (V2): Version History & Visual Diff Viewer
+         ========================================================================== */
+
+      .v2-history-screen {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        background: var(--surface-panel);
+      }
+
+      .v2-diff-box {
+        background: var(--surface-muted);
+        border: 1px solid var(--border-subtle);
+        border-radius: 0.85rem;
+        padding: 0.85rem;
+        font-family: var(--font-mono);
+        font-size: 0.78rem;
+        line-height: 1.6;
+        overflow-x: auto;
+        margin: 0.75rem 0;
+      }
+
+      .v2-diff-add {
+        background: rgba(16, 185, 129, 0.15);
+        color: #047857;
+        padding: 0.1rem 0.25rem;
+        border-radius: 0.25rem;
+        display: block;
+      }
+
+      .v2-diff-del {
+        background: rgba(239, 68, 68, 0.15);
+        color: #b91c1c;
+        padding: 0.1rem 0.25rem;
+        border-radius: 0.25rem;
+        display: block;
+        text-decoration: line-through;
+      }
+
+      /* Annotation Panel */
+      .v2-annotation-panel {
+        width: 400px;
+        background: #131b2e;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 1.5rem;
+        padding: 1.75rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+        color: #cbd5e1;
+        box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.4);
+      }
+
+      .v2-annotation-panel h2 {
+        margin: 0;
+        font-size: 1.2rem;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .v2-anno-item {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.07);
+        border-radius: 0.85rem;
+        padding: 1rem;
+      }
+
+      .v2-anno-tag {
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: #38bdf8;
+        display: inline-block;
+        margin-bottom: 0.35rem;
+      }
+
+      .v2-anno-title {
+        font-size: 0.92rem;
+        font-weight: 700;
+        color: #fff;
+        margin: 0 0 0.35rem;
+      }
+
+      .v2-anno-desc {
+        font-size: 0.82rem;
+        color: #94a3b8;
+        line-height: 1.55;
+        margin: 0;
+      }
+
+      .v2-anno-desc em {
+        color: #fdba74;
+        font-style: normal;
+      }
+
+      @media (max-width: 950px) {
+        .v2-viewport {
+          flex-direction: column;
+          align-items: center;
+        }
+        .v2-annotation-panel {
+          width: 100%;
+          max-width: var(--phone-w);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Top Presenter Bar -->
+    <header class="v2-presenter-bar">
+      <div class="v2-presenter-brand">
+        <svg width="24" height="24" viewBox="0 0 64 64" fill="none">
+          <rect x="2" y="2" width="60" height="60" rx="16" fill="#a35616" />
+          <path d="M 38,15 L 46,15 L 46,49 L 38,49 Z" fill="#e1ebf4" />
+          <path d="M 18,15 L 26,15 L 46,49 L 38,49 L 26,28.5 L 26,49 L 18,49 Z" fill="#ffffff" />
+        </svg>
+        <strong>Nook Mobile v2</strong>
+        <span class="v2-badge">Bottom Dock & Stream</span>
+      </div>
+
+      <div class="v2-controls">
+        <!-- Screen Switcher -->
+        <div class="v2-control-group">
+          <span style="font-size:0.75rem; color:#94a3b8; padding:0 0.35rem;">Màn hình:</span>
+          <button class="v2-control-btn is-active" data-v2-screen="feed">📱 Stream Feed</button>
+          <button class="v2-control-btn" data-v2-screen="editor">✍️ Focus Editor</button>
+          <button class="v2-control-btn" data-v2-screen="toc">📑 Outline (TOC)</button>
+          <button class="v2-control-btn" data-v2-screen="command">🔍 Quick Switcher</button>
+          <button class="v2-control-btn" data-v2-screen="history">⏳ Version Diff</button>
+        </div>
+
+        <!-- Theme Switcher -->
+        <div class="v2-control-group">
+          <span style="font-size:0.75rem; color:#94a3b8; padding:0 0.35rem;">Theme:</span>
+          <button class="v2-theme-btn" style="background: #9e6b02;" title="Light" data-theme="light"></button>
+          <button class="v2-theme-btn is-active" style="background: #a35616;" title="Coffee" data-theme="coffee"></button>
+          <button class="v2-theme-btn" style="background: #2f6b4f;" title="Forest" data-theme="forest"></button>
+          <button class="v2-theme-btn" style="background: #18263f;" title="Midnight" data-theme="midnight"></button>
+          <button class="v2-theme-btn" style="background: #0b0f19;" title="Dark" data-theme="dark"></button>
+          <button class="v2-theme-btn" style="background: #fff4dd; border-color: #888;" title="Retro" data-theme="retro"></button>
+        </div>
+
+        <!-- Frame Mode -->
+        <div class="v2-control-group">
+          <button id="v2-toggle-frame-btn" class="v2-control-btn">
+            <span>📐 Khung viền</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Viewport -->
+    <main class="v2-viewport">
+      <!-- Phone Frame -->
+      <div class="v2-phone-frame">
+        <!-- Status Bar -->
+        <div class="v2-status-bar">
+          <span>9:41</span>
+          <div class="v2-island"></div>
+          <div style="display:flex; align-items:center; gap:0.4rem; font-size:0.75rem;">
+            <span>5G</span>
+            <svg width="18" height="10" viewBox="0 0 24 14" fill="currentColor">
+              <rect x="1" y="1" width="19" height="12" rx="3" fill="none" stroke="currentColor" stroke-width="2"/>
+              <rect x="3" y="3" width="13" height="8" rx="1.5" fill="currentColor"/>
+              <path d="M22 5v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Mobile App Content -->
+        <div class="v2-app">
+          <!-- ==============================================================
+               SCREEN 1 (V2): Stream & Timeline Feed
+               ============================================================== -->
+          <div id="v2-screen-feed" class="v2-screen is-active">
+            <header class="v2-header-stream">
+              <div>
+                <h1 class="v2-header-title">Thư viện ghi chú</h1>
+              </div>
+              <div class="v2-header-actions">
+                <button class="v2-icon-circle" id="v2-trigger-command-btn" title="Tìm kiếm & Phím tắt">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8" />
+                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                  </svg>
+                </button>
+              </div>
+            </header>
+
+            <!-- Hero Pinned Card -->
+            <section class="v2-hero-note" data-v2-action="open-editor">
+              <div class="v2-hero-top">
+                <span class="v2-pin-label">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M16 4v4l2 3v2h-5v7l-1 1-1-1v-7H6v-2l2-3V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1z" />
+                  </svg>
+                  Ghi chú quan trọng
+                </span>
+                <span style="font-size:0.75rem; color:var(--text-muted);">Sửa 10:30</span>
+              </div>
+              <h2 class="v2-hero-title">Kiến trúc Protobloc & Quyết định kỹ thuật</h2>
+              <p class="v2-hero-preview">Xử lý bất đồng bộ (asynchronous processing), chiến lược chịu lỗi (fault tolerance), và cơ chế lưu trữ offline-first với IndexedDB...</p>
+              <div class="v2-hero-footer">
+                <div style="display:flex; gap:0.4rem;">
+                  <span class="v2-task-progress">✓ 4/5 mục xong</span>
+                  <span style="background:rgba(0,0,0,0.06); padding:0.15rem 0.45rem; border-radius:0.4rem; font-weight:600;">#architecture</span>
+                </div>
+                <span>480 từ</span>
+              </div>
+            </section>
+
+            <!-- Stream Group: Hôm nay -->
+            <div class="v2-stream-group">
+              <div class="v2-stream-date-header">
+                <span class="v2-stream-date-label">Hôm nay</span>
+                <span class="v2-stream-count">2 ghi chú</span>
+              </div>
+              <div class="v2-stream-cards">
+                <article class="v2-stream-card" data-v2-action="open-editor">
+                  <div class="v2-card-header">
+                    <h3 class="v2-card-title">Ý tưởng Nook Mobile v2: Bottom Dock & Gesture</h3>
+                  </div>
+                  <p class="v2-card-preview">Chuyển toàn bộ điều hướng xuống đáy màn hình (Thumb Zone). Đưa các nút định dạng vào Floating Capsule bám theo vị trí gõ...</p>
+                  <div class="v2-card-footer">
+                    <div class="v2-card-meta-left">
+                      <span style="width:7px; height:7px; border-radius:999px; background:#a855f7;"></span>
+                      <span style="font-weight:600;">Ý tưởng</span>
+                      <span>·</span>
+                      <span>#ux #mobile</span>
+                    </div>
+                    <span>08:15</span>
+                  </div>
+                </article>
+
+                <article class="v2-stream-card" data-v2-action="open-editor">
+                  <div class="v2-card-header">
+                    <h3 class="v2-card-title">Từ vựng tiếng Anh chuyên ngành Senior</h3>
+                  </div>
+                  <p class="v2-card-preview">Blast radius (phạm vi ảnh hưởng), Eventual consistency (tính nhất quán cuối cùng), Backpressure (áp lực ngược)...</p>
+                  <div class="v2-card-footer">
+                    <div class="v2-card-meta-left">
+                      <span style="width:7px; height:7px; border-radius:999px; background:#10b981;"></span>
+                      <span style="font-weight:600;">Học tập</span>
+                    </div>
+                    <span>07:45</span>
+                  </div>
+                </article>
+              </div>
+            </div>
+
+            <!-- Stream Group: Tuần này -->
+            <div class="v2-stream-group">
+              <div class="v2-stream-date-header">
+                <span class="v2-stream-date-label">Tuần này</span>
+                <span class="v2-stream-count">3 ghi chú</span>
+              </div>
+              <div class="v2-stream-cards">
+                <article class="v2-stream-card" data-v2-action="open-editor">
+                  <div class="v2-card-header">
+                    <h3 class="v2-card-title">Checklist chuẩn bị sinh con (Om 2026)</h3>
+                    <span class="v2-task-progress" style="color:#b45309; background:#fffbeb; border-color:#fde68a;">⏳ 3/8 mục</span>
+                  </div>
+                  <p class="v2-card-preview">- Tã dán sơ sinh (3 bịch)
+- Bình sữa chống sặc & máy tiệt trùng
+- Giấy tờ bệnh viện & sổ tiêm chủng...</p>
+                  <div class="v2-card-footer">
+                    <div class="v2-card-meta-left">
+                      <span style="width:7px; height:7px; border-radius:999px; background:#f59e0b;"></span>
+                      <span style="font-weight:600;">Cá nhân</span>
+                    </div>
+                    <span>18/09</span>
+                  </div>
+                </article>
+              </div>
+            </div>
+          </div>
+
+          <!-- ==============================================================
+               SCREEN 2 (V2): Editor with Floating Capsule
+               ============================================================== -->
+          <div id="v2-screen-editor" class="v2-screen">
+            <div class="v2-editor-screen">
+              <header class="v2-editor-nav">
+                <button class="v2-icon-circle" id="v2-editor-back-btn" style="border:none; width:2rem; height:2rem;">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="19" y1="12" x2="5" y2="12" />
+                    <polyline points="12 19 5 12 12 5" />
+                  </svg>
+                </button>
+                <div style="display:flex; align-items:center; gap:0.5rem;">
+                  <button class="v2-icon-circle" id="v2-open-toc-btn" style="width:2rem; height:2rem;" title="Mục lục bài viết">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <line x1="4" y1="6" x2="20" y2="6" />
+                      <line x1="4" y1="12" x2="14" y2="12" />
+                      <line x1="4" y1="18" x2="18" y2="18" />
+                    </svg>
+                  </button>
+                  <button class="v2-icon-circle" id="v2-open-history-btn" style="width:2rem; height:2rem;" title="Lịch sử phiên bản">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M3.5 12a8.5 8.5 0 1 0 2.2-5.7" />
+                      <path d="M3.5 4.8v4.4h4.4M12 7.5V12l3 1.8" />
+                    </svg>
+                  </button>
+                </div>
+              </header>
+
+              <div class="v2-editor-body">
+                <div class="v2-editor-title-area">
+                  <input class="v2-editor-title" type="text" value="Kiến trúc Protobloc & Quyết định kỹ thuật" />
+                  <div class="v2-editor-stats-row">
+                    <span style="color:#059669; font-weight:600;">● Đã lưu offline</span>
+                    <span>·</span>
+                    <span>480 từ</span>
+                    <span>·</span>
+                    <span>2 phút đọc</span>
+                    <span>·</span>
+                    <span style="color:var(--primary-accent); font-weight:600;">#architecture</span>
+                  </div>
+                </div>
+
+                <textarea class="v2-editor-textarea">### 1. Kiến trúc lưu trữ Offline-first
+Hệ thống sử dụng **IndexedDB** làm bộ lưu trữ cục bộ chính, cho phép đọc ghi mượt mà ngay cả khi không có mạng (*zero network latency*).
+
+### 2. Các quyết định kỹ thuật quan trọng
+- [x] Bất đồng bộ (*Asynchronous processing*)
+- [x] Tính chịu lỗi (*Fault tolerance*)
+- [ ] Giới hạn phạm vi ảnh hưởng (*Blast radius*)
+
+> [!NOTE]
+> Backup định kỳ qua JSON để phòng ngừa sự cố.</textarea>
+              </div>
+
+              <!-- Contextual Formatting Capsule (Pill) -->
+              <div class="v2-format-capsule">
+                <button class="v2-capsule-btn" title="Tiêu đề">H</button>
+                <button class="v2-capsule-btn" title="In đậm"><strong>B</strong></button>
+                <button class="v2-capsule-btn" title="In nghiêng"><em>I</em></button>
+                <button class="v2-capsule-btn" title="Khối mã">{ }</button>
+                <div class="v2-capsule-divider"></div>
+                <button class="v2-capsule-btn" title="Gạch đầu dòng">•≡</button>
+                <button class="v2-capsule-btn" title="Checklist">☑</button>
+                <div class="v2-capsule-divider"></div>
+                <button class="v2-capsule-btn" title="Hoàn tác">↺</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- ==============================================================
+               SCREEN 3 (V2): Document Outline Drawer (TOC)
+               ============================================================== -->
+          <div id="v2-screen-toc" class="v2-screen">
+            <div class="v2-toc-sheet">
+              <div class="v2-toc-panel">
+                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem; padding-bottom:0.65rem; border-bottom:1px solid var(--border-subtle);">
+                  <h3 style="margin:0; font-size:1.05rem; font-weight:800;">Mục lục (Outline)</h3>
+                  <button class="v2-icon-circle" id="v2-close-toc-btn" style="width:1.85rem; height:1.85rem; border:none;">✕</button>
+                </div>
+                <nav style="display:flex; flex-direction:column; gap:0.25rem;">
+                  <a class="v2-toc-item h1">Kiến trúc Protobloc</a>
+                  <a class="v2-toc-item h2">1. Kiến trúc lưu trữ Offline-first</a>
+                  <a class="v2-toc-item h3">IndexedDB Schema & Migration</a>
+                  <a class="v2-toc-item h2">2. Các quyết định kỹ thuật quan trọng</a>
+                  <a class="v2-toc-item h3">Bất đồng bộ (Asynchronous processing)</a>
+                  <a class="v2-toc-item h3">Phạm vi ảnh hưởng (Blast radius)</a>
+                  <a class="v2-toc-item h2">3. Kế hoạch sao lưu dữ liệu</a>
+                </nav>
+              </div>
+            </div>
+          </div>
+
+          <!-- ==============================================================
+               SCREEN 4 (V2): Command Palette & Quick Switcher
+               ============================================================== -->
+          <div id="v2-screen-command" class="v2-screen">
+            <div class="v2-command-overlay">
+              <div class="v2-command-modal">
+                <div class="v2-command-input-row">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8" />
+                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                  </svg>
+                  <input class="v2-command-input" type="text" placeholder="Tìm kiếm hoặc gõ lệnh…" autofocus value="arch" />
+                  <button class="v2-icon-circle" id="v2-close-command-btn" style="border:none; width:1.85rem; height:1.85rem;">✕</button>
+                </div>
+                <div class="v2-command-list">
+                  <div class="v2-command-section-title">Ghi chú khớp từ khóa</div>
+                  <div class="v2-command-row is-selected">
+                    <div>
+                      <strong style="display:block;">Kiến trúc Protobloc</strong>
+                      <small style="color:var(--text-muted);">...quyết định về xử lý bất đồng bộ...</small>
+                    </div>
+                    <span style="font-size:0.7rem; color:var(--primary-accent);">Hôm nay</span>
+                  </div>
+                  <div class="v2-command-row">
+                    <div>
+                      <strong style="display:block;">System Architecture Patterns</strong>
+                      <small style="color:var(--text-muted);">Eventual consistency, CQRS...</small>
+                    </div>
+                    <span style="font-size:0.7rem; color:var(--text-muted);">12/09</span>
+                  </div>
+
+                  <div class="v2-command-section-title">Thao tác nhanh</div>
+                  <div class="v2-command-row">
+                    <div style="display:flex; align-items:center; gap:0.5rem;">
+                      <span>⚡</span>
+                      <span>Lọc theo tag <strong>#architecture</strong></span>
+                    </div>
+                  </div>
+                  <div class="v2-command-row">
+                    <div style="display:flex; align-items:center; gap:0.5rem;">
+                      <span>➕</span>
+                      <span>Tạo ghi chú mới với tag này</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ==============================================================
+               SCREEN 5 (V2): Version History & Visual Diff
+               ============================================================== -->
+          <div id="v2-screen-history" class="v2-screen">
+            <div class="v2-history-screen">
+              <header class="v2-editor-nav">
+                <button class="v2-icon-circle" id="v2-history-back-btn" style="border:none; width:2rem; height:2rem;">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="19" y1="12" x2="5" y2="12" />
+                    <polyline points="12 19 5 12 12 5" />
+                  </svg>
+                </button>
+                <div style="font-weight:700; font-size:0.95rem;">Lịch sử phiên bản</div>
+                <button class="v2-control-btn is-active" style="padding:0.35rem 0.75rem; font-size:0.78rem;">Khôi phục</button>
+              </header>
+
+              <div style="padding:1.15rem; flex:1; overflow-y:auto;">
+                <div style="display:flex; gap:0.5rem; margin-bottom:1rem; overflow-x:auto; padding-bottom:0.25rem;">
+                  <button class="v2-control-btn is-active" style="white-space:nowrap;">Bản hiện tại (10:30)</button>
+                  <button class="v2-control-btn" style="white-space:nowrap; border:1px solid var(--border-subtle); color:var(--text-strong);">Hôm qua (18:45)</button>
+                  <button class="v2-control-btn" style="white-space:nowrap; border:1px solid var(--border-subtle); color:var(--text-strong);">15/09 (09:12)</button>
+                </div>
+
+                <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:0.5rem;">So sánh thay đổi (Visual Diff):</div>
+                <div class="v2-diff-box">
+                  <span>### 2. Các quyết định kỹ thuật quan trọng</span>
+                  <span class="v2-diff-del">- [ ] Bất đồng bộ (fire-and-forget)</span>
+                  <span class="v2-diff-add">- [x] Bất đồng bộ (*Asynchronous processing*)</span>
+                  <span class="v2-diff-add">- [x] Tính chịu lỗi (*Fault tolerance*)</span>
+                  <span>- [ ] Giới hạn phạm vi ảnh hưởng (*Blast radius*)</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Floating Bottom Dock (Action Island) -->
+          <div class="v2-dock-container">
+            <nav class="v2-dock">
+              <button class="v2-dock-item is-active" id="dock-btn-feed">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="3" width="18" height="18" rx="2" />
+                  <path d="M7 8h10M7 12h10M7 16h6" />
+                </svg>
+                <span>Ghi chú</span>
+              </button>
+
+              <button class="v2-dock-item" id="dock-btn-search">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="11" cy="11" r="8" />
+                  <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                </svg>
+                <span>Tìm kiếm</span>
+              </button>
+
+              <!-- Center Add (+) Button -->
+              <button class="v2-dock-add-btn" id="dock-btn-add" title="Ghi chú mới">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <line x1="12" y1="5" x2="12" y2="19" />
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+              </button>
+
+              <button class="v2-dock-item" id="dock-btn-tags">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
+                  <line x1="7" y1="7" x2="7.01" y2="7" />
+                </svg>
+                <span>Nhãn</span>
+              </button>
+
+              <button class="v2-dock-item" id="dock-btn-history">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M3.5 12a8.5 8.5 0 1 0 2.2-5.7" />
+                  <path d="M3.5 4.8v4.4h4.4M12 7.5V12l3 1.8" />
+                </svg>
+                <span>Lịch sử</span>
+              </button>
+            </nav>
+          </div>
+        </div>
+
+        <div class="v2-home-bar"></div>
+      </div>
+
+      <!-- Design Annotations Panel -->
+      <aside class="v2-annotation-panel">
+        <h2>
+          <span>✨ Điểm sáng tạo ở Version 2</span>
+        </h2>
+
+        <div class="v2-anno-item">
+          <span class="v2-anno-tag">Cải tiến 1 · Công thái học (Ergonomics)</span>
+          <h3 class="v2-anno-title">Floating Bottom Dock (Action Island)</h3>
+          <p class="v2-anno-desc">
+            Không còn nút hamburger ở góc trên bên trái! 100% các thao tác cốt lõi (Xem ghi chú, Tìm kiếm, Tạo mới, Xem nhãn, Lịch sử) được đưa xuống <em>Floating Bottom Dock</em> ngay trong tầm tay cái (*thumb zone*).
+          </p>
+        </div>
+
+        <div class="v2-anno-item">
+          <span class="v2-anno-tag">Cải tiến 2 · Bố cục dữ liệu</span>
+          <h3 class="v2-anno-title">Stream Timeline & Task Progress</h3>
+          <p class="v2-anno-desc">
+            Ghi chú được phân nhóm theo dòng thời gian tự nhiên (<em>Hôm nay, Tuần này, Tháng trước</em>). Thẻ ghi chú tự động phân tích Markdown để hiển thị tiến độ công việc (<em>✓ 4/5 mục xong</em>) và số lượng từ.
+          </p>
+        </div>
+
+        <div class="v2-anno-item">
+          <span class="v2-anno-tag">Cải tiến 3 · Trình soạn thảo tập trung</span>
+          <h3 class="v2-anno-title">Floating Capsule & Mục lục (TOC)</h3>
+          <p class="v2-anno-desc">
+            Thanh công cụ định dạng được thu gọn thành một viên con nhộng nổi (<em>Floating Capsule</em>) tinh tế, không làm mất diện tích gõ. Thêm ngăn kéo <em>Mục lục (Outline)</em> giúp nhảy nhanh tới các tiêu đề trong ghi chú dài.
+          </p>
+        </div>
+
+        <div class="v2-anno-item">
+          <span class="v2-anno-tag">Cải tiến 4 · Tính năng cao cấp Nook</span>
+          <h3 class="v2-anno-title">Visual Diff cho 50 phiên bản lịch sử</h3>
+          <p class="v2-anno-desc">
+            Nook lưu tới 50 bản sửa đổi cho mỗi ghi chú. Version 2 đưa ra giao diện so sánh trực quan (<em>Visual Diff</em>) màu xanh/đỏ chuẩn Git trên mobile để dễ dàng khôi phục nội dung cũ.
+          </p>
+        </div>
+      </aside>
+    </main>
+
+    <!-- Interactive Script -->
+    <script>
+      (() => {
+        const screens = {
+          feed: document.getElementById("v2-screen-feed"),
+          editor: document.getElementById("v2-screen-editor"),
+          toc: document.getElementById("v2-screen-toc"),
+          command: document.getElementById("v2-screen-command"),
+          history: document.getElementById("v2-screen-history")
+        };
+
+        const screenBtns = document.querySelectorAll("[data-v2-screen]");
+
+        function switchScreen(name) {
+          Object.entries(screens).forEach(([sName, el]) => {
+            if (el) el.classList.toggle("is-active", sName === name);
+          });
+          screenBtns.forEach(b => b.classList.toggle("is-active", b.dataset.v2Screen === name));
+
+          // Highlight dock item if matching
+          document.getElementById("dock-btn-feed")?.classList.toggle("is-active", name === "feed");
+          document.getElementById("dock-btn-search")?.classList.toggle("is-active", name === "command");
+          document.getElementById("dock-btn-history")?.classList.toggle("is-active", name === "history");
+        }
+
+        screenBtns.forEach(b => b.addEventListener("click", () => switchScreen(b.dataset.v2Screen)));
+
+        // In-app triggers
+        document.querySelectorAll("[data-v2-action='open-editor']").forEach(el => {
+          el.addEventListener("click", () => switchScreen("editor"));
+        });
+
+        document.getElementById("v2-editor-back-btn")?.addEventListener("click", () => switchScreen("feed"));
+        document.getElementById("v2-open-toc-btn")?.addEventListener("click", () => switchScreen("toc"));
+        document.getElementById("v2-close-toc-btn")?.addEventListener("click", () => switchScreen("editor"));
+        document.getElementById("v2-open-history-btn")?.addEventListener("click", () => switchScreen("history"));
+        document.getElementById("v2-history-back-btn")?.addEventListener("click", () => switchScreen("editor"));
+
+        document.getElementById("v2-trigger-command-btn")?.addEventListener("click", () => switchScreen("command"));
+        document.getElementById("v2-close-command-btn")?.addEventListener("click", () => switchScreen("feed"));
+
+        // Dock buttons
+        document.getElementById("dock-btn-feed")?.addEventListener("click", () => switchScreen("feed"));
+        document.getElementById("dock-btn-search")?.addEventListener("click", () => switchScreen("command"));
+        document.getElementById("dock-btn-add")?.addEventListener("click", () => switchScreen("editor"));
+        document.getElementById("dock-btn-history")?.addEventListener("click", () => switchScreen("history"));
+        document.getElementById("dock-btn-tags")?.addEventListener("click", () => switchScreen("command"));
+
+        // Themes
+        const themeBtns = document.querySelectorAll("[data-theme]");
+        themeBtns.forEach(btn => {
+          btn.addEventListener("click", () => {
+            document.documentElement.dataset.theme = btn.dataset.theme;
+            themeBtns.forEach(b => b.classList.toggle("is-active", b === btn));
+          });
+        });
+
+        // Frame toggle
+        document.getElementById("v2-toggle-frame-btn")?.addEventListener("click", () => {
+          document.body.classList.toggle("mode-responsive");
+        });
+      })();
+    </script>
+  </body>
+</html>

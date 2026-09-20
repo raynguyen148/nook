@@ -116,9 +116,9 @@
 
         <div id="sidebar-body" class="sidebar__body">
           <div class="sidebar__body-inner">
-            <div id="backup-health" class="storage-status backup-health" aria-live="polite" title="Your notes are stored locally in this browser. This is the backup status.">
+            <div id="backup-health" class="storage-status backup-health" data-state="never" aria-live="polite" aria-label="Notes are stored only in this browser. No backup download has been requested yet." title="Notes are stored only in this browser. No backup download has been requested yet.">
               <span id="backup-health-dot" class="status-dot status-dot--backup-never" aria-hidden="true"></span>
-              <span id="backup-health-message">Stored locally · no backup download requested yet</span>
+              <span id="backup-health-message">Local · No backup yet</span>
             </div>
 
             <section class="space-navigation" aria-labelledby="space-navigation-heading">
@@ -808,7 +808,7 @@
                   <path d="M5 6h.01M9 6h.01M13 6h.01M17 6h.01M5 10h.01M9 10h.01M13 10h.01M17 10h.01M7.5 13h9"></path>
                 </svg>
               </button>
-              <span id="note-save-shortcut-help" class="sr-only">Press 1 for the Markdown editor, 2 for split preview, and 3 for Preview. Press T to cycle the theme when focus is outside form controls. Formatting shortcuts support bold, italic, links, inline code, numbered lists, and bullet lists. Quick save keeps this note open. Save note closes it.</span>
+              <span id="note-save-shortcut-help" class="sr-only">Press 1 for the Markdown editor, 2 for split preview, and 3 for Preview. Press T to cycle the theme when focus is outside text fields and editable controls. Formatting shortcuts support bold, italic, links, inline code, numbered lists, and bullet lists. Quick save keeps this note open. Save note closes it.</span>
               <div class="note-save-shortcut__tooltip" role="tooltip">
                 <p>Note shortcuts</p>
                 <div class="note-save-shortcut__row">

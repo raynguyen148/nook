@@ -1167,6 +1167,7 @@ html body .management-search input:focus-visible {
  * Tab versus pointer modality explicitly for these controls. */
 html:not([data-input-modality="keyboard"]) body .search-field input:focus {
   border-color: transparent !important;
+  background-color: var(--form-control-resting-background) !important;
   box-shadow: none !important;
   outline: none !important;
 }
@@ -1175,6 +1176,7 @@ html:not([data-input-modality="keyboard"]) body .search-field input:focus {
 
 html:not([data-input-modality="keyboard"]) body .sort-field select:focus {
   border-color: color-mix(in srgb, currentColor 18%, transparent) !important;
+  background-color: var(--form-control-resting-background) !important;
   box-shadow: none !important;
   outline: none !important;
 }
@@ -1183,6 +1185,7 @@ html:not([data-input-modality="keyboard"]) body .sort-field select:focus {
 
 html:not([data-input-modality="keyboard"]) body .management-search input:focus {
   border-color: var(--management-search-resting-border) !important;
+  background-color: var(--form-control-resting-background) !important;
   box-shadow: var(--management-search-resting-shadow) !important;
   outline: none !important;
 }
@@ -1191,7 +1194,28 @@ html:not([data-input-modality="keyboard"]) body .management-search input:focus {
 
 html:not([data-input-modality="keyboard"]) body .management-row input:focus {
   border-color: var(--management-row-input-resting-border) !important;
+  background-color: var(--form-control-resting-background) !important;
   box-shadow: var(--management-row-input-resting-shadow) !important;
+  outline: none !important;
+}
+
+
+
+html:not([data-input-modality="keyboard"])
+  body
+  .field:not(.field--title):not(.tag-editor-field):not(.note-content-field)
+  :is(input, select, textarea):focus,
+html:not([data-input-modality="keyboard"])
+  body
+  .create-row
+  :is(input, select):focus,
+html:not([data-input-modality="keyboard"])
+  body
+  .management-row
+  select:focus {
+  border-color: var(--form-control-resting-border) !important;
+  background-color: var(--form-control-resting-background) !important;
+  box-shadow: var(--form-control-resting-shadow) !important;
   outline: none !important;
 }
 
@@ -1307,10 +1331,17 @@ html:not([data-input-modality="keyboard"]) body .note-dialog .tag-picker:focus-w
 
 
 
-.note-editor-modes,
-.view-mode-control__choices {
+.note-editor-modes {
   border-color: var(--component-border);
   border-radius: var(--radius-pill);
+  background: var(--component-surface-muted);
+}
+
+
+
+.view-mode-control__choices {
+  border-color: var(--component-border);
+  border-radius: var(--radius-control);
   background: var(--component-surface-muted);
 }
 

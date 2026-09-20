@@ -367,6 +367,9 @@
 
   .backup-health {
     grid-column: 1 / -1;
+    align-self: stretch;
+    width: 100%;
+    justify-content: flex-start;
   }
 
   .brand {
@@ -566,6 +569,14 @@
     align-self: center;
     margin: 0.45rem auto 0.75rem;
     width: fit-content;
+  }
+
+  .backup-health {
+    justify-content: flex-start;
+    justify-self: stretch;
+    align-self: stretch;
+    width: 100%;
+    margin-inline: 0;
   }
 
   .workspace {

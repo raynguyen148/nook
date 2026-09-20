@@ -28,9 +28,8 @@
 
 .storage-status {
   margin-top: 1.05rem;
-  border: 1px solid #e2e8f0;
-  border-radius: 0.55rem;
-  background: rgb(248 250 252 / 80%);
+  border: 1px solid var(--backup-health-border, var(--component-border));
+  background: var(--backup-health-surface, var(--component-surface-muted));
 }
 
 

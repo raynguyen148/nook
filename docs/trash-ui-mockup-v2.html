@@ -1,0 +1,867 @@
+<!doctype html>
+<html lang="vi" data-theme="coffee">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Nook — Mockup UI Trash (Đề Xuất Nâng Cao v2)</title>
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="../css/app.css" />
+    <style>
+      body {
+        margin: 0;
+        padding: 2rem 1.5rem 4rem;
+        background: #090d16;
+        color: #f8fafc;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      .v2-header {
+        max-width: 1240px;
+        margin: 0 auto 2rem;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding-bottom: 1.25rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      }
+
+      .v2-title h1 {
+        margin: 0 0 0.35rem;
+        font-size: 1.45rem;
+        font-weight: 700;
+        color: #fff;
+      }
+
+      .v2-title p {
+        margin: 0;
+        font-size: 0.88rem;
+        color: #94a3b8;
+      }
+
+      .v2-toolbar-controls {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.75rem;
+      }
+
+      .v2-btn-group {
+        display: inline-flex;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.09);
+        border-radius: 0.65rem;
+        padding: 0.2rem;
+        gap: 0.2rem;
+      }
+
+      .v2-nav-btn {
+        background: transparent;
+        border: none;
+        color: #94a3b8;
+        font-size: 0.8rem;
+        font-weight: 500;
+        padding: 0.35rem 0.75rem;
+        border-radius: 0.45rem;
+        cursor: pointer;
+        transition: all 0.15s ease;
+      }
+
+      .v2-nav-btn:hover {
+        background: rgba(255, 255, 255, 0.08);
+        color: #fff;
+      }
+
+      .v2-nav-btn.is-active {
+        background: #f43f5e;
+        color: #fff;
+        font-weight: 600;
+      }
+
+      .theme-dot-btn {
+        width: 1.35rem;
+        height: 1.35rem;
+        border-radius: 999px;
+        border: 2px solid transparent;
+        cursor: pointer;
+        padding: 0;
+        transition: transform 0.15s ease;
+      }
+
+      .theme-dot-btn:hover {
+        transform: scale(1.15);
+      }
+
+      .theme-dot-btn.is-active {
+        border-color: #fff;
+        transform: scale(1.15);
+      }
+
+      /* Workspace Container */
+      .workspace-preview {
+        max-width: 1240px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+      }
+
+      .workspace-shell {
+        background: var(--surface-page);
+        border: 1px solid var(--border-subtle);
+        border-radius: 1.25rem;
+        padding: 2rem;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        color: var(--text-strong);
+        position: relative;
+        overflow: hidden;
+        transition: all 0.2s ease;
+      }
+
+      /* Background tint for Trash */
+      .workspace-shell.has-trash-tint {
+        background: linear-gradient(180deg, rgba(244, 63, 94, 0.03) 0%, var(--surface-page) 140px);
+      }
+
+      /* Topbar */
+      .ws-topbar {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+      }
+
+      .ws-eyebrow {
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #f43f5e;
+        margin: 0 0 0.25rem;
+      }
+
+      .ws-title {
+        font-size: 1.85rem;
+        font-weight: 800;
+        letter-spacing: -0.025em;
+        margin: 0 0 0.35rem;
+        color: var(--text-strong);
+        line-height: 1.2;
+      }
+
+      .ws-subtitle {
+        font-size: 0.88rem;
+        color: var(--text-muted);
+        margin: 0;
+      }
+
+      .ws-topbar-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .ws-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        height: 2.4rem;
+        padding: 0 0.85rem;
+        border-radius: 0.72rem;
+        font-size: 0.82rem;
+        font-weight: 600;
+        cursor: pointer;
+        border: 1px solid var(--border-subtle);
+        background: var(--surface-panel);
+        color: var(--text-strong);
+      }
+
+      .ws-btn-danger {
+        background: #fff1f2;
+        border-color: #fecdd3;
+        color: #e11d48;
+      }
+
+      /* Notes Panel */
+      .ws-panel {
+        background: var(--surface-panel);
+        border: 1px solid var(--border-subtle);
+        border-radius: 1.1rem;
+        padding: 1.35rem 1.5rem 5rem;
+        position: relative;
+      }
+
+      .ws-panel-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1.25rem;
+      }
+
+      .ws-panel-title {
+        font-size: 1.35rem;
+        font-weight: 800;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.55rem;
+      }
+
+      .ws-panel-pill {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        background: var(--surface-muted);
+        padding: 0.2rem 0.6rem;
+        border-radius: 999px;
+      }
+
+      /* Toolbar */
+      .ws-toolbar {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 1.35rem;
+      }
+
+      .ws-search {
+        flex: 1;
+        height: 2.35rem;
+        border: 1px solid var(--border-subtle);
+        border-radius: 0.65rem;
+        background: var(--surface-muted);
+        padding: 0 0.75rem;
+        font-size: 0.82rem;
+        color: var(--text-muted);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      /* Grid of Cards */
+      .ws-cards-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 1.15rem;
+      }
+
+      @media (max-width: 900px) {
+        .ws-cards-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* Base Card */
+      .ws-card {
+        background: var(--surface-panel);
+        border: 1px solid var(--border-subtle);
+        border-radius: 0.95rem;
+        padding: 1.1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.2s ease;
+      }
+
+      /* ==========================================================================
+         CONCEPT 1: "Ghost Cards & Hover-to-Resurrect"
+         ========================================================================== */
+      .mode-ghost .ws-card {
+        opacity: 0.78;
+        filter: grayscale(20%);
+        border-style: dashed;
+      }
+
+      .mode-ghost .ws-card:hover {
+        opacity: 1;
+        filter: grayscale(0%);
+        border-style: solid;
+        border-color: #059669;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px -4px rgba(5, 150, 105, 0.15);
+      }
+
+      /* Central Hover Resurrection Overlay */
+      .ws-card-resurrect-overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(255, 255, 255, 0.88);
+        backdrop-filter: blur(2px);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 0.5rem;
+        z-index: 10;
+        animation: fadeIn 0.15s ease;
+      }
+
+      [data-theme="dark"] .ws-card-resurrect-overlay,
+      [data-theme="midnight"] .ws-card-resurrect-overlay {
+        background: rgba(15, 23, 42, 0.88);
+      }
+
+      .mode-ghost .ws-card:hover .ws-card-resurrect-overlay {
+        display: flex;
+      }
+
+      .btn-resurrect {
+        background: #059669;
+        color: #fff;
+        border: none;
+        border-radius: 999px;
+        padding: 0.55rem 1.15rem;
+        font-size: 0.82rem;
+        font-weight: 700;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
+        transition: transform 0.15s ease;
+      }
+
+      .btn-resurrect:hover {
+        transform: scale(1.05);
+      }
+
+      .btn-purge-small {
+        background: transparent;
+        color: #e11d48;
+        border: none;
+        font-size: 0.72rem;
+        font-weight: 600;
+        cursor: pointer;
+      }
+
+      .btn-purge-small:hover {
+        text-decoration: underline;
+      }
+
+      /* ==========================================================================
+         CONCEPT 2: "Deletion Timeline & Badges"
+         ========================================================================== */
+      .deletion-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        font-size: 0.7rem;
+        font-weight: 600;
+        color: #e11d48;
+        background: #fff1f2;
+        border: 1px solid #fecdd3;
+        padding: 0.15rem 0.45rem;
+        border-radius: 0.35rem;
+      }
+
+      /* ==========================================================================
+         CONCEPT 3: "Watermark Stamp / Archived Paper"
+         ========================================================================== */
+      .mode-stamp .ws-card::before {
+        content: "TRASH";
+        position: absolute;
+        top: 1.2rem;
+        right: -1.2rem;
+        transform: rotate(25deg);
+        font-size: 0.65rem;
+        font-weight: 900;
+        letter-spacing: 0.15em;
+        color: rgba(225, 29, 72, 0.35);
+        border: 1.5px solid rgba(225, 29, 72, 0.35);
+        padding: 0.1rem 0.6rem;
+        border-radius: 0.25rem;
+        pointer-events: none;
+      }
+
+      /* ==========================================================================
+         CONCEPT 4: "Dual-Action Card Footer"
+         ========================================================================== */
+      .dual-action-footer {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.45rem;
+        margin-top: 0.65rem;
+        padding-top: 0.65rem;
+        border-top: 1px solid var(--border-subtle);
+      }
+
+      .btn-card-restore {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.35rem;
+        padding: 0.45rem;
+        border-radius: 0.5rem;
+        border: 1px solid #a7f3d0;
+        background: #ecfdf5;
+        color: #059669;
+        font-size: 0.75rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background 0.15s ease;
+      }
+
+      .btn-card-restore:hover {
+        background: #d1fae5;
+      }
+
+      .btn-card-purge {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.35rem;
+        padding: 0.45rem;
+        border-radius: 0.5rem;
+        border: 1px solid #fecdd3;
+        background: #fff1f2;
+        color: #e11d48;
+        font-size: 0.75rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background 0.15s ease;
+      }
+
+      .btn-card-purge:hover {
+        background: #ffe4e6;
+      }
+
+      /* ==========================================================================
+         CONCEPT 5: "Floating Recovery Dock" (Bottom Center)
+         ========================================================================== */
+      .floating-recovery-dock {
+        position: absolute;
+        bottom: 1.25rem;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(15, 23, 42, 0.94);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        color: #fff;
+        backdrop-filter: blur(16px);
+        padding: 0.45rem 0.75rem 0.45rem 1.15rem;
+        border-radius: 999px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.35);
+        display: flex;
+        align-items: center;
+        gap: 1.25rem;
+        z-index: 50;
+        animation: slideUpDock 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      @keyframes slideUpDock {
+        from { transform: translate(-50%, 20px); opacity: 0; }
+        to { transform: translate(-50%, 0); opacity: 1; }
+      }
+
+      .dock-info {
+        display: flex;
+        align-items: center;
+        gap: 0.55rem;
+        font-size: 0.8rem;
+        font-weight: 600;
+      }
+
+      .dock-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.45rem;
+      }
+
+      .dock-btn {
+        appearance: none;
+        border: none;
+        border-radius: 999px;
+        padding: 0.4rem 0.85rem;
+        font-size: 0.75rem;
+        font-weight: 700;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+      }
+
+      .dock-btn-restore-all {
+        background: #059669;
+        color: #fff;
+      }
+
+      .dock-btn-empty {
+        background: rgba(225, 29, 72, 0.2);
+        color: #fca5a5;
+        border: 1px solid rgba(225, 29, 72, 0.4);
+      }
+
+      /* Card Typography & Internals */
+      .card-meta-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 0.72rem;
+        color: var(--text-muted);
+      }
+
+      .card-title-text {
+        font-size: 0.96rem;
+        font-weight: 700;
+        color: var(--text-strong);
+        margin: 0;
+        line-height: 1.35;
+      }
+
+      .card-preview-text {
+        font-size: 0.82rem;
+        color: var(--text-default);
+        line-height: 1.5;
+        margin: 0;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+
+      /* Detail Annotations Panel */
+      .v2-annotation-box {
+        background: #131b2e;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 1.25rem;
+        padding: 1.75rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+      }
+
+      .v2-annotation-box h2 {
+        margin: 0;
+        font-size: 1.2rem;
+        color: #fff;
+      }
+
+      .v2-grid-annotations {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 1rem;
+      }
+
+      .v2-anno-item {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.07);
+        border-radius: 0.85rem;
+        padding: 1rem;
+      }
+
+      .v2-anno-item h3 {
+        margin: 0 0 0.35rem;
+        font-size: 0.94rem;
+        color: #38bdf8;
+      }
+
+      .v2-anno-item p {
+        margin: 0;
+        font-size: 0.82rem;
+        color: #94a3b8;
+        line-height: 1.55;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="v2-header">
+      <div class="v2-title">
+        <h1>Nook — 5 Đề Xuất UI Trash Sáng Tạo (Phiên Bản Nâng Cao)</h1>
+        <p>Tìm kiếm giải pháp tinh tế, bảo vệ an toàn dữ liệu người dùng mà không tạo cảm giác ồn ào.</p>
+      </div>
+
+      <div class="v2-toolbar-controls">
+        <!-- Mode Switcher -->
+        <div class="v2-btn-group">
+          <button class="v2-nav-btn is-active" data-trash-mode="dock">1. Floating Dock</button>
+          <button class="v2-nav-btn" data-trash-mode="ghost">2. Thẻ bóng ma (Ghost)</button>
+          <button class="v2-nav-btn" data-trash-mode="dual">3. Phím bấm kép trên thẻ</button>
+          <button class="v2-nav-btn" data-trash-mode="timeline">4. Dòng thời gian xóa</button>
+          <button class="v2-nav-btn" data-trash-mode="stamp">5. Con dấu mờ (Stamp)</button>
+        </div>
+
+        <!-- Theme Picker -->
+        <div class="v2-btn-group" style="padding:0.25rem 0.5rem; gap:0.45rem;">
+          <button class="theme-dot-btn" style="background:#9e6b02;" data-theme="light" title="Light"></button>
+          <button class="theme-dot-btn is-active" style="background:#a35616;" data-theme="coffee" title="Coffee"></button>
+          <button class="theme-dot-btn" style="background:#2f6b4f;" data-theme="forest" title="Forest"></button>
+          <button class="theme-dot-btn" style="background:#18263f;" data-theme="midnight" title="Midnight"></button>
+          <button class="theme-dot-btn" style="background:#0b0f19;" data-theme="dark" title="Dark"></button>
+          <button class="theme-dot-btn" style="background:#fff4dd; border-color:#888;" data-theme="retro" title="Retro"></button>
+        </div>
+      </div>
+    </header>
+
+    <main class="workspace-preview">
+      <div class="workspace-shell has-trash-tint" id="ws-shell">
+        <!-- Topbar -->
+        <header class="ws-topbar">
+          <div>
+            <p class="ws-eyebrow">SPACE / TRASH</p>
+            <h1 class="ws-title">Thùng rác (Trash)</h1>
+            <p class="ws-subtitle">Các ghi chú đã xóa sẽ được lưu giữ tại đây cho đến khi bạn dọn sạch.</p>
+          </div>
+          <div class="ws-topbar-actions">
+            <button class="ws-btn">Cài đặt</button>
+            <button class="ws-btn">Sao lưu</button>
+            <button class="ws-btn ws-btn-danger">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
+              </svg>
+              <span>Dọn sạch thùng rác</span>
+            </button>
+          </div>
+        </header>
+
+        <!-- Panel -->
+        <section class="ws-panel">
+          <div class="ws-panel-header">
+            <h2 class="ws-panel-title">
+              <span>Danh sách ghi chú đã xóa</span>
+              <span class="ws-panel-pill">14 ghi chú</span>
+            </h2>
+          </div>
+
+          <div class="ws-toolbar">
+            <div class="ws-search">
+              <span>⌕ Tìm kiếm trong thùng rác…</span>
+            </div>
+            <button class="ws-btn" style="height:2.35rem;">Mới xóa nhất ▾</button>
+          </div>
+
+          <!-- Cards Grid -->
+          <div class="ws-cards-grid">
+            <!-- Card 1 -->
+            <article class="ws-card">
+              <!-- Hover to Resurrect Overlay -->
+              <div class="ws-card-resurrect-overlay">
+                <button class="btn-resurrect">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                    <path d="M3 3v5h5" />
+                  </svg>
+                  <span>Khôi phục ghi chú</span>
+                </button>
+                <button class="btn-purge-small">Xóa vĩnh viễn</button>
+              </div>
+
+              <div class="card-meta-row">
+                <span style="font-weight:600; color:#38bdf8;">Meeting</span>
+                <span class="deletion-badge">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>
+                  Xóa 2 ngày trước
+                </span>
+              </div>
+              <h3 class="card-title-text">Khó khăn khi làm việc</h3>
+              <p class="card-preview-text">To be honest, it's been a bit more challenging than I expected. I've been using AI to analyze the problems...</p>
+
+              <!-- Dual Action Footer (Visible in Dual Mode) -->
+              <div class="dual-action-footer">
+                <button class="btn-card-restore">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+                  <span>Khôi phục</span>
+                </button>
+                <button class="btn-card-purge">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+                  <span>Xóa hẳn</span>
+                </button>
+              </div>
+            </article>
+
+            <!-- Card 2 -->
+            <article class="ws-card">
+              <div class="ws-card-resurrect-overlay">
+                <button class="btn-resurrect">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                    <path d="M3 3v5h5" />
+                  </svg>
+                  <span>Khôi phục ghi chú</span>
+                </button>
+                <button class="btn-purge-small">Xóa vĩnh viễn</button>
+              </div>
+
+              <div class="card-meta-row">
+                <span style="font-weight:600; color:#10b981;">General</span>
+                <span class="deletion-badge">Xóa hôm qua</span>
+              </div>
+              <h3 class="card-title-text">Erik slack notes</h3>
+              <p class="card-preview-text">Hi Erik, Just finished capturing the screenshots for the deck! Used clean sample data on prod...</p>
+
+              <div class="dual-action-footer">
+                <button class="btn-card-restore">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+                  <span>Khôi phục</span>
+                </button>
+                <button class="btn-card-purge">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+                  <span>Xóa hẳn</span>
+                </button>
+              </div>
+            </article>
+
+            <!-- Card 3 -->
+            <article class="ws-card">
+              <div class="ws-card-resurrect-overlay">
+                <button class="btn-resurrect">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                    <path d="M3 3v5h5" />
+                  </svg>
+                  <span>Khôi phục ghi chú</span>
+                </button>
+                <button class="btn-purge-small">Xóa vĩnh viễn</button>
+              </div>
+
+              <div class="card-meta-row">
+                <span style="font-weight:600; color:#f59e0b;">Planning</span>
+                <span class="deletion-badge">Xóa 1 tuần trước</span>
+              </div>
+              <h3 class="card-title-text">All Markdown syntax</h3>
+              <p class="card-preview-text">Nook is a private, offline-first personal notes workspace. It is a static web app made with vanilla HTML, CSS, and JS...</p>
+
+              <div class="dual-action-footer">
+                <button class="btn-card-restore">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+                  <span>Khôi phục</span>
+                </button>
+                <button class="btn-card-purge">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+                  <span>Xóa hẳn</span>
+                </button>
+              </div>
+            </article>
+          </div>
+
+          <!-- Floating Recovery Dock -->
+          <div class="floating-recovery-dock" id="floating-dock">
+            <div class="dock-info">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
+              </svg>
+              <span>14 ghi chú trong thùng rác</span>
+            </div>
+            <div class="dock-actions">
+              <button class="dock-btn dock-btn-restore-all" title="Khôi phục toàn bộ ghi chú về thư viện">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+                <span>Khôi phục tất cả</span>
+              </button>
+              <button class="dock-btn dock-btn-empty" title="Xóa vĩnh viễn toàn bộ ghi chú">
+                <span>Dọn sạch</span>
+              </button>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- Analysis Panel -->
+      <section class="v2-annotation-box">
+        <h2>💡 Phân Tích Chi Tiết 5 Ý Tưởng Mới Cho Không Gian Trash</h2>
+        <div class="v2-grid-annotations">
+          <div class="v2-anno-item">
+            <h3>1. Floating Recovery Dock (Thanh công cụ phục hồi nổi)</h3>
+            <p>
+              Một thanh pill nổi lơ lửng ở đáy màn hình: hiển thị số lượng ghi chú trong thùng rác cùng 2 nút hành động nhanh: <strong>[Khôi phục tất cả]</strong> và <strong>[Dọn sạch]</strong>. Giúp người dùng thao tác tức thì mà không cần cuộn lên đầu trang.
+            </p>
+          </div>
+
+          <div class="v2-anno-item">
+            <h3>2. Thẻ bóng ma & Hover-to-Resurrect (Ghost Cards)</h3>
+            <p>
+              Các thẻ ghi chú ở trạng thái mờ (<em>opacity 0.78</em>) và có viền nét đứt. Khi rê chuột (hoặc chạm trên mobile), thẻ "thức tỉnh" và mở ra nút xanh nổi bật <strong>"Khôi phục ghi chú"</strong> ngay giữa thẻ.
+            </p>
+          </div>
+
+          <div class="v2-anno-item">
+            <h3>3. Nút bấm kép rõ ràng (Dual-Action Card Footer)</h3>
+            <p>
+              Thay vì các icon nhỏ xíu ở góc, chân thẻ chia đôi thành 2 nút bấm có chữ rõ ràng: <strong>[Khôi phục]</strong> (xanh lá) và <strong>[Xóa hẳn]</strong> (đỏ nhạt). Người dùng không bao giờ bị bấm nhầm.
+            </p>
+          </div>
+
+          <div class="v2-anno-item">
+            <h3>4. Dòng thời gian xóa (Deletion Timeline Badges)</h3>
+            <p>
+              Thay vì hiển thị ngày tạo ghi chú thông thường, thẻ hiển thị nhãn: <em>"Xóa 2 ngày trước"</em>, <em>"Xóa hôm qua"</em>. Giúp người dùng hiểu ngữ cảnh vì sao ghi chú này lại nằm ở đây.
+            </p>
+          </div>
+
+          <div class="v2-anno-item">
+            <h3>5. Con dấu lưu trữ mờ (Watermark Stamp)</h3>
+            <p>
+              Một con dấu đóng dấu đỏ nhạt mờ <code>TRASH</code> nghiêng 25 độ ở góc trên phải mỗi thẻ. Mang tính thẩm mỹ cao của tài liệu văn phòng cổ điển mà không làm rối mắt.
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Interactive Script -->
+    <script>
+      (() => {
+        const shell = document.getElementById("ws-shell");
+        const dock = document.getElementById("floating-dock");
+        const dualFooters = document.querySelectorAll(".dual-action-footer");
+        const badges = document.querySelectorAll(".deletion-badge");
+
+        const modes = {
+          dock: () => {
+            shell.className = "workspace-shell has-trash-tint";
+            dock.style.display = "flex";
+            dualFooters.forEach(f => f.style.display = "none");
+            badges.forEach(b => b.style.display = "inline-flex");
+          },
+          ghost: () => {
+            shell.className = "workspace-shell has-trash-tint mode-ghost";
+            dock.style.display = "none";
+            dualFooters.forEach(f => f.style.display = "none");
+            badges.forEach(b => b.style.display = "inline-flex");
+          },
+          dual: () => {
+            shell.className = "workspace-shell has-trash-tint";
+            dock.style.display = "none";
+            dualFooters.forEach(f => f.style.display = "grid");
+            badges.forEach(b => b.style.display = "inline-flex");
+          },
+          timeline: () => {
+            shell.className = "workspace-shell has-trash-tint";
+            dock.style.display = "none";
+            dualFooters.forEach(f => f.style.display = "none");
+            badges.forEach(b => b.style.display = "inline-flex");
+          },
+          stamp: () => {
+            shell.className = "workspace-shell has-trash-tint mode-stamp";
+            dock.style.display = "none";
+            dualFooters.forEach(f => f.style.display = "none");
+            badges.forEach(b => b.style.display = "inline-flex");
+          }
+        };
+
+        const navBtns = document.querySelectorAll("[data-trash-mode]");
+        navBtns.forEach(btn => {
+          btn.addEventListener("click", () => {
+            navBtns.forEach(b => b.classList.toggle("is-active", b === btn));
+            const mode = btn.dataset.trashMode;
+            if (modes[mode]) modes[mode]();
+          });
+        });
+
+        // Initialize with dock mode
+        modes.dock();
+
+        // Theme picker
+        const themeBtns = document.querySelectorAll("[data-theme]");
+        themeBtns.forEach(btn => {
+          btn.addEventListener("click", () => {
+            document.documentElement.dataset.theme = btn.dataset.theme;
+            themeBtns.forEach(b => b.classList.toggle("is-active", b === btn));
+          });
+        });
+      })();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,2007 @@
+<!doctype html>
+<html lang="vi" data-theme="coffee">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Nook — Mobile UI Redesign Mockup</title>
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="../css/app.css" />
+    <style>
+      /* ==========================================================================
+         Mobile Mockup Interactive Shell & Showcase Styles
+         ========================================================================== */
+
+      :root {
+        --phone-w: 390px;
+        --phone-h: 844px;
+        --phone-radius: 46px;
+        --phone-border: 10px solid #1e293b;
+        --phone-shadow: 0 25px 60px -15px rgba(15, 23, 42, 0.35), 0 0 0 1px rgba(15, 23, 42, 0.08);
+        --app-bg: var(--surface-page, #fcfbf9);
+        --panel-bg: var(--surface-panel, #ffffff);
+      }
+
+      body {
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+        min-height: 100dvh;
+        background: #0f172a;
+        color: #f1f5f9;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      /* Control Topbar (Presenter Bar) */
+      .presenter-bar {
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 0.75rem 1.5rem;
+        background: rgba(15, 23, 42, 0.94);
+        backdrop-filter: blur(12px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .presenter-brand {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+
+      .presenter-brand strong {
+        font-size: 1.05rem;
+        letter-spacing: -0.01em;
+        color: #fff;
+      }
+
+      .presenter-badge {
+        padding: 0.2rem 0.55rem;
+        border-radius: 999px;
+        background: rgba(163, 86, 22, 0.25);
+        border: 1px solid rgba(163, 86, 22, 0.5);
+        color: #fdba74;
+        font-size: 0.72rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
+
+      .presenter-controls {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.65rem;
+      }
+
+      .control-group {
+        display: inline-flex;
+        align-items: center;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 0.6rem;
+        padding: 0.2rem;
+        gap: 0.2rem;
+      }
+
+      .control-label {
+        font-size: 0.75rem;
+        color: #94a3b8;
+        padding: 0 0.4rem;
+        font-weight: 500;
+      }
+
+      .control-btn {
+        appearance: none;
+        border: none;
+        background: transparent;
+        color: #cbd5e1;
+        font-size: 0.8rem;
+        font-weight: 500;
+        padding: 0.35rem 0.7rem;
+        border-radius: 0.45rem;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+      }
+
+      .control-btn:hover {
+        background: rgba(255, 255, 255, 0.08);
+        color: #fff;
+      }
+
+      .control-btn.is-active {
+        background: #3b82f6;
+        color: #fff;
+        font-weight: 600;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+      }
+
+      .theme-btn {
+        width: 1.5rem;
+        height: 1.5rem;
+        border-radius: 999px;
+        border: 2px solid transparent;
+        cursor: pointer;
+        padding: 0;
+        transition: transform 0.15s ease;
+      }
+
+      .theme-btn:hover {
+        transform: scale(1.15);
+      }
+
+      .theme-btn.is-active {
+        border-color: #fff;
+        transform: scale(1.15);
+      }
+
+      /* Showcase Layout */
+      .mockup-viewport {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        padding: 2.5rem 1rem 4rem;
+        gap: 2.5rem;
+      }
+
+      /* Phone Mockup Frame */
+      .phone-frame {
+        position: relative;
+        width: var(--phone-w);
+        height: var(--phone-h);
+        border: var(--phone-border);
+        border-radius: var(--phone-radius);
+        box-shadow: var(--phone-shadow);
+        background: var(--surface-page);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        flex-shrink: 0;
+        color: var(--text-strong);
+        transition: width 0.25s ease, height 0.25s ease, border-radius 0.25s ease;
+      }
+
+      /* Fullscreen mode toggle */
+      body.mode-responsive .phone-frame {
+        width: 100%;
+        max-width: 440px;
+        height: 860px;
+        border: none;
+        border-radius: 1.5rem;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+      }
+
+      /* Dynamic Island / Status Bar */
+      .phone-status-bar {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 1.65rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--text-strong);
+        z-index: 999;
+        pointer-events: none;
+        user-select: none;
+      }
+
+      .phone-island {
+        width: 110px;
+        height: 26px;
+        background: #000;
+        border-radius: 999px;
+        margin: 0 auto;
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        top: 10px;
+      }
+
+      .phone-status-icons {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.75rem;
+      }
+
+      .phone-home-bar {
+        position: absolute;
+        bottom: 8px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 134px;
+        height: 5px;
+        background: var(--text-muted);
+        opacity: 0.4;
+        border-radius: 999px;
+        z-index: 999;
+        pointer-events: none;
+      }
+
+      /* Mobile App Container */
+      .mobile-app {
+        position: relative;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        padding-top: 48px; /* under status bar */
+        padding-bottom: 24px; /* above home bar */
+        overflow: hidden;
+        background: var(--surface-page);
+      }
+
+      /* Screen Containers */
+      .mobile-screen {
+        display: none;
+        flex-direction: column;
+        flex: 1;
+        height: 100%;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        position: relative;
+      }
+
+      .mobile-screen.is-active {
+        display: flex;
+      }
+
+      /* ==========================================================================
+         SCREEN 1: Mobile Main Page (Feed / Library)
+         ========================================================================== */
+
+      .m-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.65rem 1rem;
+        background: var(--surface-page);
+        border-bottom: 1px solid transparent;
+        position: sticky;
+        top: 0;
+        z-index: 20;
+      }
+
+      .m-header__left {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+      }
+
+      .m-icon-btn {
+        width: 2.35rem;
+        height: 2.35rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 0.65rem;
+        border: 1px solid var(--border-subtle);
+        background: var(--surface-panel);
+        color: var(--text-strong);
+        cursor: pointer;
+        padding: 0;
+        transition: background 0.15s ease, border-color 0.15s ease;
+      }
+
+      .m-icon-btn:hover {
+        background: var(--surface-muted);
+      }
+
+      .m-icon-btn svg {
+        width: 1.15rem;
+        height: 1.15rem;
+      }
+
+      .m-brand {
+        display: flex;
+        align-items: center;
+        gap: 0.45rem;
+      }
+
+      .m-brand-mark {
+        width: 1.65rem;
+        height: 1.65rem;
+      }
+
+      .m-brand-title {
+        font-size: 1.15rem;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        color: var(--text-strong);
+      }
+
+      .m-header__right {
+        display: flex;
+        align-items: center;
+        gap: 0.45rem;
+      }
+
+      /* Search & Filter Bar */
+      .m-search-box {
+        padding: 0.4rem 1rem 0.65rem;
+      }
+
+      .m-search-input-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+        background: var(--surface-panel);
+        border: 1px solid var(--border-subtle);
+        border-radius: 0.85rem;
+        padding: 0 0.75rem;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+      }
+
+      .m-search-icon {
+        color: var(--text-muted);
+        margin-right: 0.45rem;
+      }
+
+      .m-search-input {
+        width: 100%;
+        height: 2.45rem;
+        border: none;
+        background: transparent;
+        font-size: 0.88rem;
+        color: var(--text-strong);
+        outline: none;
+      }
+
+      .m-search-input::placeholder {
+        color: var(--text-muted);
+      }
+
+      .m-filter-trigger {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        border: 1px solid var(--border-subtle);
+        background: var(--surface-muted);
+        color: var(--text-muted);
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.5rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        cursor: pointer;
+      }
+
+      .m-filter-trigger.is-active {
+        background: var(--selected-surface);
+        color: var(--selected-text);
+        border-color: var(--selected-border);
+      }
+
+      /* Horizontal Scrollable Categories/Spaces Pills */
+      .m-chip-bar {
+        display: flex;
+        align-items: center;
+        gap: 0.45rem;
+        padding: 0 1rem 0.75rem;
+        overflow-x: auto;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .m-chip-bar::-webkit-scrollbar {
+        display: none;
+      }
+
+      .m-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.35rem 0.75rem;
+        border-radius: 999px;
+        background: var(--surface-panel);
+        border: 1px solid var(--border-subtle);
+        color: var(--text-muted);
+        font-size: 0.78rem;
+        font-weight: 600;
+        white-space: nowrap;
+        cursor: pointer;
+        flex-shrink: 0;
+        transition: all 0.15s ease;
+      }
+
+      .m-chip.is-active {
+        background: var(--selected-surface);
+        color: var(--selected-text);
+        border-color: var(--selected-border);
+      }
+
+      .m-chip-count {
+        font-size: 0.7rem;
+        opacity: 0.75;
+      }
+
+      .m-chip-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 999px;
+      }
+
+      /* Note List Feed */
+      .m-feed {
+        padding: 0 1rem 5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+
+      .m-feed-meta {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        padding: 0 0.25rem 0.15rem;
+      }
+
+      .m-note-card {
+        background: var(--surface-panel);
+        border: 1px solid var(--border-subtle);
+        border-radius: 0.95rem;
+        padding: 0.95rem;
+        box-shadow: 0 2px 8px -2px rgba(15, 23, 42, 0.04);
+        cursor: pointer;
+        position: relative;
+        transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+      }
+
+      .m-note-card:active {
+        transform: scale(0.985);
+        background: var(--surface-muted);
+      }
+
+      .m-note-card.is-pinned {
+        border-color: var(--selected-border);
+        background: linear-gradient(180deg, var(--selected-surface) 0%, var(--surface-panel) 36px);
+      }
+
+      .m-card-top {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 0.5rem;
+        margin-bottom: 0.4rem;
+      }
+
+      .m-card-title {
+        font-size: 0.98rem;
+        font-weight: 700;
+        color: var(--text-strong);
+        line-height: 1.3;
+        margin: 0;
+      }
+
+      .m-card-pin-badge {
+        color: var(--primary-accent);
+        flex-shrink: 0;
+      }
+
+      .m-card-preview {
+        font-size: 0.83rem;
+        color: var(--text-default);
+        line-height: 1.48;
+        margin: 0 0 0.65rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+
+      .m-card-bottom {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.5rem;
+        font-size: 0.72rem;
+      }
+
+      .m-card-tags {
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+        flex-wrap: wrap;
+      }
+
+      .m-type-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        padding: 0.15rem 0.45rem;
+        border-radius: 0.4rem;
+        background: var(--surface-muted);
+        color: var(--text-muted);
+        font-weight: 600;
+      }
+
+      .m-tag-pill {
+        color: var(--text-muted);
+        background: rgba(100, 116, 139, 0.08);
+        padding: 0.15rem 0.4rem;
+        border-radius: 0.4rem;
+      }
+
+      .m-card-time {
+        color: var(--text-muted);
+        white-space: nowrap;
+        font-size: 0.7rem;
+      }
+
+      /* Floating Action Button (FAB) */
+      .m-fab {
+        position: absolute;
+        bottom: 2rem;
+        right: 1.25rem;
+        width: 3.4rem;
+        height: 3.4rem;
+        border-radius: 999px;
+        background: var(--primary-accent);
+        color: #fff;
+        border: none;
+        box-shadow: 0 6px 20px -2px rgba(158, 107, 2, 0.4), 0 2px 6px rgba(0, 0, 0, 0.15);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        z-index: 40;
+        transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease;
+      }
+
+      .m-fab:hover {
+        transform: scale(1.06);
+      }
+
+      .m-fab:active {
+        transform: scale(0.92);
+      }
+
+      .m-fab svg {
+        width: 1.5rem;
+        height: 1.5rem;
+      }
+
+      /* ==========================================================================
+         SCREEN 2: Mobile Navigation Drawer (Sidebar Expand)
+         ========================================================================== */
+
+      .m-drawer-overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.5);
+        backdrop-filter: blur(4px);
+        z-index: 50;
+        display: flex;
+      }
+
+      .m-drawer {
+        width: 82%;
+        max-width: 315px;
+        height: 100%;
+        background: var(--surface-panel);
+        box-shadow: 10px 0 30px rgba(0, 0, 0, 0.25);
+        display: flex;
+        flex-direction: column;
+        animation: drawerSlide 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      @keyframes drawerSlide {
+        from { transform: translateX(-100%); }
+        to { transform: translateX(0); }
+      }
+
+      .m-drawer-header {
+        padding: 1.25rem 1.15rem 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid var(--border-subtle);
+      }
+
+      .m-drawer-body {
+        flex: 1;
+        overflow-y: auto;
+        padding: 1rem 1.15rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+      }
+
+      .m-storage-badge {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.55rem 0.75rem;
+        border-radius: 0.65rem;
+        background: var(--surface-muted);
+        border: 1px solid var(--border-subtle);
+        font-size: 0.75rem;
+        color: var(--text-muted);
+      }
+
+      .m-storage-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 999px;
+        background: #10b981;
+      }
+
+      .m-drawer-section-title {
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        margin: 0 0 0.5rem;
+      }
+
+      .m-nav-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.65rem 0.75rem;
+        border-radius: 0.65rem;
+        color: var(--text-strong);
+        text-decoration: none;
+        font-size: 0.88rem;
+        font-weight: 500;
+        cursor: pointer;
+        border: none;
+        background: transparent;
+        width: 100%;
+        text-align: left;
+        transition: background 0.15s ease;
+      }
+
+      .m-nav-item:hover {
+        background: var(--surface-muted);
+      }
+
+      .m-nav-item.is-active {
+        background: var(--selected-surface);
+        color: var(--selected-text);
+        font-weight: 600;
+      }
+
+      .m-nav-item-left {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+      }
+
+      .m-nav-item-left svg {
+        width: 1.15rem;
+        height: 1.15rem;
+      }
+
+      .m-nav-item-count {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        background: rgba(100, 116, 139, 0.1);
+        padding: 0.15rem 0.45rem;
+        border-radius: 999px;
+      }
+
+      .m-drawer-footer {
+        padding: 0.85rem 1.15rem;
+        border-top: 1px solid var(--border-subtle);
+        background: var(--surface-muted);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      /* ==========================================================================
+         SCREEN 3: Note Detail (Editor)
+         ========================================================================== */
+
+      .m-editor-screen {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        background: var(--surface-panel);
+      }
+
+      .m-editor-appbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.5rem 0.85rem;
+        border-bottom: 1px solid var(--border-subtle);
+        background: var(--surface-panel);
+      }
+
+      .m-editor-appbar__left {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .m-segmented-control {
+        display: inline-flex;
+        background: var(--surface-muted);
+        padding: 0.2rem;
+        border-radius: 0.55rem;
+        border: 1px solid var(--border-subtle);
+      }
+
+      .m-segmented-btn {
+        border: none;
+        background: transparent;
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        padding: 0.25rem 0.75rem;
+        border-radius: 0.4rem;
+        cursor: pointer;
+      }
+
+      .m-segmented-btn.is-active {
+        background: var(--surface-panel);
+        color: var(--text-strong);
+        box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+      }
+
+      .m-save-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        font-size: 0.72rem;
+        color: #059669;
+        font-weight: 600;
+      }
+
+      .m-save-status-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 999px;
+        background: #059669;
+      }
+
+      .m-editor-body {
+        flex: 1;
+        overflow-y: auto;
+        padding: 1.15rem 1.15rem 0;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .m-title-input {
+        width: 100%;
+        border: none;
+        outline: none;
+        font-size: 1.45rem;
+        font-weight: 800;
+        color: var(--text-strong);
+        background: transparent;
+        line-height: 1.25;
+        margin-bottom: 0.65rem;
+        font-family: inherit;
+      }
+
+      .m-title-input::placeholder {
+        color: var(--text-muted);
+        opacity: 0.5;
+      }
+
+      .m-editor-metadata-bar {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        padding-bottom: 0.85rem;
+        border-bottom: 1px solid var(--border-subtle);
+        margin-bottom: 1rem;
+      }
+
+      .m-meta-selector {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.25rem 0.55rem;
+        border-radius: 0.5rem;
+        border: 1px solid var(--border-subtle);
+        background: var(--surface-muted);
+        font-size: 0.75rem;
+        color: var(--text-strong);
+        cursor: pointer;
+      }
+
+      .m-meta-selector select {
+        appearance: none;
+        border: none;
+        background: transparent;
+        font-size: inherit;
+        font-weight: 600;
+        color: inherit;
+        outline: none;
+        cursor: pointer;
+      }
+
+      .m-content-textarea {
+        width: 100%;
+        flex: 1;
+        min-height: 260px;
+        border: none;
+        outline: none;
+        background: transparent;
+        font-size: 0.95rem;
+        line-height: 1.6;
+        color: var(--text-default);
+        font-family: var(--font-sans);
+        resize: none;
+      }
+
+      /* Mobile Formatting Accessory Bar */
+      .m-format-bar {
+        position: sticky;
+        bottom: 0;
+        background: var(--surface-panel);
+        border-top: 1px solid var(--border-subtle);
+        padding: 0.35rem 0.65rem;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        overflow-x: auto;
+        scrollbar-width: none;
+        box-shadow: 0 -3px 12px rgba(0,0,0,0.03);
+      }
+
+      .m-format-bar::-webkit-scrollbar {
+        display: none;
+      }
+
+      .m-format-btn {
+        min-width: 2.15rem;
+        height: 2.15rem;
+        border-radius: 0.45rem;
+        border: 1px solid transparent;
+        background: transparent;
+        color: var(--text-strong);
+        font-size: 0.85rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        padding: 0 0.35rem;
+        flex-shrink: 0;
+      }
+
+      .m-format-btn:active {
+        background: var(--surface-muted);
+        border-color: var(--border-subtle);
+      }
+
+      .m-format-btn svg {
+        width: 1.1rem;
+        height: 1.1rem;
+      }
+
+      .m-format-divider {
+        width: 1px;
+        height: 1.25rem;
+        background: var(--border-subtle);
+        margin: 0 0.2rem;
+        flex-shrink: 0;
+      }
+
+      /* ==========================================================================
+         SCREEN 4: Note Detail (Quick View / Reader Mode)
+         ========================================================================== */
+
+      .m-reader-screen {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        background: var(--surface-panel);
+      }
+
+      .m-reader-appbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.5rem 0.85rem;
+        border-bottom: 1px solid var(--border-subtle);
+      }
+
+      .m-reader-body {
+        flex: 1;
+        overflow-y: auto;
+        padding: 1.25rem 1.25rem 4.5rem;
+      }
+
+      .m-reader-title {
+        font-size: 1.55rem;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        line-height: 1.22;
+        margin: 0 0 0.75rem;
+        color: var(--text-strong);
+      }
+
+      .m-reader-meta {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.85rem;
+        border-bottom: 1px solid var(--border-subtle);
+      }
+
+      .m-reader-prose {
+        font-size: 0.95rem;
+        line-height: 1.68;
+        color: var(--text-default);
+      }
+
+      .m-reader-prose h2 {
+        font-size: 1.2rem;
+        margin: 1.5rem 0 0.6rem;
+        color: var(--text-strong);
+      }
+
+      .m-reader-prose p {
+        margin: 0 0 1rem;
+      }
+
+      .m-reader-prose ul {
+        margin: 0 0 1rem;
+        padding-left: 1.25rem;
+      }
+
+      .m-reader-prose li {
+        margin-bottom: 0.35rem;
+      }
+
+      .m-reader-prose code {
+        background: var(--surface-muted);
+        padding: 0.15rem 0.35rem;
+        border-radius: 0.35rem;
+        font-size: 0.85em;
+      }
+
+      .m-reader-bottom-bar {
+        position: sticky;
+        bottom: 0;
+        background: var(--surface-panel);
+        border-top: 1px solid var(--border-subtle);
+        padding: 0.65rem 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        box-shadow: 0 -4px 15px rgba(0,0,0,0.04);
+      }
+
+      /* ==========================================================================
+         SCREEN 5: Filter & Sort Bottom Sheet
+         ========================================================================== */
+
+      .m-sheet-overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.5);
+        backdrop-filter: blur(4px);
+        z-index: 60;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+      }
+
+      .m-bottom-sheet {
+        background: var(--surface-panel);
+        border-radius: 1.5rem 1.5rem 0 0;
+        box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.25);
+        max-height: 85%;
+        display: flex;
+        flex-direction: column;
+        animation: sheetUp 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      @keyframes sheetUp {
+        from { transform: translateY(100%); }
+        to { transform: translateY(0); }
+      }
+
+      .m-sheet-handle {
+        width: 36px;
+        height: 4px;
+        border-radius: 999px;
+        background: var(--border-strong);
+        margin: 0.65rem auto 0.35rem;
+      }
+
+      .m-sheet-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.75rem 1.25rem;
+        border-bottom: 1px solid var(--border-subtle);
+      }
+
+      .m-sheet-title {
+        font-size: 1.05rem;
+        font-weight: 700;
+        margin: 0;
+      }
+
+      .m-sheet-body {
+        padding: 1.15rem 1.25rem;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+      }
+
+      .m-sheet-footer {
+        padding: 0.85rem 1.25rem;
+        border-top: 1px solid var(--border-subtle);
+        background: var(--surface-muted);
+        display: flex;
+        gap: 0.75rem;
+      }
+
+      /* ==========================================================================
+         SCREEN 6: Mobile Settings & Data
+         ========================================================================== */
+
+      .m-settings-screen {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        background: var(--surface-page);
+      }
+
+      .m-settings-body {
+        flex: 1;
+        overflow-y: auto;
+        padding: 1rem 1rem 3rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+      }
+
+      .m-settings-group {
+        background: var(--surface-panel);
+        border: 1px solid var(--border-subtle);
+        border-radius: 1rem;
+        overflow: hidden;
+      }
+
+      .m-settings-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.85rem 1rem;
+        border-bottom: 1px solid var(--border-subtle);
+        font-size: 0.88rem;
+        color: var(--text-strong);
+      }
+
+      .m-settings-row:last-child {
+        border-bottom: none;
+      }
+
+      .m-settings-row__copy {
+        display: flex;
+        flex-direction: column;
+        gap: 0.15rem;
+      }
+
+      .m-settings-row__title {
+        font-weight: 600;
+      }
+
+      .m-settings-row__desc {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+      }
+
+      /* ==========================================================================
+         Design Annotations & Callout Pins
+         ========================================================================== */
+
+      .annotation-panel {
+        width: 380px;
+        background: #1e293b;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 1.25rem;
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+        color: #e2e8f0;
+        box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.3);
+      }
+
+      .annotation-panel h2 {
+        margin: 0;
+        font-size: 1.15rem;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .annotation-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .annotation-item {
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 0.75rem;
+        padding: 0.85rem;
+      }
+
+      .annotation-tag {
+        display: inline-block;
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #38bdf8;
+        margin-bottom: 0.3rem;
+      }
+
+      .annotation-title {
+        font-size: 0.88rem;
+        font-weight: 700;
+        color: #fff;
+        margin: 0 0 0.3rem;
+      }
+
+      .annotation-desc {
+        font-size: 0.8rem;
+        color: #94a3b8;
+        line-height: 1.5;
+        margin: 0;
+      }
+
+      .annotation-desc em {
+        color: #fdba74;
+        font-style: normal;
+      }
+
+      @media (max-width: 900px) {
+        .mockup-viewport {
+          flex-direction: column;
+          align-items: center;
+        }
+        .annotation-panel {
+          width: 100%;
+          max-width: var(--phone-w);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Top presenter control bar -->
+    <header class="presenter-bar">
+      <div class="presenter-brand">
+        <svg width="24" height="24" viewBox="0 0 64 64" fill="none">
+          <rect x="2" y="2" width="60" height="60" rx="16" fill="#a35616" />
+          <path d="M 38,15 L 46,15 L 46,49 L 38,49 Z" fill="#e1ebf4" />
+          <path d="M 18,15 L 26,15 L 46,49 L 38,49 L 26,28.5 L 26,49 L 18,49 Z" fill="#ffffff" />
+        </svg>
+        <strong>Nook Mobile UI Proposal</strong>
+        <span class="presenter-badge">Interactive Mockup</span>
+      </div>
+
+      <div class="presenter-controls">
+        <!-- Screen Switcher -->
+        <div class="control-group">
+          <span class="control-label">Màn hình:</span>
+          <button class="control-btn is-active" data-screen="feed">📱 Page chính</button>
+          <button class="control-btn" data-screen="drawer">📂 Sidebar Drawer</button>
+          <button class="control-btn" data-screen="editor">✍️ Note Editor</button>
+          <button class="control-btn" data-screen="reader">📖 Quick View</button>
+          <button class="control-btn" data-screen="sheet">⚡ Filter Sheet</button>
+          <button class="control-btn" data-screen="settings">⚙️ Settings</button>
+        </div>
+
+        <!-- Theme Switcher -->
+        <div class="control-group">
+          <span class="control-label">Theme:</span>
+          <button class="theme-btn" style="background: #9e6b02;" title="Light" data-theme="light"></button>
+          <button class="theme-btn is-active" style="background: #a35616;" title="Coffee" data-theme="coffee"></button>
+          <button class="theme-btn" style="background: #2f6b4f;" title="Forest" data-theme="forest"></button>
+          <button class="theme-btn" style="background: #18263f;" title="Midnight" data-theme="midnight"></button>
+          <button class="theme-btn" style="background: #0b0f19;" title="Dark" data-theme="dark"></button>
+          <button class="theme-btn" style="background: #fff4dd; border-color: #888;" title="Retro" data-theme="retro"></button>
+        </div>
+
+        <!-- Frame mode -->
+        <div class="control-group">
+          <button id="toggle-frame-btn" class="control-btn" title="Chuyển chế độ khung điện thoại hoặc toàn màn hình">
+            <span>📐 Khung viền</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Viewport containing the Phone Frame and the Annotations -->
+    <main class="mockup-viewport">
+      <!-- Device Frame -->
+      <div class="phone-frame">
+        <!-- Status bar with Dynamic Island -->
+        <div class="phone-status-bar">
+          <span>9:41</span>
+          <div class="phone-island"></div>
+          <div class="phone-status-icons">
+            <span>5G</span>
+            <svg width="18" height="10" viewBox="0 0 24 14" fill="currentColor">
+              <rect x="1" y="1" width="19" height="12" rx="3" fill="none" stroke="currentColor" stroke-width="2"/>
+              <rect x="3" y="3" width="13" height="8" rx="1.5" fill="currentColor"/>
+              <path d="M22 5v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </div>
+        </div>
+
+        <!-- App Container -->
+        <div class="mobile-app">
+          <!-- ==============================================================
+               SCREEN 1: Page chính (Main Feed / Note List)
+               ============================================================== -->
+          <div id="screen-feed" class="mobile-screen is-active">
+            <header class="m-header">
+              <div class="m-header__left">
+                <button class="m-icon-btn" id="open-drawer-btn" aria-label="Mở Menu">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                    <line x1="4" y1="7" x2="20" y2="7" />
+                    <line x1="4" y1="12" x2="20" y2="12" />
+                    <line x1="4" y1="17" x2="14" y2="17" />
+                  </svg>
+                </button>
+                <div class="m-brand">
+                  <span class="m-brand-title">Nook</span>
+                </div>
+              </div>
+              <div class="m-header__right">
+                <button class="m-icon-btn" id="quick-theme-btn" aria-label="Đổi theme">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <circle cx="12" cy="12" r="4" />
+                    <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
+                  </svg>
+                </button>
+                <button class="m-icon-btn" id="open-settings-btn" aria-label="Cài đặt">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <circle cx="12" cy="12" r="3" />
+                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+                  </svg>
+                </button>
+              </div>
+            </header>
+
+            <!-- Search Field with Integrated Filter Trigger -->
+            <div class="m-search-box">
+              <div class="m-search-input-wrapper">
+                <span class="m-search-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8" />
+                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                  </svg>
+                </span>
+                <input class="m-search-input" type="search" placeholder="Tìm kiếm ghi chú…" />
+                <button class="m-filter-trigger" id="open-filter-sheet-btn">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="4" y1="6" x2="20" y2="6" />
+                    <line x1="7" y1="12" x2="17" y2="12" />
+                    <line x1="10" y1="18" x2="14" y2="18" />
+                  </svg>
+                  <span>Lọc</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Horizontal Quick Filter Chips -->
+            <div class="m-chip-bar">
+              <button class="m-chip is-active">
+                <span>Tất cả</span>
+                <span class="m-chip-count">14</span>
+              </button>
+              <button class="m-chip">
+                <span class="m-chip-dot" style="background: #38bdf8;"></span>
+                <span>Công việc</span>
+                <span class="m-chip-count">6</span>
+              </button>
+              <button class="m-chip">
+                <span class="m-chip-dot" style="background: #a855f7;"></span>
+                <span>Ý tưởng</span>
+                <span class="m-chip-count">4</span>
+              </button>
+              <button class="m-chip">
+                <span class="m-chip-dot" style="background: #10b981;"></span>
+                <span>Học tập</span>
+                <span class="m-chip-count">4</span>
+              </button>
+            </div>
+
+            <!-- Note Cards Feed -->
+            <div class="m-feed">
+              <div class="m-feed-meta">
+                <span>14 ghi chú</span>
+                <span>Mới nhất trước</span>
+              </div>
+
+              <!-- Pinned Card -->
+              <article class="m-note-card is-pinned" data-action="open-editor">
+                <div class="m-card-top">
+                  <h3 class="m-card-title">Kiến trúc hệ thống Protobloc & Quyết định kỹ thuật</h3>
+                  <span class="m-card-pin-badge" title="Đã ghim">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M16 4v4l2 3v2h-5v7l-1 1-1-1v-7H6v-2l2-3V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1z" />
+                    </svg>
+                  </span>
+                </div>
+                <p class="m-card-preview">Tổng hợp các quyết định về xử lý bất đồng bộ (asynchronous processing), chiến lược chịu lỗi (fault tolerance), và cơ chế đồng bộ offline với IndexedDB...</p>
+                <div class="m-card-bottom">
+                  <div class="m-card-tags">
+                    <span class="m-type-badge">
+                      <span class="m-chip-dot" style="background: #38bdf8;"></span>
+                      Công việc
+                    </span>
+                    <span class="m-tag-pill">#architecture</span>
+                    <span class="m-tag-pill">#indexeddb</span>
+                  </div>
+                  <span class="m-card-time">10:30</span>
+                </div>
+              </article>
+
+              <!-- Normal Card -->
+              <article class="m-note-card" data-action="open-editor">
+                <div class="m-card-top">
+                  <h3 class="m-card-title">Ý tưởng thiết kế Nook Mobile 2.0</h3>
+                </div>
+                <p class="m-card-preview">1. Tối ưu khu vực ngón tay cái (thumb zone). 2. Chuyển sidebar thành off-canvas drawer. 3. Thêm bottom sheet cho bộ lọc để giảm tải màn hình chính.</p>
+                <div class="m-card-bottom">
+                  <div class="m-card-tags">
+                    <span class="m-type-badge">
+                      <span class="m-chip-dot" style="background: #a855f7;"></span>
+                      Ý tưởng
+                    </span>
+                    <span class="m-tag-pill">#ux</span>
+                    <span class="m-tag-pill">#mobile</span>
+                  </div>
+                  <span class="m-card-time">Hôm qua</span>
+                </div>
+              </article>
+
+              <!-- Normal Card -->
+              <article class="m-note-card" data-action="open-editor">
+                <div class="m-card-top">
+                  <h3 class="m-card-title">Checklist chuẩn bị sinh con (Om 2026)</h3>
+                </div>
+                <p class="m-card-preview">- Tã dán sơ sinh (3 bịch)
+- Bình sữa chống sặc & máy tiệt trùng
+- Giấy tờ bệnh viện & sổ tiêm chủng</p>
+                <div class="m-card-bottom">
+                  <div class="m-card-tags">
+                    <span class="m-type-badge">
+                      <span class="m-chip-dot" style="background: #f59e0b;"></span>
+                      Cá nhân
+                    </span>
+                    <span class="m-tag-pill">#family</span>
+                  </div>
+                  <span class="m-card-time">18/09</span>
+                </div>
+              </article>
+
+              <!-- Normal Card -->
+              <article class="m-note-card" data-action="open-editor">
+                <div class="m-card-top">
+                  <h3 class="m-card-title">Ghi chép từ vựng tiếng Anh chuyên ngành Senior</h3>
+                </div>
+                <p class="m-card-preview">Blast radius (phạm vi ảnh hưởng), Eventual consistency (tính nhất quán cuối cùng), Backpressure (áp lực ngược), Graceful degradation...</p>
+                <div class="m-card-bottom">
+                  <div class="m-card-tags">
+                    <span class="m-type-badge">
+                      <span class="m-chip-dot" style="background: #10b981;"></span>
+                      Học tập
+                    </span>
+                    <span class="m-tag-pill">#english</span>
+                  </div>
+                  <span class="m-card-time">14/09</span>
+                </div>
+              </article>
+            </div>
+
+            <!-- Floating Action Button (+) -->
+            <button class="m-fab" id="fab-new-note" aria-label="Tạo ghi chú mới" title="Tạo ghi chú mới">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                <line x1="12" y1="5" x2="12" y2="19" />
+                <line x1="5" y1="12" x2="19" y2="12" />
+              </svg>
+            </button>
+          </div>
+
+          <!-- ==============================================================
+               SCREEN 2: Sidebar Drawer (Navigation Menu)
+               ============================================================== -->
+          <div id="screen-drawer" class="mobile-screen">
+            <div class="m-drawer-overlay">
+              <div class="m-drawer">
+                <div class="m-drawer-header">
+                  <div class="m-brand">
+                    <svg width="24" height="24" viewBox="0 0 64 64" fill="none">
+                      <rect x="2" y="2" width="60" height="60" rx="16" fill="#a35616" />
+                      <path d="M 38,15 L 46,15 L 46,49 L 38,49 Z" fill="#e1ebf4" />
+                      <path d="M 18,15 L 26,15 L 46,49 L 38,49 L 26,28.5 L 26,49 L 18,49 Z" fill="#ffffff" />
+                    </svg>
+                    <div>
+                      <span class="m-brand-title" style="display:block; font-size:1.05rem;">Nook</span>
+                      <span style="font-size:0.7rem; color:var(--text-muted);">Không gian cá nhân offline</span>
+                    </div>
+                  </div>
+                  <button class="m-icon-btn" id="close-drawer-btn" style="width:2rem; height:2rem;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <line x1="18" y1="6" x2="6" y2="18" />
+                      <line x1="6" y1="6" x2="18" y2="18" />
+                    </svg>
+                  </button>
+                </div>
+
+                <div class="m-drawer-body">
+                  <!-- Storage health -->
+                  <div class="m-storage-badge">
+                    <span class="m-storage-dot"></span>
+                    <span>Lưu trên trình duyệt · Đã an toàn</span>
+                  </div>
+
+                  <!-- Spaces -->
+                  <div>
+                    <h4 class="m-drawer-section-title">Không gian</h4>
+                    <button class="m-nav-item is-active">
+                      <div class="m-nav-item-left">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                          <rect x="3" y="3" width="18" height="18" rx="2" />
+                          <path d="M7 8h10M7 12h10M7 16h6" />
+                        </svg>
+                        <span>Tất cả ghi chú</span>
+                      </div>
+                      <span class="m-nav-item-count">14</span>
+                    </button>
+                    <button class="m-nav-item">
+                      <div class="m-nav-item-left">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                          <polyline points="3 6 5 6 21 6" />
+                          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                        </svg>
+                        <span>Thùng rác</span>
+                      </div>
+                      <span class="m-nav-item-count">2</span>
+                    </button>
+                  </div>
+
+                  <!-- Note Types -->
+                  <div>
+                    <h4 class="m-drawer-section-title">Phân loại (Types)</h4>
+                    <button class="m-nav-item">
+                      <div class="m-nav-item-left">
+                        <span class="m-chip-dot" style="background:#38bdf8;"></span>
+                        <span>Công việc</span>
+                      </div>
+                      <span class="m-nav-item-count">6</span>
+                    </button>
+                    <button class="m-nav-item">
+                      <div class="m-nav-item-left">
+                        <span class="m-chip-dot" style="background:#a855f7;"></span>
+                        <span>Ý tưởng</span>
+                      </div>
+                      <span class="m-nav-item-count">4</span>
+                    </button>
+                    <button class="m-nav-item">
+                      <div class="m-nav-item-left">
+                        <span class="m-chip-dot" style="background:#10b981;"></span>
+                        <span>Học tập</span>
+                      </div>
+                      <span class="m-nav-item-count">4</span>
+                    </button>
+                    <button class="m-nav-item">
+                      <div class="m-nav-item-left">
+                        <span class="m-chip-dot" style="background:#f59e0b;"></span>
+                        <span>Cá nhân</span>
+                      </div>
+                      <span class="m-nav-item-count">0</span>
+                    </button>
+                  </div>
+
+                  <!-- Tags -->
+                  <div>
+                    <h4 class="m-drawer-section-title">Nhãn (Tags)</h4>
+                    <div style="display:flex; flex-wrap:wrap; gap:0.4rem;">
+                      <span class="m-tag-pill" style="padding:0.3rem 0.6rem; font-size:0.75rem;">#architecture (3)</span>
+                      <span class="m-tag-pill" style="padding:0.3rem 0.6rem; font-size:0.75rem;">#indexeddb (2)</span>
+                      <span class="m-tag-pill" style="padding:0.3rem 0.6rem; font-size:0.75rem;">#english (5)</span>
+                      <span class="m-tag-pill" style="padding:0.3rem 0.6rem; font-size:0.75rem;">#family (1)</span>
+                      <span class="m-tag-pill" style="padding:0.3rem 0.6rem; font-size:0.75rem;">#ux (2)</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="m-drawer-footer">
+                  <button class="m-icon-btn" style="border:none; background:transparent; width:auto; gap:0.5rem; font-size:0.82rem; font-weight:600;">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" />
+                    </svg>
+                    <span>Sao lưu JSON</span>
+                  </button>
+                  <button class="m-icon-btn" id="drawer-settings-btn" style="border:none; background:transparent; width:auto; gap:0.4rem; font-size:0.82rem; font-weight:600;">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8">
+                      <circle cx="12" cy="12" r="3" />
+                      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+                    </svg>
+                    <span>Cài đặt</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ==============================================================
+               SCREEN 3: Note Detail (Editor Mode)
+               ============================================================== -->
+          <div id="screen-editor" class="mobile-screen">
+            <div class="m-editor-screen">
+              <header class="m-editor-appbar">
+                <div class="m-editor-appbar__left">
+                  <button class="m-icon-btn" id="editor-back-btn" aria-label="Quay lại">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <line x1="19" y1="12" x2="5" y2="12" />
+                      <polyline points="12 19 5 12 12 5" />
+                    </svg>
+                  </button>
+                  <div class="m-segmented-control">
+                    <button class="m-segmented-btn is-active">Soạn thảo</button>
+                    <button class="m-segmented-btn" id="switch-to-preview-btn">Xem trước</button>
+                  </div>
+                </div>
+                <div style="display:flex; align-items:center; gap:0.6rem;">
+                  <span class="m-save-status">
+                    <span class="m-save-status-dot"></span>
+                    <span>Đã lưu</span>
+                  </span>
+                  <button class="m-icon-btn" style="border:none; width:2rem; height:2rem;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="12" cy="12" r="1" />
+                      <circle cx="12" cy="5" r="1" />
+                      <circle cx="12" cy="19" r="1" />
+                    </svg>
+                  </button>
+                </div>
+              </header>
+
+              <div class="m-editor-body">
+                <input class="m-title-input" type="text" value="Kiến trúc hệ thống Protobloc & Quyết định kỹ thuật" placeholder="Tiêu đề ghi chú…" />
+                
+                <!-- Metadata selectors -->
+                <div class="m-editor-metadata-bar">
+                  <div class="m-meta-selector">
+                    <span class="m-chip-dot" style="background:#38bdf8;"></span>
+                    <select>
+                      <option>Công việc</option>
+                      <option>Ý tưởng</option>
+                      <option>Học tập</option>
+                      <option>Cá nhân</option>
+                    </select>
+                  </div>
+                  <span class="m-tag-pill">#architecture ✕</span>
+                  <span class="m-tag-pill">#indexeddb ✕</span>
+                  <button class="m-meta-selector" style="border-style:dashed; color:var(--text-muted);">+ Gắn tag</button>
+                </div>
+
+                <textarea class="m-content-textarea" placeholder="Nội dung Markdown…">### 1. Kiến trúc lưu trữ Offline-first
+Hệ thống sử dụng **IndexedDB** làm bộ lưu trữ cục bộ chính, cho phép đọc ghi mượt mà ngay cả khi không có mạng (*zero network latency*).
+
+### 2. Các quyết định kỹ thuật quan trọng
+- **Bất đồng bộ (*Asynchronous processing*)**: Các tác vụ nặng như indexing và export đều được đưa vào hàng đợi.
+- **Phạm vi ảnh hưởng (*Blast radius*)**: Mỗi module chạy độc lập qua strict IIFE, lỗi một phần không làm crash toàn bộ app.
+
+> [!NOTE]
+> Backup định kỳ qua JSON để tránh mất dữ liệu khi trình duyệt xóa cache.</textarea>
+              </div>
+
+              <!-- Keyboard Accessory Bar (Formatting tools) -->
+              <div class="m-format-bar">
+                <button class="m-format-btn" title="Tiêu đề">H</button>
+                <button class="m-format-btn" title="In đậm"><strong>B</strong></button>
+                <button class="m-format-btn" title="In nghiêng"><em>I</em></button>
+                <button class="m-format-btn" title="Gạch ngang"><del>S</del></button>
+                <div class="m-format-divider"></div>
+                <button class="m-format-btn" title="Mã dòng">&lt;/&gt;</button>
+                <button class="m-format-btn" title="Khối mã">{ }</button>
+                <div class="m-format-divider"></div>
+                <button class="m-format-btn" title="Danh sách gạch đầu dòng">•≡</button>
+                <button class="m-format-btn" title="Danh sách đánh số">1≡</button>
+                <button class="m-format-btn" title="Task list">☑</button>
+                <button class="m-format-btn" title="Bảng">▦</button>
+                <button class="m-format-btn" title="Trích dẫn">&gt;</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- ==============================================================
+               SCREEN 4: Note Detail (Quick View / Reader Mode)
+               ============================================================== -->
+          <div id="screen-reader" class="mobile-screen">
+            <div class="m-reader-screen">
+              <header class="m-reader-appbar">
+                <button class="m-icon-btn" id="reader-back-btn" aria-label="Quay lại">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="19" y1="12" x2="5" y2="12" />
+                    <polyline points="12 19 5 12 12 5" />
+                  </svg>
+                </button>
+                <div class="m-segmented-control">
+                  <button class="m-segmented-btn" id="switch-to-editor-btn">Soạn thảo</button>
+                  <button class="m-segmented-btn is-active">Xem trước</button>
+                </div>
+                <button class="m-icon-btn" title="Sao chép nội dung">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <rect x="9" y="9" width="13" height="13" rx="2" />
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                  </svg>
+                </button>
+              </header>
+
+              <div class="m-reader-body">
+                <h1 class="m-reader-title">Kiến trúc hệ thống Protobloc & Quyết định kỹ thuật</h1>
+                <div class="m-reader-meta">
+                  <span class="m-type-badge">
+                    <span class="m-chip-dot" style="background:#38bdf8;"></span>
+                    Công việc
+                  </span>
+                  <span>·</span>
+                  <span>Cập nhật 10:30</span>
+                  <span>·</span>
+                  <span>2 phút đọc</span>
+                </div>
+
+                <div class="m-reader-prose">
+                  <h2>1. Kiến trúc lưu trữ Offline-first</h2>
+                  <p>Hệ thống sử dụng <strong>IndexedDB</strong> làm bộ lưu trữ cục bộ chính, cho phép đọc ghi mượt mà ngay cả khi không có mạng (<em>zero network latency</em>).</p>
+
+                  <h2>2. Các quyết định kỹ thuật quan trọng</h2>
+                  <ul>
+                    <li><strong>Bất đồng bộ (<em>Asynchronous processing</em>)</strong>: Các tác vụ nặng như indexing và export đều được đưa vào hàng đợi nền.</li>
+                    <li><strong>Phạm vi ảnh hưởng (<em>Blast radius</em>)</strong>: Mỗi module chạy độc lập qua strict IIFE, lỗi một phần không làm crash toàn bộ app.</li>
+                  </ul>
+
+                  <div style="background:var(--selected-surface); border-left:4px solid var(--primary-accent); padding:0.75rem 1rem; border-radius:0.5rem; margin:1rem 0;">
+                    <strong style="color:var(--selected-text); font-size:0.85rem; display:block; margin-bottom:0.25rem;">LƯU Ý</strong>
+                    <p style="margin:0; font-size:0.85rem; color:var(--text-default);">Backup định kỳ qua JSON để tránh mất dữ liệu khi trình duyệt xóa cache.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="m-reader-bottom-bar">
+                <div style="display:flex; gap:0.5rem;">
+                  <button class="m-icon-btn" title="Xuất .md">
+                    <span style="font-size:0.75rem; font-weight:700;">.MD</span>
+                  </button>
+                  <button class="m-icon-btn" title="Chia sẻ / Export">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                      <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13" />
+                    </svg>
+                  </button>
+                </div>
+                <button class="control-btn is-active" id="reader-edit-btn" style="padding:0.6rem 1.25rem; font-size:0.85rem; border-radius:0.75rem;">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                  </svg>
+                  <span>Chỉnh sửa</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- ==============================================================
+               SCREEN 5: Filter & Sort Bottom Sheet
+               ============================================================== -->
+          <div id="screen-sheet" class="mobile-screen">
+            <div class="m-sheet-overlay">
+              <div class="m-bottom-sheet">
+                <div class="m-sheet-handle"></div>
+                <div class="m-sheet-header">
+                  <h3 class="m-sheet-title">Bộ lọc & Sắp xếp</h3>
+                  <button class="m-icon-btn" id="close-sheet-btn" style="width:2rem; height:2rem; border:none;">✕</button>
+                </div>
+                <div class="m-sheet-body">
+                  <!-- Sort order -->
+                  <div>
+                    <h4 class="m-drawer-section-title">Sắp xếp theo</h4>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.45rem;">
+                      <button class="m-chip is-active" style="justify-content:center;">Mới tạo nhất</button>
+                      <button class="m-chip" style="justify-content:center;">Cũ nhất</button>
+                      <button class="m-chip" style="justify-content:center;">Mới cập nhật</button>
+                      <button class="m-chip" style="justify-content:center;">Tiêu đề A–Z</button>
+                    </div>
+                  </div>
+
+                  <!-- Date filter -->
+                  <div>
+                    <h4 class="m-drawer-section-title">Thời gian</h4>
+                    <div style="display:flex; gap:0.45rem;">
+                      <button class="m-chip">Hôm nay</button>
+                      <button class="m-chip">Tuần này</button>
+                      <button class="m-chip is-active">Tất cả</button>
+                    </div>
+                  </div>
+
+                  <!-- Types -->
+                  <div>
+                    <h4 class="m-drawer-section-title">Phân loại (Types)</h4>
+                    <div style="display:flex; flex-wrap:wrap; gap:0.45rem;">
+                      <button class="m-chip is-active">Tất cả</button>
+                      <button class="m-chip"><span class="m-chip-dot" style="background:#38bdf8;"></span>Công việc</button>
+                      <button class="m-chip"><span class="m-chip-dot" style="background:#a855f7;"></span>Ý tưởng</button>
+                      <button class="m-chip"><span class="m-chip-dot" style="background:#10b981;"></span>Học tập</button>
+                    </div>
+                  </div>
+
+                  <!-- Tags -->
+                  <div>
+                    <h4 class="m-drawer-section-title">Tags</h4>
+                    <div style="display:flex; flex-wrap:wrap; gap:0.4rem;">
+                      <span class="m-tag-pill" style="padding:0.35rem 0.65rem;">#architecture</span>
+                      <span class="m-tag-pill" style="padding:0.35rem 0.65rem;">#indexeddb</span>
+                      <span class="m-tag-pill" style="padding:0.35rem 0.65rem;">#english</span>
+                      <span class="m-tag-pill" style="padding:0.35rem 0.65rem;">#family</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="m-sheet-footer">
+                  <button class="control-btn" style="flex:1; justify-content:center; padding:0.75rem; border:1px solid var(--border-subtle); color:var(--text-strong); background:var(--surface-panel);">Đặt lại</button>
+                  <button class="control-btn is-active" id="apply-sheet-btn" style="flex:1; justify-content:center; padding:0.75rem;">Áp dụng (14)</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ==============================================================
+               SCREEN 6: Mobile Settings & Data
+               ============================================================== -->
+          <div id="screen-settings" class="mobile-screen">
+            <div class="m-settings-screen">
+              <header class="m-header">
+                <div class="m-header__left">
+                  <button class="m-icon-btn" id="settings-back-btn" aria-label="Quay lại">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <line x1="19" y1="12" x2="5" y2="12" />
+                      <polyline points="12 19 5 12 12 5" />
+                    </svg>
+                  </button>
+                  <span class="m-brand-title" style="font-size:1.1rem;">Cài đặt</span>
+                </div>
+              </header>
+
+              <div class="m-settings-body">
+                <!-- Group 1: Appearance -->
+                <div>
+                  <h4 class="m-drawer-section-title" style="padding:0 0.4rem;">Giao diện (Theme)</h4>
+                  <div class="m-settings-group">
+                    <div class="m-settings-row">
+                      <div class="m-settings-row__copy">
+                        <span class="m-settings-row__title">Chủ đề màu</span>
+                        <span class="m-settings-row__desc">Đang chọn: Coffee</span>
+                      </div>
+                      <select style="border:1px solid var(--border-subtle); background:var(--surface-muted); color:var(--text-strong); padding:0.3rem 0.6rem; border-radius:0.5rem; font-size:0.8rem; font-weight:600;">
+                        <option>Coffee (Ấm áp)</option>
+                        <option>Light (Sáng)</option>
+                        <option>Forest (Xanh lá)</option>
+                        <option>Midnight (Xanh đêm)</option>
+                        <option>Dark (Tối)</option>
+                        <option>Retro (Cổ điển)</option>
+                      </select>
+                    </div>
+                    <div class="m-settings-row">
+                      <div class="m-settings-row__copy">
+                        <span class="m-settings-row__title">Dòng xem trước ghi chú</span>
+                        <span class="m-settings-row__desc">Số dòng hiển thị ở thẻ danh sách</span>
+                      </div>
+                      <span style="font-weight:700; font-size:0.85rem; color:var(--primary-accent);">2 dòng</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Group 2: Organize -->
+                <div>
+                  <h4 class="m-drawer-section-title" style="padding:0 0.4rem;">Quản lý phân loại</h4>
+                  <div class="m-settings-group">
+                    <div class="m-settings-row" style="cursor:pointer;">
+                      <div class="m-settings-row__copy">
+                        <span class="m-settings-row__title">Quản lý Phân loại (Types)</span>
+                        <span class="m-settings-row__desc">4 loại hiện có</span>
+                      </div>
+                      <span style="color:var(--text-muted);">›</span>
+                    </div>
+                    <div class="m-settings-row" style="cursor:pointer;">
+                      <div class="m-settings-row__copy">
+                        <span class="m-settings-row__title">Quản lý Nhãn (Tags)</span>
+                        <span class="m-settings-row__desc">5 nhãn đang dùng</span>
+                      </div>
+                      <span style="color:var(--text-muted);">›</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Group 3: Data & Storage -->
+                <div>
+                  <h4 class="m-drawer-section-title" style="padding:0 0.4rem;">Dữ liệu & Sao lưu</h4>
+                  <div class="m-settings-group">
+                    <div class="m-settings-row">
+                      <div class="m-settings-row__copy">
+                        <span class="m-settings-row__title">Xuất bản sao lưu (Export JSON)</span>
+                        <span class="m-settings-row__desc">Tải về toàn bộ ghi chú và lịch sử</span>
+                      </div>
+                      <button class="m-icon-btn" style="width:2.2rem; height:2.2rem;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" />
+                        </svg>
+                      </button>
+                    </div>
+                    <div class="m-settings-row">
+                      <div class="m-settings-row__copy">
+                        <span class="m-settings-row__title">Nhập dữ liệu (Import JSON)</span>
+                        <span class="m-settings-row__desc">Khôi phục ghi chú từ file dự phòng</span>
+                      </div>
+                      <button class="m-icon-btn" style="width:2.2rem; height:2.2rem;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12" />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Phone home bar indicator -->
+        <div class="phone-home-bar"></div>
+      </div>
+
+      <!-- Design Annotations Panel -->
+      <aside class="annotation-panel">
+        <h2>
+          <span>💡 Phân tích & Giải pháp UI</span>
+        </h2>
+        <div class="annotation-list">
+          <div class="annotation-item">
+            <span class="annotation-tag">Vấn đề 1 · Header & Sidebar</span>
+            <h3 class="annotation-title">Thay Accordion trên đầu bằng Off-canvas Drawer</h3>
+            <p class="annotation-desc">
+              <strong>Hiện tại:</strong> Sidebar nằm ngay trên đầu trang, chiếm trọn nửa màn hình khiến người dùng phải cuộn dài mới thấy ghi chú.<br/>
+              <strong>Giải pháp:</strong> Đưa vào ngăn kéo trượt (<em>off-canvas navigation drawer</em>) mở bằng nút hamburger. Trả lại 100% chiều cao màn hình cho danh sách ghi chú.
+            </p>
+          </div>
+
+          <div class="annotation-item">
+            <span class="annotation-tag">Vấn đề 2 · Vùng ngón tay cái (Thumb Zone)</span>
+            <h3 class="annotation-title">Thêm Floating Action Button (FAB)</h3>
+            <p class="annotation-desc">
+              <strong>Hiện tại:</strong> Nút "New note" nằm tít góc trên, rất khó với tới khi cầm điện thoại một tay.<br/>
+              <strong>Giải pháp:</strong> Nút <code>+</code> nổi cố định ở góc dưới phải (<em>FAB</em>), chạm cực nhanh bằng ngón tay cái.
+            </p>
+          </div>
+
+          <div class="annotation-item">
+            <span class="annotation-tag">Vấn đề 3 · Trình soạn thảo</span>
+            <h3 class="annotation-title">Thanh công cụ Accessory Bar & Bỏ chế độ Split</h3>
+            <p class="annotation-desc">
+              <strong>Hiện tại:</strong> Chế độ Split và Side Note làm hẹp màn hình mobile; thanh định dạng 12 nút bị quấn dòng xấu.<br/>
+              <strong>Giải pháp:</strong> Dùng segmented control 2 nút <code>[Soạn thảo | Xem trước]</code>; thanh định dạng nằm ngang cuộn mượt (<em>keyboard accessory bar</em>) bám sát bàn phím.
+            </p>
+          </div>
+
+          <div class="annotation-item">
+            <span class="annotation-tag">Vấn đề 4 · Lọc & Sắp xếp</span>
+            <h3 class="annotation-title">Bottom Sheet thay vì mở rộng đẩy nội dung</h3>
+            <p class="annotation-desc">
+              <strong>Hiện tại:</strong> Bấm Filter sẽ bung accordion đẩy thẻ ghi chú xuống sâu.<br/>
+              <strong>Giải pháp:</strong> Dùng tấm trượt đáy (<em>bottom sheet</em>) với cử chỉ vuốt, chọn loại/tag/thời gian nhanh chóng rồi đóng lại.
+            </p>
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <!-- Interactive Script for Mockup Navigation and Theme Switching -->
+    <script>
+      (() => {
+        // Screen Switcher Logic
+        const screens = {
+          feed: document.getElementById("screen-feed"),
+          drawer: document.getElementById("screen-drawer"),
+          editor: document.getElementById("screen-editor"),
+          reader: document.getElementById("screen-reader"),
+          sheet: document.getElementById("screen-sheet"),
+          settings: document.getElementById("screen-settings")
+        };
+
+        const screenBtns = document.querySelectorAll("[data-screen]");
+
+        function switchScreen(targetName) {
+          Object.entries(screens).forEach(([name, el]) => {
+            if (el) {
+              el.classList.toggle("is-active", name === targetName);
+            }
+          });
+          screenBtns.forEach(btn => {
+            btn.classList.toggle("is-active", btn.dataset.screen === targetName);
+          });
+        }
+
+        screenBtns.forEach(btn => {
+          btn.addEventListener("click", () => switchScreen(btn.dataset.screen));
+        });
+
+        // In-Mockup Interactive Triggers
+        document.getElementById("open-drawer-btn")?.addEventListener("click", () => switchScreen("drawer"));
+        document.getElementById("close-drawer-btn")?.addEventListener("click", () => switchScreen("feed"));
+        document.getElementById("fab-new-note")?.addEventListener("click", () => switchScreen("editor"));
+        document.getElementById("editor-back-btn")?.addEventListener("click", () => switchScreen("feed"));
+        document.getElementById("switch-to-preview-btn")?.addEventListener("click", () => switchScreen("reader"));
+        document.getElementById("switch-to-editor-btn")?.addEventListener("click", () => switchScreen("editor"));
+        document.getElementById("reader-back-btn")?.addEventListener("click", () => switchScreen("feed"));
+        document.getElementById("reader-edit-btn")?.addEventListener("click", () => switchScreen("editor"));
+        document.getElementById("open-filter-sheet-btn")?.addEventListener("click", () => switchScreen("sheet"));
+        document.getElementById("close-sheet-btn")?.addEventListener("click", () => switchScreen("feed"));
+        document.getElementById("apply-sheet-btn")?.addEventListener("click", () => switchScreen("feed"));
+        document.getElementById("open-settings-btn")?.addEventListener("click", () => switchScreen("settings"));
+        document.getElementById("drawer-settings-btn")?.addEventListener("click", () => switchScreen("settings"));
+        document.getElementById("settings-back-btn")?.addEventListener("click", () => switchScreen("feed"));
+
+        // Clicking on note cards opens the editor
+        document.querySelectorAll("[data-action='open-editor']").forEach(card => {
+          card.addEventListener("click", () => switchScreen("editor"));
+        });
+
+        // Theme Switcher Logic
+        const themeBtns = document.querySelectorAll("[data-theme]");
+        themeBtns.forEach(btn => {
+          btn.addEventListener("click", () => {
+            const theme = btn.dataset.theme;
+            document.documentElement.dataset.theme = theme;
+            themeBtns.forEach(b => b.classList.toggle("is-active", b === btn));
+          });
+        });
+
+        // Quick theme toggle in phone header
+        const themeOrder = ["light", "coffee", "forest", "midnight", "dark", "retro"];
+        document.getElementById("quick-theme-btn")?.addEventListener("click", () => {
+          const current = document.documentElement.dataset.theme || "coffee";
+          const next = themeOrder[(themeOrder.indexOf(current) + 1) % themeOrder.length];
+          document.documentElement.dataset.theme = next;
+          themeBtns.forEach(b => b.classList.toggle("is-active", b.dataset.theme === next));
+        });
+
+        // Frame mode toggle
+        const toggleFrameBtn = document.getElementById("toggle-frame-btn");
+        toggleFrameBtn?.addEventListener("click", () => {
+          document.body.classList.toggle("mode-responsive");
+          toggleFrameBtn.classList.toggle("is-active", document.body.classList.contains("mode-responsive"));
+        });
+      })();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,769 @@
+<!doctype html>
+<html lang="vi" data-theme="coffee">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Nook — Mockup Nhận Biết Không Gian Trash Tinh Tế</title>
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="../css/app.css" />
+    <style>
+      body {
+        margin: 0;
+        padding: 2rem 1.5rem 4rem;
+        background: #0f172a;
+        color: #f8fafc;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      .showcase-header {
+        max-width: 1240px;
+        margin: 0 auto 2rem;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding-bottom: 1.25rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .showcase-title h1 {
+        margin: 0 0 0.35rem;
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: #fff;
+      }
+
+      .showcase-title p {
+        margin: 0;
+        font-size: 0.88rem;
+        color: #94a3b8;
+      }
+
+      .controls-bar {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.75rem;
+      }
+
+      .btn-group {
+        display: inline-flex;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 0.65rem;
+        padding: 0.2rem;
+        gap: 0.2rem;
+      }
+
+      .nav-btn {
+        background: transparent;
+        border: none;
+        color: #cbd5e1;
+        font-size: 0.8rem;
+        font-weight: 500;
+        padding: 0.35rem 0.75rem;
+        border-radius: 0.45rem;
+        cursor: pointer;
+        transition: all 0.15s ease;
+      }
+
+      .nav-btn:hover {
+        background: rgba(255, 255, 255, 0.08);
+        color: #fff;
+      }
+
+      .nav-btn.is-active {
+        background: #e11d48;
+        color: #fff;
+        font-weight: 600;
+      }
+
+      .theme-dot-btn {
+        width: 1.35rem;
+        height: 1.35rem;
+        border-radius: 999px;
+        border: 2px solid transparent;
+        cursor: pointer;
+        transition: transform 0.15s ease;
+      }
+
+      .theme-dot-btn:hover {
+        transform: scale(1.15);
+      }
+
+      .theme-dot-btn.is-active {
+        border-color: #fff;
+        transform: scale(1.15);
+      }
+
+      /* Workspace Preview Container */
+      .preview-container {
+        max-width: 1240px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+      }
+
+      .workspace-frame {
+        background: var(--surface-page);
+        border: 1px solid var(--border-subtle);
+        border-radius: 1.25rem;
+        padding: 2rem;
+        box-shadow: 0 10px 35px rgba(0, 0, 0, 0.25);
+        color: var(--text-strong);
+        transition: all 0.2s ease;
+      }
+
+      /* Topbar replication */
+      .mock-topbar {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+      }
+
+      .mock-eyebrow {
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        margin: 0 0 0.25rem;
+        transition: color 0.15s ease;
+      }
+
+      .mock-eyebrow.is-trash {
+        color: #e11d48;
+      }
+
+      .mock-title {
+        font-size: 1.85rem;
+        font-weight: 800;
+        letter-spacing: -0.025em;
+        margin: 0 0 0.35rem;
+        color: var(--text-strong);
+        line-height: 1.2;
+      }
+
+      .mock-subtitle {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        margin: 0;
+      }
+
+      .mock-topbar-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .mock-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        height: 2.4rem;
+        padding: 0 0.85rem;
+        border-radius: 0.72rem;
+        font-size: 0.82rem;
+        font-weight: 600;
+        cursor: pointer;
+        border: 1px solid var(--border-subtle);
+        background: var(--surface-panel);
+        color: var(--text-strong);
+      }
+
+      .mock-btn-danger {
+        background: #fff1f2;
+        border-color: #fecdd3;
+        color: #e11d48;
+      }
+
+      /* Notes Panel */
+      .mock-panel {
+        background: var(--surface-panel);
+        border: 1px solid var(--border-subtle);
+        border-radius: 1rem;
+        padding: 1.25rem 1.5rem;
+        position: relative;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      /* Subtle Ambient Border when in Trash */
+      .mock-panel.has-ambient-accent {
+        border-top: 3.5px solid #f43f5e;
+      }
+
+      .mock-panel-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1.25rem;
+      }
+
+      .mock-browse-label {
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        margin: 0 0 0.15rem;
+      }
+
+      .mock-heading {
+        font-size: 1.35rem;
+        font-weight: 800;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .mock-count-pill {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        background: var(--surface-muted);
+        padding: 0.2rem 0.6rem;
+        border-radius: 999px;
+      }
+
+      /* ==========================================================================
+         PROPOSED TRASH HIGHLIGHTS
+         ========================================================================== */
+
+      /* 1. Contextual Banner */
+      .trash-banner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: #fff1f2;
+        border: 1px solid #fecdd3;
+        border-radius: 0.75rem;
+        padding: 0.65rem 1rem;
+        margin-bottom: 1.25rem;
+        font-size: 0.82rem;
+        color: #9f1239;
+        animation: fadeIn 0.2s ease;
+      }
+
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-4px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      .trash-banner-left {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+      }
+
+      .trash-banner-left svg {
+        width: 1.15rem;
+        height: 1.15rem;
+        flex-shrink: 0;
+      }
+
+      .trash-banner-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+      }
+
+      .trash-banner-btn {
+        background: transparent;
+        border: 1px solid rgba(159, 18, 57, 0.25);
+        color: #9f1239;
+        padding: 0.25rem 0.65rem;
+        border-radius: 0.5rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        cursor: pointer;
+      }
+
+      .trash-banner-btn:hover {
+        background: rgba(159, 18, 57, 0.08);
+      }
+
+      /* Mock Toolbar */
+      .mock-toolbar {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 1.25rem;
+      }
+
+      .mock-search {
+        flex: 1;
+        height: 2.35rem;
+        border: 1px solid var(--border-subtle);
+        border-radius: 0.65rem;
+        background: var(--surface-muted);
+        padding: 0 0.75rem;
+        font-size: 0.82rem;
+        color: var(--text-muted);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      /* Note Cards Grid */
+      .mock-cards-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 1rem;
+      }
+
+      @media (max-width: 900px) {
+        .mock-cards-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .mock-card {
+        background: var(--surface-panel);
+        border: 1px solid var(--border-subtle);
+        border-radius: 0.85rem;
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+        position: relative;
+        transition: all 0.15s ease;
+      }
+
+      /* Subtle Trash Treatment for Cards */
+      .mock-card.is-trash-card {
+        border-color: rgba(225, 29, 72, 0.2);
+        background: linear-gradient(180deg, rgba(255, 241, 242, 0.3) 0%, var(--surface-panel) 32px);
+      }
+
+      .mock-card-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 0.72rem;
+        color: var(--text-muted);
+      }
+
+      .mock-card-title {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: var(--text-strong);
+        margin: 0;
+        line-height: 1.35;
+      }
+
+      .mock-card-preview {
+        font-size: 0.82rem;
+        color: var(--text-default);
+        line-height: 1.48;
+        margin: 0;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+
+      .mock-card-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 0.5rem;
+        padding-top: 0.5rem;
+        border-top: 1px solid var(--border-subtle);
+      }
+
+      .mock-card-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+      }
+
+      .mock-card-action-btn {
+        width: 1.85rem;
+        height: 1.85rem;
+        border-radius: 0.45rem;
+        border: 1px solid var(--border-subtle);
+        background: var(--surface-muted);
+        color: var(--text-strong);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        padding: 0;
+      }
+
+      /* Prominent Restore Button */
+      .mock-card-action-btn.is-restore-highlight {
+        background: #ecfdf5;
+        border-color: #a7f3d0;
+        color: #059669;
+        font-weight: 700;
+      }
+
+      .mock-card-action-btn.is-delete-highlight {
+        background: #fff1f2;
+        border-color: #fecdd3;
+        color: #e11d48;
+      }
+
+      .mock-card-action-btn svg {
+        width: 0.95rem;
+        height: 0.95rem;
+      }
+
+      /* Analysis Section */
+      .analysis-panel {
+        background: #1e293b;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 1.25rem;
+        padding: 1.5rem;
+      }
+
+      .analysis-panel h2 {
+        margin: 0 0 1rem;
+        font-size: 1.15rem;
+        color: #fff;
+      }
+
+      .analysis-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 1rem;
+      }
+
+      .analysis-card {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.07);
+        border-radius: 0.85rem;
+        padding: 1rem;
+      }
+
+      .analysis-card h3 {
+        margin: 0 0 0.35rem;
+        font-size: 0.92rem;
+        color: #f43f5e;
+      }
+
+      .analysis-card p {
+        margin: 0;
+        font-size: 0.82rem;
+        color: #94a3b8;
+        line-height: 1.5;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="showcase-header">
+      <div class="showcase-title">
+        <h1>Nook — Đề Xuất Nhận Biết Không Gian Trash Tinh Tế</h1>
+        <p>So sánh giao diện Trash hiện tại vs các giải pháp tạo điểm nhấn nhẹ nhàng, rõ ràng.</p>
+      </div>
+
+      <div class="controls-bar">
+        <!-- View Switcher -->
+        <div class="btn-group">
+          <button class="nav-btn is-active" data-view="combined">✨ Tổng hợp (Khuyên dùng)</button>
+          <button class="nav-btn" data-view="banner">1. Banner ngữ cảnh</button>
+          <button class="nav-btn" data-view="topbar">2. Đổi Topbar Title</button>
+          <button class="nav-btn" data-view="cards">3. Thẻ có viền Trash</button>
+          <button class="nav-btn" data-view="current">0. Hiện tại (Gốc)</button>
+        </div>
+
+        <!-- Theme Picker -->
+        <div class="btn-group" style="padding:0.25rem 0.5rem; gap:0.45rem;">
+          <button class="theme-dot-btn" style="background:#9e6b02;" data-theme="light" title="Light"></button>
+          <button class="theme-dot-btn is-active" style="background:#a35616;" data-theme="coffee" title="Coffee"></button>
+          <button class="theme-dot-btn" style="background:#2f6b4f;" data-theme="forest" title="Forest"></button>
+          <button class="theme-dot-btn" style="background:#18263f;" data-theme="midnight" title="Midnight"></button>
+          <button class="theme-dot-btn" style="background:#0b0f19;" data-theme="dark" title="Dark"></button>
+          <button class="theme-dot-btn" style="background:#fff4dd; border-color:#888;" data-theme="retro" title="Retro"></button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Workspace Preview -->
+    <main class="preview-container">
+      <div class="workspace-frame">
+        <!-- Topbar -->
+        <header class="mock-topbar">
+          <div>
+            <p class="mock-eyebrow" id="topbar-eyebrow">YOUR LOCAL LIBRARY</p>
+            <h1 class="mock-title" id="topbar-title">Personal Notes</h1>
+            <p class="mock-subtitle" id="topbar-subtitle">A private, offline space for ideas, work, and learning.</p>
+          </div>
+          <div class="mock-topbar-actions">
+            <button class="mock-btn">Settings</button>
+            <button class="mock-btn">Backup</button>
+            <button class="mock-btn mock-btn-danger">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
+              </svg>
+              <span>Empty Trash</span>
+            </button>
+          </div>
+        </header>
+
+        <!-- Notes Panel -->
+        <section class="mock-panel" id="notes-panel">
+          <!-- Contextual Trash Banner (Proposed) -->
+          <div class="trash-banner" id="trash-banner">
+            <div class="trash-banner-left">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                <line x1="10" y1="11" x2="10" y2="17" />
+                <line x1="14" y1="11" x2="14" y2="17" />
+              </svg>
+              <span><strong>Bạn đang ở Thùng rác (Trash).</strong> Các ghi chú ở đây có thể khôi phục hoặc xóa vĩnh viễn.</span>
+            </div>
+            <div class="trash-banner-actions">
+              <button class="trash-banner-btn" id="btn-back-library">← Quay về All notes</button>
+            </div>
+          </div>
+
+          <!-- Panel Heading -->
+          <div class="mock-panel-header">
+            <div>
+              <p class="mock-browse-label">Browse Space</p>
+              <h2 class="mock-heading">
+                <span>Trash</span>
+                <span class="mock-count-pill">14 notes</span>
+              </h2>
+            </div>
+          </div>
+
+          <!-- Toolbar -->
+          <div class="mock-toolbar">
+            <div class="mock-search">
+              <span>⌕ Search in Trash…</span>
+            </div>
+            <button class="mock-btn" style="height:2.35rem;">Newest created ▾</button>
+          </div>
+
+          <!-- Cards Grid -->
+          <div class="mock-cards-grid">
+            <!-- Card 1 -->
+            <article class="mock-card is-trash-card">
+              <div class="mock-card-top">
+                <span style="font-weight:600; color:#38bdf8;">Meeting</span>
+                <span>Created Aug 10, 2026</span>
+              </div>
+              <h3 class="mock-card-title">Khó khăn khi làm việc</h3>
+              <p class="mock-card-preview">To be honest, it's been a bit more challenging than I expected. I've been using AI to analyze the problems...</p>
+              <div class="mock-card-footer">
+                <span style="font-size:0.75rem; color:var(--text-muted);">No tags</span>
+                <div class="mock-card-actions">
+                  <button class="mock-card-action-btn" title="Preview">👁</button>
+                  <button class="mock-card-action-btn is-restore-highlight" title="Khôi phục ghi chú (Restore)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                      <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                      <path d="M3 3v5h5" />
+                    </svg>
+                  </button>
+                  <button class="mock-card-action-btn is-delete-highlight" title="Xóa vĩnh viễn (Delete forever)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M18 6 6 18M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </article>
+
+            <!-- Card 2 -->
+            <article class="mock-card is-trash-card">
+              <div class="mock-card-top">
+                <span style="font-weight:600; color:#10b981;">General</span>
+                <span>Created Sep 10, 2026</span>
+              </div>
+              <h3 class="mock-card-title">Erik slack notes</h3>
+              <p class="mock-card-preview">Hi Erik, Just finished capturing the screenshots for the deck! Used clean sample data on prod...</p>
+              <div class="mock-card-footer">
+                <span style="font-size:0.75rem; color:var(--text-muted);">No tags</span>
+                <div class="mock-card-actions">
+                  <button class="mock-card-action-btn" title="Preview">👁</button>
+                  <button class="mock-card-action-btn is-restore-highlight" title="Khôi phục ghi chú (Restore)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                      <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                      <path d="M3 3v5h5" />
+                    </svg>
+                  </button>
+                  <button class="mock-card-action-btn is-delete-highlight" title="Xóa vĩnh viễn (Delete forever)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M18 6 6 18M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </article>
+
+            <!-- Card 3 -->
+            <article class="mock-card is-trash-card">
+              <div class="mock-card-top">
+                <span style="font-weight:600; color:#f59e0b;">Planning</span>
+                <span>Created Aug 29, 2026</span>
+              </div>
+              <h3 class="mock-card-title">All Markdown syntax</h3>
+              <p class="mock-card-preview">Nook is a private, offline-first personal notes workspace. It is a static web app made with vanilla HTML, CSS, and JS...</p>
+              <div class="mock-card-footer">
+                <span style="font-size:0.75rem; color:var(--text-muted);">#kickoff</span>
+                <div class="mock-card-actions">
+                  <button class="mock-card-action-btn" title="Preview">👁</button>
+                  <button class="mock-card-action-btn is-restore-highlight" title="Khôi phục ghi chú (Restore)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                      <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                      <path d="M3 3v5h5" />
+                    </svg>
+                  </button>
+                  <button class="mock-card-action-btn is-delete-highlight" title="Xóa vĩnh viễn (Delete forever)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M18 6 6 18M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </article>
+          </div>
+        </section>
+      </div>
+
+      <!-- Analysis -->
+      <section class="analysis-panel">
+        <h2>💡 Phân Tích & Chi Tiết Các Giải Pháp Tinh Tế</h2>
+        <div class="analysis-grid">
+          <div class="analysis-card">
+            <h3>1. Đổi Topbar theo ngữ cảnh (Contextual Topbar)</h3>
+            <p>
+              Hiện tại tiêu đề to nhất trang vẫn là <em>"Personal Notes"</em>. Khi vào Trash, đổi thành <strong>"Trash"</strong> kèm mô tả <em>"Notes waiting to be restored or permanently deleted"</em>. Rất tự nhiên và triệt để.
+            </p>
+          </div>
+
+          <div class="analysis-card">
+            <h3>2. Banner ngữ cảnh mỏng (Ambient Banner)</h3>
+            <p>
+              Một dải thông báo màu hồng nhạt đặt ngay dưới tiêu đề. Vừa nhắc nhở người dùng đang ở trong Trash, vừa có nút quay nhanh về <strong>"← All notes"</strong> mà không cần tìm sidebar.
+            </p>
+          </div>
+
+          <div class="analysis-card">
+            <h3>3. Thẻ ghi chú & Nút Khôi phục rõ ràng</h3>
+            <p>
+              Thẻ ghi chú trong Trash có vệt màu đỏ nhạt ở đỉnh card (<em>tint header</em>). Nút <strong>Khôi phục (Restore)</strong> được highlight màu xanh ngọc nhẹ (`#ecfdf5`) để người dùng dễ dàng cứu lại ghi chú.
+            </p>
+          </div>
+
+          <div class="analysis-card">
+            <h3>4. Viền nhấn đỏ mỏng trên Panel</h3>
+            <p>
+              Đường viền trên của khung chứa ghi chú (`border-top: 3.5px solid #f43f5e`) tạo cảm giác chuyển đổi không gian sang trạng thái cảnh báo một cách tinh tế, không làm chói mắt.
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Interactive Script -->
+    <script>
+      (() => {
+        const views = {
+          combined: () => {
+            setTopbar(true);
+            setBanner(true);
+            setCards(true);
+            setPanelAccent(true);
+          },
+          banner: () => {
+            setTopbar(false);
+            setBanner(true);
+            setCards(false);
+            setPanelAccent(false);
+          },
+          topbar: () => {
+            setTopbar(true);
+            setBanner(false);
+            setCards(false);
+            setPanelAccent(false);
+          },
+          cards: () => {
+            setTopbar(false);
+            setBanner(false);
+            setCards(true);
+            setPanelAccent(true);
+          },
+          current: () => {
+            setTopbar(false);
+            setBanner(false);
+            setCards(false);
+            setPanelAccent(false);
+          }
+        };
+
+        function setTopbar(isTrash) {
+          const eyebrow = document.getElementById("topbar-eyebrow");
+          const title = document.getElementById("topbar-title");
+          const subtitle = document.getElementById("topbar-subtitle");
+
+          if (isTrash) {
+            eyebrow.textContent = "SPACE / TRASH";
+            eyebrow.classList.add("is-trash");
+            title.textContent = "Trash";
+            subtitle.textContent = "Notes waiting to be restored or permanently deleted.";
+          } else {
+            eyebrow.textContent = "YOUR LOCAL LIBRARY";
+            eyebrow.classList.remove("is-trash");
+            title.textContent = "Personal Notes";
+            subtitle.textContent = "A private, offline space for ideas, work, and learning.";
+          }
+        }
+
+        function setBanner(show) {
+          const banner = document.getElementById("trash-banner");
+          banner.style.display = show ? "flex" : "none";
+        }
+
+        function setCards(isTrash) {
+          document.querySelectorAll(".mock-card").forEach(c => {
+            c.classList.toggle("is-trash-card", isTrash);
+          });
+          document.querySelectorAll(".mock-card-action-btn").forEach(btn => {
+            if (btn.title.includes("Khôi phục")) {
+              btn.classList.toggle("is-restore-highlight", isTrash);
+            }
+            if (btn.title.includes("Xóa")) {
+              btn.classList.toggle("is-delete-highlight", isTrash);
+            }
+          });
+        }
+
+        function setPanelAccent(hasAccent) {
+          document.getElementById("notes-panel").classList.toggle("has-ambient-accent", hasAccent);
+        }
+
+        const navBtns = document.querySelectorAll("[data-view]");
+        navBtns.forEach(btn => {
+          btn.addEventListener("click", () => {
+            navBtns.forEach(b => b.classList.toggle("is-active", b === btn));
+            const viewName = btn.dataset.view;
+            if (views[viewName]) views[viewName]();
+          });
+        });
+
+        // Initialize with combined
+        views.combined();
+
+        // Theme switching
+        const themeBtns = document.querySelectorAll("[data-theme]");
+        themeBtns.forEach(btn => {
+          btn.addEventListener("click", () => {
+            document.documentElement.dataset.theme = btn.dataset.theme;
+            themeBtns.forEach(b => b.classList.toggle("is-active", b === btn));
+          });
+        });
+      })();
+    </script>
+  </body>
+</html>

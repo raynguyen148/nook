@@ -29,6 +29,9 @@ html[data-theme="retro"] {
   --retro-success: #27643a;
   --retro-warning: #8a5100;
   --retro-error: #a52d1c;
+  --backup-good-accent: var(--retro-success);
+  --backup-warning-accent: var(--retro-warning);
+  --backup-never-accent: var(--retro-error);
   --retro-link: #705000;
   --retro-code-surface: #2b241e;
   --retro-code-header: #40372f;
@@ -64,6 +67,8 @@ html[data-theme="retro"] {
   --management-search-resting-shadow: var(--retro-shadow-sm);
   --management-row-input-resting-border: var(--retro-border);
   --management-row-input-resting-shadow: var(--retro-shadow-sm);
+  --form-control-resting-background: var(--retro-paper);
+  --note-title-resting-border: var(--retro-border);
   --primary-accent: var(--retro-yellow);
   --primary-accent-hover: var(--retro-yellow-hover);
   --primary-accent-text: var(--retro-ink);
@@ -162,10 +167,10 @@ html[data-theme="retro"] :where(.brand small, .filter-heading, .filter-section-t
 html[data-theme="retro"] .sidebar { border-color: var(--retro-border); background: var(--retro-paper); box-shadow: var(--retro-shadow-sm); }
 html[data-theme="retro"] .brand-mark { filter: none; }
 html[data-theme="retro"] :where(.sidebar-toggle-btn, .storage-status) {
-  border: var(--retro-border-width) solid var(--retro-border);
+  border: var(--retro-border-width) solid var(--backup-health-border, var(--retro-border));
   border-radius: var(--retro-radius-control);
-  color: var(--retro-ink);
-  background: var(--retro-canvas);
+  color: var(--backup-health-text, var(--retro-ink));
+  background: var(--backup-health-surface, var(--retro-canvas));
   box-shadow: var(--retro-shadow-sm);
 }
 

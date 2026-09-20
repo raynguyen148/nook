@@ -8,12 +8,17 @@ html[data-theme="forest"] {
   color-scheme: light;
   --theme-surface-page: #f3f7f1;
   --theme-danger-border: #e6bfc1;
+  --backup-good-accent: #2f6b4f;
+  --backup-warning-accent: #8d5608;
+  --backup-never-accent: #b13d43;
   background: #f3f7f1;
   color: #1e2d24;
   --management-search-resting-border: #cbdccc;
   --management-search-resting-shadow: 0 1px 2px rgb(0 0 0 / 4%);
   --management-row-input-resting-border: #cbdccc;
   --management-row-input-resting-shadow: none;
+  --form-control-resting-background: #ffffff;
+  --note-title-resting-background: #f8fbf7;
 
   /* Evergreen anchor: reserved for actions, selected states, and emphasis. */
   --primary-accent: #2f6b4f;
@@ -138,9 +143,9 @@ html[data-theme="forest"] .eyebrow {
 }
 
 html[data-theme="forest"] .storage-status {
-  border-color: #cbdccc;
-  color: #496252;
-  background: #e1ece1;
+  border-color: var(--backup-health-border, #cbdccc);
+  color: var(--backup-health-text, #496252);
+  background: var(--backup-health-surface, #e1ece1);
 }
 
 html[data-theme="forest"] .text-button,

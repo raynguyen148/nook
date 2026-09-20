@@ -300,6 +300,14 @@
 
 
 
+form.management-row .management-row__main input,
+form.management-row .management-row__controls--editing .color-picker__trigger {
+  height: 1.85rem;
+  min-height: 1.85rem;
+}
+
+
+
 .management-row__controls--editing {
   display: flex;
   align-items: center;
@@ -1186,17 +1194,12 @@
 
   form.management-row .management-row__controls--editing {
     display: grid;
-    grid-template-columns: auto auto auto;
+    grid-template-columns: auto auto;
     width: 100%;
   }
 
   form.management-row--type .management-row__controls--editing {
-    grid-template-columns: minmax(0, 1fr) auto auto;
-  }
-
-  form.management-row .usage-count {
-    margin-right: auto;
-    align-self: center;
+    grid-template-columns: auto auto;
   }
 
   form.management-row--type .color-picker {
@@ -1204,9 +1207,6 @@
     width: 100%;
   }
 
-  form.management-row--type .usage-count {
-    grid-column: 1;
-  }
 }
 
 

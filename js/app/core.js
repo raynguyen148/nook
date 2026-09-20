@@ -557,17 +557,32 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
   }
 
   function formatBackupStatus(message) {
-    return `Stored locally · ${message}`;
+    return `Local · ${message}`;
   }
 
   function backupHealthMessage(health, daysSinceReference) {
     const hasDownloadRequest = Boolean(health.lastDownloadRequestedAt);
-    if (!hasDownloadRequest) return formatBackupStatus("no backup download requested yet");
-    if (daysSinceReference === 0) return formatBackupStatus("backup download requested today");
+    if (!hasDownloadRequest) return formatBackupStatus("No backup yet");
+    if (daysSinceReference === 0) return formatBackupStatus("Backup requested today");
     if (daysSinceReference >= BACKUP_REMINDER_AGE_MS / 86400000) {
-      return formatBackupStatus(`no download request for ${daysSinceReference} ${daysSinceReference === 1 ? "day" : "days"}`);
+      return formatBackupStatus(`Backup due (${daysSinceReference}d)`);
     }
-    return formatBackupStatus(`download requested ${daysSinceReference} ${daysSinceReference === 1 ? "day" : "days"} ago`);
+    return formatBackupStatus(`Backup requested ${daysSinceReference}d ago`);
+  }
+
+  function backupHealthDescription(health, daysSinceReference) {
+    const hasDownloadRequest = Boolean(health.lastDownloadRequestedAt);
+    const dayLabel = `${daysSinceReference} ${daysSinceReference === 1 ? "day" : "days"}`;
+    if (!hasDownloadRequest) {
+      return "Notes are stored only in this browser. No backup download has been requested yet.";
+    }
+    if (daysSinceReference === 0) {
+      return "Notes are stored locally. A backup download was requested today.";
+    }
+    if (daysSinceReference >= BACKUP_REMINDER_AGE_MS / 86400000) {
+      return `Notes are stored locally. No backup download has been requested for ${dayLabel}; export a backup soon.`;
+    }
+    return `Notes are stored locally. A backup download was requested ${dayLabel} ago.`;
   }
 
   function syncBackupHealth() {
@@ -575,14 +590,14 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
     const daysSinceReference = backupAgeInDays(health);
     const dueToAge = daysSinceReference >= BACKUP_REMINDER_AGE_MS / 86400000;
     const hasDownloadRequest = Boolean(health.lastDownloadRequestedAt);
-    const statusClass = !hasDownloadRequest
-      ? "status-dot--backup-never"
-      : dueToAge
-        ? "status-dot--backup-warning"
-        : "status-dot--backup-good";
+    const status = !hasDownloadRequest ? "never" : dueToAge ? "warning" : "good";
+    const statusClass = `status-dot--backup-${status}`;
+    elements.backupHealth.dataset.state = status;
     elements.backupHealthDot.className = `status-dot ${statusClass}`;
-    const message = backupHealthMessage(health, daysSinceReference);
-    elements.backupHealthMessage.textContent = message;
+    elements.backupHealthMessage.textContent = backupHealthMessage(health, daysSinceReference);
+    const description = backupHealthDescription(health, daysSinceReference);
+    elements.backupHealth.title = description;
+    elements.backupHealth.setAttribute("aria-label", description);
   }
 
   function recordBackupExport() {
@@ -617,7 +632,7 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
     elements.settingsShortcutModifiers.forEach((element) => {
       element.textContent = modifier;
     });
-    elements.noteSaveShortcutHelp.textContent = `Press 1 for the Markdown editor, 2 for split preview, and 3 for Preview. Press T to cycle the theme when focus is outside form controls. Formatting shortcuts support bold, italic, links, inline code, numbered lists, and bullet lists. Quick save keeps this note open: ${modifierName}, Shift, and S. Save note and close: ${modifierName} and Enter.`;
+    elements.noteSaveShortcutHelp.textContent = `Press 1 for the Markdown editor, 2 for split preview, and 3 for Preview. Press T to cycle the theme when focus is outside text fields and editable controls. Formatting shortcuts support bold, italic, links, inline code, numbered lists, and bullet lists. Quick save keeps this note open: ${modifierName}, Shift, and S. Save note and close: ${modifierName} and Enter.`;
   }
 
   function createElement(tagName, options = {}) {
