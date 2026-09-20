@@ -348,11 +348,37 @@
 
         <section class="notes-panel" aria-labelledby="notes-heading">
           <div class="notes-panel__heading">
-            <div>
-              <p class="eyebrow">Browse</p>
-              <h2 id="notes-heading">All notes</h2>
+            <div class="notes-panel__context">
+              <p id="notes-eyebrow" class="eyebrow">Browse</p>
+              <div class="notes-panel__title-row">
+                <h2 id="notes-heading">All notes</h2>
+                <span id="notes-description" class="shortcut-button notes-panel__help is-hidden">
+                  <button
+                    class="notes-panel__help-trigger"
+                    type="button"
+                    aria-label="About Trash"
+                    aria-describedby="notes-description-tooltip"
+                  >
+                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <circle cx="8" cy="8" r="6" />
+                      <path d="M8 7.25v4M8 4.75h.01" />
+                    </svg>
+                  </button>
+                  <span id="notes-description-tooltip" class="shortcut-tooltip notes-panel__description" role="tooltip">
+                    <span>Deleted notes stay here until you restore or permanently delete them.</span>
+                  </span>
+                </span>
+              </div>
             </div>
-            <span id="notes-count" class="notes-count" aria-live="polite"></span>
+            <div class="notes-panel__summary">
+              <span id="notes-count" class="notes-count" aria-live="polite"></span>
+              <button id="leave-trash-btn" class="text-button notes-panel__back is-hidden" type="button">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="m9.75 4.5-3.5 3.5 3.5 3.5" />
+                </svg>
+                <span>Back to all notes</span>
+              </button>
+            </div>
           </div>
 
           <div class="toolbar-slot">
@@ -1744,10 +1770,10 @@
     <div id="toast" class="toast" popover="manual" role="status" aria-live="polite" aria-atomic="true">
       <span class="toast__indicator" aria-hidden="true">
         <svg class="toast__indicator-icon toast__indicator-icon--success" viewBox="0 0 24 24" aria-hidden="true">
-          <path d="m7.5 12 3 3 6-6" />
+          <path d="m5.5 12.25 4.25 4.25 8.75-8.75" />
         </svg>
         <svg class="toast__indicator-icon toast__indicator-icon--error" viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M12 7.5v5M12 16.5h.01" />
+          <path d="M12 5.25v8.25M12 18h.01" />
         </svg>
       </span>
       <span id="toast-message"></span>

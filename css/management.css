@@ -727,8 +727,8 @@
 }
 
 .toast__indicator {
-  width: 1.375rem;
-  height: 1.375rem;
+  width: 1.5rem;
+  height: 1.5rem;
   flex: none;
   border-radius: 50%;
   color: var(--toast-status-icon);
@@ -738,8 +738,8 @@
 }
 
 .toast__indicator svg {
-  width: 0.78rem;
-  height: 0.78rem;
+  width: 1rem;
+  height: 1rem;
   fill: none;
   stroke: currentColor;
   stroke-linecap: round;

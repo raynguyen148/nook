@@ -100,7 +100,10 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
     compactView: document.querySelector("#compact-view-btn"),
     activeFilters: document.querySelector("#active-filters"),
     notesCount: document.querySelector("#notes-count"),
+    notesEyebrow: document.querySelector("#notes-eyebrow"),
     notesHeading: document.querySelector("#notes-heading"),
+    notesDescription: document.querySelector("#notes-description"),
+    leaveTrash: document.querySelector("#leave-trash-btn"),
     notesRange: document.querySelector("#notes-range"),
     sortDescription: document.querySelector("#sort-description"),
     notesList: document.querySelector("#notes-list"),
@@ -753,6 +756,26 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
     return shortDateFormatter.format(date);
   }
 
+  function formatRelativeDeletedDate(value) {
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return "unknown date";
+
+    const today = new Date();
+    const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime();
+    const dateStart = new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
+    const dayDifference = Math.max(0, Math.round((todayStart - dateStart) / 86400000));
+
+    if (dayDifference === 0) return "today";
+    if (dayDifference === 1) return "yesterday";
+    if (dayDifference < 7) return `${dayDifference} days ago`;
+    if (dayDifference < 14) return "1 week ago";
+    if (dayDifference < 30) return `${Math.floor(dayDifference / 7)} weeks ago`;
+    if (dayDifference < 60) return "1 month ago";
+    if (dayDifference < 365) return `${Math.floor(dayDifference / 30)} months ago`;
+    if (dayDifference < 730) return "1 year ago";
+    return `${Math.floor(dayDifference / 365)} years ago`;
+  }
+
   function getNoteCardDateInfo(note) {
     const isEdited = Boolean(
       note?.updatedAt &&
@@ -760,6 +783,14 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
       new Date(note.updatedAt).getTime() > new Date(note.createdAt).getTime()
     );
     const prefersUpdated = typeof ui.sort === "string" && ui.sort.startsWith("updated");
+
+    if (note?.deletedAt) {
+      return {
+        text: `Deleted ${formatRelativeDeletedDate(note.deletedAt)}`,
+        datetime: note.deletedAt,
+        title: `Deleted ${formatFullDate(note.deletedAt)} · Created ${formatFullDate(note.createdAt)}`,
+      };
+    }
 
     if (prefersUpdated && isEdited) {
       return {

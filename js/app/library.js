@@ -383,7 +383,11 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
     const trashCount = library.notes.filter(isDeletedNote).length;
 
     const allNotesCount = library.notes.filter((note) => !isDeletedNote(note)).length;
+    elements.notesPanel.classList.toggle("is-trash-view", ui.trashOnly);
+    elements.notesEyebrow.textContent = ui.trashOnly ? "Deleted notes" : "Browse";
     elements.notesHeading.textContent = ui.trashOnly ? "Trash" : "All notes";
+    elements.notesDescription.classList.toggle("is-hidden", !ui.trashOnly);
+    elements.leaveTrash.classList.toggle("is-hidden", !ui.trashOnly);
     elements.allNotesSpaceCount.textContent = allNotesCount;
     elements.allNotesSpace.title = `All notes (${allNotesCount})`;
     elements.trashSpaceCount.textContent = trashCount;

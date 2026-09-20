@@ -8,8 +8,11 @@
     <link rel="stylesheet" href="../css/management.css" />
     <link rel="stylesheet" href="../css/responsive.css" />
     <link rel="stylesheet" href="../css/themes/classic.css" />
-    <link rel="stylesheet" href="../css/themes/warm.css" />
+    <link rel="stylesheet" href="../css/themes/coffee.css" />
+    <link rel="stylesheet" href="../css/themes/forest.css" />
+    <link rel="stylesheet" href="../css/themes/midnight.css" />
     <link rel="stylesheet" href="../css/themes/dark.css" />
+    <link rel="stylesheet" href="../css/themes/retro.css" />
     <style>
       /* Hallmark · component preview: toast · states: all eight */
       .toast-preview__sprite {
@@ -116,8 +119,8 @@
   </head>
   <body>
     <svg class="toast-preview__sprite" aria-hidden="true" focusable="false">
-      <symbol id="toast-indicator-success" viewBox="0 0 24 24"><path d="m7.5 12 3 3 6-6" /></symbol>
-      <symbol id="toast-indicator-error" viewBox="0 0 24 24"><path d="M12 7.5v5M12 16.5h.01" /></symbol>
+      <symbol id="toast-indicator-success" viewBox="0 0 24 24"><path d="m5.5 12.25 4.25 4.25 8.75-8.75" /></symbol>
+      <symbol id="toast-indicator-error" viewBox="0 0 24 24"><path d="M12 5.25v8.25M12 18h.01" /></symbol>
     </svg>
     <template id="toast-indicator-template">
       <span class="toast__indicator" aria-hidden="true">
@@ -132,8 +135,11 @@
       <fieldset class="toast-preview__themes">
         <legend>Theme</legend>
         <button class="toast-preview__theme" type="button" data-preview-theme="light" aria-pressed="true">Light</button>
-        <button class="toast-preview__theme" type="button" data-preview-theme="warm" aria-pressed="false">Warm</button>
+        <button class="toast-preview__theme" type="button" data-preview-theme="coffee" aria-pressed="false">Coffee</button>
+        <button class="toast-preview__theme" type="button" data-preview-theme="forest" aria-pressed="false">Forest</button>
+        <button class="toast-preview__theme" type="button" data-preview-theme="midnight" aria-pressed="false">Midnight</button>
         <button class="toast-preview__theme" type="button" data-preview-theme="dark" aria-pressed="false">Dark</button>
+        <button class="toast-preview__theme" type="button" data-preview-theme="retro" aria-pressed="false">Retro</button>
       </fieldset>
 
       <section class="toast-preview__grid" aria-label="Toast state examples">

@@ -1,4 +1,8 @@
-/* ==========================================================================
+/* Hallmark · focused redesign: Trash context header · genre: modern-minimal
+ * tone: restrained utilitarian · anchor hue: inherited Nook theme
+ * structural fingerprint: preserved sidebar and library workspace
+ * pre-emit critique: P5 H5 E5 S5 R5 V4
+ * ==========================================================================
    Nook - Library Surface
    Final sidebar, topbar, toolbar, filter, and note-card presentation.
    ========================================================================== */
@@ -100,9 +104,101 @@
 
 
 .notes-panel__heading {
+  align-items: flex-start;
   margin-bottom: 1.05rem;
-  padding-bottom: 1rem;
+  padding-bottom: 0.5rem;
   border-bottom: 1px solid #f1f5f9;
+}
+
+
+
+.notes-panel__context {
+  min-width: 0;
+}
+
+
+
+.notes-panel__title-row {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+
+
+.notes-panel__help-trigger {
+  display: inline-grid;
+  width: 1.45rem;
+  height: 1.45rem;
+  place-items: center;
+  border: 0;
+  border-radius: 9999px;
+  padding: 0;
+  color: var(--text-muted);
+  background: transparent;
+  cursor: help;
+}
+
+
+
+.notes-panel__help-trigger:hover,
+.notes-panel__help-trigger:focus-visible {
+  color: var(--danger-text);
+  background: var(--danger-surface);
+}
+
+
+
+.notes-panel__help-trigger svg {
+  width: 0.95rem;
+  height: 0.95rem;
+}
+
+
+
+.notes-panel__description {
+  right: auto;
+  left: 0;
+  justify-content: flex-start;
+  text-align: left;
+}
+
+
+
+.notes-panel__summary {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
+
+
+.notes-panel__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.28rem;
+  white-space: nowrap;
+}
+
+
+
+.notes-panel__back svg {
+  width: 0.9rem;
+  height: 0.9rem;
+}
+
+
+
+.notes-panel.is-trash-view {
+  border-top-color: var(--danger-border);
+}
+
+
+
+.notes-panel.is-trash-view .notes-panel__heading > .notes-panel__context > .eyebrow {
+  color: var(--danger-text);
 }
 
 
@@ -367,7 +463,15 @@
   }
 
   .notes-panel__heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.75rem;
     padding-bottom: 0.85rem;
+  }
+
+  .notes-panel__summary {
+    width: 100%;
+    justify-content: space-between;
   }
 
   .note-card:hover,
