@@ -1,11 +1,13 @@
 "use strict";
 
-const CACHE_VERSION = "nook-app-v24";
+const CACHE_VERSION = "nook-app-v25";
 const APP_ASSETS = [
   "./",
   "./index.html",
   "./manifest.webmanifest",
   "./favicon.svg",
+  "./icons/nook-192.png",
+  "./icons/nook-512.png",
   "./css/app.css",
   "./css/accessibility.css",
   "./css/base.css",

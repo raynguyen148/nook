@@ -6,9 +6,86 @@ globalThis[Symbol.for("nook.app.modules")].register("offline", (app) => {
   const { api, elements, ui } = app;
   let registration = null;
   let updateRequested = false;
+  let deferredInstallPrompt = null;
+  let installationConfirmed = false;
 
   const showError = (...args) => api.showError(...args);
   const showToast = (...args) => api.showToast(...args);
+
+  function isHostedContext() {
+    return location.protocol === "https:" || location.hostname === "localhost" || location.hostname === "127.0.0.1";
+  }
+
+  function isInstalledApp() {
+    return window.matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
+  }
+
+  function refreshInstallAvailability() {
+    if (!elements.installAppMessage || !elements.installApp) return;
+    if (installationConfirmed || isInstalledApp()) {
+      elements.installAppMessage.textContent = "Nook is installed on this device and opens in its own window.";
+      elements.installApp.classList.add("is-hidden");
+      return;
+    }
+    if (!isHostedContext()) {
+      elements.installAppMessage.textContent = "Installation requires HTTPS or localhost. File mode remains available offline.";
+      elements.installApp.classList.add("is-hidden");
+      return;
+    }
+    if (deferredInstallPrompt) {
+      elements.installAppMessage.textContent = "Install Nook to open it from your desktop in its own window.";
+      elements.installApp.classList.remove("is-hidden");
+      return;
+    }
+    elements.installAppMessage.textContent = "Use your browser's Install App or Add to Dock command when available.";
+    elements.installApp.classList.add("is-hidden");
+  }
+
+  function captureInstallPrompt(event) {
+    event.preventDefault();
+    deferredInstallPrompt = event;
+    refreshInstallAvailability();
+  }
+
+  async function requestAppInstall() {
+    if (!deferredInstallPrompt) {
+      showToast("Use your browser's Install App or Add to Dock command.", "success");
+      return;
+    }
+    elements.installApp.disabled = true;
+    try {
+      const prompt = deferredInstallPrompt;
+      deferredInstallPrompt = null;
+      await prompt.prompt();
+      const choice = await prompt.userChoice;
+      if (choice?.outcome === "accepted") {
+        elements.installAppMessage.textContent = "Finishing installation…";
+      } else {
+        elements.installAppMessage.textContent = "Installation was dismissed. Reload later or use your browser's install command.";
+      }
+    } catch (error) {
+      showError(error, "Nook could not open the browser installation prompt.");
+    } finally {
+      elements.installApp.disabled = false;
+      elements.installApp.classList.add("is-hidden");
+    }
+  }
+
+  function setupInstallCapability() {
+    elements.installApp?.addEventListener("click", requestAppInstall);
+    window.addEventListener("beforeinstallprompt", captureInstallPrompt);
+    window.addEventListener("appinstalled", () => {
+      deferredInstallPrompt = null;
+      installationConfirmed = true;
+      refreshInstallAvailability();
+      showToast("Nook was installed.", "success");
+    });
+    const displayMode = window.matchMedia("(display-mode: standalone)");
+    if (typeof displayMode.addEventListener === "function") {
+      displayMode.addEventListener("change", refreshInstallAvailability);
+    }
+    refreshInstallAvailability();
+  }
 
   function formatBytes(value) {
     if (!Number.isFinite(value) || value < 0) return "unknown";
@@ -97,7 +174,7 @@ globalThis[Symbol.for("nook.app.modules")].register("offline", (app) => {
   }
 
   async function setupHostedOfflineApp() {
-    const hosted = location.protocol === "https:" || location.hostname === "localhost" || location.hostname === "127.0.0.1";
+    const hosted = isHostedContext();
     if (!hosted || !("serviceWorker" in navigator)) {
       if (elements.offlineAppMessage) {
         elements.offlineAppMessage.textContent = location.protocol === "file:"
@@ -152,6 +229,7 @@ globalThis[Symbol.for("nook.app.modules")].register("offline", (app) => {
   function setupStorageAndOfflineCapabilities() {
     elements.requestPersistence?.addEventListener("click", requestStoragePersistence);
     elements.applyOfflineUpdate?.addEventListener("click", applyHostedOfflineUpdate);
+    setupInstallCapability();
     void refreshStorageHealth();
     void setupHostedOfflineApp();
   }
@@ -160,6 +238,8 @@ globalThis[Symbol.for("nook.app.modules")].register("offline", (app) => {
     formatBytes,
     refreshStorageHealth,
     requestStoragePersistence,
+    refreshInstallAvailability,
+    requestAppInstall,
     setupHostedOfflineApp,
     applyHostedOfflineUpdate,
     setupStorageAndOfflineCapabilities,

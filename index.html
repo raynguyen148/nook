@@ -48,6 +48,7 @@
     </script>
     <title>Nook</title>
     <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="icons/nook-192.png" />
     <link rel="manifest" href="manifest.webmanifest" />
     <link rel="stylesheet" href="css/app.css" />
   </head>
@@ -1642,6 +1643,15 @@
             </div>
             <div class="data-setting__actions">
               <button id="request-persistence-btn" class="button button-secondary is-hidden" type="button">Request persistence</button>
+            </div>
+          </section>
+          <section class="management-row data-setting" aria-labelledby="install-app-title">
+            <div class="data-setting__copy">
+              <h3 id="install-app-title" class="management-row__name">Install Nook</h3>
+              <p id="install-app-message" class="dialog-description" aria-live="polite">Open Nook from HTTPS or localhost to install it as a desktop app.</p>
+            </div>
+            <div class="data-setting__actions">
+              <button id="install-app-btn" class="button button-secondary is-hidden" type="button">Install app</button>
             </div>
           </section>
           <section class="management-row data-setting" aria-labelledby="offline-app-title">

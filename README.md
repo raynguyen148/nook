@@ -323,6 +323,13 @@ versioned local-resource cache in `sw.js` and reopen the app offline after the
 assets have been cached. Other hosted origins keep local IndexedDB behavior but
 do not receive this Service Worker path.
 
+On a supported desktop browser, open Settings → Data and choose **Install app**
+when it is available. Nook then opens in a standalone window and receives its
+own desktop, dock, or app-launcher icon. Browsers that do not expose the in-app
+prompt may offer **Install App** or **Add to Dock** in their own menu. Standard
+PWA installation requires HTTPS or localhost and is not available from
+`file://`.
+
 When a new worker is waiting, Nook offers **Apply update**. It does not force a
 reload while the primary editor or Side note has unsaved changes; save or
 preserve those drafts first. The worker is activated only after an explicit
@@ -404,6 +411,7 @@ mutation occurs.
 | [`js/app/offline.js`](js/app/offline.js) | Optional storage-health, persistent-storage request, and hosted Service Worker update controls |
 | [`sw.js`](sw.js) | Versioned cache for local hosted app resources; never owns note data |
 | [`manifest.webmanifest`](manifest.webmanifest) | Local install metadata for hosted browsers |
+| [`icons/`](icons) | Local PNG application icons used by installed browsers and operating systems |
 | [`js/app/`](js/app) | UI modules split by responsibility: shared state, preferences, feedback, library, editor, settings/import-export, tab sync, offline capabilities, and event/bootstrap wiring |
 | [`docs/architecture.md`](docs/architecture.md) | Module boundaries, CSS ownership, extension rules, and structural validation |
 | [`favicon.svg`](favicon.svg) | Local Nook application icon used by the browser tab |

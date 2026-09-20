@@ -247,6 +247,8 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
     deleteLibrary: document.querySelector("#delete-library-btn"),
     storageHealthMessage: document.querySelector("#storage-health-message"),
     requestPersistence: document.querySelector("#request-persistence-btn"),
+    installAppMessage: document.querySelector("#install-app-message"),
+    installApp: document.querySelector("#install-app-btn"),
     offlineAppMessage: document.querySelector("#offline-app-message"),
     applyOfflineUpdate: document.querySelector("#apply-offline-update-btn"),
     themePicker: document.querySelector("#theme-picker"),
