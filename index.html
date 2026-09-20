@@ -999,10 +999,26 @@
                         <option value="title-desc">Title Z–A</option>
                       </select>
                     </div>
+                    <div class="secondary-layout-control view-mode-control" role="group" aria-label="Side note layout">
+                      <div class="view-mode-control__choices">
+                        <div class="view-mode-choice">
+                          <button id="secondary-focus-view-btn" class="view-mode-button" type="button" aria-pressed="true" aria-label="Focus view: one column" aria-keyshortcuts="1" aria-describedby="secondary-focus-tooltip">
+                            <svg class="view-mode-icon view-mode-icon--focus" viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 6.75h15M4.5 12h15M4.5 17.25h15" /></svg>
+                          </button>
+                          <span id="secondary-focus-tooltip" class="shortcut-tooltip" role="tooltip"><span>Focus view</span><kbd>1</kbd></span>
+                        </div>
+                        <div class="view-mode-choice">
+                          <button id="secondary-comfortable-view-btn" class="view-mode-button" type="button" aria-pressed="false" aria-label="Comfortable view: two columns when space allows" aria-keyshortcuts="2" aria-describedby="secondary-comfortable-tooltip">
+                            <svg class="view-mode-icon view-mode-icon--comfortable" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.75" y="4" width="7" height="16" rx="1.6" /><rect x="13.25" y="4" width="7" height="16" rx="1.6" /></svg>
+                          </button>
+                          <span id="secondary-comfortable-tooltip" class="shortcut-tooltip" role="tooltip"><span>Comfortable view</span><kbd>2</kbd></span>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
-                <div id="secondary-notes-list" class="secondary-notes-list notes-list" role="listbox" aria-label="Side notes to open"></div>
+                <div id="secondary-notes-list" class="secondary-notes-list notes-list" role="region" aria-label="Side notes to open"></div>
               </div>
             </div>
 

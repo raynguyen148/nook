@@ -1780,7 +1780,7 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
     }
   }
 
-  async function deleteNoteWithConfirmation(note) {
+  async function deleteNoteWithConfirmation(note, { preserveSidePicker = false } = {}) {
     if (!note || ui.noteSaveInFlight) return;
     const confirmed = await requestConfirmation({
       title: "Move note to Trash?",
@@ -1789,7 +1789,9 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
       cancelLabel: "Keep note",
     });
     if (!confirmed) return;
-    if (ui.dualPaneOpen) {
+    const keepPicker = preserveSidePicker && note.id !== ui.editingNoteId &&
+      elements.secondaryPickerView && !elements.secondaryPickerView.classList.contains("is-hidden");
+    if (ui.dualPaneOpen && !keepPicker) {
       const sideClosed = await api.closeDualPane?.();
       if (!sideClosed || ui.dualPaneOpen) return;
     }

@@ -123,6 +123,8 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
     secondaryNoteSearch: document.querySelector("#secondary-note-search"),
     secondaryClearSearch: document.querySelector("#secondary-clear-search-btn"),
     secondarySort: document.querySelector("#secondary-sort-select"),
+    secondaryFocusView: document.querySelector("#secondary-focus-view-btn"),
+    secondaryComfortableView: document.querySelector("#secondary-comfortable-view-btn"),
     secondaryNotesList: document.querySelector("#secondary-notes-list"),
     secondaryEditorContainer: document.querySelector("#secondary-editor-container"),
     secondaryPreviewPanel: document.querySelector("#secondary-preview-panel"),
@@ -346,6 +348,8 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
     secondaryAutoSaveTimer: 0,
     secondarySearchQuery: "",
     secondarySort: "updated-desc",
+    secondaryViewMode: readSecondaryViewMode(),
+    secondaryListScrollTop: 0,
     copyInFlight: false,
     restoreViewFocus: true,
     afterQuickViewClose: null,
@@ -665,6 +669,14 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
 
   function normalizedSearchQuery() {
     return ui.query.trim().toLocaleLowerCase();
+  }
+
+  function readSecondaryViewMode() {
+    try {
+      return window.localStorage.getItem("nook:secondary-view-mode") === "comfortable" ? "comfortable" : "focus";
+    } catch {
+      return "focus";
+    }
   }
 
   function appendHighlightedText(element, value) {

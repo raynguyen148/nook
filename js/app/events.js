@@ -330,6 +330,11 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
     elements.noteDialog?.addEventListener("focusin", () => {
       ui.activePane = "primary";
     });
+    elements.secondaryFocusView?.addEventListener("click", () => api.setSecondaryViewMode("focus"));
+    elements.secondaryComfortableView?.addEventListener("click", () => api.setSecondaryViewMode("comfortable"));
+    elements.secondaryNotesList?.addEventListener("scroll", () => {
+      if (!elements.secondaryPickerView.classList.contains("is-hidden")) ui.secondaryListScrollTop = elements.secondaryNotesList.scrollTop;
+    });
     elements.secondaryBackToPicker?.addEventListener("click", showSecondaryPicker);
     elements.secondaryCopyContent?.addEventListener("click", copySecondaryNoteContent);
     elements.secondaryExportMd?.addEventListener("click", exportSecondaryNoteMarkdown);
@@ -400,16 +405,22 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
     });
     elements.secondaryNoteSearch?.addEventListener("input", (event) => {
       ui.secondarySearchQuery = event.target.value;
+      ui.secondaryListScrollTop = 0;
+      elements.secondaryNotesList.scrollTop = 0;
       renderSecondaryNotesList();
     });
     elements.secondaryClearSearch?.addEventListener("click", () => {
       ui.secondarySearchQuery = "";
+      ui.secondaryListScrollTop = 0;
+      elements.secondaryNotesList.scrollTop = 0;
       if (elements.secondaryNoteSearch) elements.secondaryNoteSearch.value = "";
       renderSecondaryNotesList();
       elements.secondaryNoteSearch?.focus();
     });
     elements.secondarySort?.addEventListener("change", (event) => {
       ui.secondarySort = event.target.value;
+      ui.secondaryListScrollTop = 0;
+      elements.secondaryNotesList.scrollTop = 0;
       renderSecondaryNotesList();
     });
     elements.closeConfirmation.addEventListener("click", () => closeConfirmation());
@@ -687,6 +698,15 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
         !event.isComposing &&
         !event.defaultPrevented &&
         !editingText;
+
+      if (isModeKey && matchesModifierFree && ui.dualPaneOpen &&
+          !elements.secondaryPickerView?.classList.contains("is-hidden") && ui.activePane === "secondary") {
+        if (!activeModalDialog() && !window.getSelection()?.toString() && formattingKey !== "3") {
+          event.preventDefault();
+          api.setSecondaryViewMode(formattingKey === "1" ? "focus" : "comfortable");
+        }
+        return;
+      }
 
       if (isModeKey && matchesModifierFree) {
         const isSecondaryReaderActive =
