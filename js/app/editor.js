@@ -580,12 +580,10 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
     }
   }
 
-  function getPreviewContentOffset(element, maximum, preview = elements.noteContentPreview) {
-    if (!preview) return 0;
-    const previewBounds = preview.getBoundingClientRect();
+  function getPreviewContentOffset(element, maximum, previewTop, previewScrollTop) {
     const elementBounds = element.getBoundingClientRect();
     return clampScrollPosition(
-      elementBounds.top - previewBounds.top + preview.scrollTop,
+      elementBounds.top - previewTop + previewScrollTop,
       maximum,
     );
   }
@@ -653,9 +651,6 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
           ui.secondaryScrollSyncResetFrame = 0;
         },
         cancelResetFrame: () => window.cancelAnimationFrame(ui.secondaryScrollSyncResetFrame),
-        scheduleResetFrame: (callback) => {
-          ui.secondaryScrollSyncResetFrame = window.requestAnimationFrame(callback);
-        },
         getMapFrame: () => ui.secondaryScrollMapFrame,
         setMapFrame: (frame) => {
           ui.secondaryScrollMapFrame = frame;
@@ -683,9 +678,6 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
         ui.noteScrollSyncResetFrame = 0;
       },
       cancelResetFrame: () => window.cancelAnimationFrame(ui.noteScrollSyncResetFrame),
-      scheduleResetFrame: (callback) => {
-        ui.noteScrollSyncResetFrame = window.requestAnimationFrame(callback);
-      },
       getMapFrame: () => ui.noteScrollMapFrame,
       setMapFrame: (frame) => {
         ui.noteScrollMapFrame = frame;
@@ -726,12 +718,14 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
       ? measureNoteEditorSourceLineOffsets(source.value, lineStarts, sourceLines, sourceMaximum, source)
       : new Map();
     const points = [{ source: 0, preview: 0 }];
+    const previewTop = preview.getBoundingClientRect().top;
+    const previewScrollTop = preview.scrollTop;
     anchors.forEach(({ element, sourceLine }) => {
       const sourceOffset = sourceOffsets.get(sourceLine);
       if (!Number.isFinite(sourceOffset) || sourceOffset <= 0.5 || sourceOffset >= sourceMaximum - 0.5) return;
       points.push({
         source: sourceOffset,
-        preview: getPreviewContentOffset(element, previewMaximum, preview),
+        preview: getPreviewContentOffset(element, previewMaximum, previewTop, previewScrollTop),
       });
     });
     points.push({ source: sourceMaximum, preview: previewMaximum });
@@ -750,11 +744,6 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
     };
     session.setScrollMap(scrollMap);
     return scrollMap;
-  }
-
-  function buildNoteEditorScrollMap(source = elements.noteContent) {
-    const session = getSplitScrollSession(source);
-    return buildSplitScrollMap(session);
   }
 
   function isNoteEditorScrollMapCurrent(scrollMap, source = elements.noteContent, preview = elements.noteContentPreview) {
@@ -807,24 +796,25 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
       session.resetSyncTarget();
     }
     const currentMap = session.getScrollMap();
-    const scrollMap = isNoteEditorScrollMapCurrent(currentMap, session.source, session.preview)
-      ? currentMap
-      : buildSplitScrollMap(session);
-    if (!scrollMap) return;
+    if (!isNoteEditorScrollMapCurrent(currentMap, session.source, session.preview)) {
+      // Mirror/Range measurements belong to the scheduled layout pass, never
+      // to a native scroll event. Keep the user's pane as the scroll leader.
+      scheduleNoteEditorScrollMap(source);
+      return;
+    }
+    const scrollMap = currentMap;
     const map = source === session.source
       ? scrollMap.sourceToPreview
       : scrollMap.previewToSource;
     const targetPosition = clampScrollPosition(
       interpolateNoteEditorScrollMap(map, source.scrollTop),
-      getNoteEditorMaximumScrollTop(target),
+      source === session.source ? scrollMap.previewMaximum : scrollMap.sourceMaximum,
     );
     if (Math.abs(target.scrollTop - targetPosition) < 0.5) return;
-    session.setSyncTarget(target, targetPosition);
     target.scrollTop = targetPosition;
-    session.cancelResetFrame();
-    session.scheduleResetFrame(() => {
-      session.resetSyncTarget();
-    });
+    // Read back the browser-clamped position. Keep the echo guard until that
+    // scroll arrives, even if delivery happens after the next animation frame.
+    session.setSyncTarget(target, target.scrollTop);
   }
 
   function scheduleNoteEditorScrollMap(source = elements.noteContent) {
@@ -833,8 +823,10 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
     window.cancelAnimationFrame(session.getMapFrame());
     session.setMapFrame(window.requestAnimationFrame(() => {
       session.setMapFrame(0);
-      if (buildSplitScrollMap(session)) {
-        const other = source === session.source ? session.preview : session.source;
+      const liveSession = getSplitScrollSession(source);
+      if (!liveSession.isSplit) return;
+      if (buildSplitScrollMap(liveSession)) {
+        const other = source === liveSession.source ? liveSession.preview : liveSession.source;
         syncNoteEditorScroll(source, other);
       }
     }));
@@ -849,9 +841,6 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
       { sourceMap: true },
     );
     ui.noteScrollMap = null;
-    if (buildNoteEditorScrollMap()) {
-      syncNoteEditorScroll(elements.noteContent, elements.noteContentPreview);
-    }
     scheduleNoteEditorScrollMap(elements.noteContent);
   }
 
@@ -860,6 +849,7 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
     ui.noteScrollMap = null;
     window.cancelAnimationFrame(ui.noteEditorPreviewFrame);
     ui.noteEditorPreviewFrame = window.requestAnimationFrame(() => {
+      ui.noteEditorPreviewFrame = 0;
       renderNoteEditorPreview();
     });
   }
