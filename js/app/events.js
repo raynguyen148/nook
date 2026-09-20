@@ -63,6 +63,7 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
     scheduleTagFilterLayout,
     toggleTagFilterExpansion,
     observeTagFilterLayout,
+    observeResponsivePagination,
     renderQuickView,
     syncNotePreviewActions,
     isDetailWorkspaceOpen,
@@ -176,6 +177,7 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
       closeThemePicker();
       handleManagementTabKeydown(event);
     };
+    observeResponsivePagination();
     elements.mobileFilterToggle.addEventListener("click", toggleMobileFilters);
     elements.sidebarToggle?.addEventListener("click", () => toggleSidebar());
     elements.sidebarToggle?.addEventListener("pointerenter", positionSidebarToggleTooltip);

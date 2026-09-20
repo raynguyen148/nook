@@ -5,6 +5,8 @@
 
 @media (max-width: 1200px) {
   .notes-list--compact {
+    --notes-columns: 3;
+
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
@@ -13,6 +15,8 @@
 
 @media (max-width: 960px) {
   .notes-list--compact {
+    --notes-columns: 2;
+
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
@@ -674,6 +678,8 @@
 
   .notes-list--comfortable,
   .notes-list--compact {
+    --notes-columns: 1;
+
     grid-template-columns: 1fr;
   }
 

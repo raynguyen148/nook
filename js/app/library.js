@@ -13,11 +13,20 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
   const secondaryDraftRecoveryStore = api.createDraftRecoveryStore();
   const SECONDARY_RESULT_LIMIT = 50;
   let notesContentAnimation = null;
+  let responsivePaginationFrame = 0;
+  let responsivePaginationTimer = 0;
+  let responsivePaginationPending = false;
   let sortPicker = null;
   let tagFilterLayoutFrame = 0;
   let tagFilterResizeObserver = null;
   const TAG_FILTER_DESKTOP_QUERY = "(min-width: 821px)";
   const TAG_FILTER_HEIGHT_RESERVE = 12;
+  const RESPONSIVE_PAGINATION_QUERIES = [
+    "(max-width: 1200px)",
+    "(max-width: 960px)",
+    "(max-width: 620px)",
+  ];
+  const RESPONSIVE_PAGINATION_SETTLE_DELAY = 180;
   const SORT_LABELS = Object.freeze({
     "created-desc": "Newest created",
     "created-asc": "Oldest created",
@@ -2176,15 +2185,86 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
     elements.pagination.append(next);
   }
 
+  function effectiveNotesColumnCount() {
+    const value = window.getComputedStyle(elements.notesList).getPropertyValue("--notes-columns");
+    const columns = Number.parseInt(value, 10);
+    return Number.isInteger(columns) && columns > 0 ? columns : 1;
+  }
+
+  function pageSizeForColumns(columns) {
+    if (ui.viewMode === "focus") return PAGE_SIZE;
+    return Math.ceil(PAGE_SIZE / columns) * columns;
+  }
+
+  function syncPaginationMetrics() {
+    const columns = effectiveNotesColumnCount();
+    const previousPageSize = ui.pageSize || PAGE_SIZE;
+    const nextPageSize = pageSizeForColumns(columns);
+    if (ui.paginationColumns === columns && previousPageSize === nextPageSize) return false;
+
+    const pageSizeChanged = previousPageSize !== nextPageSize;
+    const anchorIndex = Math.max(0, (ui.page - 1) * previousPageSize);
+    ui.paginationColumns = columns;
+    if (!pageSizeChanged) return false;
+
+    ui.pageSize = nextPageSize;
+    ui.page = Math.floor(anchorIndex / nextPageSize) + 1;
+    return true;
+  }
+
+  function cancelResponsivePaginationSchedule() {
+    window.clearTimeout(responsivePaginationTimer);
+    window.cancelAnimationFrame(responsivePaginationFrame);
+    responsivePaginationTimer = 0;
+    responsivePaginationFrame = 0;
+    responsivePaginationPending = false;
+  }
+
+  function syncResponsivePagination() {
+    cancelResponsivePaginationSchedule();
+    if (!syncPaginationMetrics()) return false;
+    renderNotes();
+    return true;
+  }
+
+  function scheduleResponsivePagination() {
+    if (!responsivePaginationPending) return;
+    window.clearTimeout(responsivePaginationTimer);
+    window.cancelAnimationFrame(responsivePaginationFrame);
+    responsivePaginationFrame = 0;
+    responsivePaginationTimer = window.setTimeout(() => {
+      responsivePaginationTimer = 0;
+      responsivePaginationFrame = window.requestAnimationFrame(() => {
+        responsivePaginationFrame = 0;
+        responsivePaginationPending = false;
+        syncResponsivePagination();
+      });
+    }, RESPONSIVE_PAGINATION_SETTLE_DELAY);
+  }
+
+  function deferResponsivePagination() {
+    responsivePaginationPending = true;
+    scheduleResponsivePagination();
+  }
+
+  function observeResponsivePagination() {
+    RESPONSIVE_PAGINATION_QUERIES.forEach((query) => {
+      window.matchMedia(query).addEventListener("change", deferResponsivePagination);
+    });
+    window.addEventListener("resize", scheduleResponsivePagination, { passive: true });
+  }
+
   function renderNotes({ motion = "none" } = {}) {
     syncViewModeUI();
+    syncPaginationMetrics();
     elements.sort.value = ui.sort;
     syncSortPicker();
     const matchingNotes = getVisibleNotes();
-    const totalPages = Math.max(1, Math.ceil(matchingNotes.length / PAGE_SIZE));
+    const pageSize = ui.pageSize || PAGE_SIZE;
+    const totalPages = Math.max(1, Math.ceil(matchingNotes.length / pageSize));
     ui.page = Math.min(ui.page, totalPages);
-    const start = (ui.page - 1) * PAGE_SIZE;
-    const pageNotes = matchingNotes.slice(start, start + PAGE_SIZE);
+    const start = (ui.page - 1) * pageSize;
+    const pageNotes = matchingNotes.slice(start, start + pageSize);
     const end = start + pageNotes.length;
 
     elements.notesCount.textContent = pluralize(matchingNotes.length, "note");
@@ -2255,6 +2335,8 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
     syncSortPicker,
     paginationItems,
     renderPagination,
+    syncResponsivePagination,
+    observeResponsivePagination,
     renderNotes,
     closeDualPane,
     openDualPane,

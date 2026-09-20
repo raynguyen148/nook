@@ -40,6 +40,7 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
   const pluralize = (...args) => api.pluralize(...args);
   const usesMacKeyboardShortcuts = (...args) => api.usesMacKeyboardShortcuts(...args);
   const scheduleTagFilterLayout = (...args) => api.scheduleTagFilterLayout?.(...args);
+  const syncResponsivePagination = (...args) => api.syncResponsivePagination(...args);
 
   function getNextTheme(currentTheme) {
     const currentIndex = THEMES.indexOf(currentTheme);
@@ -694,6 +695,8 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
     } catch {
       // The layout still works when browser privacy settings block localStorage.
     }
+
+    syncResponsivePagination();
 
     if (reduceMotion) return;
 

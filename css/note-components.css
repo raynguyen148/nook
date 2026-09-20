@@ -678,6 +678,8 @@ select::-ms-expand {
 
 
 .notes-list {
+  --notes-columns: 1;
+
   display: grid;
   grid-template-columns: 1fr;
   align-items: stretch;
@@ -688,12 +690,16 @@ select::-ms-expand {
 
 
 .notes-list--comfortable {
+  --notes-columns: 2;
+
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 
 
 .notes-list--compact {
+  --notes-columns: 4;
+
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 

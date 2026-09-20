@@ -302,6 +302,8 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
     viewMode: getStoredViewMode(),
     notePreviewLines: getStoredNotePreviewLines(),
     page: 1,
+    pageSize: PAGE_SIZE,
+    paginationColumns: 0,
     editingNoteId: "",
     selectedNoteTagIds: new Set(),
     noteEditorSession: 0,

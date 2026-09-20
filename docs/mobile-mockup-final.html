@@ -1,0 +1,1626 @@
+<!doctype html>
+<html lang="vi" data-theme="coffee">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Nook — Mobile UI Bản Hoàn Chỉnh Thực Chiến (Definitive Edition)</title>
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="../css/app.css" />
+    <style>
+      /* ==========================================================================
+         Nook Mobile - Definitive Edition (Bản Hoàn Chỉnh Thực Chiến)
+         Philosophy: 100% Thumb Zone Reachability, Zero Navigation Friction,
+         Clean Contextual Spaces, Robust Offline Safety.
+         ========================================================================== */
+
+      :root {
+        --phone-w: 393px;
+        --phone-h: 852px;
+        --phone-radius: 50px;
+        --phone-border: 11px solid #1c2434;
+        --phone-shadow: 0 35px 80px -15px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.08);
+        --nav-height: 3.85rem;
+      }
+
+      body {
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+        min-height: 100dvh;
+        background: #090d16;
+        color: #f8fafc;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      /* Presenter Control Bar */
+      .final-presenter-bar {
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 0.75rem 1.5rem;
+        background: rgba(9, 13, 22, 0.94);
+        backdrop-filter: blur(16px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      }
+
+      .final-brand-group {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+
+      .final-badge {
+        padding: 0.2rem 0.65rem;
+        border-radius: 999px;
+        background: rgba(16, 185, 129, 0.15);
+        border: 1px solid rgba(16, 185, 129, 0.4);
+        color: #34d399;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+      }
+
+      .final-controls {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.65rem;
+      }
+
+      .final-btn-group {
+        display: inline-flex;
+        align-items: center;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.09);
+        border-radius: 0.65rem;
+        padding: 0.2rem;
+        gap: 0.2rem;
+      }
+
+      .final-nav-btn {
+        appearance: none;
+        border: none;
+        background: transparent;
+        color: #94a3b8;
+        font-size: 0.8rem;
+        font-weight: 500;
+        padding: 0.35rem 0.75rem;
+        border-radius: 0.45rem;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+      }
+
+      .final-nav-btn:hover {
+        background: rgba(255, 255, 255, 0.07);
+        color: #fff;
+      }
+
+      .final-nav-btn.is-active {
+        background: #0284c7;
+        color: #fff;
+        font-weight: 600;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+      }
+
+      .theme-dot-btn {
+        width: 1.45rem;
+        height: 1.45rem;
+        border-radius: 999px;
+        border: 2px solid transparent;
+        cursor: pointer;
+        padding: 0;
+        transition: transform 0.15s ease;
+      }
+
+      .theme-dot-btn:hover {
+        transform: scale(1.15);
+      }
+
+      .theme-dot-btn.is-active {
+        border-color: #fff;
+        transform: scale(1.15);
+      }
+
+      /* Viewport */
+      .final-viewport {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        padding: 2.5rem 1.5rem 4rem;
+        gap: 2.5rem;
+      }
+
+      /* Phone Frame */
+      .final-phone-frame {
+        position: relative;
+        width: var(--phone-w);
+        height: var(--phone-h);
+        border: var(--phone-border);
+        border-radius: var(--phone-radius);
+        box-shadow: var(--phone-shadow);
+        background: var(--surface-page);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        flex-shrink: 0;
+        color: var(--text-strong);
+        transition: all 0.25s ease;
+      }
+
+      body.mode-responsive .final-phone-frame {
+        width: 100%;
+        max-width: 440px;
+        height: 870px;
+        border: none;
+        border-radius: 1.75rem;
+        box-shadow: 0 12px 50px rgba(0,0,0,0.5);
+      }
+
+      /* Status Bar */
+      .final-status-bar {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 1.75rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--text-strong);
+        z-index: 999;
+        pointer-events: none;
+      }
+
+      .final-island {
+        width: 116px;
+        height: 28px;
+        background: #000;
+        border-radius: 999px;
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        top: 10px;
+      }
+
+      .final-home-bar {
+        position: absolute;
+        bottom: 8px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 138px;
+        height: 5px;
+        background: var(--text-muted);
+        opacity: 0.35;
+        border-radius: 999px;
+        z-index: 999;
+        pointer-events: none;
+      }
+
+      /* App Shell */
+      .final-app {
+        position: relative;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        padding-top: 48px;
+        overflow: hidden;
+        background: var(--surface-page);
+      }
+
+      .final-screen {
+        display: none;
+        flex-direction: column;
+        flex: 1;
+        height: 100%;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        position: relative;
+        padding-bottom: calc(var(--nav-height) + 1rem);
+      }
+
+      .final-screen.is-active {
+        display: flex;
+      }
+
+      /* ==========================================================================
+         CORE COMPONENT: Fixed Bottom Navigation Bar (Thumb Zone Hero)
+         ========================================================================== */
+
+      .final-bottom-nav {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: var(--nav-height);
+        background: var(--surface-panel);
+        border-top: 1px solid var(--border-subtle);
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+        padding: 0 0.5rem 0.5rem;
+        z-index: 80;
+        box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.03);
+      }
+
+      .nav-tab-btn {
+        flex: 1;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.18rem;
+        background: transparent;
+        border: none;
+        color: var(--text-muted);
+        cursor: pointer;
+        padding: 0;
+        transition: color 0.15s ease, transform 0.15s ease;
+      }
+
+      .nav-tab-btn:active {
+        transform: scale(0.92);
+      }
+
+      .nav-tab-btn.is-active {
+        color: var(--primary-accent);
+      }
+
+      .nav-tab-btn svg {
+        width: 1.35rem;
+        height: 1.35rem;
+      }
+
+      .nav-tab-btn span {
+        font-size: 0.65rem;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+      }
+
+      /* Prominent Center Add (+) Button */
+      .nav-center-add {
+        position: relative;
+        top: -0.65rem;
+        width: 3.2rem;
+        height: 3.2rem;
+        border-radius: 999px;
+        background: var(--primary-accent);
+        color: #fff;
+        border: 3.5px solid var(--surface-page);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 6px 18px rgba(163, 86, 22, 0.35);
+        cursor: pointer;
+        transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        flex-shrink: 0;
+      }
+
+      .nav-center-add:active {
+        transform: scale(0.9);
+      }
+
+      .nav-center-add svg {
+        width: 1.55rem;
+        height: 1.55rem;
+      }
+
+      /* ==========================================================================
+         SCREEN 1: All Notes Feed (Trang Chính)
+         ========================================================================== */
+
+      .fn-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.65rem 1.15rem 0.35rem;
+      }
+
+      /* Space Selector Pill (Switch All Notes vs Trash) */
+      .space-selector-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        padding: 0.35rem 0.65rem 0.35rem 0.45rem;
+        border-radius: 999px;
+        background: var(--surface-panel);
+        border: 1px solid var(--border-subtle);
+        cursor: pointer;
+        transition: all 0.15s ease;
+      }
+
+      .space-selector-pill:active {
+        background: var(--surface-muted);
+      }
+
+      .space-selector-icon {
+        width: 1.5rem;
+        height: 1.5rem;
+        border-radius: 999px;
+        background: var(--selected-surface);
+        color: var(--primary-accent);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .space-selector-icon svg {
+        width: 0.88rem;
+        height: 0.88rem;
+      }
+
+      .space-selector-title {
+        font-size: 0.95rem;
+        font-weight: 800;
+        color: var(--text-strong);
+      }
+
+      .space-selector-chevron {
+        color: var(--text-muted);
+        font-size: 0.75rem;
+        margin-left: 0.15rem;
+      }
+
+      .fn-header-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.45rem;
+      }
+
+      .fn-icon-btn {
+        width: 2.2rem;
+        height: 2.2rem;
+        border-radius: 0.65rem;
+        border: 1px solid var(--border-subtle);
+        background: var(--surface-panel);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-strong);
+        cursor: pointer;
+      }
+
+      .fn-icon-btn svg {
+        width: 1.15rem;
+        height: 1.15rem;
+      }
+
+      /* Horizontal Category Chips */
+      .fn-chip-bar {
+        display: flex;
+        align-items: center;
+        gap: 0.45rem;
+        padding: 0.5rem 1.15rem 0.75rem;
+        overflow-x: auto;
+        scrollbar-width: none;
+      }
+
+      .fn-chip-bar::-webkit-scrollbar {
+        display: none;
+      }
+
+      .fn-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.35rem 0.75rem;
+        border-radius: 999px;
+        background: var(--surface-panel);
+        border: 1px solid var(--border-subtle);
+        color: var(--text-muted);
+        font-size: 0.78rem;
+        font-weight: 600;
+        white-space: nowrap;
+        cursor: pointer;
+        flex-shrink: 0;
+      }
+
+      .fn-chip.is-active {
+        background: var(--selected-surface);
+        color: var(--selected-text);
+        border-color: var(--selected-border);
+      }
+
+      .fn-chip-dot {
+        width: 6.5px;
+        height: 6.5px;
+        border-radius: 999px;
+      }
+
+      /* Note Feed Cards */
+      .fn-feed {
+        padding: 0 1.15rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.85rem;
+      }
+
+      .fn-feed-meta {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        padding: 0 0.2rem;
+      }
+
+      .fn-card {
+        background: var(--surface-panel);
+        border: 1px solid var(--border-subtle);
+        border-radius: 1.1rem;
+        padding: 1rem 1.1rem;
+        box-shadow: 0 2px 8px -2px rgba(15, 23, 42, 0.04);
+        cursor: pointer;
+        position: relative;
+        transition: transform 0.15s ease, background 0.15s ease;
+      }
+
+      .fn-card:active {
+        transform: scale(0.985);
+        background: var(--surface-muted);
+      }
+
+      .fn-card.is-pinned {
+        border-color: var(--selected-border);
+        background: linear-gradient(145deg, var(--selected-surface) 0%, var(--surface-panel) 38px);
+      }
+
+      .fn-card-top {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 0.5rem;
+        margin-bottom: 0.35rem;
+      }
+
+      .fn-card-title {
+        font-size: 0.98rem;
+        font-weight: 700;
+        color: var(--text-strong);
+        line-height: 1.35;
+        margin: 0;
+      }
+
+      .fn-card-preview {
+        font-size: 0.84rem;
+        color: var(--text-default);
+        line-height: 1.5;
+        margin: 0 0 0.75rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+
+      .fn-card-bottom {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.5rem;
+        font-size: 0.72rem;
+        color: var(--text-muted);
+      }
+
+      .fn-card-meta-left {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        flex-wrap: wrap;
+      }
+
+      .fn-type-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        font-weight: 600;
+        color: var(--text-strong);
+      }
+
+      .fn-tag-chip {
+        background: var(--surface-muted);
+        color: var(--text-muted);
+        padding: 0.15rem 0.4rem;
+        border-radius: 0.35rem;
+      }
+
+      .fn-task-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        color: #059669;
+        font-weight: 700;
+        background: #ecfdf5;
+        padding: 0.15rem 0.4rem;
+        border-radius: 0.35rem;
+      }
+
+      /* ==========================================================================
+         SCREEN 2: Note Detail (Editor Mode)
+         ========================================================================== */
+
+      .fn-editor-screen {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        background: var(--surface-panel);
+      }
+
+      .fn-editor-appbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.55rem 0.85rem;
+        border-bottom: 1px solid var(--border-subtle);
+        background: var(--surface-panel);
+      }
+
+      .fn-segmented {
+        display: inline-flex;
+        background: var(--surface-muted);
+        padding: 0.2rem;
+        border-radius: 0.55rem;
+        border: 1px solid var(--border-subtle);
+      }
+
+      .fn-segmented-btn {
+        border: none;
+        background: transparent;
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        padding: 0.25rem 0.75rem;
+        border-radius: 0.4rem;
+        cursor: pointer;
+      }
+
+      .fn-segmented-btn.is-active {
+        background: var(--surface-panel);
+        color: var(--text-strong);
+        box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+      }
+
+      .fn-save-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        font-size: 0.72rem;
+        color: #059669;
+        font-weight: 600;
+      }
+
+      .fn-save-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 999px;
+        background: #059669;
+      }
+
+      .fn-editor-body {
+        flex: 1;
+        overflow-y: auto;
+        padding: 1.15rem 1.15rem 5rem;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .fn-title-input {
+        width: 100%;
+        border: none;
+        outline: none;
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: var(--text-strong);
+        background: transparent;
+        line-height: 1.25;
+        margin-bottom: 0.5rem;
+        font-family: inherit;
+      }
+
+      .fn-editor-metadata {
+        display: flex;
+        align-items: center;
+        gap: 0.45rem;
+        flex-wrap: wrap;
+        padding-bottom: 0.85rem;
+        border-bottom: 1px solid var(--border-subtle);
+        margin-bottom: 1rem;
+      }
+
+      .fn-meta-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.22rem 0.55rem;
+        border-radius: 0.5rem;
+        background: var(--surface-muted);
+        border: 1px solid var(--border-subtle);
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--text-strong);
+      }
+
+      .fn-textarea {
+        width: 100%;
+        flex: 1;
+        min-height: 320px;
+        border: none;
+        outline: none;
+        background: transparent;
+        font-size: 0.96rem;
+        line-height: 1.65;
+        color: var(--text-default);
+        font-family: var(--font-sans);
+        resize: none;
+      }
+
+      /* Keyboard Accessory Formatting Bar */
+      .fn-accessory-bar {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: var(--surface-panel);
+        border-top: 1px solid var(--border-subtle);
+        padding: 0.35rem 0.65rem;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        overflow-x: auto;
+        scrollbar-width: none;
+        box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.04);
+        z-index: 75;
+      }
+
+      .fn-accessory-bar::-webkit-scrollbar {
+        display: none;
+      }
+
+      .fn-acc-btn {
+        min-width: 2.15rem;
+        height: 2.15rem;
+        border-radius: 0.45rem;
+        border: 1px solid transparent;
+        background: transparent;
+        color: var(--text-strong);
+        font-size: 0.85rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        padding: 0 0.35rem;
+        flex-shrink: 0;
+      }
+
+      .fn-acc-btn:active {
+        background: var(--surface-muted);
+        border-color: var(--border-subtle);
+      }
+
+      .fn-acc-divider {
+        width: 1px;
+        height: 1.25rem;
+        background: var(--border-subtle);
+        margin: 0 0.2rem;
+        flex-shrink: 0;
+      }
+
+      /* ==========================================================================
+         SCREEN 3: Note Detail (Reader / Quick View Mode)
+         ========================================================================== */
+
+      .fn-reader-screen {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        background: var(--surface-panel);
+      }
+
+      .fn-reader-body {
+        flex: 1;
+        overflow-y: auto;
+        padding: 1.25rem 1.25rem 5rem;
+      }
+
+      .fn-reader-title {
+        font-size: 1.6rem;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        line-height: 1.22;
+        margin: 0 0 0.65rem;
+        color: var(--text-strong);
+      }
+
+      .fn-reader-meta {
+        display: flex;
+        align-items: center;
+        gap: 0.55rem;
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        margin-bottom: 1.25rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid var(--border-subtle);
+      }
+
+      .fn-reader-prose {
+        font-size: 0.96rem;
+        line-height: 1.7;
+        color: var(--text-default);
+      }
+
+      .fn-reader-prose h2 {
+        font-size: 1.2rem;
+        margin: 1.4rem 0 0.6rem;
+        color: var(--text-strong);
+      }
+
+      .fn-reader-prose p {
+        margin: 0 0 1rem;
+      }
+
+      .fn-reader-prose ul {
+        margin: 0 0 1rem;
+        padding-left: 1.25rem;
+      }
+
+      /* ==========================================================================
+         SCREEN 4: Trash Space (Thùng rác chuẩn chỉnh)
+         ========================================================================== */
+
+      .fn-trash-header {
+        background: linear-gradient(180deg, rgba(244, 63, 94, 0.05) 0%, transparent 100%);
+        padding: 0.85rem 1.15rem 0.5rem;
+        border-bottom: 1px solid rgba(244, 63, 94, 0.15);
+        margin-bottom: 0.85rem;
+      }
+
+      .fn-trash-eyebrow {
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #e11d48;
+        margin: 0 0 0.2rem;
+      }
+
+      .fn-trash-title-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .fn-trash-title {
+        font-size: 1.45rem;
+        font-weight: 800;
+        margin: 0;
+        color: var(--text-strong);
+      }
+
+      .fn-trash-desc {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        margin: 0.35rem 0 0.65rem;
+        line-height: 1.4;
+      }
+
+      .fn-card.is-in-trash {
+        border-color: rgba(244, 63, 94, 0.25);
+        background: linear-gradient(180deg, rgba(255, 241, 242, 0.4) 0%, var(--surface-panel) 36px);
+      }
+
+      .fn-deletion-badge {
+        font-size: 0.7rem;
+        font-weight: 600;
+        color: #e11d48;
+        background: #fff1f2;
+        border: 1px solid #fecdd3;
+        padding: 0.15rem 0.45rem;
+        border-radius: 0.35rem;
+      }
+
+      .fn-btn-restore {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        padding: 0.3rem 0.65rem;
+        border-radius: 0.5rem;
+        background: #ecfdf5;
+        border: 1px solid #a7f3d0;
+        color: #059669;
+        font-size: 0.75rem;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      /* ==========================================================================
+         SCREEN 5: Search & Filter Bottom Sheet
+         ========================================================================== */
+
+      .fn-sheet-overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.55);
+        backdrop-filter: blur(6px);
+        z-index: 90;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+      }
+
+      .fn-sheet {
+        background: var(--surface-panel);
+        border-radius: 1.5rem 1.5rem 0 0;
+        box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.3);
+        max-height: 85%;
+        display: flex;
+        flex-direction: column;
+        animation: sheetUp 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      @keyframes sheetUp {
+        from { transform: translateY(100%); }
+        to { transform: translateY(0); }
+      }
+
+      .fn-sheet-handle {
+        width: 36px;
+        height: 4px;
+        border-radius: 999px;
+        background: var(--border-strong);
+        margin: 0.65rem auto 0.35rem;
+      }
+
+      .fn-sheet-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.65rem 1.25rem;
+        border-bottom: 1px solid var(--border-subtle);
+      }
+
+      .fn-sheet-body {
+        padding: 1rem 1.25rem;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 1.15rem;
+      }
+
+      /* ==========================================================================
+         SCREEN 6: Settings & Storage Health
+         ========================================================================== */
+
+      .fn-settings-screen {
+        padding: 1rem 1.15rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+      }
+
+      .fn-settings-group {
+        background: var(--surface-panel);
+        border: 1px solid var(--border-subtle);
+        border-radius: 1rem;
+        overflow: hidden;
+      }
+
+      .fn-settings-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.85rem 1rem;
+        border-bottom: 1px solid var(--border-subtle);
+        font-size: 0.85rem;
+      }
+
+      .fn-settings-row:last-child {
+        border-bottom: none;
+      }
+
+      /* Annotations Sidebar */
+      .final-annotations {
+        width: 410px;
+        background: #111728;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 1.5rem;
+        padding: 1.75rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+        color: #cbd5e1;
+        box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.5);
+      }
+
+      .final-annotations h2 {
+        margin: 0;
+        font-size: 1.25rem;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .final-anno-card {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.07);
+        border-radius: 0.85rem;
+        padding: 1rem;
+      }
+
+      .final-anno-tag {
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: #38bdf8;
+        display: inline-block;
+        margin-bottom: 0.35rem;
+      }
+
+      .final-anno-title {
+        font-size: 0.94rem;
+        font-weight: 700;
+        color: #fff;
+        margin: 0 0 0.35rem;
+      }
+
+      .final-anno-desc {
+        font-size: 0.82rem;
+        color: #94a3b8;
+        line-height: 1.55;
+        margin: 0;
+      }
+
+      .final-anno-desc em {
+        color: #fdba74;
+        font-style: normal;
+      }
+
+      @media (max-width: 950px) {
+        .final-viewport {
+          flex-direction: column;
+          align-items: center;
+        }
+        .final-annotations {
+          width: 100%;
+          max-width: var(--phone-w);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Presenter Control Bar -->
+    <header class="final-presenter-bar">
+      <div class="final-brand-group">
+        <svg width="24" height="24" viewBox="0 0 64 64" fill="none">
+          <rect x="2" y="2" width="60" height="60" rx="16" fill="#a35616" />
+          <path d="M 38,15 L 46,15 L 46,49 L 38,49 Z" fill="#e1ebf4" />
+          <path d="M 18,15 L 26,15 L 46,49 L 38,49 L 26,28.5 L 26,49 L 18,49 Z" fill="#ffffff" />
+        </svg>
+        <strong>Nook Mobile — Bản Hoàn Chỉnh Thực Chiến</strong>
+        <span class="final-badge">Definitive Edition</span>
+      </div>
+
+      <div class="final-controls">
+        <!-- Screen Switcher -->
+        <div class="final-btn-group">
+          <button class="final-nav-btn is-active" data-fn-screen="feed">📱 1. Feed chính</button>
+          <button class="final-nav-btn" data-fn-screen="editor">✍️ 2. Soạn thảo</button>
+          <button class="final-nav-btn" data-fn-screen="reader">📖 3. Đọc (View)</button>
+          <button class="final-nav-btn" data-fn-screen="trash">🗑️ 4. Thùng rác</button>
+          <button class="final-nav-btn" data-fn-screen="search">🔍 5. Lọc & Tìm</button>
+          <button class="final-nav-btn" data-fn-screen="settings">⚙️ 6. Cài đặt</button>
+        </div>
+
+        <!-- Theme Picker -->
+        <div class="final-btn-group" style="padding:0.25rem 0.5rem; gap:0.45rem;">
+          <button class="theme-dot-btn" style="background:#9e6b02;" data-theme="light" title="Light"></button>
+          <button class="theme-dot-btn is-active" style="background:#a35616;" data-theme="coffee" title="Coffee"></button>
+          <button class="theme-dot-btn" style="background:#2f6b4f;" data-theme="forest" title="Forest"></button>
+          <button class="theme-dot-btn" style="background:#18263f;" data-theme="midnight" title="Midnight"></button>
+          <button class="theme-dot-btn" style="background:#0b0f19;" data-theme="dark" title="Dark"></button>
+          <button class="theme-dot-btn" style="background:#fff4dd; border-color:#888;" data-theme="retro" title="Retro"></button>
+        </div>
+
+        <!-- Frame Mode -->
+        <div class="final-btn-group">
+          <button id="fn-toggle-frame-btn" class="final-nav-btn">
+            <span>📐 Khung viền</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Viewport -->
+    <main class="final-viewport">
+      <!-- Phone Frame -->
+      <div class="final-phone-frame">
+        <!-- Status Bar -->
+        <div class="final-status-bar">
+          <span>9:41</span>
+          <div class="final-island"></div>
+          <div style="display:flex; align-items:center; gap:0.4rem; font-size:0.75rem;">
+            <span>5G</span>
+            <svg width="18" height="10" viewBox="0 0 24 14" fill="currentColor">
+              <rect x="1" y="1" width="19" height="12" rx="3" fill="none" stroke="currentColor" stroke-width="2"/>
+              <rect x="3" y="3" width="13" height="8" rx="1.5" fill="currentColor"/>
+              <path d="M22 5v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </div>
+        </div>
+
+        <!-- App Container -->
+        <div class="final-app">
+          <!-- ==============================================================
+               SCREEN 1: All Notes Feed (Trang Chính)
+               ============================================================== -->
+          <div id="fn-screen-feed" class="final-screen is-active">
+            <header class="fn-header">
+              <!-- Space Selector Dropdown Pill -->
+              <div class="space-selector-pill" id="fn-space-toggle-btn" title="Chuyển đổi không gian (All notes / Trash)">
+                <span class="space-selector-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="18" height="18" rx="2" />
+                    <path d="M7 8h10M7 12h10M7 16h6" />
+                  </svg>
+                </span>
+                <span class="space-selector-title">All notes</span>
+                <span class="space-selector-chevron">▾</span>
+              </div>
+
+              <div class="fn-header-actions">
+                <button class="fn-icon-btn" id="fn-quick-theme-btn" title="Đổi theme">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <circle cx="12" cy="12" r="4" />
+                    <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
+                  </svg>
+                </button>
+              </div>
+            </header>
+
+            <!-- Horizontal Quick Filter Chips -->
+            <div class="fn-chip-bar">
+              <button class="fn-chip is-active">Tất cả (79)</button>
+              <button class="fn-chip">
+                <span class="fn-chip-dot" style="background:#38bdf8;"></span>
+                Công việc (28)
+              </button>
+              <button class="fn-chip">
+                <span class="fn-chip-dot" style="background:#a855f7;"></span>
+                Ý tưởng (14)
+              </button>
+              <button class="fn-chip">
+                <span class="fn-chip-dot" style="background:#10b981;"></span>
+                Học tập (18)
+              </button>
+              <button class="fn-chip">
+                <span class="fn-chip-dot" style="background:#f59e0b;"></span>
+                Cá nhân (19)
+              </button>
+            </div>
+
+            <!-- Notes List -->
+            <div class="fn-feed">
+              <div class="fn-feed-meta">
+                <span>79 ghi chú</span>
+                <span>Mới nhất trước</span>
+              </div>
+
+              <!-- Pinned Card -->
+              <article class="fn-card is-pinned" data-fn-action="open-editor">
+                <div class="fn-card-top">
+                  <h3 class="fn-card-title">Kiến trúc Protobloc & Quyết định kỹ thuật</h3>
+                  <span style="color:var(--primary-accent);" title="Đã ghim">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M16 4v4l2 3v2h-5v7l-1 1-1-1v-7H6v-2l2-3V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1z" />
+                    </svg>
+                  </span>
+                </div>
+                <p class="fn-card-preview">Xử lý bất đồng bộ (asynchronous processing), chiến lược chịu lỗi (fault tolerance), và cơ chế lưu trữ offline-first với IndexedDB...</p>
+                <div class="fn-card-bottom">
+                  <div class="fn-card-meta-left">
+                    <span class="fn-type-badge">
+                      <span class="fn-chip-dot" style="background:#38bdf8;"></span>
+                      Công việc
+                    </span>
+                    <span class="fn-task-pill">✓ 4/5</span>
+                    <span class="fn-tag-chip">#architecture</span>
+                  </div>
+                  <span>10:30</span>
+                </div>
+              </article>
+
+              <!-- Card 2 -->
+              <article class="fn-card" data-fn-action="open-editor">
+                <div class="fn-card-top">
+                  <h3 class="fn-card-title">Thiết kế Mobile UI Nook — Bản thực chiến</h3>
+                </div>
+                <p class="fn-card-preview">Tập trung 100% vào vùng ngón tay cái (Thumb Zone). Đưa các chức năng chính xuống thanh điều hướng đáy...</p>
+                <div class="fn-card-bottom">
+                  <div class="fn-card-meta-left">
+                    <span class="fn-type-badge">
+                      <span class="fn-chip-dot" style="background:#a855f7;"></span>
+                      Ý tưởng
+                    </span>
+                    <span class="fn-tag-chip">#mobile #ux</span>
+                  </div>
+                  <span>Hôm qua</span>
+                </div>
+              </article>
+
+              <!-- Card 3 -->
+              <article class="fn-card" data-fn-action="open-editor">
+                <div class="fn-card-top">
+                  <h3 class="fn-card-title">Checklist chuẩn bị sinh con (Om 2026)</h3>
+                </div>
+                <p class="fn-card-preview">- Tã dán sơ sinh (3 bịch)
+- Bình sữa chống sặc & máy tiệt trùng
+- Giấy tờ bệnh viện & sổ tiêm chủng...</p>
+                <div class="fn-card-bottom">
+                  <div class="fn-card-meta-left">
+                    <span class="fn-type-badge">
+                      <span class="fn-chip-dot" style="background:#f59e0b;"></span>
+                      Cá nhân
+                    </span>
+                    <span class="fn-task-pill" style="color:#b45309; background:#fffbeb;">⏳ 3/8</span>
+                  </div>
+                  <span>18/09</span>
+                </div>
+              </article>
+            </div>
+          </div>
+
+          <!-- ==============================================================
+               SCREEN 2: Note Detail (Editor Mode)
+               ============================================================== -->
+          <div id="fn-screen-editor" class="final-screen">
+            <div class="fn-editor-screen">
+              <header class="fn-editor-appbar">
+                <button class="fn-icon-btn" id="fn-editor-back-btn" style="border:none;">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="19" y1="12" x2="5" y2="12" />
+                    <polyline points="12 19 5 12 12 5" />
+                  </svg>
+                </button>
+                <div class="fn-segmented">
+                  <button class="fn-segmented-btn is-active">Soạn thảo</button>
+                  <button class="fn-segmented-btn" id="fn-to-reader-btn">Đọc</button>
+                </div>
+                <span class="fn-save-status">
+                  <span class="fn-save-dot"></span>
+                  <span>Đã lưu</span>
+                </span>
+              </header>
+
+              <div class="fn-editor-body">
+                <input class="fn-title-input" type="text" value="Kiến trúc Protobloc & Quyết định kỹ thuật" />
+
+                <div class="fn-editor-metadata">
+                  <div class="fn-meta-pill">
+                    <span class="fn-chip-dot" style="background:#38bdf8;"></span>
+                    <span>Công việc ▾</span>
+                  </div>
+                  <span class="fn-tag-chip">#architecture ✕</span>
+                  <span class="fn-tag-chip">#indexeddb ✕</span>
+                  <button class="fn-meta-pill" style="border-style:dashed; color:var(--text-muted);">+ Gắn tag</button>
+                </div>
+
+                <textarea class="fn-textarea">### 1. Kiến trúc lưu trữ Offline-first
+Hệ thống sử dụng **IndexedDB** làm bộ lưu trữ cục bộ chính, cho phép đọc ghi mượt mà ngay cả khi không có mạng (*zero network latency*).
+
+### 2. Các quyết định kỹ thuật quan trọng
+- [x] Bất đồng bộ (*Asynchronous processing*)
+- [x] Tính chịu lỗi (*Fault tolerance*)
+- [ ] Giới hạn phạm vi ảnh hưởng (*Blast radius*)
+
+> [!NOTE]
+> Backup định kỳ qua JSON để phòng ngừa sự cố.</textarea>
+              </div>
+
+              <!-- Keyboard Accessory Bar -->
+              <div class="fn-accessory-bar">
+                <button class="fn-acc-btn" title="Tiêu đề">H</button>
+                <button class="fn-acc-btn" title="In đậm"><strong>B</strong></button>
+                <button class="fn-acc-btn" title="In nghiêng"><em>I</em></button>
+                <button class="fn-acc-btn" title="Mã dòng">&lt;/&gt;</button>
+                <button class="fn-acc-btn" title="Khối mã">{ }</button>
+                <div class="fn-acc-divider"></div>
+                <button class="fn-acc-btn" title="Gạch đầu dòng">•≡</button>
+                <button class="fn-acc-btn" title="Danh sách số">1≡</button>
+                <button class="fn-acc-btn" title="Task list">☑</button>
+                <button class="fn-acc-btn" title="Bảng">▦</button>
+                <div class="fn-acc-divider"></div>
+                <button class="fn-acc-btn" title="Hoàn tác">↺</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- ==============================================================
+               SCREEN 3: Note Detail (Reader / Quick View Mode)
+               ============================================================== -->
+          <div id="fn-screen-reader" class="final-screen">
+            <div class="fn-reader-screen">
+              <header class="fn-editor-appbar">
+                <button class="fn-icon-btn" id="fn-reader-back-btn" style="border:none;">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="19" y1="12" x2="5" y2="12" />
+                    <polyline points="12 19 5 12 12 5" />
+                  </svg>
+                </button>
+                <div class="fn-segmented">
+                  <button class="fn-segmented-btn" id="fn-to-editor-btn">Soạn thảo</button>
+                  <button class="fn-segmented-btn is-active">Đọc</button>
+                </div>
+                <button class="fn-icon-btn" style="border:none;" title="Sao chép nội dung">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <rect x="9" y="9" width="13" height="13" rx="2" />
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                  </svg>
+                </button>
+              </header>
+
+              <div class="fn-reader-body">
+                <h1 class="fn-reader-title">Kiến trúc Protobloc & Quyết định kỹ thuật</h1>
+                <div class="fn-reader-meta">
+                  <span class="fn-type-badge">
+                    <span class="fn-chip-dot" style="background:#38bdf8;"></span>
+                    Công việc
+                  </span>
+                  <span>·</span>
+                  <span>Cập nhật 10:30</span>
+                  <span>·</span>
+                  <span>2 phút đọc</span>
+                </div>
+
+                <div class="fn-reader-prose">
+                  <h2>1. Kiến trúc lưu trữ Offline-first</h2>
+                  <p>Hệ thống sử dụng <strong>IndexedDB</strong> làm bộ lưu trữ cục bộ chính, cho phép đọc ghi mượt mà ngay cả khi không có mạng (<em>zero network latency</em>).</p>
+
+                  <h2>2. Các quyết định kỹ thuật quan trọng</h2>
+                  <ul>
+                    <li><strong>Bất đồng bộ (<em>Asynchronous processing</em>)</strong>: Đưa các tác vụ nặng vào hàng đợi nền.</li>
+                    <li><strong>Tính chịu lỗi (<em>Fault tolerance</em>)</strong>: Đảm bảo dữ liệu không bị hỏng khi mất điện đột ngột.</li>
+                  </ul>
+
+                  <div style="background:var(--selected-surface); border-left:4px solid var(--primary-accent); padding:0.75rem 1rem; border-radius:0.5rem; margin:1rem 0;">
+                    <strong style="color:var(--selected-text); font-size:0.85rem; display:block; margin-bottom:0.25rem;">LƯU Ý</strong>
+                    <p style="margin:0; font-size:0.85rem; color:var(--text-default);">Backup định kỳ qua JSON để phòng ngừa sự cố.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ==============================================================
+               SCREEN 4: Trash Space (Thùng rác chuẩn chỉnh)
+               ============================================================== -->
+          <div id="fn-screen-trash" class="final-screen">
+            <header class="fn-trash-header">
+              <div class="fn-trash-eyebrow">DELETED NOTES</div>
+              <div class="fn-trash-title-row">
+                <h1 class="fn-trash-title">Thùng rác (Trash)</h1>
+                <button class="fn-icon-btn" id="fn-trash-back-btn" style="font-size:0.75rem; font-weight:700; width:auto; padding:0 0.65rem; gap:0.25rem;">
+                  <span>← All notes</span>
+                </button>
+              </div>
+              <p class="fn-trash-desc">Các ghi chú đã xóa sẽ lưu ở đây cho đến khi bạn khôi phục hoặc xóa hẳn.</p>
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-size:0.75rem; color:var(--text-muted); font-weight:600;">14 ghi chú</span>
+                <button class="fn-btn-restore" style="background:#fff1f2; border-color:#fecdd3; color:#e11d48;">
+                  <span>Dọn sạch thùng rác</span>
+                </button>
+              </div>
+            </header>
+
+            <div class="fn-feed">
+              <article class="fn-card is-in-trash">
+                <div class="fn-card-top">
+                  <h3 class="fn-card-title">Khó khăn khi làm việc</h3>
+                  <span class="fn-deletion-badge">Xóa 2 ngày trước</span>
+                </div>
+                <p class="fn-card-preview">To be honest, it's been a bit more challenging than I expected. I've been using AI to analyze...</p>
+                <div class="fn-card-bottom">
+                  <span>Meeting</span>
+                  <button class="fn-btn-restore">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+                    <span>Khôi phục</span>
+                  </button>
+                </div>
+              </article>
+
+              <article class="fn-card is-in-trash">
+                <div class="fn-card-top">
+                  <h3 class="fn-card-title">Erik slack notes</h3>
+                  <span class="fn-deletion-badge">Xóa hôm qua</span>
+                </div>
+                <p class="fn-card-preview">Hi Erik, Just finished capturing the screenshots for the deck! Used clean sample data on prod...</p>
+                <div class="fn-card-bottom">
+                  <span>General</span>
+                  <button class="fn-btn-restore">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+                    <span>Khôi phục</span>
+                  </button>
+                </div>
+              </article>
+            </div>
+          </div>
+
+          <!-- ==============================================================
+               SCREEN 5: Search & Filter Bottom Sheet
+               ============================================================== -->
+          <div id="fn-screen-search" class="final-screen">
+            <div class="fn-sheet-overlay">
+              <div class="fn-sheet">
+                <div class="fn-sheet-handle"></div>
+                <div class="fn-sheet-header">
+                  <h3 style="margin:0; font-size:1.05rem; font-weight:700;">Tìm kiếm & Bộ lọc</h3>
+                  <button class="fn-icon-btn" id="fn-close-search-btn" style="border:none; width:2rem; height:2rem;">✕</button>
+                </div>
+                <div class="fn-sheet-body">
+                  <!-- Search bar -->
+                  <div style="position:relative; display:flex; align-items:center; background:var(--surface-muted); border:1px solid var(--border-subtle); border-radius:0.75rem; padding:0 0.75rem;">
+                    <span style="color:var(--text-muted); margin-right:0.45rem;">⌕</span>
+                    <input type="search" placeholder="Nhập từ khóa tìm kiếm…" autofocus style="width:100%; height:2.5rem; border:none; background:transparent; outline:none; font-size:0.9rem; color:var(--text-strong);" />
+                  </div>
+
+                  <!-- Sort -->
+                  <div>
+                    <span style="font-size:0.72rem; font-weight:700; text-transform:uppercase; color:var(--text-muted); letter-spacing:0.06em; display:block; margin-bottom:0.45rem;">Sắp xếp theo</span>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.45rem;">
+                      <button class="fn-chip is-active" style="justify-content:center;">Mới tạo nhất</button>
+                      <button class="fn-chip" style="justify-content:center;">Mới cập nhật</button>
+                      <button class="fn-chip" style="justify-content:center;">Cũ nhất</button>
+                      <button class="fn-chip" style="justify-content:center;">Tiêu đề A–Z</button>
+                    </div>
+                  </div>
+
+                  <!-- Tags -->
+                  <div>
+                    <span style="font-size:0.72rem; font-weight:700; text-transform:uppercase; color:var(--text-muted); letter-spacing:0.06em; display:block; margin-bottom:0.45rem;">Lọc theo nhãn (Tags)</span>
+                    <div style="display:flex; flex-wrap:wrap; gap:0.4rem;">
+                      <span class="fn-tag-chip" style="padding:0.3rem 0.6rem;">#architecture</span>
+                      <span class="fn-tag-chip" style="padding:0.3rem 0.6rem;">#indexeddb</span>
+                      <span class="fn-tag-chip" style="padding:0.3rem 0.6rem;">#family</span>
+                      <span class="fn-tag-chip" style="padding:0.3rem 0.6rem;">#ux</span>
+                    </div>
+                  </div>
+                </div>
+                <div style="padding:0.75rem 1.25rem; border-top:1px solid var(--border-subtle); background:var(--surface-muted); display:flex; gap:0.65rem;">
+                  <button class="final-nav-btn" style="flex:1; justify-content:center; padding:0.65rem; border:1px solid var(--border-subtle); color:var(--text-strong); background:var(--surface-panel);">Đặt lại</button>
+                  <button class="final-nav-btn is-active" id="fn-apply-search-btn" style="flex:1; justify-content:center; padding:0.65rem;">Áp dụng</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ==============================================================
+               SCREEN 6: Settings & Storage Health
+               ============================================================== -->
+          <div id="fn-screen-settings" class="final-screen">
+            <header class="fn-header" style="border-bottom:1px solid var(--border-subtle); margin-bottom:1rem;">
+              <h1 style="font-size:1.35rem; font-weight:800; margin:0;">Cài đặt</h1>
+            </header>
+
+            <div class="fn-settings-screen">
+              <!-- Storage Health Box -->
+              <div style="background:var(--surface-panel); border:1px solid var(--border-subtle); border-radius:1rem; padding:1rem; display:flex; flex-direction:column; gap:0.45rem;">
+                <div style="display:flex; align-items:center; justify-content:space-between;">
+                  <div style="display:flex; align-items:center; gap:0.4rem; font-size:0.8rem; font-weight:700;">
+                    <span style="width:7px; height:7px; border-radius:999px; background:#16a34a;"></span>
+                    <span>Lưu trữ cục bộ an toàn</span>
+                  </div>
+                  <span style="font-size:0.72rem; color:var(--text-muted);">1.5 MiB</span>
+                </div>
+                <p style="margin:0; font-size:0.75rem; color:var(--text-muted); line-height:1.4;">
+                  Dữ liệu được lưu trong IndexedDB của trình duyệt. Sao lưu lần cuối 2 ngày trước.
+                </p>
+                <div style="display:flex; gap:0.5rem; margin-top:0.35rem;">
+                  <button class="fn-icon-btn" style="flex:1; width:auto; font-size:0.78rem; font-weight:700; gap:0.4rem;">
+                    <span>Xuất bản sao lưu (JSON)</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- General Settings -->
+              <div class="fn-settings-group">
+                <div class="fn-settings-row">
+                  <div>
+                    <strong style="display:block;">Giao diện (Theme)</strong>
+                    <small style="color:var(--text-muted);">Đang dùng: Coffee</small>
+                  </div>
+                  <span style="color:var(--primary-accent); font-weight:700;">Coffee ▾</span>
+                </div>
+                <div class="fn-settings-row" id="fn-settings-to-trash" style="cursor:pointer;">
+                  <div>
+                    <strong style="display:block;">Thùng rác (Trash)</strong>
+                    <small style="color:var(--text-muted);">14 ghi chú có thể khôi phục</small>
+                  </div>
+                  <span style="color:var(--text-muted);">›</span>
+                </div>
+                <div class="fn-settings-row">
+                  <div>
+                    <strong style="display:block;">Quản lý Types & Tags</strong>
+                    <small style="color:var(--text-muted);">4 loại, 5 nhãn</small>
+                  </div>
+                  <span style="color:var(--text-muted);">›</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Fixed Bottom Navigation Bar -->
+          <nav class="final-bottom-nav">
+            <button class="nav-tab-btn is-active" id="tab-feed">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="18" height="18" rx="2" />
+                <path d="M7 8h10M7 12h10M7 16h6" />
+              </svg>
+              <span>Ghi chú</span>
+            </button>
+
+            <button class="nav-tab-btn" id="tab-search">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+              </svg>
+              <span>Tìm kiếm</span>
+            </button>
+
+            <!-- Prominent Center Add (+) Button -->
+            <button class="nav-center-add" id="tab-add" title="Tạo ghi chú mới">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <line x1="12" y1="5" x2="12" y2="19" />
+                <line x1="5" y1="12" x2="19" y2="12" />
+              </svg>
+            </button>
+
+            <button class="nav-tab-btn" id="tab-trash">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
+              </svg>
+              <span>Thùng rác</span>
+            </button>
+
+            <button class="nav-tab-btn" id="tab-settings">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="3" />
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+              </svg>
+              <span>Cài đặt</span>
+            </button>
+          </nav>
+        </div>
+
+        <div class="final-home-bar"></div>
+      </div>
+
+      <!-- Annotations Panel -->
+      <aside class="final-annotations">
+        <h2>
+          <span>🏆 Kiến Trúc Mobile Thực Chiến</span>
+        </h2>
+
+        <div class="final-anno-card">
+          <span class="final-anno-tag">1. Công thái học cốt lõi</span>
+          <h3 class="final-anno-title">Bottom Nav Bar + Nút Tạo Ghi Chú Nổi Bật</h3>
+          <p class="final-anno-desc">
+            Bỏ hoàn toàn thanh hamburger ở góc trên! 4 tab chính (<em>Ghi chú, Tìm kiếm, Thùng rác, Cài đặt</em>) cùng nút <strong>+</strong> lớn ở tâm đều nằm vừa khít trong vùng ngón tay cái (*thumb zone*).
+          </p>
+        </div>
+
+        <div class="final-anno-card">
+          <span class="final-anno-tag">2. Chuyển đổi Không gian 1 chạm</span>
+          <h3 class="final-anno-title">Space Selector Dropdown</h3>
+          <p class="final-anno-desc">
+            Ở góc trên bên trái, một nút con nhộng <code>All notes ▾</code> cho phép đổi nhanh sang <code>Trash (14)</code> mà không cần mở drawer cồng kềnh.
+          </p>
+        </div>
+
+        <div class="final-anno-card">
+          <span class="final-anno-tag">3. Soạn thảo chuẩn Mobile</span>
+          <h3 class="final-anno-title">Keyboard Accessory Bar</h3>
+          <p class="final-anno-desc">
+            Khi gõ phím, dải công cụ Markdown bám sát ngay trên bàn phím ảo, vuốt ngang mượt mà với các nút kích thước chuẩn chạm (`≥ 44px`).
+          </p>
+        </div>
+
+        <div class="final-anno-card">
+          <span class="final-anno-tag">4. An toàn dữ liệu trong Thùng rác</span>
+          <h3 class="final-anno-title">Nhãn thời gian xóa & Nút Khôi phục</h3>
+          <p class="final-anno-desc">
+            Thẻ ghi chú trong Trash có nhãn <em>"Xóa 2 ngày trước"</em>, viền đỏ nhạt, và nút <strong>[Khôi phục]</strong> xanh lá tiện lợi.
+          </p>
+        </div>
+      </aside>
+    </main>
+
+    <!-- Interactive Script -->
+    <script>
+      (() => {
+        const screens = {
+          feed: document.getElementById("fn-screen-feed"),
+          editor: document.getElementById("fn-screen-editor"),
+          reader: document.getElementById("fn-screen-reader"),
+          trash: document.getElementById("fn-screen-trash"),
+          search: document.getElementById("fn-screen-search"),
+          settings: document.getElementById("fn-screen-settings")
+        };
+
+        const screenBtns = document.querySelectorAll("[data-fn-screen]");
+
+        function switchScreen(name) {
+          Object.entries(screens).forEach(([sName, el]) => {
+            if (el) el.classList.toggle("is-active", sName === name);
+          });
+          screenBtns.forEach(b => b.classList.toggle("is-active", b.dataset.fnScreen === name));
+
+          // Update bottom nav active state
+          document.getElementById("tab-feed")?.classList.toggle("is-active", name === "feed");
+          document.getElementById("tab-search")?.classList.toggle("is-active", name === "search");
+          document.getElementById("tab-trash")?.classList.toggle("is-active", name === "trash");
+          document.getElementById("tab-settings")?.classList.toggle("is-active", name === "settings");
+        }
+
+        screenBtns.forEach(b => b.addEventListener("click", () => switchScreen(b.dataset.fnScreen)));
+
+        // Bottom nav triggers
+        document.getElementById("tab-feed")?.addEventListener("click", () => switchScreen("feed"));
+        document.getElementById("tab-search")?.addEventListener("click", () => switchScreen("search"));
+        document.getElementById("tab-add")?.addEventListener("click", () => switchScreen("editor"));
+        document.getElementById("tab-trash")?.addEventListener("click", () => switchScreen("trash"));
+        document.getElementById("tab-settings")?.addEventListener("click", () => switchScreen("settings"));
+
+        // In-screen triggers
+        document.querySelectorAll("[data-fn-action='open-editor']").forEach(c => {
+          c.addEventListener("click", () => switchScreen("editor"));
+        });
+
+        document.getElementById("fn-editor-back-btn")?.addEventListener("click", () => switchScreen("feed"));
+        document.getElementById("fn-to-reader-btn")?.addEventListener("click", () => switchScreen("reader"));
+        document.getElementById("fn-to-editor-btn")?.addEventListener("click", () => switchScreen("editor"));
+        document.getElementById("fn-reader-back-btn")?.addEventListener("click", () => switchScreen("feed"));
+        document.getElementById("fn-space-toggle-btn")?.addEventListener("click", () => switchScreen("trash"));
+        document.getElementById("fn-trash-back-btn")?.addEventListener("click", () => switchScreen("feed"));
+        document.getElementById("fn-close-search-btn")?.addEventListener("click", () => switchScreen("feed"));
+        document.getElementById("fn-apply-search-btn")?.addEventListener("click", () => switchScreen("feed"));
+        document.getElementById("fn-settings-to-trash")?.addEventListener("click", () => switchScreen("trash"));
+
+        // Themes
+        const themeBtns = document.querySelectorAll("[data-theme]");
+        themeBtns.forEach(btn => {
+          btn.addEventListener("click", () => {
+            document.documentElement.dataset.theme = btn.dataset.theme;
+            themeBtns.forEach(b => b.classList.toggle("is-active", b === btn));
+          });
+        });
+
+        // Quick theme button in header
+        const themes = ["light", "coffee", "forest", "midnight", "dark", "retro"];
+        document.getElementById("fn-quick-theme-btn")?.addEventListener("click", () => {
+          const current = document.documentElement.dataset.theme || "coffee";
+          const next = themes[(themes.indexOf(current) + 1) % themes.length];
+          document.documentElement.dataset.theme = next;
+          themeBtns.forEach(b => b.classList.toggle("is-active", b.dataset.theme === next));
+        });
+
+        // Frame toggle
+        document.getElementById("fn-toggle-frame-btn")?.addEventListener("click", () => {
+          document.body.classList.toggle("mode-responsive");
+        });
+      })();
+    </script>
+  </body>
+</html>
