@@ -1222,6 +1222,7 @@ select::-ms-expand {
 
 
 
+
 .note-card--pinned .note-card__pin-toggle:hover:not(:disabled),
 .note-card--pinned .note-card__pin-toggle:focus-visible,
 .note-card--pinned .note-card__pin-toggle.is-focus {
