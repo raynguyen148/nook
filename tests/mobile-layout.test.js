@@ -166,6 +166,16 @@ test("mobile search opens the filter sheet and keeps the query when returning to
   assert.equal(f.app.elements.mobileFilterDialog.open, false, "desktop search remains inline");
 });
 
+test("clicking mobile navigation search opens the filter sheet without auto-focusing the search input", () => {
+  const f = fixture();
+  f.resize(true);
+  let focused = false;
+  f.app.elements.search.focus = () => { focused = true; };
+  f.app.elements.mobileSearch.click();
+  assert.equal(f.app.elements.mobileFilterDialog.open, true);
+  assert.equal(focused, false, "search input must not be auto-focused when footer search is clicked");
+});
+
 test("closing the search sheet restores the current Trash navigation state", () => {
   const f = fixture();
   f.resize(true);
@@ -245,8 +255,10 @@ test("visual viewport geometry updates mobile height and is removed on desktop",
   const values = f.document.documentElement.style.values;
   assert.equal(values.get("--mobile-viewport-height"), "410px");
   assert.equal(values.get("--mobile-viewport-top"), "25px");
+  assert.equal(values.get("--mobile-keyboard-offset"), "365px");
   f.resize(false);
   f.frame();
   assert.equal(values.has("--mobile-viewport-height"), false);
   assert.equal(values.has("--mobile-viewport-top"), false);
+  assert.equal(values.has("--mobile-keyboard-offset"), false);
 });

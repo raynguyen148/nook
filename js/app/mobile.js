@@ -219,13 +219,20 @@ globalThis[Symbol.for("nook.app.modules")].register("mobile", (app) => {
     if (!mobileQuery.matches || !viewport || viewport.scale !== 1) {
       root.style.removeProperty("--mobile-viewport-height");
       root.style.removeProperty("--mobile-viewport-top");
+      root.style.removeProperty("--mobile-keyboard-offset");
       root.classList.remove("is-mobile-keyboard-open");
       return;
     }
+    const keyboardOffset = Math.max(0, window.innerHeight - (viewport.offsetTop + viewport.height));
     root.style.setProperty("--mobile-viewport-height", `${viewport.height}px`);
     root.style.setProperty("--mobile-viewport-top", `${viewport.offsetTop}px`);
+    root.style.setProperty("--mobile-keyboard-offset", `${Math.round(keyboardOffset)}px`);
     const typing = document.activeElement?.matches("input, textarea, [contenteditable='true']");
-    root.classList.toggle("is-mobile-keyboard-open", Boolean(typing && window.innerHeight - viewport.height > 120));
+    const keyboardOpen = Boolean(typing && (keyboardOffset > 120 || window.innerHeight - viewport.height > 120));
+    root.classList.toggle("is-mobile-keyboard-open", keyboardOpen);
+    if (keyboardOpen && document.activeElement && document.activeElement.closest?.(".mobile-sheet")) {
+      document.activeElement.scrollIntoView?.({ block: "nearest", behavior: "smooth" });
+    }
   }
 
   function scheduleMobileViewport() {
@@ -294,10 +301,17 @@ globalThis[Symbol.for("nook.app.modules")].register("mobile", (app) => {
     syncMobileNavigation();
   }
 
-  function focusMobileSearch() {
+  function focusMobileSearch(options = {}) {
+    const { focusInput = true } = options;
     if (elements.organizeDialog.open) elements.organizeDialog.close();
-    if (mobileQuery.matches) openMobileSheet(elements.mobileFilterDialog);
-    elements.search.focus({ preventScroll: true });
+    if (mobileQuery.matches) {
+      openMobileSheet(elements.mobileFilterDialog);
+      if (focusInput) {
+        elements.search.focus({ preventScroll: true });
+      }
+    } else if (focusInput) {
+      elements.search.focus({ preventScroll: true });
+    }
   }
 
   function bindMobileEvents() {
@@ -356,7 +370,7 @@ globalThis[Symbol.for("nook.app.modules")].register("mobile", (app) => {
       api.showTrashSpace();
       window.scrollTo({ top: 0, behavior: "instant" });
     });
-    elements.mobileSearch.addEventListener("click", focusMobileSearch);
+    elements.mobileSearch.addEventListener("click", () => focusMobileSearch({ focusInput: false }));
     elements.mobileNew.addEventListener("click", () => {
       elements.organizeDialog.close();
       api.openNoteEditor(null, { invoker: elements.mobileNew });
@@ -404,7 +418,15 @@ globalThis[Symbol.for("nook.app.modules")].register("mobile", (app) => {
     });
     elements.mobileResetFilters.addEventListener("click", () => {
       api.clearFilters({ preserveSort: false });
-      elements.search.focus({ preventScroll: true });
+      if (!mobileQuery.matches) elements.search.focus({ preventScroll: true });
+    });
+    elements.search.addEventListener("focus", () => {
+      if (mobileQuery.matches) {
+        scheduleMobileViewport();
+        setTimeout(() => {
+          elements.search.scrollIntoView?.({ block: "nearest", behavior: "smooth" });
+        }, 120);
+      }
     });
     elements.search.addEventListener("keydown", (event) => {
       if (mobileQuery.matches && event.key === "Enter") {

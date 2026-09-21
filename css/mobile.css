@@ -782,8 +782,8 @@ dialog:not([open]),
     transition: transform var(--motion-duration-medium) var(--motion-ease-out), opacity var(--motion-duration-short) var(--motion-ease-out), display var(--motion-duration-medium) allow-discrete, overlay var(--motion-duration-medium) allow-discrete;
   }
   .mobile-sheet {
-    display: flex; flex-direction: column; gap: 0; position: fixed; inset: auto 0 0;
-    width: 100%; max-width: 40rem; height: auto; max-height: min(85dvh, var(--mobile-viewport-height, 85dvh));
+    display: flex; flex-direction: column; gap: 0; position: fixed; inset: auto 0 var(--mobile-keyboard-offset, 0px);
+    width: 100%; max-width: 40rem; height: auto; max-height: min(85dvh, calc(var(--mobile-viewport-height, 85dvh) - env(safe-area-inset-top, 0px) - 0.5rem));
     margin: 0 auto; padding: 0; overflow: hidden;
     border: 1px solid var(--border-subtle); border-bottom: 0; border-radius: 1.75rem 1.75rem 0 0;
     color: var(--text-default); background: var(--surface-panel);
@@ -1169,7 +1169,8 @@ dialog:not([open]),
   #mobile-filter-dialog .sort-field__option { min-height: 44px; }
 
   /* The document owns the visual viewport; page chrome never competes for it. */
-  body:has(.workspace.is-note-detail-open) { overflow: hidden; }
+  body:has(.workspace.is-note-detail-open),
+  body:has(.mobile-sheet[open]) { overflow: hidden; }
   body .app-shell .workspace.is-note-detail-open {
     position: fixed; z-index: 60; inset: var(--mobile-viewport-top, 0px) 0 auto;
     width: 100%; height: var(--mobile-viewport-height, 100dvh); padding: 0;
