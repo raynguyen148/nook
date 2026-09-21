@@ -167,36 +167,38 @@
             </button>
 
             <div id="regular-filter-controls" class="is-mobile-collapsed">
-              <div class="filter-heading">
-                <span>Filters</span>
-                <button id="clear-filters-btn" class="text-button" type="button">Clear</button>
-              </div>
+              <section class="filter-type-section">
+                <div class="filter-heading">
+                  <span>Filters</span>
+                  <button id="clear-filters-btn" class="text-button" type="button">Clear</button>
+                </div>
 
-              <nav class="filter-navigation" aria-label="Filter notes">
-                <button id="created-today-filter" class="sidebar-filter" type="button" aria-pressed="false">
-                  <span class="sidebar-filter__label">
-                    <svg class="sidebar-filter__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                      <rect x="3.5" y="5.25" width="17" height="15.25" rx="2" />
-                      <path d="M7.5 3.75v3M16.5 3.75v3M3.75 9.25h16.5" />
-                    </svg>
-                    <span>Created Today</span>
-                  </span>
-                  <span id="created-today-filter-count" class="filter-count">0</span>
-                </button>
-                <button id="updated-today-filter" class="sidebar-filter" type="button" aria-pressed="false">
-                  <span class="sidebar-filter__label">
-                    <svg class="sidebar-filter__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                      <rect x="3.5" y="5.25" width="17" height="15.25" rx="2" />
-                      <path d="M7.5 3.75v3M16.5 3.75v3M3.75 9.25h8.75" />
-                      <circle cx="16.25" cy="16" r="3.25" />
-                      <path d="M16.25 14.35v1.9l1.25.75" />
-                    </svg>
-                    <span>Updated Today</span>
-                  </span>
-                  <span id="updated-today-filter-count" class="filter-count">0</span>
-                </button>
-                <div id="type-filter-list" class="type-filter-list"></div>
-              </nav>
+                <nav class="filter-navigation" aria-label="Filter notes">
+                  <button id="created-today-filter" class="sidebar-filter" type="button" aria-pressed="false">
+                    <span class="sidebar-filter__label">
+                      <svg class="sidebar-filter__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <rect x="3.5" y="5.25" width="17" height="15.25" rx="2" />
+                        <path d="M7.5 3.75v3M16.5 3.75v3M3.75 9.25h16.5" />
+                      </svg>
+                      <span>Created Today</span>
+                    </span>
+                    <span id="created-today-filter-count" class="filter-count">0</span>
+                  </button>
+                  <button id="updated-today-filter" class="sidebar-filter" type="button" aria-pressed="false">
+                    <span class="sidebar-filter__label">
+                      <svg class="sidebar-filter__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <rect x="3.5" y="5.25" width="17" height="15.25" rx="2" />
+                        <path d="M7.5 3.75v3M16.5 3.75v3M3.75 9.25h8.75" />
+                        <circle cx="16.25" cy="16" r="3.25" />
+                        <path d="M16.25 14.35v1.9l1.25.75" />
+                      </svg>
+                      <span>Updated Today</span>
+                    </span>
+                    <span id="updated-today-filter-count" class="filter-count">0</span>
+                  </button>
+                  <div id="type-filter-list" class="type-filter-list"></div>
+                </nav>
+              </section>
 
               <section class="tag-filter-section" aria-labelledby="tag-filter-heading">
                 <div class="filter-section-title">

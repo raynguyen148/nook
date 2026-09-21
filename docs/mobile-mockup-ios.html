@@ -1,0 +1,1052 @@
+<!doctype html>
+<html lang="vi" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Nook — Mockup UI Card Style iOS Sang Trọng & Tinh Tế</title>
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+    <style>
+      /* ==========================================================================
+         Nook Mobile — iOS Elevated Elements (Preserving Card Layout)
+         Philosophy:
+         - Keep 100% current layout: Separate Note Cards, Chips, Search, Bottom Nav.
+         - Elevate every single element to Apple/iOS 18 luxury aesthetics:
+           * Apple Squircle continuous curvature (18px radius)
+           * Dynamic iOS System Backgrounds & Materials
+           * Ultra-refined Hairline micro-borders & ambient depth shadows
+           * Native SF Pro typographic hierarchy & tabular metrics
+           * Frosted glass translucent headers, search fields, and tab bars
+           * Subtle haptic-like active press feedback
+         ========================================================================== */
+
+      :root {
+        --phone-w: 393px;
+        --phone-h: 852px;
+        --phone-radius: 54px;
+        --phone-border: 12px solid #1c1d22;
+        --phone-shadow: 0 40px 100px -20px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1);
+
+        /* Apple System Colors - Light Mode */
+        --ios-bg-canvas: #f2f2f7;            /* iOS Secondary System Background */
+        --ios-card-bg: #ffffff;              /* iOS System Background (Pure White) */
+        --ios-card-border: rgba(0, 0, 0, 0.04);
+        --ios-card-shadow: 0 2px 10px rgba(0, 0, 0, 0.03), 0 1px 3px rgba(0, 0, 0, 0.02);
+        --ios-card-shadow-active: 0 1px 4px rgba(0, 0, 0, 0.02);
+
+        --ios-glass-header: rgba(242, 242, 247, 0.82);
+        --ios-glass-nav: rgba(255, 255, 255, 0.85);
+        --ios-glass-border: rgba(60, 60, 67, 0.15);
+
+        --ios-text-strong: #000000;          /* iOS Label */
+        --ios-text-body: #3c3c43;            /* iOS Secondary Label */
+        --ios-text-muted: #8e8e93;           /* iOS Tertiary Label */
+        --ios-fill-tertiary: rgba(118, 118, 128, 0.12); /* Search / Chip Fill */
+        --ios-fill-secondary: rgba(118, 118, 128, 0.08);
+
+        /* Nook Amber / Gold Accent */
+        --nook-accent: #d97706;
+        --nook-accent-soft: rgba(217, 119, 6, 0.12);
+        --nook-accent-border: rgba(217, 119, 6, 0.28);
+        --nook-accent-glow: 0 4px 16px rgba(217, 119, 6, 0.28);
+
+        --font-apple: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display",
+          "Helvetica Neue", sans-serif;
+      }
+
+      html[data-theme="dark"] {
+        /* Apple System Colors - Dark Mode */
+        --ios-bg-canvas: #000000;            /* True Pure Black */
+        --ios-card-bg: #1c1c1e;              /* iOS Secondary Dark */
+        --ios-card-border: rgba(255, 255, 255, 0.07);
+        --ios-card-shadow: 0 3px 12px rgba(0, 0, 0, 0.45);
+        --ios-card-shadow-active: 0 1px 4px rgba(0, 0, 0, 0.3);
+
+        --ios-glass-header: rgba(0, 0, 0, 0.78);
+        --ios-glass-nav: rgba(28, 28, 30, 0.85);
+        --ios-glass-border: rgba(84, 84, 88, 0.36);
+
+        --ios-text-strong: #ffffff;
+        --ios-text-body: #ebebf5;
+        --ios-text-muted: #8e8e93;
+        --ios-fill-tertiary: rgba(118, 118, 128, 0.24);
+        --ios-fill-secondary: rgba(118, 118, 128, 0.16);
+
+        --nook-accent: #f59e0b;
+        --nook-accent-soft: rgba(245, 158, 11, 0.18);
+        --nook-accent-border: rgba(245, 158, 11, 0.35);
+        --nook-accent-glow: 0 4px 18px rgba(245, 158, 11, 0.35);
+      }
+
+      * {
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      body {
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+        background: #090c12;
+        color: #f1f5f9;
+        font-family: var(--font-apple);
+        -webkit-font-smoothing: antialiased;
+      }
+
+      /* Mockup Topbar */
+      .mockup-header {
+        position: sticky;
+        top: 0;
+        z-index: 999;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 0.85rem 1.75rem;
+        background: rgba(9, 12, 18, 0.94);
+        backdrop-filter: blur(20px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      }
+
+      .mockup-brand {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+
+      .mockup-brand-title {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: #ffffff;
+        letter-spacing: -0.01em;
+      }
+
+      .mockup-tag {
+        font-size: 0.7rem;
+        font-weight: 700;
+        padding: 0.2rem 0.65rem;
+        border-radius: 999px;
+        background: rgba(217, 119, 6, 0.2);
+        color: #fbbf24;
+        border: 1px solid rgba(217, 119, 6, 0.35);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      .mockup-controls {
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+      }
+
+      .theme-toggle-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        padding: 0.4rem 0.85rem;
+        border-radius: 0.55rem;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: rgba(255, 255, 255, 0.06);
+        color: #f1f5f9;
+        font-size: 0.8rem;
+        cursor: pointer;
+        font-weight: 500;
+        transition: all 0.15s ease;
+      }
+
+      .theme-toggle-btn:hover {
+        background: rgba(255, 255, 255, 0.12);
+      }
+
+      /* Workspace Layout */
+      .mockup-workspace {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        gap: 3.5rem;
+        padding: 2.5rem 1.5rem 4rem;
+      }
+
+      /* Specification Sidebar */
+      .mockup-specs {
+        max-width: 380px;
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+      }
+
+      .spec-card {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.07);
+        border-radius: 1.1rem;
+        padding: 1.25rem;
+      }
+
+      .spec-card h3 {
+        margin: 0 0 0.5rem;
+        font-size: 0.95rem;
+        font-weight: 650;
+        color: #f8fafc;
+        display: flex;
+        align-items: center;
+        gap: 0.55rem;
+      }
+
+      .spec-card h3 .bullet {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #f59e0b;
+      }
+
+      .spec-card p {
+        margin: 0;
+        font-size: 0.85rem;
+        line-height: 1.55;
+        color: #94a3b8;
+      }
+
+      .spec-card code {
+        font-family: ui-monospace, SFMono-Regular, monospace;
+        font-size: 0.78rem;
+        padding: 0.15rem 0.35rem;
+        border-radius: 4px;
+        background: rgba(255, 255, 255, 0.08);
+        color: #fbbf24;
+      }
+
+      /* iPhone Device Frame */
+      .phone-wrapper {
+        position: relative;
+        width: var(--phone-w);
+        height: var(--phone-h);
+        border: var(--phone-border);
+        border-radius: var(--phone-radius);
+        box-shadow: var(--phone-shadow);
+        background: var(--ios-bg-canvas);
+        color: var(--ios-text-strong);
+        overflow: hidden;
+        flex: none;
+        display: flex;
+        flex-direction: column;
+        transition: background 0.25s ease;
+      }
+
+      /* Dynamic Island */
+      .dynamic-island {
+        position: absolute;
+        top: 11px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 124px;
+        height: 35px;
+        background: #000000;
+        border-radius: 20px;
+        z-index: 500;
+        pointer-events: none;
+      }
+
+      /* iOS Status Bar */
+      .status-bar {
+        height: 48px;
+        padding: 14px 28px 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--ios-text-strong);
+        z-index: 400;
+        user-select: none;
+      }
+
+      .status-bar-icons {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      /* Home Indicator Bar */
+      .home-indicator {
+        position: absolute;
+        bottom: 8px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 138px;
+        height: 5px;
+        background: var(--ios-text-strong);
+        opacity: 0.24;
+        border-radius: 999px;
+        z-index: 500;
+        pointer-events: none;
+      }
+
+      /* Scrollable Main Library View */
+      .mobile-library-scroll {
+        flex: 1;
+        overflow-y: auto;
+        padding: 0 16px calc(5.5rem + env(safe-area-inset-bottom, 24px));
+        -webkit-overflow-scrolling: touch;
+      }
+
+      /* ==========================================================================
+         ELEMENT 1: STICKY HEADER (Frosted Glass & Capsule Space Picker)
+         ========================================================================== */
+      .mobile-library-header {
+        position: sticky;
+        top: 0;
+        z-index: 40;
+        margin: 0 -16px;
+        padding: 8px 16px 10px;
+        background: var(--ios-glass-header);
+        backdrop-filter: blur(25px);
+        -webkit-backdrop-filter: blur(25px);
+        border-bottom: 0.5px solid var(--ios-glass-border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .mobile-space-picker {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        height: 38px;
+        padding: 0 12px 0 6px;
+        border-radius: 999px;
+        background: var(--ios-card-bg);
+        border: 0.5px solid var(--ios-card-border);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+        cursor: pointer;
+        transition: transform 0.12s cubic-bezier(0.25, 1, 0.5, 1), background 0.12s ease;
+      }
+
+      .mobile-space-picker:active {
+        transform: scale(0.96);
+        opacity: 0.85;
+      }
+
+      .mobile-space-icon {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: var(--nook-accent-soft);
+        color: var(--nook-accent);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex: none;
+      }
+
+      .mobile-space-icon svg {
+        width: 15px;
+        height: 15px;
+      }
+
+      #mobile-library-title {
+        font-size: 0.95rem;
+        font-weight: 650;
+        color: var(--ios-text-strong);
+        letter-spacing: -0.01em;
+      }
+
+      .mobile-space-chevron {
+        width: 12px;
+        height: 12px;
+        color: var(--ios-text-muted);
+      }
+
+      .mobile-library-header__actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .header-icon-button {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: var(--ios-card-bg);
+        border: 0.5px solid var(--ios-card-border);
+        color: var(--ios-text-strong);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+        position: relative;
+        transition: transform 0.12s cubic-bezier(0.25, 1, 0.5, 1);
+      }
+
+      .header-icon-button:active {
+        transform: scale(0.92);
+        opacity: 0.8;
+      }
+
+      .header-icon-button svg {
+        width: 17px;
+        height: 17px;
+      }
+
+      /* ==========================================================================
+         ELEMENT 2: TYPE CHIPS (Segmented iOS Scroll Bar)
+         ========================================================================== */
+      .mobile-type-chips {
+        display: flex;
+        gap: 6px;
+        overflow-x: auto;
+        padding: 12px 0 6px;
+        scrollbar-width: none;
+      }
+
+      .mobile-type-chips::-webkit-scrollbar {
+        display: none;
+      }
+
+      .mobile-type-chip {
+        flex: 0 0 auto;
+        display: inline-flex;
+        align-items: center;
+        height: 34px;
+        padding: 0 12px;
+        border-radius: 999px;
+        background: var(--ios-card-bg);
+        border: 0.5px solid var(--ios-card-border);
+        color: var(--ios-text-body);
+        font-size: 0.82rem;
+        font-weight: 550;
+        gap: 6px;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+        cursor: pointer;
+        transition: all 0.15s cubic-bezier(0.25, 1, 0.5, 1);
+      }
+
+      .mobile-type-chip:active {
+        transform: scale(0.95);
+      }
+
+      .mobile-type-chip.is-active {
+        background: var(--nook-accent);
+        color: #ffffff;
+        border-color: transparent;
+        font-weight: 600;
+        box-shadow: 0 2px 8px rgba(217, 119, 6, 0.3);
+      }
+
+      .mobile-type-chip .type-dot {
+        width: 6.5px;
+        height: 6.5px;
+        border-radius: 50%;
+        background: currentColor;
+      }
+
+      .mobile-type-chip__count {
+        font-size: 0.72rem;
+        opacity: 0.8;
+        font-variant-numeric: tabular-nums;
+      }
+
+      /* ==========================================================================
+         ELEMENT 3: SEARCH BAR (iOS Spotlight Style)
+         ========================================================================== */
+      .mobile-search-row {
+        margin: 6px 0 10px;
+      }
+
+      .search-field {
+        position: relative;
+        display: flex;
+        align-items: center;
+        background: var(--ios-fill-tertiary);
+        border-radius: 12px;
+        height: 38px;
+        padding: 0 12px;
+        gap: 8px;
+      }
+
+      .search-field svg {
+        width: 16px;
+        height: 16px;
+        color: var(--ios-text-muted);
+        flex: none;
+      }
+
+      .search-input {
+        width: 100%;
+        border: none;
+        background: transparent;
+        font-size: 0.94rem;
+        color: var(--ios-text-strong);
+        outline: none;
+        font-family: inherit;
+      }
+
+      .search-input::placeholder {
+        color: var(--ios-text-muted);
+      }
+
+      /* Meta info row */
+      .results-meta {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 2px 4px 10px;
+        font-size: 0.76rem;
+        color: var(--ios-text-muted);
+        font-variant-numeric: tabular-nums;
+      }
+
+      .results-meta strong {
+        color: var(--ios-text-strong);
+        font-weight: 600;
+      }
+
+      /* ==========================================================================
+         ELEMENT 4: NOTE CARDS (iOS Squircle Elegance)
+         ========================================================================== */
+      .notes-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px; /* Distinct card gap preserved! */
+      }
+
+      .note-card {
+        position: relative;
+        padding: 16px 16px 14px;
+        border-radius: 18px; /* Apple continuous squircle curvature */
+        background: var(--ios-card-bg);
+        border: 0.5px solid var(--ios-card-border);
+        box-shadow: var(--ios-card-shadow);
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        user-select: none;
+        transition: transform 0.12s cubic-bezier(0.25, 1, 0.5, 1),
+                    background 0.12s ease,
+                    box-shadow 0.12s ease;
+      }
+
+      .note-card:active {
+        transform: scale(0.985);
+        background: var(--ios-fill-secondary);
+        box-shadow: var(--ios-card-shadow-active);
+      }
+
+      /* Pinned Card Style: Subtle gold aura, delicate indicator */
+      .note-card--pinned {
+        border-color: var(--nook-accent-border);
+        background: linear-gradient(180deg, var(--nook-accent-soft) 0%, var(--ios-card-bg) 64px);
+      }
+
+      .note-card__header-row {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 8px;
+      }
+
+      .note-card__title {
+        margin: 0;
+        font-size: 1.05rem;
+        font-weight: 650;
+        letter-spacing: -0.015em;
+        line-height: 1.32;
+        color: var(--ios-text-strong);
+        overflow-wrap: anywhere;
+        flex: 1;
+      }
+
+      .note-card__pin-icon {
+        color: #f59e0b;
+        flex: none;
+        margin-top: 2px;
+      }
+
+      .note-card__pin-icon svg {
+        width: 14px;
+        height: 14px;
+      }
+
+      .note-card__preview {
+        margin: 0;
+        font-size: 0.88rem;
+        line-height: 1.48;
+        color: var(--ios-text-body);
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+
+      .note-card__footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 4px;
+        padding-top: 8px;
+        border-top: 0.5px solid var(--ios-fill-secondary);
+        gap: 8px;
+      }
+
+      .note-card__meta-group {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+
+      .type-badge {
+        font-size: 0.72rem;
+        font-weight: 600;
+        padding: 2px 8px;
+        border-radius: 999px;
+        line-height: 1.35;
+      }
+
+      .type-badge--work {
+        background: rgba(59, 130, 246, 0.12);
+        color: #2563eb;
+      }
+
+      .type-badge--personal {
+        background: rgba(16, 185, 129, 0.12);
+        color: #059669;
+      }
+
+      .type-badge--ideas {
+        background: rgba(139, 92, 246, 0.12);
+        color: #7c3aed;
+      }
+
+      .tag-chip {
+        font-size: 0.72rem;
+        font-weight: 500;
+        padding: 2px 8px;
+        border-radius: 999px;
+        background: var(--ios-fill-secondary);
+        color: var(--ios-text-muted);
+      }
+
+      .note-card__date {
+        font-size: 0.75rem;
+        font-weight: 500;
+        color: var(--ios-text-muted);
+        white-space: nowrap;
+        font-variant-numeric: tabular-nums;
+        margin-left: auto;
+      }
+
+      /* ==========================================================================
+         ELEMENT 5: BOTTOM NAVIGATION (iOS Frosted Tab Bar with Center Action)
+         ========================================================================== */
+      .mobile-navigation {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: calc(54px + 28px);
+        padding: 6px 12px 28px;
+        background: var(--ios-glass-nav);
+        backdrop-filter: blur(25px);
+        -webkit-backdrop-filter: blur(25px);
+        border-top: 0.5px solid var(--ios-glass-border);
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+        z-index: 100;
+      }
+
+      .nav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 2px;
+        flex: 1;
+        height: 48px;
+        border: none;
+        background: transparent;
+        color: var(--ios-text-muted);
+        cursor: pointer;
+        padding: 0;
+        transition: transform 0.12s ease, color 0.12s ease;
+      }
+
+      .nav-item:active {
+        transform: scale(0.92);
+      }
+
+      .nav-item svg {
+        width: 22px;
+        height: 22px;
+      }
+
+      .nav-item span {
+        font-size: 0.65rem;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+      }
+
+      .nav-item.is-active {
+        color: var(--nook-accent);
+      }
+
+      /* Center Action Button (Elevated Amber Pill Glow) */
+      .nav-new-btn {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background: var(--nook-accent);
+        color: #ffffff;
+        border: 3px solid var(--ios-card-bg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        margin-top: -16px;
+        box-shadow: var(--nook-accent-glow);
+        transition: transform 0.12s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.12s ease;
+      }
+
+      .nav-new-btn:active {
+        transform: scale(0.91);
+      }
+
+      .nav-new-btn svg {
+        width: 24px;
+        height: 24px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Presenter Topbar -->
+    <header class="mockup-header">
+      <div class="mockup-brand">
+        <span class="mockup-brand-title">Nook Mobile — Style Card & Element iOS Sang Trọng</span>
+        <span class="mockup-tag">Layout Giữ Nguyên</span>
+      </div>
+
+      <div class="mockup-controls">
+        <button id="toggle-theme-btn" class="theme-toggle-btn" type="button" onclick="toggleTheme()">
+          <span>Chuyển sang Dark Mode</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Workspace Showcase -->
+    <main class="mockup-workspace">
+      <!-- iPhone Mockup Frame -->
+      <div class="phone-wrapper">
+        <!-- Dynamic Island -->
+        <div class="dynamic-island"></div>
+
+        <!-- Status Bar -->
+        <div class="status-bar">
+          <span>9:41</span>
+          <div class="status-bar-icons">
+            <svg width="17" height="11" viewBox="0 0 17 11" fill="currentColor">
+              <path d="M1 8.5h2v2H1zm4-3h2v5H5zm4-3h2v8H9zm4-2h2v10h-2z" />
+            </svg>
+            <svg width="15" height="11" viewBox="0 0 15 11" fill="currentColor">
+              <path d="M7.5 2.5C9.5 2.5 11.3 3.3 12.6 4.7l1.4-1.4C12.3 1.6 10 0.5 7.5 0.5 5 0.5 2.7 1.6 1 3.3l1.4 1.4C3.7 3.3 5.5 2.5 7.5 2.5zm0 4c1.1 0 2.1 0.4 2.8 1.2l1.4-1.4C10.7 5.3 9.2 4.5 7.5 4.5c-1.7 0-3.2 0.8-4.2 1.8l1.4 1.4c.7-.8 1.7-1.2 2.8-1.2zm0 4a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" />
+            </svg>
+            <svg width="25" height="12" viewBox="0 0 25 12" fill="currentColor">
+              <rect x="0.5" y="0.5" width="21" height="11" rx="3.5" fill="none" stroke="currentColor" />
+              <rect x="2" y="2" width="16" height="8" rx="2" />
+              <path d="M23 4.5v3a1.5 1.5 0 000-3z" />
+            </svg>
+          </div>
+        </div>
+
+        <!-- Scrollable Mobile Library -->
+        <div class="mobile-library-scroll">
+          <!-- STICKY HEADER -->
+          <header class="mobile-library-header">
+            <button class="mobile-space-picker" type="button" aria-label="Chọn Space">
+              <span class="mobile-space-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                  <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+                </svg>
+              </span>
+              <span id="mobile-library-title">All notes</span>
+              <svg class="mobile-space-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m6 9 6 6 6-6" />
+              </svg>
+            </button>
+
+            <div class="mobile-library-header__actions">
+              <button class="header-icon-button" type="button" aria-label="Change theme" onclick="toggleTheme()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="5" />
+                  <line x1="12" y1="1" x2="12" y2="3" />
+                  <line x1="12" y1="21" x2="12" y2="23" />
+                  <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+                  <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                  <line x1="1" y1="12" x2="3" y2="12" />
+                  <line x1="21" y1="12" x2="23" y2="12" />
+                  <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+                  <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+                </svg>
+              </button>
+              <button class="header-icon-button" type="button" aria-label="Filters">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="4" y1="21" x2="4" y2="14" />
+                  <line x1="4" y1="10" x2="4" y2="3" />
+                  <line x1="12" y1="21" x2="12" y2="12" />
+                  <line x1="12" y1="8" x2="12" y2="3" />
+                  <line x1="20" y1="21" x2="20" y2="16" />
+                  <line x1="20" y1="12" x2="20" y2="3" />
+                  <line x1="1" y1="14" x2="7" y2="14" />
+                  <line x1="9" y1="8" x2="15" y2="8" />
+                  <line x1="17" y1="16" x2="23" y2="16" />
+                </svg>
+              </button>
+            </div>
+          </header>
+
+          <!-- TYPE CHIPS SCROLL -->
+          <div class="mobile-type-chips" role="group" aria-label="Filter note types">
+            <button class="mobile-type-chip is-active" type="button">
+              <span>All</span>
+              <span class="mobile-type-chip__count">8</span>
+            </button>
+            <button class="mobile-type-chip" type="button">
+              <span class="type-dot" style="color: #3b82f6"></span>
+              <span>Work</span>
+              <span class="mobile-type-chip__count">4</span>
+            </button>
+            <button class="mobile-type-chip" type="button">
+              <span class="type-dot" style="color: #10b981"></span>
+              <span>Personal</span>
+              <span class="mobile-type-chip__count">2</span>
+            </button>
+            <button class="mobile-type-chip" type="button">
+              <span class="type-dot" style="color: #8b5cf6"></span>
+              <span>Ideas</span>
+              <span class="mobile-type-chip__count">2</span>
+            </button>
+          </div>
+
+          <!-- SEARCH FIELD (Spotlight Style) -->
+          <div class="mobile-search-row">
+            <div class="search-field">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8" />
+                <path d="m21 21-4.3-4.3" />
+              </svg>
+              <input class="search-input" type="search" placeholder="Search notes and tags" />
+            </div>
+          </div>
+
+          <!-- RESULTS META -->
+          <div class="results-meta">
+            <span>Showing <strong>1–8</strong> of 8 notes</span>
+            <span>Updated recently</span>
+          </div>
+
+          <!-- NOTE CARDS LIST (SEPARATE CARDS WITH ELEVATED SQUIRCLE STYLE) -->
+          <div class="notes-list">
+            <!-- Pinned Card 1 -->
+            <article class="note-card note-card--pinned">
+              <div class="note-card__header-row">
+                <h2 class="note-card__title">Q3 Technical Architecture & Storage Sync</h2>
+                <span class="note-card__pin-icon" title="Pinned note">
+                  <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M16 4v8l2 2v2h-7v6l-1 1-1-1v-6H2v-2l2-2V4a1 1 0 011-1h10a1 1 0 011 1z" />
+                  </svg>
+                </span>
+              </div>
+              <p class="note-card__preview">
+                IndexedDB durable storage migration paths, offline verification routines, zero external runtime dependency checks...
+              </p>
+              <div class="note-card__footer">
+                <div class="note-card__meta-group">
+                  <span class="type-badge type-badge--work">Work</span>
+                  <span class="tag-chip">#database</span>
+                  <span class="tag-chip">#architecture</span>
+                </div>
+                <span class="note-card__date">9:15 AM</span>
+              </div>
+            </article>
+
+            <!-- Pinned Card 2 -->
+            <article class="note-card note-card--pinned">
+              <div class="note-card__header-row">
+                <h2 class="note-card__title">Reading List 2026: Systems & Design</h2>
+                <span class="note-card__pin-icon" title="Pinned note">
+                  <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M16 4v8l2 2v2h-7v6l-1 1-1-1v-6H2v-2l2-2V4a1 1 0 011-1h10a1 1 0 011 1z" />
+                  </svg>
+                </span>
+              </div>
+              <p class="note-card__preview">
+                1. Designing Data-Intensive Applications · Martin Kleppmann<br />
+                2. Shape Up: Stop Running in Circles · Basecamp
+              </p>
+              <div class="note-card__footer">
+                <div class="note-card__meta-group">
+                  <span class="type-badge type-badge--ideas">Ideas</span>
+                  <span class="tag-chip">#books</span>
+                </div>
+                <span class="note-card__date">Yesterday</span>
+              </div>
+            </article>
+
+            <!-- Card 3 -->
+            <article class="note-card">
+              <div class="note-card__header-row">
+                <h2 class="note-card__title">Protobloc Async Workflow Implementation</h2>
+              </div>
+              <p class="note-card__preview">
+                Background worker fault tolerance patterns. Investigating batch recovery mechanisms and minimizing blast radius on transient network drops.
+              </p>
+              <div class="note-card__footer">
+                <div class="note-card__meta-group">
+                  <span class="type-badge type-badge--work">Work</span>
+                  <span class="tag-chip">#protobloc</span>
+                </div>
+                <span class="note-card__date">Sep 19</span>
+              </div>
+            </article>
+
+            <!-- Card 4 -->
+            <article class="note-card">
+              <div class="note-card__header-row">
+                <h2 class="note-card__title">Weekly Grocery & Baby Essentials</h2>
+              </div>
+              <p class="note-card__preview">
+                Organic rolled oats, unsweetened almond milk, diapers size 4, cold brew coffee beans, avocado, olive oil.
+              </p>
+              <div class="note-card__footer">
+                <div class="note-card__meta-group">
+                  <span class="type-badge type-badge--personal">Personal</span>
+                  <span class="tag-chip">#home</span>
+                </div>
+                <span class="note-card__date">Sep 17</span>
+              </div>
+            </article>
+
+            <!-- Card 5 -->
+            <article class="note-card">
+              <div class="note-card__header-row">
+                <h2 class="note-card__title">UI Tokens & Typography Hierarchy Review</h2>
+              </div>
+              <p class="note-card__preview">
+                Preserving BEM CSS cascade while refining SF Pro letter-spacing (-0.015em) and hairline dividers for Retina displays.
+              </p>
+              <div class="note-card__footer">
+                <div class="note-card__meta-group">
+                  <span class="type-badge type-badge--work">Work</span>
+                  <span class="tag-chip">#design</span>
+                </div>
+                <span class="note-card__date">Sep 14</span>
+              </div>
+            </article>
+          </div>
+        </div>
+
+        <!-- BOTTOM NAVIGATION (FROSTED GLASS WITH CENTER BUTTON) -->
+        <nav class="mobile-navigation" aria-label="Mobile navigation">
+          <button class="nav-item is-active" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+            </svg>
+            <span>Notes</span>
+          </button>
+
+          <button class="nav-item" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8" />
+              <path d="m21 21-4.3-4.3" />
+            </svg>
+            <span>Search</span>
+          </button>
+
+          <!-- Elevated Center Action -->
+          <button class="nav-new-btn" type="button" aria-label="New Note">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+          </button>
+
+          <button class="nav-item" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" />
+            </svg>
+            <span>Trash</span>
+          </button>
+
+          <button class="nav-item" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="3" />
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+            </svg>
+            <span>Settings</span>
+          </button>
+        </nav>
+
+        <!-- Home Indicator Bar -->
+        <div class="home-indicator"></div>
+      </div>
+
+      <!-- Explanatory Design Specs for Ray -->
+      <aside class="mockup-specs">
+        <div class="spec-card">
+          <h3>
+            <span class="bullet"></span>
+            <span>Giữ Nguyên 100% Cấu Trúc Bố Cục</span>
+          </h3>
+          <p>
+            Vẫn giữ nguyên từng thẻ Card tách rời, khoảng cách lề, thanh cuộn type chips, thanh tìm kiếm và thanh điều hướng 5 nút dưới đáy (có nút New tròn ở giữa).
+          </p>
+        </div>
+
+        <div class="spec-card">
+          <h3>
+            <span class="bullet"></span>
+            <span>Card Squircle & Độ Nổi Siêu Tinh Tế</span>
+          </h3>
+          <p>
+            Bo góc thẻ tăng lên <code>18px</code> chuẩn đường cong liên tục (*continuous curvature*) của iOS. Viền thẻ được hạ xuống siêu mỏng (*micro-border `0.5px` bán trong suốt*), kết hợp bóng đổ chiều sâu môi trường (*ambient depth shadow*), loại bỏ hoàn toàn cảm giác viền thô cứng của web truyền thống.
+          </p>
+        </div>
+
+        <div class="spec-card">
+          <h3>
+            <span class="bullet"></span>
+            <span>Kính Mờ Trong Suốt (*Frosted Glass Material*)</span>
+          </h3>
+          <p>
+            Header và Bottom Bar áp dụng <code>backdrop-filter: blur(25px)</code> chuẩn Apple. Khi cuộn nội dung qua, các thẻ bên dưới sẽ hiển thị nhòe mờ lấp lánh bên dưới thanh bar.
+          </p>
+        </div>
+
+        <div class="spec-card">
+          <h3>
+            <span class="bullet"></span>
+            <span>Typography & Pills Sang Trọng</span>
+          </h3>
+          <p>
+            Font chữ SF Pro với tracking âm <code>-0.015em</code>, trọng số Semibold 650 chắc chắn. Các nhãn Type và Tag được thiết kế dưới dạng viên nhộng mờ mờ (*translucent capsule chips*), thanh lịch và dịu mắt.
+          </p>
+        </div>
+      </aside>
+    </main>
+
+    <script>
+      function toggleTheme() {
+        const html = document.documentElement;
+        const current = html.getAttribute('data-theme');
+        const next = current === 'dark' ? 'light' : 'dark';
+        html.setAttribute('data-theme', next);
+        document.getElementById('toggle-theme-btn').textContent =
+          next === 'dark' ? 'Chuyển sang Light Mode' : 'Chuyển sang Dark Mode';
+      }
+    </script>
+  </body>
+</html>

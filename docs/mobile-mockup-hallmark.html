@@ -1,0 +1,1432 @@
+<!doctype html>
+<html lang="vi" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Nook Mobile — Hallmark Native iOS Edition</title>
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+    <style>
+      /* ==========================================================================
+         HALLMARK SPEC: NOOK MOBILE — NATIVE CRAFTSMAN EDITION
+         Archetype: Warm Craftsman + Modern Minimal (Bear App x Things 3 x Apple Notes)
+         Principles:
+         - Zero AI Slop: No generic purple gradients, no cookie-cutter cards.
+         - Warm-tinted Neutrals: Canvas uses warm alabaster paper (#f8f7f4) and rich slate (#121316).
+         - Restraint & Rhythm: Distinctive display typography, strict 4px/8px rhythm, tactile touch surfaces.
+         - Single Anchor Hue: Warm Amber (#b45309 / #d97706), accent surface strictly < 5%.
+         ========================================================================== */
+
+      :root {
+        --phone-w: 393px;
+        --phone-h: 852px;
+        --phone-radius: 54px;
+        --phone-border: 12px solid #1a1c23;
+        --phone-shadow: 0 44px 110px -25px rgba(15, 23, 42, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.12);
+
+        /* Hallmark Warm Craftsman Palette — Light Mode */
+        --surface-canvas: #f6f5f1;             /* Warm Japanese alabaster paper */
+        --surface-card: #ffffff;               /* Pure crisp card */
+        --surface-card-subtle: #fbfbf9;
+        --surface-elevated: #ffffff;
+        --surface-pressed: #edebe4;
+        --surface-dock: rgba(255, 255, 255, 0.88);
+
+        /* Borders & Dividers */
+        --border-hairline: rgba(44, 38, 27, 0.08);
+        --border-card: rgba(44, 38, 27, 0.06);
+        --border-active: rgba(180, 83, 9, 0.35);
+
+        /* Depth & Shadows */
+        --shadow-tactile: 0 2px 8px -2px rgba(44, 38, 27, 0.04), 0 1px 2px rgba(44, 38, 27, 0.03);
+        --shadow-dock: 0 16px 40px -10px rgba(44, 38, 27, 0.12), 0 1px 3px rgba(44, 38, 27, 0.06);
+        --shadow-button: 0 4px 14px rgba(180, 83, 9, 0.28);
+
+        /* Ink & Typography */
+        --ink-display: #181714;                /* Deep warm charcoal */
+        --ink-body: #3c3933;                   /* Warm body ink */
+        --ink-subtle: #79746b;                 /* Muted editorial ink */
+        --ink-faint: #aba59a;
+
+        /* Single Anchor Accent (Warm Amber / Wax Seal) */
+        --accent-amber: #b45309;
+        --accent-amber-light: #fef3c7;
+        --accent-amber-glow: rgba(180, 83, 9, 0.16);
+
+        /* Semantic Type Tones */
+        --type-work: #1e40af;
+        --type-work-bg: #eff6ff;
+        --type-personal: #166534;
+        --type-personal-bg: #f0fdf4;
+        --type-ideas: #6b21a8;
+        --type-ideas-bg: #faf5ff;
+
+        --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Iowan Old Style", Georgia, serif;
+        --font-text: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
+        --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+      }
+
+      html[data-theme="dark"] {
+        /* Hallmark Warm Craftsman Palette — Dark Slate Mode */
+        --surface-canvas: #0f1013;             /* Deep slate charcoal (not harsh OLED black) */
+        --surface-card: #18191e;               /* Layered card slab */
+        --surface-card-subtle: #1e1f25;
+        --surface-elevated: #22232a;
+        --surface-pressed: #2a2b34;
+        --surface-dock: rgba(24, 25, 30, 0.9);
+
+        --border-hairline: rgba(255, 255, 255, 0.08);
+        --border-card: rgba(255, 255, 255, 0.07);
+        --border-active: rgba(245, 158, 11, 0.4);
+
+        --shadow-tactile: 0 4px 16px rgba(0, 0, 0, 0.45);
+        --shadow-dock: 0 20px 50px rgba(0, 0, 0, 0.6);
+        --shadow-button: 0 4px 20px rgba(245, 158, 11, 0.35);
+
+        --ink-display: #f5f4ef;
+        --ink-body: #d5d3ca;
+        --ink-subtle: #8e8c84;
+        --ink-faint: #5a5953;
+
+        --accent-amber: #f59e0b;
+        --accent-amber-light: rgba(245, 158, 11, 0.16);
+        --accent-amber-glow: rgba(245, 158, 11, 0.25);
+
+        --type-work: #93c5fd;
+        --type-work-bg: rgba(59, 130, 246, 0.15);
+        --type-personal: #86efac;
+        --type-personal-bg: rgba(34, 197, 94, 0.15);
+        --type-ideas: #d8b4fe;
+        --type-ideas-bg: rgba(168, 85, 247, 0.15);
+      }
+
+      * {
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      body {
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+        background: #090a0d;
+        color: #e2e8f0;
+        font-family: var(--font-text);
+        -webkit-font-smoothing: antialiased;
+      }
+
+      /* Mockup Topbar Bar */
+      .hallmark-topbar {
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 0.9rem 2rem;
+        background: rgba(9, 10, 13, 0.95);
+        backdrop-filter: blur(20px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      }
+
+      .hallmark-brand {
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+      }
+
+      .hallmark-logo {
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
+        background: linear-gradient(135deg, #b45309, #78350f);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 8px rgba(180, 83, 9, 0.4);
+      }
+
+      .hallmark-logo svg {
+        width: 16px;
+        height: 16px;
+        color: #fff;
+      }
+
+      .hallmark-title {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: #fff;
+        letter-spacing: -0.01em;
+      }
+
+      .hallmark-badge {
+        font-size: 0.7rem;
+        font-weight: 700;
+        padding: 0.2rem 0.65rem;
+        border-radius: 999px;
+        background: rgba(180, 83, 9, 0.2);
+        color: #fbbf24;
+        border: 1px solid rgba(180, 83, 9, 0.4);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
+
+      .hallmark-actions {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .view-mode-tabs {
+        display: inline-flex;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        padding: 3px;
+        gap: 2px;
+      }
+
+      .tab-btn {
+        background: transparent;
+        border: none;
+        color: #94a3b8;
+        font-size: 0.82rem;
+        font-weight: 500;
+        padding: 0.4rem 0.9rem;
+        border-radius: 7px;
+        cursor: pointer;
+        transition: all 0.15s ease;
+      }
+
+      .tab-btn:hover {
+        color: #fff;
+      }
+
+      .tab-btn.is-active {
+        background: rgba(255, 255, 255, 0.15);
+        color: #fff;
+        font-weight: 600;
+      }
+
+      .theme-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.45rem 0.95rem;
+        border-radius: 9px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: rgba(255, 255, 255, 0.06);
+        color: #f1f5f9;
+        font-size: 0.82rem;
+        cursor: pointer;
+        font-weight: 500;
+        transition: all 0.15s ease;
+      }
+
+      .theme-btn:hover {
+        background: rgba(255, 255, 255, 0.12);
+      }
+
+      /* Main Showcase Stage */
+      .mockup-stage {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        gap: 3.5rem;
+        padding: 2.5rem 1.5rem 5rem;
+      }
+
+      /* Phone Hardware Frame */
+      .device-frame {
+        position: relative;
+        width: var(--phone-w);
+        height: var(--phone-h);
+        border: var(--phone-border);
+        border-radius: var(--phone-radius);
+        box-shadow: var(--phone-shadow);
+        background: var(--surface-canvas);
+        color: var(--ink-body);
+        overflow: hidden;
+        flex: none;
+        display: flex;
+        flex-direction: column;
+        transition: background 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      /* Dynamic Island */
+      .dynamic-island {
+        position: absolute;
+        top: 11px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 124px;
+        height: 35px;
+        background: #000000;
+        border-radius: 20px;
+        z-index: 500;
+        pointer-events: none;
+      }
+
+      /* Status Bar */
+      .status-bar {
+        height: 48px;
+        padding: 14px 28px 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--ink-display);
+        z-index: 400;
+        user-select: none;
+      }
+
+      .status-icons {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      /* Home Indicator */
+      .home-indicator {
+        position: absolute;
+        bottom: 8px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 138px;
+        height: 5px;
+        background: var(--ink-display);
+        opacity: 0.22;
+        border-radius: 999px;
+        z-index: 500;
+        pointer-events: none;
+      }
+
+      /* Screen Switching Container */
+      .screen-container {
+        flex: 1;
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .view-screen {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        opacity: 0;
+        pointer-events: none;
+        transform: translateY(8px);
+        transition: opacity 0.24s cubic-bezier(0.16, 1, 0.3, 1), transform 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      .view-screen.is-active {
+        opacity: 1;
+        pointer-events: auto;
+        transform: translateY(0);
+      }
+
+      /* ==========================================================================
+         VIEW 1: CRAFTSMAN LIBRARY (NOTE STREAM)
+         ========================================================================== */
+      .library-scroll {
+        flex: 1;
+        overflow-y: auto;
+        padding: 4px 16px calc(6rem + 24px);
+        -webkit-overflow-scrolling: touch;
+      }
+
+      /* Masthead Navigation Bar */
+      .craft-masthead {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 4px 0 16px;
+      }
+
+      .space-menu-trigger {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 6px 12px 6px 8px;
+        border-radius: 999px;
+        background: var(--surface-card);
+        border: 1px solid var(--border-hairline);
+        box-shadow: var(--shadow-tactile);
+        color: var(--ink-display);
+        font-size: 0.88rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform 0.12s ease;
+      }
+
+      .space-menu-trigger:active {
+        transform: scale(0.96);
+      }
+
+      .space-icon-dot {
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        background: var(--accent-amber-light);
+        color: var(--accent-amber);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .space-icon-dot svg {
+        width: 12px;
+        height: 12px;
+      }
+
+      .masthead-tools {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .circle-action-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: var(--surface-card);
+        border: 1px solid var(--border-hairline);
+        box-shadow: var(--shadow-tactile);
+        color: var(--ink-body);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: transform 0.12s ease;
+      }
+
+      .circle-action-btn:active {
+        transform: scale(0.92);
+      }
+
+      .circle-action-btn svg {
+        width: 16px;
+        height: 16px;
+      }
+
+      /* Hero Display Title (Apple Large Title) */
+      .hero-title-group {
+        margin: 6px 0 16px;
+      }
+
+      .hero-display-title {
+        margin: 0;
+        font-size: 2.15rem;
+        font-weight: 750;
+        letter-spacing: -0.03em;
+        line-height: 1.12;
+        color: var(--ink-display);
+      }
+
+      .hero-submeta {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 5px;
+        font-size: 0.8rem;
+        color: var(--ink-subtle);
+        font-weight: 450;
+      }
+
+      .hero-submeta .status-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #10b981;
+      }
+
+      /* Integrated Tactile Search */
+      .craft-search-box {
+        position: relative;
+        display: flex;
+        align-items: center;
+        background: var(--surface-card);
+        border: 1px solid var(--border-hairline);
+        box-shadow: var(--shadow-tactile);
+        border-radius: 14px;
+        height: 42px;
+        padding: 0 14px;
+        gap: 10px;
+        margin-bottom: 16px;
+      }
+
+      .craft-search-box svg {
+        width: 17px;
+        height: 17px;
+        color: var(--ink-faint);
+        flex: none;
+      }
+
+      .craft-search-input {
+        width: 100%;
+        border: none;
+        background: transparent;
+        font-size: 0.92rem;
+        font-family: inherit;
+        color: var(--ink-display);
+        outline: none;
+      }
+
+      .craft-search-input::placeholder {
+        color: var(--ink-faint);
+      }
+
+      /* Clean Tag Rail */
+      .craft-tag-rail {
+        display: flex;
+        gap: 6px;
+        overflow-x: auto;
+        padding-bottom: 18px;
+        scrollbar-width: none;
+      }
+
+      .craft-tag-rail::-webkit-scrollbar {
+        display: none;
+      }
+
+      .rail-chip {
+        flex: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        height: 32px;
+        padding: 0 12px;
+        border-radius: 999px;
+        background: var(--surface-card);
+        border: 1px solid var(--border-hairline);
+        color: var(--ink-body);
+        font-size: 0.82rem;
+        font-weight: 550;
+        cursor: pointer;
+        box-shadow: var(--shadow-tactile);
+        transition: all 0.15s ease;
+      }
+
+      .rail-chip.is-active {
+        background: var(--ink-display);
+        color: var(--surface-canvas);
+        border-color: transparent;
+      }
+
+      .rail-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: currentColor;
+      }
+
+      /* Stream Section Divider */
+      .stream-section-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin: 10px 0 10px 4px;
+      }
+
+      .stream-label {
+        font-size: 0.76rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--ink-subtle);
+      }
+
+      .stream-counter {
+        font-size: 0.72rem;
+        color: var(--ink-faint);
+        font-variant-numeric: tabular-nums;
+      }
+
+      /* Tactile Document Card */
+      .stream-cards {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .doc-card {
+        position: relative;
+        background: var(--surface-card);
+        border: 1px solid var(--border-card);
+        border-radius: 18px;
+        padding: 16px 16px 14px;
+        box-shadow: var(--shadow-tactile);
+        cursor: pointer;
+        user-select: none;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        transition: transform 0.12s cubic-bezier(0.16, 1, 0.3, 1), background 0.12s ease, box-shadow 0.12s ease;
+      }
+
+      .doc-card:active {
+        transform: scale(0.985);
+        background: var(--surface-pressed);
+      }
+
+      /* Pinned Style: Craftsman Left Accent Blade */
+      .doc-card--pinned {
+        border-color: var(--border-active);
+        background: var(--surface-card);
+        overflow: hidden;
+      }
+
+      .doc-card--pinned::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 4px;
+        background: var(--accent-amber);
+      }
+
+      .doc-card__top {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 8px;
+      }
+
+      .doc-card__title {
+        margin: 0;
+        font-size: 1.05rem;
+        font-weight: 650;
+        line-height: 1.32;
+        letter-spacing: -0.015em;
+        color: var(--ink-display);
+        flex: 1;
+      }
+
+      .doc-card__pin-badge {
+        color: var(--accent-amber);
+        flex: none;
+        margin-top: 2px;
+      }
+
+      .doc-card__pin-badge svg {
+        width: 14px;
+        height: 14px;
+      }
+
+      .doc-card__excerpt {
+        margin: 0;
+        font-size: 0.88rem;
+        line-height: 1.5;
+        color: var(--ink-subtle);
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+
+      .doc-card__excerpt code {
+        font-family: var(--font-mono);
+        font-size: 0.78rem;
+        padding: 1px 5px;
+        border-radius: 4px;
+        background: var(--surface-canvas);
+        color: var(--accent-amber);
+      }
+
+      .doc-card__footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 4px;
+        padding-top: 8px;
+        border-top: 1px solid var(--border-hairline);
+        gap: 8px;
+      }
+
+      .doc-card__badges {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+
+      .type-pill {
+        font-size: 0.72rem;
+        font-weight: 600;
+        padding: 2px 8px;
+        border-radius: 6px;
+      }
+
+      .type-pill--work {
+        background: var(--type-work-bg);
+        color: var(--type-work);
+      }
+
+      .type-pill--personal {
+        background: var(--type-personal-bg);
+        color: var(--type-personal);
+      }
+
+      .type-pill--ideas {
+        background: var(--type-ideas-bg);
+        color: var(--type-ideas);
+      }
+
+      .tag-pill {
+        font-size: 0.72rem;
+        font-weight: 500;
+        color: var(--ink-subtle);
+        padding: 2px 6px;
+        border-radius: 6px;
+        background: var(--surface-canvas);
+      }
+
+      .doc-card__time {
+        font-size: 0.75rem;
+        font-weight: 500;
+        color: var(--ink-faint);
+        font-variant-numeric: tabular-nums;
+        margin-left: auto;
+      }
+
+      /* ==========================================================================
+         FLOATING CRAFTSMAN DOCK (Things 3 / Bear Style)
+         ========================================================================== */
+      .craft-dock {
+        position: absolute;
+        bottom: 24px;
+        left: 16px;
+        right: 16px;
+        height: 56px;
+        border-radius: 28px;
+        background: var(--surface-dock);
+        backdrop-filter: blur(28px);
+        -webkit-backdrop-filter: blur(28px);
+        border: 1px solid var(--border-hairline);
+        box-shadow: var(--shadow-dock);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 8px 0 16px;
+        z-index: 100;
+      }
+
+      .dock-left-group {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+      }
+
+      .dock-space-name {
+        font-size: 0.88rem;
+        font-weight: 650;
+        color: var(--ink-display);
+      }
+
+      .dock-note-tally {
+        font-size: 0.76rem;
+        color: var(--ink-subtle);
+        font-variant-numeric: tabular-nums;
+      }
+
+      .dock-compose-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        height: 42px;
+        padding: 0 16px;
+        border-radius: 21px;
+        background: var(--accent-amber);
+        color: #ffffff;
+        border: none;
+        font-size: 0.88rem;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: var(--shadow-button);
+        transition: transform 0.12s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      .dock-compose-btn:active {
+        transform: scale(0.93);
+      }
+
+      .dock-compose-btn svg {
+        width: 18px;
+        height: 18px;
+      }
+
+      /* ==========================================================================
+         VIEW 2: FOCUS NOTE CANVAS (Clean Paper Writing)
+         ========================================================================== */
+      .canvas-topbar {
+        height: 46px;
+        padding: 0 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid var(--border-hairline);
+        background: var(--surface-card);
+      }
+
+      .canvas-back-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        background: none;
+        border: none;
+        color: var(--accent-amber);
+        font-size: 0.95rem;
+        font-weight: 500;
+        cursor: pointer;
+        padding: 0;
+      }
+
+      .canvas-back-btn svg {
+        width: 20px;
+        height: 20px;
+      }
+
+      .canvas-save-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 0.74rem;
+        font-weight: 600;
+        color: #10b981;
+      }
+
+      .canvas-save-badge::before {
+        content: "";
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: currentColor;
+      }
+
+      .canvas-body {
+        flex: 1;
+        overflow-y: auto;
+        padding: 24px 22px calc(5rem + 24px);
+        background: var(--surface-card);
+      }
+
+      .canvas-title-input {
+        width: 100%;
+        border: none;
+        outline: none;
+        background: transparent;
+        font-family: var(--font-display);
+        font-size: 1.85rem;
+        font-weight: 750;
+        letter-spacing: -0.025em;
+        line-height: 1.22;
+        color: var(--ink-display);
+        margin-bottom: 10px;
+      }
+
+      .canvas-meta-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.78rem;
+        color: var(--ink-subtle);
+        margin-bottom: 24px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid var(--border-hairline);
+      }
+
+      .canvas-content {
+        font-size: 1.05rem;
+        line-height: 1.65;
+        color: var(--ink-body);
+      }
+
+      .canvas-content p {
+        margin: 0 0 1.25rem;
+      }
+
+      .craft-task-row {
+        display: flex;
+        align-items: baseline;
+        gap: 12px;
+        margin-bottom: 0.85rem;
+      }
+
+      .craft-ring {
+        width: 19px;
+        height: 19px;
+        border-radius: 50%;
+        border: 2px solid var(--accent-amber);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex: none;
+        cursor: pointer;
+        transition: all 0.15s ease;
+      }
+
+      .craft-ring.is-done {
+        background: var(--accent-amber);
+        color: #fff;
+      }
+
+      .craft-ring svg {
+        width: 11px;
+        height: 11px;
+      }
+
+      /* Keyboard Accessory Bar */
+      .canvas-accessory-bar {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: calc(46px + 24px);
+        padding: 4px 12px 24px;
+        background: var(--surface-dock);
+        backdrop-filter: blur(24px);
+        border-top: 1px solid var(--border-hairline);
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+        z-index: 100;
+      }
+
+      .accessory-tool {
+        width: 38px;
+        height: 38px;
+        border: none;
+        background: transparent;
+        color: var(--ink-body);
+        font-size: 0.95rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        cursor: pointer;
+      }
+
+      .accessory-tool:active {
+        background: var(--surface-pressed);
+      }
+
+      /* ==========================================================================
+         SPEC PRESENTATION PUNCH LIST (Right Sidebar)
+         ========================================================================== */
+      .spec-panel {
+        max-width: 420px;
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+      }
+
+      .spec-box {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.07);
+        border-radius: 1.25rem;
+        padding: 1.4rem;
+      }
+
+      .spec-box h3 {
+        margin: 0 0 0.6rem;
+        font-size: 1rem;
+        font-weight: 700;
+        color: #f8fafc;
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+      }
+
+      .spec-box h3 .badge {
+        padding: 0.2rem 0.5rem;
+        border-radius: 6px;
+        background: #d97706;
+        color: #fff;
+        font-size: 0.72rem;
+        font-weight: 700;
+      }
+
+      .spec-box p {
+        margin: 0;
+        font-size: 0.86rem;
+        line-height: 1.6;
+        color: #94a3b8;
+      }
+
+      .spec-box ul {
+        margin: 0.6rem 0 0;
+        padding-left: 1.2rem;
+        font-size: 0.84rem;
+        color: #94a3b8;
+        line-height: 1.6;
+      }
+
+      .spec-box code {
+        font-family: var(--font-mono);
+        font-size: 0.8rem;
+        padding: 0.15rem 0.4rem;
+        border-radius: 4px;
+        background: rgba(255, 255, 255, 0.08);
+        color: #fcd34d;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Topbar Controls -->
+    <header class="hallmark-topbar">
+      <div class="hallmark-brand">
+        <div class="hallmark-logo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+          </svg>
+        </div>
+        <span class="hallmark-title">Nook — Hallmark Native Craftsman Edition</span>
+        <span class="hallmark-badge">Opinionated Design</span>
+      </div>
+
+      <div class="hallmark-actions">
+        <div class="view-mode-tabs" role="tablist">
+          <button class="tab-btn is-active" type="button" onclick="switchView('stream')">
+            1. Note Stream (Library)
+          </button>
+          <button class="tab-btn" type="button" onclick="switchView('canvas')">
+            2. Focus Canvas (Editor)
+          </button>
+        </div>
+
+        <button id="theme-switcher-btn" class="theme-btn" type="button" onclick="toggleTheme()">
+          <span>Mode: Warm Alabaster</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Stage -->
+    <main class="mockup-stage">
+      <!-- Device Frame -->
+      <div class="device-frame">
+        <div class="dynamic-island"></div>
+
+        <div class="status-bar">
+          <span>9:41</span>
+          <div class="status-icons">
+            <svg width="17" height="11" viewBox="0 0 17 11" fill="currentColor">
+              <path d="M1 8.5h2v2H1zm4-3h2v5H5zm4-3h2v8H9zm4-2h2v10h-2z" />
+            </svg>
+            <svg width="15" height="11" viewBox="0 0 15 11" fill="currentColor">
+              <path d="M7.5 2.5C9.5 2.5 11.3 3.3 12.6 4.7l1.4-1.4C12.3 1.6 10 0.5 7.5 0.5 5 0.5 2.7 1.6 1 3.3l1.4 1.4C3.7 3.3 5.5 2.5 7.5 2.5zm0 4c1.1 0 2.1 0.4 2.8 1.2l1.4-1.4C10.7 5.3 9.2 4.5 7.5 4.5c-1.7 0-3.2 0.8-4.2 1.8l1.4 1.4c.7-.8 1.7-1.2 2.8-1.2zm0 4a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" />
+            </svg>
+            <svg width="25" height="12" viewBox="0 0 25 12" fill="currentColor">
+              <rect x="0.5" y="0.5" width="21" height="11" rx="3.5" fill="none" stroke="currentColor" />
+              <rect x="2" y="2" width="16" height="8" rx="2" />
+              <path d="M23 4.5v3a1.5 1.5 0 000-3z" />
+            </svg>
+          </div>
+        </div>
+
+        <div class="screen-container">
+          <!-- ================= VIEW 1: NOTE STREAM ================= -->
+          <section id="view-stream" class="view-screen is-active">
+            <div class="library-scroll">
+              <!-- Masthead -->
+              <div class="craft-masthead">
+                <button class="space-menu-trigger" type="button">
+                  <span class="space-icon-dot">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                      <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+                    </svg>
+                  </span>
+                  <span>All Notes</span>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="m6 9 6 6 6-6" />
+                  </svg>
+                </button>
+
+                <div class="masthead-tools">
+                  <button class="circle-action-btn" type="button" aria-label="Search" onclick="document.getElementById('stream-search').focus()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                      <circle cx="11" cy="11" r="8" />
+                      <path d="m21 21-4.3-4.3" />
+                    </svg>
+                  </button>
+                  <button class="circle-action-btn" type="button" aria-label="Toggle theme" onclick="toggleTheme()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Hero Display Title -->
+              <div class="hero-title-group">
+                <h1 class="hero-display-title">Notes</h1>
+                <div class="hero-submeta">
+                  <span class="status-dot"></span>
+                  <span>Stored on device</span>
+                  <span>·</span>
+                  <span>5 notes</span>
+                </div>
+              </div>
+
+              <!-- Integrated Search -->
+              <div class="craft-search-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <circle cx="11" cy="11" r="8" />
+                  <path d="m21 21-4.3-4.3" />
+                </svg>
+                <input id="stream-search" class="craft-search-input" type="search" placeholder="Search ideas, code, tags..." />
+              </div>
+
+              <!-- Tag Rail -->
+              <div class="craft-tag-rail">
+                <button class="rail-chip is-active" type="button">
+                  <span>All</span>
+                </button>
+                <button class="rail-chip" type="button">
+                  <span class="rail-dot" style="color: #2563eb"></span>
+                  <span>Work</span>
+                </button>
+                <button class="rail-chip" type="button">
+                  <span class="rail-dot" style="color: #059669"></span>
+                  <span>Personal</span>
+                </button>
+                <button class="rail-chip" type="button">
+                  <span class="rail-dot" style="color: #7c3aed"></span>
+                  <span>Ideas</span>
+                </button>
+                <button class="rail-chip" type="button">
+                  <span class="rail-dot" style="color: #ea580c"></span>
+                  <span>Reading</span>
+                </button>
+              </div>
+
+              <!-- Stream Section: Pinned -->
+              <div class="stream-section-header">
+                <span class="stream-label">Pinned</span>
+                <span class="stream-counter">2</span>
+              </div>
+
+              <div class="stream-cards">
+                <!-- Pinned Card 1 -->
+                <article class="doc-card doc-card--pinned" onclick="switchView('canvas')">
+                  <div class="doc-card__top">
+                    <h2 class="doc-card__title">Q3 Technical Architecture & Sync</h2>
+                    <span class="doc-card__pin-badge">
+                      <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M16 4v8l2 2v2h-7v6l-1 1-1-1v-6H2v-2l2-2V4a1 1 0 011-1h10a1 1 0 011 1z" />
+                      </svg>
+                    </span>
+                  </div>
+                  <p class="doc-card__excerpt">
+                    Local IndexedDB storage invariants, <code>PersonalNotesStorage</code> schema versioning, and zero remote runtime dependencies...
+                  </p>
+                  <div class="doc-card__footer">
+                    <div class="doc-card__badges">
+                      <span class="type-pill type-pill--work">Work</span>
+                      <span class="tag-pill">#sqlite</span>
+                      <span class="tag-pill">#storage</span>
+                    </div>
+                    <span class="doc-card__time">9:15 AM</span>
+                  </div>
+                </article>
+
+                <!-- Pinned Card 2 -->
+                <article class="doc-card doc-card--pinned" onclick="switchView('canvas')">
+                  <div class="doc-card__top">
+                    <h2 class="doc-card__title">Reading List 2026: Systems & Craft</h2>
+                    <span class="doc-card__pin-badge">
+                      <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M16 4v8l2 2v2h-7v6l-1 1-1-1v-6H2v-2l2-2V4a1 1 0 011-1h10a1 1 0 011 1z" />
+                      </svg>
+                    </span>
+                  </div>
+                  <p class="doc-card__excerpt">
+                    Designing Data-Intensive Applications, Shape Up, The Design of Everyday Things, and Typography Handbook.
+                  </p>
+                  <div class="doc-card__footer">
+                    <div class="doc-card__badges">
+                      <span class="type-pill type-pill--ideas">Ideas</span>
+                      <span class="tag-pill">#books</span>
+                    </div>
+                    <span class="doc-card__time">Yesterday</span>
+                  </div>
+                </article>
+              </div>
+
+              <!-- Stream Section: Recent -->
+              <div class="stream-section-header" style="margin-top: 20px">
+                <span class="stream-label">This Week</span>
+                <span class="stream-counter">3</span>
+              </div>
+
+              <div class="stream-cards">
+                <!-- Card 3 -->
+                <article class="doc-card" onclick="switchView('canvas')">
+                  <div class="doc-card__top">
+                    <h2 class="doc-card__title">Protobloc Async Workflow Implementation</h2>
+                  </div>
+                  <p class="doc-card__excerpt">
+                    Background queue retry strategies with exponential backoff. Isolating blast radius during transient third-party API disruptions.
+                  </p>
+                  <div class="doc-card__footer">
+                    <div class="doc-card__badges">
+                      <span class="type-pill type-pill--work">Work</span>
+                      <span class="tag-pill">#protobloc</span>
+                    </div>
+                    <span class="doc-card__time">Sep 19</span>
+                  </div>
+                </article>
+
+                <!-- Card 4 -->
+                <article class="doc-card" onclick="switchView('canvas')">
+                  <div class="doc-card__top">
+                    <h2 class="doc-card__title">Weekly Family Grocery & Home Essentials</h2>
+                  </div>
+                  <p class="doc-card__excerpt">
+                    Cold brew beans, organic rolled oats, unsweetened almond milk, diapers size 4, avocados, extra virgin olive oil.
+                  </p>
+                  <div class="doc-card__footer">
+                    <div class="doc-card__badges">
+                      <span class="type-pill type-pill--personal">Personal</span>
+                      <span class="tag-pill">#home</span>
+                    </div>
+                    <span class="doc-card__time">Sep 17</span>
+                  </div>
+                </article>
+
+                <!-- Card 5 -->
+                <article class="doc-card" onclick="switchView('canvas')">
+                  <div class="doc-card__top">
+                    <h2 class="doc-card__title">UI Tokens & Typography Hierarchy Review</h2>
+                  </div>
+                  <p class="doc-card__excerpt">
+                    Ensuring strict 4px/8px rhythm, eliminating disconnected pixel values, and elevating touch targets to 44px minimum hit bounds.
+                  </p>
+                  <div class="doc-card__footer">
+                    <div class="doc-card__badges">
+                      <span class="type-pill type-pill--work">Work</span>
+                      <span class="tag-pill">#design</span>
+                    </div>
+                    <span class="doc-card__time">Sep 14</span>
+                  </div>
+                </article>
+              </div>
+            </div>
+
+            <!-- Floating Craftsman Dock (Things 3 / Apple Notes Hybrid) -->
+            <div class="craft-dock">
+              <div class="dock-left-group" onclick="alert('Mở menu Spaces & Thư mục')">
+                <div>
+                  <div class="dock-space-name">All Notes</div>
+                  <div class="dock-note-tally">5 notes · 184 kB</div>
+                </div>
+              </div>
+
+              <button class="dock-compose-btn" type="button" onclick="switchView('canvas')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <line x1="12" y1="5" x2="12" y2="19" />
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+                <span>New Note</span>
+              </button>
+            </div>
+          </section>
+
+          <!-- ================= VIEW 2: FOCUS CANVAS ================= -->
+          <section id="view-canvas" class="view-screen">
+            <div class="canvas-topbar">
+              <button class="canvas-back-btn" type="button" onclick="switchView('stream')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <path d="m15 18-6-6 6-6" />
+                </svg>
+                <span>Notes</span>
+              </button>
+
+              <span class="canvas-save-badge">Saved offline</span>
+
+              <button class="circle-action-btn" style="width: 32px; height: 32px" type="button" aria-label="Share">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="1" />
+                  <circle cx="19" cy="12" r="1" />
+                  <circle cx="5" cy="12" r="1" />
+                </svg>
+              </button>
+            </div>
+
+            <div class="canvas-body">
+              <input class="canvas-title-input" type="text" value="Q3 Technical Architecture & Sync" spellcheck="false" />
+
+              <div class="canvas-meta-row">
+                <span>Sep 22, 2026 at 9:15 AM</span>
+                <span>·</span>
+                <span style="color: var(--accent-amber); font-weight: 600">Work</span>
+                <span>·</span>
+                <span>540 words</span>
+              </div>
+
+              <div class="canvas-content">
+                <p>
+                  Nook is a private, offline-first personal workspace. Data never leaves the browser without an explicit JSON export requested by the user.
+                </p>
+
+                <div class="craft-task-row">
+                  <span class="craft-ring is-done" onclick="this.classList.toggle('is-done')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                  </span>
+                  <span>Eliminate generic web borders in favor of tactile depth</span>
+                </div>
+
+                <div class="craft-task-row">
+                  <span class="craft-ring is-done" onclick="this.classList.toggle('is-done')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                  </span>
+                  <span>Floating craftsman dock with 1-thumb reach compose</span>
+                </div>
+
+                <div class="craft-task-row">
+                  <span class="craft-ring" onclick="this.classList.toggle('is-done')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                  </span>
+                  <span>Touch gesture engine for instant swipe-to-pin/trash</span>
+                </div>
+
+                <div class="craft-task-row">
+                  <span class="craft-ring" onclick="this.classList.toggle('is-done')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                  </span>
+                  <span>Warm alabaster / slate dark mode palette</span>
+                </div>
+
+                <p style="margin-top: 1.5rem; color: var(--ink-subtle); font-size: 0.95rem">
+                  The primary design constraint is zero runtime external dependencies and keeping the entire app bundle ultra-lightweight.
+                </p>
+              </div>
+            </div>
+
+            <!-- Keyboard Accessory Bar -->
+            <div class="canvas-accessory-bar">
+              <button class="accessory-tool" type="button" title="Heading">
+                H1
+              </button>
+              <button class="accessory-tool" type="button" title="Checklist">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="6" cy="12" r="3" />
+                  <line x1="12" y1="12" x2="21" y2="12" />
+                </svg>
+              </button>
+              <button class="accessory-tool" type="button" title="Bold">
+                <strong>B</strong>
+              </button>
+              <button class="accessory-tool" type="button" title="Code">
+                <code>&lt;/&gt;</code>
+              </button>
+              <button class="accessory-tool" type="button" title="Done" onclick="switchView('stream')" style="color: var(--accent-amber); font-weight: 700">
+                Done
+              </button>
+            </div>
+          </section>
+        </div>
+
+        <div class="home-indicator"></div>
+      </div>
+
+      <!-- Hallmark Design Analysis & Specification -->
+      <aside class="spec-panel">
+        <div class="spec-box">
+          <h3>
+            <span class="badge">01</span>
+            <span>Warm Craftsman Palette (Zero Cold Grays)</span>
+          </h3>
+          <p>
+            Loại bỏ hoàn toàn màu xám xanh công nghiệp nhạt nhẽo (slate/gray). Sử dụng <strong>Alabaster Paper</strong> (nền giấy mờ ấm `#F6F5F1`) ở Light mode và <strong>Deep Slate Ink</strong> (`#0F1013`) ở Dark mode. Điểm nhấn duy nhất là màu <strong>Warm Amber</strong> lấy cảm hứng từ con dấu sáp niêm phong cổ điển (*wax seal*), tỷ lệ diện tích màu nhấn dưới 4%.
+          </p>
+        </div>
+
+        <div class="spec-box">
+          <h3>
+            <span class="badge">02</span>
+            <span>Thẻ Xếp Dòng Đậm Chất Báo Chí (Document Card)</span>
+          </h3>
+          <p>
+            Mỗi thẻ ghi chú không chỉ là một cái hộp vuông bo tròn, mà là một lát cắt tài liệu hoàn chỉnh:
+          </p>
+          <ul>
+            <li><strong>Lưỡi ghim Amber (*Pinned Blade*)</strong>: Thẻ ghim có vạch nhấn dọc màu hổ phách tinh tế ở mép trái thay vì tô màu vàng toàn bộ thẻ.</li>
+            <li><strong>Markdown Preview thật</strong>: Khối trích dẫn hiển thị code pill <code>inline</code> thanh mảnh.</li>
+            <li><strong>Phân cấp nhãn dịu mắt</strong>: Nhãn Type (Work, Personal) và Tag `#` được ép mờ, đặt tinh gọn dưới đáy.</li>
+          </ul>
+        </div>
+
+        <div class="spec-box">
+          <h3>
+            <span class="badge">03</span>
+            <span>Floating Craftsman Dock (Chuẩn Công Thái Học Ngón Cái)</span>
+          </h3>
+          <p>
+            Loại bỏ thanh tab bar 5 icon chia đều buồn tẻ. Thay vào đó là <strong>Thanh Dock Nổi Bo Tròn</strong> (lấy cảm hứng từ Things 3 & Bear):
+          </p>
+          <ul>
+            <li>Góc trái: Tên Space hiện tại và dung lượng dữ liệu offline gọn gàng.</li>
+            <li>Góc phải: Nút <strong>+ New Note</strong> nổi bật nằm đúng vùng thuận ngón cái (*primary thumb zone*), bấm một chạm để viết ngay.</li>
+          </ul>
+        </div>
+
+        <div class="spec-box">
+          <h3>
+            <span class="badge">04</span>
+            <span>Typography Phân Cấp Rõ Ràng Trong 2 Giây</span>
+          </h3>
+          <p>
+            Tiêu đề lớn <code>34pt</code> có tracking âm <code>-0.03em</code> tạo uy lực thị giác. Toàn bộ thông số đo lường (ngày giờ, số đếm) sử dụng <code>tabular-nums</code> để căn chỉnh ngay hàng thẳng lối.
+          </p>
+        </div>
+      </aside>
+    </main>
+
+    <script>
+      function switchView(viewName) {
+        document.querySelectorAll('.view-screen').forEach((el) => {
+          el.classList.remove('is-active');
+        });
+        const target = document.getElementById('view-' + viewName);
+        if (target) {
+          target.classList.add('is-active');
+        }
+
+        document.querySelectorAll('.tab-btn').forEach((btn, idx) => {
+          btn.classList.toggle(
+            'is-active',
+            (viewName === 'stream' && idx === 0) || (viewName === 'canvas' && idx === 1)
+          );
+        });
+      }
+
+      function toggleTheme() {
+        const html = document.documentElement;
+        const current = html.getAttribute('data-theme');
+        const next = current === 'dark' ? 'light' : 'dark';
+        html.setAttribute('data-theme', next);
+        const btnText = document.querySelector('#theme-switcher-btn span');
+        if (btnText) {
+          btnText.textContent = next === 'dark' ? 'Mode: Dark Slate' : 'Mode: Warm Alabaster';
+        }
+      }
+    </script>
+  </body>
+</html>

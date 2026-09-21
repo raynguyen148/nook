@@ -1,0 +1,998 @@
+<!doctype html>
+<html lang="vi" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Nook — So Sánh & Đề Xuất Redesign Sheet "Search & Filters"</title>
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+    <style>
+      /* ==========================================================================
+         NOOK MOBILE — SEARCH & FILTERS SHEET REDESIGN
+         Before vs After Side-by-Side Comparison
+         Principles:
+         - Eliminate Pill Button Fatigue (from 25+ clunky pills down to cohesive iOS controls)
+         - iOS Segmented Control for Sorting (saves 60% vertical space)
+         - Inset Grouped List for Note Types with Checkmarks
+         - Unified Footer CTA: "Show 76 Notes"
+         ========================================================================== */
+
+      :root {
+        --phone-w: 380px;
+        --phone-h: 780px;
+        --phone-radius: 46px;
+        --phone-border: 10px solid #1c1d22;
+        --phone-shadow: 0 30px 80px -15px rgba(0, 0, 0, 0.45);
+
+        /* Apple System Tokens - Light */
+        --ios-sheet-bg: #ffffff;
+        --ios-sheet-canvas: #f2f2f7;
+        --ios-grouped-bg: #ffffff;
+        --ios-hairline: rgba(60, 60, 67, 0.16);
+        --ios-fill-tertiary: rgba(118, 118, 128, 0.12);
+        --ios-fill-secondary: rgba(118, 118, 128, 0.08);
+        --ios-text-primary: #000000;
+        --ios-text-secondary: #3c3c4399;
+        --ios-text-muted: #8e8e93;
+
+        --nook-accent: #b45309;
+        --nook-accent-soft: rgba(180, 83, 9, 0.12);
+        --nook-accent-glow: 0 4px 16px rgba(180, 83, 9, 0.28);
+
+        --font-apple: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display",
+          "Helvetica Neue", sans-serif;
+      }
+
+      html[data-theme="dark"] {
+        --ios-sheet-bg: #1c1c1e;
+        --ios-sheet-canvas: #000000;
+        --ios-grouped-bg: #2c2c2e;
+        --ios-hairline: rgba(84, 84, 88, 0.36);
+        --ios-fill-tertiary: rgba(118, 118, 128, 0.24);
+        --ios-fill-secondary: rgba(118, 118, 128, 0.16);
+        --ios-text-primary: #ffffff;
+        --ios-text-secondary: #ebebf599;
+        --ios-text-muted: #8e8e93;
+
+        --nook-accent: #f59e0b;
+        --nook-accent-soft: rgba(245, 158, 11, 0.2);
+        --nook-accent-glow: 0 4px 20px rgba(245, 158, 11, 0.35);
+      }
+
+      * {
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      body {
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+        background: #090c12;
+        color: #f1f5f9;
+        font-family: var(--font-apple);
+        -webkit-font-smoothing: antialiased;
+      }
+
+      /* Presenter Topbar */
+      .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 0.85rem 2rem;
+        background: rgba(9, 12, 18, 0.94);
+        backdrop-filter: blur(20px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      }
+
+      .topbar-brand {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+
+      .topbar-title {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: #fff;
+      }
+
+      .topbar-badge {
+        font-size: 0.7rem;
+        font-weight: 700;
+        padding: 0.2rem 0.65rem;
+        border-radius: 999px;
+        background: rgba(180, 83, 9, 0.2);
+        color: #fbbf24;
+        border: 1px solid rgba(180, 83, 9, 0.4);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      .theme-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        padding: 0.4rem 0.85rem;
+        border-radius: 0.55rem;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: rgba(255, 255, 255, 0.06);
+        color: #f1f5f9;
+        font-size: 0.8rem;
+        cursor: pointer;
+        font-weight: 500;
+      }
+
+      /* Comparison Stage */
+      .stage {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        gap: 3rem;
+        padding: 2.5rem 1.5rem 5rem;
+        flex-wrap: wrap;
+      }
+
+      .comparison-col {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .col-header {
+        text-align: center;
+      }
+
+      .col-header h2 {
+        margin: 0;
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+      }
+
+      .col-header p {
+        margin: 0.25rem 0 0;
+        font-size: 0.8rem;
+        color: #94a3b8;
+      }
+
+      /* Phone Frame */
+      .phone {
+        position: relative;
+        width: var(--phone-w);
+        height: var(--phone-h);
+        border: var(--phone-border);
+        border-radius: var(--phone-radius);
+        box-shadow: var(--phone-shadow);
+        background: rgba(0, 0, 0, 0.6);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+      }
+
+      /* Blurred background behind sheet to simulate real open modal */
+      .phone-backdrop {
+        position: absolute;
+        inset: 0;
+        background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='380' height='780' viewBox='0 0 380 780'%3E%3Crect width='380' height='780' fill='%23f2f2f7'/%3E%3Crect x='20' y='60' width='340' height='90' rx='16' fill='%23ffffff'/%3E%3Crect x='20' y='165' width='340' height='110' rx='16' fill='%23ffffff'/%3E%3Crect x='20' y='290' width='340' height='110' rx='16' fill='%23ffffff'/%3E%3C/svg%3E")
+          center / cover;
+        filter: blur(8px) brightness(0.7);
+      }
+
+      html[data-theme="dark"] .phone-backdrop {
+        background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='380' height='780' viewBox='0 0 380 780'%3E%3Crect width='380' height='780' fill='%23000000'/%3E%3Crect x='20' y='60' width='340' height='90' rx='16' fill='%231c1c1e'/%3E%3Crect x='20' y='165' width='340' height='110' rx='16' fill='%231c1c1e'/%3E%3C/svg%3E")
+          center / cover;
+        filter: blur(8px) brightness(0.4);
+      }
+
+      /* Mobile Sheet Simulation */
+      .sheet {
+        position: relative;
+        z-index: 10;
+        width: 100%;
+        height: 90%;
+        background: var(--ios-sheet-bg);
+        border-radius: 28px 28px 0 0;
+        box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.25);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        color: var(--ios-text-primary);
+      }
+
+      /* Top handle */
+      .sheet-handle {
+        width: 36px;
+        height: 5px;
+        border-radius: 999px;
+        background: rgba(120, 120, 128, 0.3);
+        margin: 8px auto 6px;
+        flex: none;
+      }
+
+      /* ==========================================================================
+         CURRENT / BEFORE SHEET STYLES
+         ========================================================================== */
+      .before-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 4px 18px 10px;
+        border-bottom: 1px solid var(--ios-hairline);
+      }
+
+      .before-header h3 {
+        margin: 0;
+        font-size: 1.1rem;
+        font-weight: 700;
+      }
+
+      .before-close-btn {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        border: none;
+        background: var(--ios-fill-secondary);
+        font-size: 1.1rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--ios-text-secondary);
+      }
+
+      .before-scroll {
+        flex: 1;
+        overflow-y: auto;
+        padding: 12px 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .before-search {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        height: 42px;
+        padding: 0 12px;
+        border-radius: 999px;
+        background: var(--ios-fill-secondary);
+        border: 1px solid var(--ios-hairline);
+        color: var(--ios-text-muted);
+        font-size: 0.9rem;
+      }
+
+      .section-label {
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--ios-text-muted);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .pill-grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+
+      .clunky-pill {
+        height: 38px;
+        border-radius: 999px;
+        border: 1px solid var(--ios-hairline);
+        background: var(--ios-sheet-bg);
+        color: var(--ios-text-primary);
+        font-size: 0.8rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        padding: 0 10px;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+      }
+
+      .clunky-pill.is-active {
+        background: #fdf5db;
+        color: #805600;
+        border-color: #f2d184;
+      }
+
+      html[data-theme="dark"] .clunky-pill.is-active {
+        background: rgba(245, 158, 11, 0.2);
+        color: #fcd34d;
+        border-color: rgba(245, 158, 11, 0.4);
+      }
+
+      .tag-cloud {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+
+      .tag-item {
+        height: 32px;
+        padding: 0 12px;
+        border-radius: 999px;
+        border: 1px solid var(--ios-hairline);
+        font-size: 0.78rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        color: var(--ios-text-secondary);
+      }
+
+      .before-footer {
+        border-top: 1px solid var(--ios-hairline);
+        padding: 10px 16px 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .before-footer-meta {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 0.78rem;
+        color: var(--ios-text-muted);
+      }
+
+      .before-submit-btn {
+        height: 46px;
+        border-radius: 999px;
+        background: #a35616;
+        color: #fff;
+        border: none;
+        font-size: 0.95rem;
+        font-weight: 700;
+      }
+
+      /* ==========================================================================
+         PROPOSED / AFTER SHEET STYLES (CLEAN & NATIVE iOS)
+         ========================================================================== */
+      .after-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 4px 16px 8px;
+        border-bottom: 0.5px solid var(--ios-hairline);
+      }
+
+      .header-text-btn {
+        background: none;
+        border: none;
+        font-size: 0.92rem;
+        cursor: pointer;
+        padding: 6px;
+      }
+
+      .header-text-btn.reset {
+        color: var(--ios-text-muted);
+      }
+
+      .header-text-btn.reset.is-active {
+        color: var(--nook-accent);
+        font-weight: 600;
+      }
+
+      .header-text-btn.done {
+        color: var(--nook-accent);
+        font-weight: 700;
+      }
+
+      .after-header h3 {
+        margin: 0;
+        font-size: 1rem;
+        font-weight: 650;
+        color: var(--ios-text-primary);
+      }
+
+      .after-scroll {
+        flex: 1;
+        overflow-y: auto;
+        padding: 12px 16px calc(4.5rem + 16px);
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        background: var(--ios-sheet-canvas);
+      }
+
+      /* Spotlight Search Bar */
+      .after-search {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        height: 38px;
+        padding: 0 12px;
+        border-radius: 11px;
+        background: var(--ios-fill-tertiary);
+        color: var(--ios-text-muted);
+        font-size: 0.92rem;
+      }
+
+      .after-search svg {
+        width: 16px;
+        height: 16px;
+        flex: none;
+      }
+
+      .after-search input {
+        width: 100%;
+        border: none;
+        background: transparent;
+        font-size: 0.92rem;
+        outline: none;
+        color: var(--ios-text-primary);
+        font-family: inherit;
+      }
+
+      /* Grouped Section Card */
+      .after-group-section {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .after-group-title {
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--ios-text-muted);
+        padding-left: 8px;
+      }
+
+      .after-grouped-card {
+        background: var(--ios-grouped-bg);
+        border-radius: 14px;
+        overflow: hidden;
+        border: 0.5px solid var(--ios-hairline);
+      }
+
+      /* iOS Segmented Control for Sort */
+      .segmented-sort-wrapper {
+        padding: 10px 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .segmented-bar {
+        display: flex;
+        background: var(--ios-fill-secondary);
+        border-radius: 8px;
+        padding: 2px;
+        gap: 2px;
+      }
+
+      .segment-item {
+        flex: 1;
+        height: 32px;
+        border: none;
+        background: transparent;
+        border-radius: 7px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        color: var(--ios-text-secondary);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.15s ease;
+      }
+
+      .segment-item.is-active {
+        background: var(--ios-grouped-bg);
+        color: var(--ios-text-primary);
+        font-weight: 650;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+      }
+
+      .sort-direction-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 2px 4px 0;
+        font-size: 0.8rem;
+        color: var(--ios-text-muted);
+      }
+
+      .direction-toggle {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        background: var(--ios-fill-secondary);
+        border: none;
+        padding: 4px 10px;
+        border-radius: 999px;
+        color: var(--nook-accent);
+        font-size: 0.78rem;
+        font-weight: 600;
+        cursor: pointer;
+      }
+
+      /* Inset Grouped Rows for Types */
+      .after-table-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 11px 14px;
+        position: relative;
+        cursor: pointer;
+        user-select: none;
+      }
+
+      .after-table-row:active {
+        background: var(--ios-fill-secondary);
+      }
+
+      .after-table-row::after {
+        content: "";
+        position: absolute;
+        left: 36px;
+        right: 0;
+        bottom: 0;
+        height: 0.5px;
+        background: var(--ios-hairline);
+      }
+
+      .after-grouped-card .after-table-row:last-child::after {
+        display: none;
+      }
+
+      .after-row-main {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 0.92rem;
+        font-weight: 500;
+        color: var(--ios-text-primary);
+      }
+
+      .type-dot-bullet {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #8e8e93;
+        flex: none;
+      }
+
+      .after-row-trailing {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .after-row-count {
+        font-size: 0.82rem;
+        color: var(--ios-text-muted);
+        font-variant-numeric: tabular-nums;
+      }
+
+      .after-checkmark {
+        width: 16px;
+        height: 16px;
+        color: var(--nook-accent);
+        display: none;
+      }
+
+      .after-table-row.is-selected .after-checkmark {
+        display: block;
+      }
+
+      .after-table-row.is-selected .after-row-main {
+        font-weight: 650;
+        color: var(--nook-accent);
+      }
+
+      /* Date Quick Pills */
+      .date-pill-row {
+        display: flex;
+        gap: 6px;
+        padding: 8px 12px;
+      }
+
+      .date-toggle-chip {
+        flex: 1;
+        height: 34px;
+        border-radius: 8px;
+        border: 1px solid var(--ios-hairline);
+        background: var(--ios-grouped-bg);
+        font-size: 0.8rem;
+        font-weight: 550;
+        color: var(--ios-text-secondary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        cursor: pointer;
+      }
+
+      .date-toggle-chip.is-active {
+        background: var(--nook-accent-soft);
+        color: var(--nook-accent);
+        border-color: var(--nook-accent);
+      }
+
+      /* Clean Tag Chips */
+      .after-tag-cloud {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        padding: 10px 12px;
+      }
+
+      .after-tag-pill {
+        height: 28px;
+        padding: 0 10px;
+        border-radius: 999px;
+        border: none;
+        background: var(--ios-fill-secondary);
+        color: var(--ios-text-secondary);
+        font-size: 0.78rem;
+        font-weight: 500;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        transition: all 0.12s ease;
+      }
+
+      .after-tag-pill.is-active {
+        background: var(--nook-accent);
+        color: #ffffff;
+        font-weight: 600;
+      }
+
+      .after-tag-pill span.num {
+        opacity: 0.75;
+        font-size: 0.7rem;
+      }
+
+      /* Native Unified Bottom CTA Dock */
+      .after-floating-cta {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 10px 16px calc(10px + 20px);
+        background: var(--ios-sheet-bg);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-top: 0.5px solid var(--ios-hairline);
+        z-index: 100;
+      }
+
+      .after-cta-button {
+        width: 100%;
+        height: 48px;
+        border-radius: 14px;
+        background: var(--nook-accent);
+        color: #ffffff;
+        border: none;
+        font-size: 0.98rem;
+        font-weight: 650;
+        letter-spacing: -0.01em;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: var(--nook-accent-glow);
+        cursor: pointer;
+        transition: transform 0.12s ease;
+      }
+
+      .after-cta-button:active {
+        transform: scale(0.985);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Topbar Controls -->
+    <header class="topbar">
+      <div class="topbar-brand">
+        <span class="topbar-title">Search & Filters Redesign Proposal</span>
+        <span class="topbar-badge">Before & After</span>
+      </div>
+
+      <button id="theme-btn" class="theme-btn" type="button" onclick="toggleTheme()">
+        <span>Switch to Dark Mode</span>
+      </button>
+    </header>
+
+    <!-- Stage Comparison -->
+    <main class="stage">
+      <!-- ================= COL 1: BEFORE (CURRENT) ================= -->
+      <div class="comparison-col">
+        <div class="col-header">
+          <h2>❌ Giao Diện Hiện Tại (Cluttered)</h2>
+          <p>Hơn 25+ nút pill tràn ngập, chiếm trọn màn hình, gây mỏi mắt</p>
+        </div>
+
+        <div class="phone">
+          <div class="phone-backdrop"></div>
+
+          <div class="sheet">
+            <div class="sheet-handle"></div>
+
+            <div class="before-header">
+              <h3>Search & filters</h3>
+              <button class="before-close-btn" type="button">×</button>
+            </div>
+
+            <div class="before-scroll">
+              <div class="before-search">
+                <span>🔍 Search title or content...</span>
+              </div>
+
+              <!-- Clunky Sort (6 huge buttons) -->
+              <div class="section-label">
+                <span>Sort Notes</span>
+              </div>
+              <div class="pill-grid-2">
+                <div class="clunky-pill is-active">● Newest created</div>
+                <div class="clunky-pill">Oldest created</div>
+                <div class="clunky-pill">Newest updated</div>
+                <div class="clunky-pill">Oldest updated</div>
+                <div class="clunky-pill">Title A–Z</div>
+                <div class="clunky-pill">Title Z–A</div>
+              </div>
+
+              <!-- Clunky Filters (10 huge buttons) -->
+              <div class="section-label">
+                <span>Filters</span>
+                <span style="color: #a35616; font-size: 0.78rem">Clear</span>
+              </div>
+              <div class="pill-grid-2">
+                <div class="clunky-pill">📅 Created Today 0</div>
+                <div class="clunky-pill">🔄 Updated Today 1</div>
+                <div class="clunky-pill">● General 9</div>
+                <div class="clunky-pill">● Learning 34</div>
+                <div class="clunky-pill">● Meeting 21</div>
+                <div class="clunky-pill">● Personal 0</div>
+                <div class="clunky-pill">● Planning 4</div>
+                <div class="clunky-pill">● Project 7</div>
+              </div>
+
+              <!-- Tags -->
+              <div class="section-label">
+                <span>Tags</span>
+              </div>
+              <div class="tag-cloud">
+                <span class="tag-item">clera 3</span>
+                <span class="tag-item">dev 1</span>
+                <span class="tag-item">feedback 1</span>
+                <span class="tag-item">general 2</span>
+                <span class="tag-item">interview practice 33</span>
+                <span class="tag-item">kickoff meeting 13</span>
+              </div>
+            </div>
+
+            <div class="before-footer">
+              <div class="before-footer-meta">
+                <span>• 76 matching notes</span>
+                <span>↺ Reset all</span>
+              </div>
+              <button class="before-submit-btn" type="button">Show notes</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= COL 2: AFTER (PROPOSED CLEAN iOS) ================= -->
+      <div class="comparison-col">
+        <div class="col-header">
+          <h2>✨ Đề Xuất Mới (Clean iOS Native)</h2>
+          <p>Segmented Control + Inset Grouped List + CTA gộp số lượng</p>
+        </div>
+
+        <div class="phone">
+          <div class="phone-backdrop"></div>
+
+          <div class="sheet">
+            <div class="sheet-handle"></div>
+
+            <!-- Native iOS Sheet Navigation Bar -->
+            <div class="after-header">
+              <button class="header-text-btn reset is-active" type="button" onclick="alert('Đã reset bộ lọc')">
+                Reset
+              </button>
+              <h3>Filter & Sort</h3>
+              <button class="header-text-btn done" type="button" onclick="alert('Đã áp dụng bộ lọc')">
+                Done
+              </button>
+            </div>
+
+            <div class="after-scroll">
+              <!-- Spotlight Search Bar -->
+              <div class="after-search">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <circle cx="11" cy="11" r="8" />
+                  <path d="m21 21-4.3-4.3" />
+                </svg>
+                <input type="search" placeholder="Search title or content..." />
+              </div>
+
+              <!-- SECTION 1: ELEGANT SEGMENTED SORT -->
+              <div class="after-group-section">
+                <div class="after-group-title">Sort By</div>
+                <div class="after-grouped-card">
+                  <div class="segmented-sort-wrapper">
+                    <!-- Segmented 3 tabs -->
+                    <div class="segmented-bar">
+                      <button class="segment-item is-active" type="button" onclick="setSortTab(this)">
+                        Date Created
+                      </button>
+                      <button class="segment-item" type="button" onclick="setSortTab(this)">
+                        Date Updated
+                      </button>
+                      <button class="segment-item" type="button" onclick="setSortTab(this)">
+                        Title
+                      </button>
+                    </div>
+
+                    <!-- Direction Toggle -->
+                    <div class="sort-direction-row">
+                      <span>Order</span>
+                      <button class="direction-toggle" type="button" onclick="toggleOrder(this)">
+                        <span>↓ Newest First</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- SECTION 2: TIME FILTERS -->
+              <div class="after-group-section">
+                <div class="after-group-title">Date Filter</div>
+                <div class="after-grouped-card">
+                  <div class="date-pill-row">
+                    <button class="date-toggle-chip" type="button" onclick="this.classList.toggle('is-active')">
+                      <span>📅 Created Today</span>
+                    </button>
+                    <button class="date-toggle-chip is-active" type="button" onclick="this.classList.toggle('is-active')">
+                      <span>🔄 Updated Today</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- SECTION 3: NOTE TYPES (INSET GROUPED LIST WITH CHECKMARKS) -->
+              <div class="after-group-section">
+                <div class="after-group-title">Note Types</div>
+                <div class="after-grouped-card">
+                  <div class="after-table-row is-selected" onclick="this.classList.toggle('is-selected')">
+                    <div class="after-row-main">
+                      <span class="type-dot-bullet" style="background: #3b82f6"></span>
+                      <span>Learning</span>
+                    </div>
+                    <div class="after-row-trailing">
+                      <span class="after-row-count">34</span>
+                      <svg class="after-checkmark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8">
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                    </div>
+                  </div>
+
+                  <div class="after-table-row is-selected" onclick="this.classList.toggle('is-selected')">
+                    <div class="after-row-main">
+                      <span class="type-dot-bullet" style="background: #ef4444"></span>
+                      <span>Meeting</span>
+                    </div>
+                    <div class="after-row-trailing">
+                      <span class="after-row-count">21</span>
+                      <svg class="after-checkmark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8">
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                    </div>
+                  </div>
+
+                  <div class="after-table-row" onclick="this.classList.toggle('is-selected')">
+                    <div class="after-row-main">
+                      <span class="type-dot-bullet" style="background: #10b981"></span>
+                      <span>Project</span>
+                    </div>
+                    <div class="after-row-trailing">
+                      <span class="after-row-count">7</span>
+                      <svg class="after-checkmark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8">
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                    </div>
+                  </div>
+
+                  <div class="after-table-row" onclick="this.classList.toggle('is-selected')">
+                    <div class="after-row-main">
+                      <span class="type-dot-bullet" style="background: #6b7280"></span>
+                      <span>General</span>
+                    </div>
+                    <div class="after-row-trailing">
+                      <span class="after-row-count">9</span>
+                      <svg class="after-checkmark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8">
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- SECTION 4: TAGS -->
+              <div class="after-group-section">
+                <div class="after-group-title">Tags</div>
+                <div class="after-grouped-card">
+                  <div class="after-tag-cloud">
+                    <button class="after-tag-pill is-active" type="button" onclick="this.classList.toggle('is-active')">
+                      <span>interview practice</span>
+                      <span class="num">33</span>
+                    </button>
+                    <button class="after-tag-pill is-active" type="button" onclick="this.classList.toggle('is-active')">
+                      <span>kickoff meeting</span>
+                      <span class="num">13</span>
+                    </button>
+                    <button class="after-tag-pill" type="button" onclick="this.classList.toggle('is-active')">
+                      <span>clera</span>
+                      <span class="num">3</span>
+                    </button>
+                    <button class="after-tag-pill" type="button" onclick="this.classList.toggle('is-active')">
+                      <span>dev</span>
+                      <span class="num">1</span>
+                    </button>
+                    <button class="after-tag-pill" type="button" onclick="this.classList.toggle('is-active')">
+                      <span>feedback</span>
+                      <span class="num">1</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Unified Floating Bottom Action -->
+            <div class="after-floating-cta">
+              <button class="after-cta-button" type="button" onclick="alert('Đã hiển thị 76 ghi chú')">
+                Show 76 Notes
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      function toggleTheme() {
+        const html = document.documentElement;
+        const current = html.getAttribute('data-theme');
+        const next = current === 'dark' ? 'light' : 'dark';
+        html.setAttribute('data-theme', next);
+        document.getElementById('theme-btn').textContent =
+          next === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode';
+      }
+
+      function setSortTab(btn) {
+        btn.parentElement.querySelectorAll('.segment-item').forEach((b) => b.classList.remove('is-active'));
+        btn.classList.add('is-active');
+      }
+
+      function toggleOrder(btn) {
+        const span = btn.querySelector('span');
+        if (span.textContent.includes('Newest')) {
+          span.textContent = '↑ Oldest First';
+        } else {
+          span.textContent = '↓ Newest First';
+        }
+      }
+    </script>
+  </body>
+</html>
