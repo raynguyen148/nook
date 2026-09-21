@@ -1657,12 +1657,11 @@ dialog:not([open]),
     border-radius: 0.65rem;
     padding: 0.75rem 1rem;
   }
-  #note-dialog .quick-view-content table {
-    display: block;
+  #note-dialog .quick-view-content .markdown-table-wrapper {
+    max-width: 100%;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior-x: contain;
-    max-width: 100%;
   }
   #note-dialog .quick-view-dates { margin-top: 28px; padding-bottom: var(--space-2); font-size: var(--mobile-caption); line-height: 1.5; gap: var(--space-1) var(--space-4); }
   #mobile-note-actions-body {
