@@ -23,7 +23,7 @@ function fixture() {
     NookMarkdown: { renderInto() {} },
   };
   vm.createContext(context);
-  for (const name of ["clampScrollPosition", "getNoteEditorMaximumScrollTop", "getSplitScrollSession", "isNoteEditorScrollMapCurrent", "interpolateNoteEditorScrollMap", "syncNoteEditorScroll", "scheduleNoteEditorScrollMap", "renderNoteEditorPreview"]) {
+  for (const name of ["clampScrollPosition", "getNoteEditorMaximumScrollTop", "getSplitScrollSession", "isNoteEditorScrollMapCurrent", "interpolateNoteEditorScrollMap", "lockNoteEditorScrollLeader", "syncNoteEditorScroll", "scheduleNoteEditorScrollMap", "renderNoteEditorPreview"]) {
     const start = sourceCode.indexOf(`  function ${name}(`);
     const end = sourceCode.indexOf("\n  function ", start + 1);
     assert.ok(start >= 0 && end > start);
@@ -65,6 +65,28 @@ test("delayed programmatic echo cannot reverse a plateau mapping", () => {
   f.context.syncNoteEditorScroll(f.preview, f.source);
   assert.equal(f.source.scrollTop, 750);
   assert.equal(f.builds(), 0);
+});
+
+test("already aligned preview echo cannot reverse a plateau mapping", () => {
+  const f = fixture();
+  f.context.ui.noteScrollMap = f.map;
+  f.preview.scrollTop = 200;
+  f.context.syncNoteEditorScroll(f.source, f.preview);
+  f.context.syncNoteEditorScroll(f.preview, f.source);
+  assert.equal(f.source.scrollTop, 400);
+});
+
+test("preview redraw scroll cannot take control away from the typing textarea", () => {
+  const f = fixture();
+  f.context.lockNoteEditorScrollLeader(f.source);
+  f.context.syncNoteEditorScroll(f.preview, f.source);
+  assert.equal(f.frames.size, 0);
+  assert.equal(f.source.scrollTop, 400);
+
+  f.context.scheduleNoteEditorScrollMap(f.source);
+  f.flush();
+  assert.equal(f.preview.scrollTop, 200);
+  assert.equal(f.context.ui.noteScrollLeader, null);
 });
 
 test("preview render measures once in a scheduled pass", () => {

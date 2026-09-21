@@ -74,6 +74,7 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
   const downloadNoteFile = (...args) => api.downloadNoteFile(...args);
   const scheduleNoteEditorScrollMap = (...args) => api.scheduleNoteEditorScrollMap(...args);
   const syncNoteEditorScroll = (...args) => api.syncNoteEditorScroll(...args);
+  const lockNoteEditorScrollLeader = (...args) => api.lockNoteEditorScrollLeader(...args);
 
   let secondarySortPicker = null;
 
@@ -1334,6 +1335,7 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
 
   function renderSecondarySplitPreview() {
     if (ui.secondaryNoteMode !== "split" || !elements.secondarySplitPreview || !elements.secondaryNoteContentEditor) return;
+    lockNoteEditorScrollLeader(elements.secondaryNoteContentEditor);
     globalThis.NookMarkdown.renderInto(
       elements.secondarySplitPreview,
       elements.secondaryNoteContentEditor.value || "",
@@ -1346,6 +1348,7 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
 
   function scheduleSecondarySplitPreview() {
     if (ui.secondaryNoteMode !== "split") return;
+    lockNoteEditorScrollLeader(elements.secondaryNoteContentEditor);
     ui.secondaryScrollMap = null;
     window.cancelAnimationFrame(secondarySplitPreviewFrame);
     secondarySplitPreviewFrame = window.requestAnimationFrame(() => {
@@ -1383,6 +1386,7 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
     ui.secondaryScrollSyncTarget = null;
     ui.secondaryScrollSyncTargetTop = 0;
     ui.secondaryScrollSyncResetFrame = 0;
+    ui.secondaryScrollLeader = null;
     ui.secondaryNoteMode = mode;
     ui.activePane = "secondary";
 

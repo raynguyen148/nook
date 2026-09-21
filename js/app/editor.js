@@ -651,6 +651,13 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
           ui.secondaryScrollSyncResetFrame = 0;
         },
         cancelResetFrame: () => window.cancelAnimationFrame(ui.secondaryScrollSyncResetFrame),
+        getScrollLeader: () => ui.secondaryScrollLeader,
+        setScrollLeader: (source) => {
+          ui.secondaryScrollLeader = source;
+        },
+        clearScrollLeader: () => {
+          ui.secondaryScrollLeader = null;
+        },
         getMapFrame: () => ui.secondaryScrollMapFrame,
         setMapFrame: (frame) => {
           ui.secondaryScrollMapFrame = frame;
@@ -678,6 +685,13 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
         ui.noteScrollSyncResetFrame = 0;
       },
       cancelResetFrame: () => window.cancelAnimationFrame(ui.noteScrollSyncResetFrame),
+      getScrollLeader: () => ui.noteScrollLeader,
+      setScrollLeader: (source) => {
+        ui.noteScrollLeader = source;
+      },
+      clearScrollLeader: () => {
+        ui.noteScrollLeader = null;
+      },
       getMapFrame: () => ui.noteScrollMapFrame,
       setMapFrame: (frame) => {
         ui.noteScrollMapFrame = frame;
@@ -783,10 +797,20 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
     ui.noteScrollSyncResetFrame = 0;
   }
 
+  function lockNoteEditorScrollLeader(source = elements.noteContent) {
+    const session = getSplitScrollSession(source);
+    if (!session?.isSplit || source !== session.source) return;
+    // Re-rendering preview content can emit a scroll event before its new map
+    // exists. The textarea is the only user-edited surface, so it remains the
+    // leader until the scheduled map has synchronized the preview.
+    session.setScrollLeader(source);
+  }
+
   function syncNoteEditorScroll(source, target) {
     if (!source || !target) return;
     const session = getSplitScrollSession(source);
     if (!session || !session.isSplit) return;
+    if (session.getScrollLeader() && source !== session.getScrollLeader()) return;
     if (source === session.getSyncTarget()) {
       session.cancelResetFrame();
       if (Math.abs(source.scrollTop - session.getSyncTargetTop()) < 1) {
@@ -810,7 +834,13 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
       interpolateNoteEditorScrollMap(map, source.scrollTop),
       source === session.source ? scrollMap.previewMaximum : scrollMap.sourceMaximum,
     );
-    if (Math.abs(target.scrollTop - targetPosition) < 0.5) return;
+    if (Math.abs(target.scrollTop - targetPosition) < 0.5) {
+      // A preview re-render can still deliver a scroll event even when the
+      // browser already landed on this exact position. Mark it as an echo so
+      // a plateau in the reverse map cannot move the active textarea.
+      session.setSyncTarget(target, target.scrollTop);
+      return;
+    }
     target.scrollTop = targetPosition;
     // Read back the browser-clamped position. Keep the echo guard until that
     // scroll arrives, even if delivery happens after the next animation frame.
@@ -825,15 +855,19 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
       session.setMapFrame(0);
       const liveSession = getSplitScrollSession(source);
       if (!liveSession.isSplit) return;
+      const scrollLeader = liveSession.getScrollLeader();
+      const leadingSource = scrollLeader || source;
       if (buildSplitScrollMap(liveSession)) {
-        const other = source === liveSession.source ? liveSession.preview : liveSession.source;
-        syncNoteEditorScroll(source, other);
+        const other = leadingSource === liveSession.source ? liveSession.preview : liveSession.source;
+        syncNoteEditorScroll(leadingSource, other);
       }
+      if (liveSession.getScrollLeader() === leadingSource) liveSession.clearScrollLeader();
     }));
   }
 
   function renderNoteEditorPreview() {
     if (ui.noteEditorMode !== "split") return;
+    lockNoteEditorScrollLeader(elements.noteContent);
     globalThis.NookMarkdown.renderInto(
       elements.noteContentPreview,
       elements.noteContent.value,
@@ -846,6 +880,7 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
 
   function scheduleNoteEditorPreview() {
     if (ui.noteEditorMode !== "split") return;
+    lockNoteEditorScrollLeader(elements.noteContent);
     ui.noteScrollMap = null;
     window.cancelAnimationFrame(ui.noteEditorPreviewFrame);
     ui.noteEditorPreviewFrame = window.requestAnimationFrame(() => {
@@ -881,6 +916,7 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
     resetCopyButtonFeedback(elements.copyNoteContent);
     if (mode !== "split") {
       ui.noteScrollMap = null;
+      ui.noteScrollLeader = null;
       window.cancelAnimationFrame(ui.noteScrollMapFrame);
       ui.noteScrollMapFrame = 0;
       window.cancelAnimationFrame(ui.noteScrollSyncResetFrame);
@@ -1541,6 +1577,7 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
     ui.noteEditorPreviewFrame = 0;
     ui.noteScrollMapFrame = 0;
     ui.noteScrollMap = null;
+    ui.noteScrollLeader = null;
     resetNoteEditorScrollSyncTarget();
     const recoveryIdentity = primaryEditorSession
       ? { pane: primaryEditorSession.pane, sessionId: primaryEditorSession.sessionId }
@@ -1850,6 +1887,7 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
     renderNoteMetadata,
     syncNoteEditorScroll,
     scheduleNoteEditorScrollMap,
+    lockNoteEditorScrollLeader,
     renderNoteEditorPreview,
     scheduleNoteEditorPreview,
     setNoteEditorMode,
