@@ -506,6 +506,7 @@ select::-ms-expand {
 
 .view-mode-control__choices {
   display: inline-flex;
+  height: var(--control-height);
   overflow: visible;
   border: 1px solid #e2e8f0;
   border-radius: var(--control-radius);
@@ -527,7 +528,7 @@ select::-ms-expand {
 .view-mode-button {
   display: grid;
   width: var(--control-height);
-  height: var(--control-height);
+  height: calc(var(--control-height) - 0.32rem - 2px);
   place-items: center;
   border: 0;
   border-radius: 0.56rem;

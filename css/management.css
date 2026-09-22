@@ -69,6 +69,29 @@
 
 
 
+@media (min-width: 621px) {
+  /* Keep the Settings frame stable while tabs with different content heights
+   * share one viewport-constrained scrolling region. */
+  .organize-dialog {
+    height: min(45rem, calc(100dvh - 2rem));
+  }
+
+  /* Type and tag controls stay visible while only their result list scrolls. */
+  .organize-dialog :is(#types-panel, #tags-panel) {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .organize-dialog :is(#types-list, #tags-list) {
+    flex: 0 1 auto;
+    min-height: 0;
+    max-height: none;
+  }
+}
+
+
+
 .organize-dialog :is(.organize-panel, .management-list, .theme-picker__options, .color-picker__menu) {
   scrollbar-color: var(--settings-scrollbar-thumb) transparent;
   scrollbar-width: thin;

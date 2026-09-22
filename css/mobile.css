@@ -612,22 +612,22 @@ dialog:not([open]),
   }
   html[data-theme="retro"] .notes-panel.is-trash-view .note-card__action--restore {
     background: var(--retro-paper);
-    border: var(--retro-border-width) solid #16a34a;
-    color: #16a34a;
+    border: var(--retro-border-width) solid var(--retro-accent);
+    color: var(--retro-accent);
     border-radius: 50% !important;
   }
   html[data-theme="retro"] .notes-panel.is-trash-view .note-card__action--permanent {
     background: var(--retro-paper);
-    border: var(--retro-border-width) solid var(--retro-border-danger, #b91c1c);
-    color: var(--retro-border-danger, #b91c1c);
+    border: var(--retro-border-width) solid var(--retro-error);
+    color: var(--retro-error);
     border-radius: 50% !important;
   }
   html[data-theme="retro"] body .notes-panel .note-card--pinned .note-card__pin-toggle {
     border: var(--retro-border-width) solid var(--retro-border);
     border-radius: var(--retro-radius-control);
-    background: var(--retro-yellow);
-    color: var(--retro-ink);
-    box-shadow: var(--retro-shadow-sm);
+    background: var(--retro-red-soft);
+    color: var(--retro-red);
+    box-shadow: none;
   }
   /* Pagination Touch Targets & Spacing */
   .notes-panel .pagination {
@@ -961,9 +961,9 @@ dialog:not([open]),
     box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.25);
   }
   html[data-theme="retro"] #mobile-reset-filters {
-    border-color: var(--retro-ink);
+    border-color: var(--retro-border);
     background: var(--retro-paper);
-    color: var(--retro-ink);
+    color: var(--retro-accent);
   }
   html[data-theme="retro"] #mobile-reset-filters:disabled {
     border-color: transparent;
@@ -1067,9 +1067,9 @@ dialog:not([open]),
     stroke: #f87171;
   }
   html[data-theme="retro"] .mobile-card-action-item--danger {
-    color: #b91c1c;
-    border-color: #b91c1c;
-    background: transparent;
+    color: var(--retro-error);
+    border-color: var(--retro-error);
+    background: var(--retro-red-soft);
   }
   .mobile-menu-list [aria-pressed="true"] { color: var(--selected-text); background: var(--selected-surface); border-color: var(--selected-border); }
   #mobile-space-dialog { max-width: 32rem; }
@@ -1744,6 +1744,7 @@ dialog:not([open]),
   #note-dialog .note-editor-pane--source { display: flex; flex-direction: column; flex: 1; min-height: 0; padding: 0; }
   #note-dialog .note-editor-pane__label { display: none; }
   #note-dialog #note-content { flex: 1; width: 100%; height: 100%; min-height: 8rem; max-height: none; padding: 10px 0 24px; resize: none; font-family: var(--font-sans); font-size: 16px; line-height: 1.65; letter-spacing: -0.006em; border: none; outline: none; background: transparent; }
+  html[data-theme="retro"] #note-dialog #note-content { font-family: var(--font-mono); letter-spacing: -0.01em; }
   #note-dialog .dialog-footer { display: none; }
   #note-dialog form > .note-formatting-toolbar {
     grid-row: 3; display: flex; flex-wrap: nowrap; gap: 0.35rem;
@@ -1958,9 +1959,9 @@ dialog:not([open]),
     background: rgba(248, 113, 113, 0.15) !important;
   }
   html[data-theme="retro"] #mobile-note-actions-body .note-delete-button {
-    color: #b91c1c !important;
-    border-color: #b91c1c !important;
-    background: transparent !important;
+    color: var(--retro-error) !important;
+    border-color: var(--retro-error) !important;
+    background: var(--retro-red-soft) !important;
   }
   /* Copy feedback icon animation */
   #mobile-note-actions-body .check-icon {
@@ -2623,6 +2624,11 @@ dialog:not([open]),
     border-radius: 0.375rem;
     box-shadow: 0 1px 0 var(--border-subtle);
     text-align: center;
+  }
+  html[data-theme="retro"] #organize-dialog .shortcut-keys kbd {
+    border-width: 1px;
+    border-radius: var(--retro-radius-sm);
+    box-shadow: none;
   }
   #organize-dialog .shortcut-list .shortcut-row:has(.shortcut-keys--labeled) {
     flex-direction: column;

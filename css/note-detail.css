@@ -1952,7 +1952,7 @@ html[data-theme="retro"] .note-editor-mode--compare {
 html[data-theme="retro"] .note-secondary-surface .field--title input,
 html[data-theme="retro"] .note-secondary-surface #secondary-note-title-input {
   border: 0 !important;
-  border-bottom: 3px solid var(--retro-border, #4a3e36) !important;
+  border-bottom: var(--retro-border-width, 1px) solid var(--retro-border) !important;
   border-radius: 0 !important;
   padding-inline: 0 !important;
   padding-block: 0 !important;
@@ -1967,18 +1967,18 @@ html[data-theme="retro"] .note-secondary-surface #secondary-note-title-input {
 
 html[data-theme="retro"] .note-secondary-surface .field--title input:focus-visible,
 html[data-theme="retro"] .note-secondary-surface #secondary-note-title-input:focus-visible {
-  border-bottom-color: var(--retro-yellow, #ffc93c) !important;
-  outline: var(--retro-border-width, 2px) solid var(--retro-border, #4a3e36) !important;
-  outline-offset: 3px !important;
+  border-bottom-color: var(--retro-accent) !important;
+  outline: 2px solid var(--retro-accent) !important;
+  outline-offset: 2px !important;
 }
 
 html[data-theme="retro"] #secondary-reader-view .note-formatting-toolbar {
-  border: var(--retro-border-width, 2px) solid var(--retro-border, #4a3e36) !important;
+  border: var(--retro-border-width, 1px) solid var(--retro-border) !important;
 }
 
 html[data-theme="retro"] .note-dialog .note-content-field.is-split .note-editor-pane--preview,
 html[data-theme="retro"] #secondary-reader-view #secondary-content-field.is-split .note-editor-pane--preview {
-  border-left: 2px solid var(--retro-border, #4a3e36) !important;
+  border-inline-start: var(--retro-border-width, 1px) solid var(--retro-border) !important;
 }
 
 /* Retro theme: editor textareas remain completely clean and never shift background/borders on focus */
@@ -2185,9 +2185,9 @@ html[data-theme="retro"] .note-secondary-surface #secondary-note-content-editor:
 html[data-theme="retro"] .note-secondary-surface #secondary-split-preview:focus-visible,
 html[data-theme="retro"] #secondary-reader-view #secondary-note-content-editor:focus-visible,
 html[data-theme="retro"] #secondary-reader-view #secondary-split-preview:focus-visible {
-  outline: var(--retro-border-width, 2px) solid var(--focus-ring) !important;
-  outline-offset: 3px !important;
-  box-shadow: 0 0 0 3px var(--focus-ring-soft) !important;
+  outline: 2px solid var(--focus-ring) !important;
+  outline-offset: 2px !important;
+  box-shadow: none !important;
 }
 
 

@@ -178,7 +178,9 @@
 .notes-panel__back {
   display: inline-flex;
   align-items: center;
+  align-self: flex-start;
   gap: 0.28rem;
+  margin-bottom: 0.55rem;
   white-space: nowrap;
 }
 

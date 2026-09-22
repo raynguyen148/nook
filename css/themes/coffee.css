@@ -755,6 +755,11 @@ html:not([data-theme]) .dialog-footer {
   border-top-color: #d8ccbd;
 }
 
+html[data-theme="coffee"] .note-detail-surface .dialog-footer,
+html:not([data-theme]) .note-detail-surface .dialog-footer {
+  background: #ffffff;
+}
+
 html[data-theme="coffee"] .quick-view-document-header h1,
 html:not([data-theme]) .quick-view-document-header h1 {
   font-family: var(--font-display);

@@ -31,9 +31,9 @@
   --theme-swatch-auto-paper: var(--theme-swatch-light-paper);
   --theme-swatch-auto-accent: var(--theme-swatch-dark-paper);
   --theme-swatch-auto-rule: #9aa0a6;
-  --theme-swatch-retro-paper: #fff4dd;
-  --theme-swatch-retro-accent: #ffd447;
-  --theme-swatch-retro-rule: #2b241e;
+  --theme-swatch-retro-paper: oklch(91.5% 0.018 78);
+  --theme-swatch-retro-accent: oklch(42% 0.075 151);
+  --theme-swatch-retro-rule: oklch(69% 0.027 72);
   --theme-picker-menu-shadow: 0 0.75rem 1.75rem rgb(42 55 79 / 12%), 0 0.15rem 0.45rem rgb(42 55 79 / 6%);
 }
 
