@@ -242,6 +242,67 @@
 
 
 
+@media (min-width: 821px) {
+  /* Keep the library masthead recognizable while returning more vertical
+   * space to the note grid on laptop and desktop viewports. */
+  .workspace {
+    padding-top: clamp(1rem, 1.5vw, 1.25rem);
+  }
+
+  .topbar {
+    margin-bottom: clamp(1.1rem, 1.7vw, 1.5rem);
+  }
+
+  .topbar .eyebrow {
+    margin-bottom: 0.3rem;
+    font-size: 0.66rem;
+  }
+
+  .topbar h1 {
+    margin-bottom: 0.3rem;
+    font-size: clamp(1.75rem, 2.4vw, 2.15rem);
+    line-height: 1.1;
+  }
+
+  .topbar .subtitle {
+    font-size: 0.875rem;
+    line-height: 1.45;
+  }
+
+  .notes-panel {
+    padding: clamp(0.9rem, 1.8vw, 1.15rem);
+  }
+
+  .notes-panel__heading {
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.4rem;
+  }
+
+  .notes-panel__heading .eyebrow {
+    margin-bottom: 0.3rem;
+    font-size: 0.66rem;
+  }
+
+  .notes-panel__heading h2 {
+    font-size: 1.08rem;
+    line-height: 1.2;
+  }
+
+  .toolbar {
+    padding: 0.36rem;
+  }
+
+  .results-meta {
+    margin-top: 0.75rem;
+  }
+
+  .notes-list {
+    margin-top: 0.65rem;
+  }
+}
+
+
+
 .note-card {
   padding: 1.05rem 1.05rem 0.95rem;
 }
