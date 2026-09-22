@@ -41,6 +41,10 @@ html[data-theme="midnight"] {
   --primary-accent-border: rgba(74, 168, 237, 0.3);
   --primary-accent-focus: rgba(74, 168, 237, 0.25);
   --primary-accent-shadow: rgba(0, 0, 0, 0.3);
+  --split-highlight-source: rgb(74 168 237 / 34%);
+  --split-highlight-preview: rgb(74 168 237 / 18%);
+  --split-highlight-edge: #70c7ff;
+  --split-highlight-outline: rgb(112 199 255 / 48%);
   --pinned-card-border: #2d6b9c;
   --pinned-card-border-hover: #3f8ac0;
   --pinned-card-surface: #172f49;

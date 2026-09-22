@@ -148,7 +148,12 @@
   }
 
   function sourceLineAt(lines, index, context) {
-    if (index >= lines.length) return context?.sourceLineCount ?? index;
+    if (index >= lines.length) {
+      // Nested blocks carry original line numbers. Their end is local to that
+      // slice, not the end of the entire document (used by top-level lines).
+      const lastSourceLine = lines.sourceLineNumbers?.at(-1);
+      return Number.isInteger(lastSourceLine) ? lastSourceLine + 1 : context?.sourceLineCount ?? index;
+    }
     return lines.sourceLineNumbers?.[index] ?? index;
   }
 

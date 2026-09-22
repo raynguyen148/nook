@@ -865,6 +865,14 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
     }));
   }
 
+  function revealNoteEditorSelection(leader, target, top) {
+    const session = getSplitScrollSession(leader);
+    if (!session.isSplit || session.getScrollLeader()) return;
+    target.scrollTop = clampScrollPosition(top, getNoteEditorMaximumScrollTop(target));
+    // Revealing a counterpart is a programmatic scroll, not a new scroll leader.
+    session.setSyncTarget(target, target.scrollTop);
+  }
+
   function renderNoteEditorPreview() {
     if (ui.noteEditorMode !== "split") return;
     lockNoteEditorScrollLeader(elements.noteContent);
@@ -1886,6 +1894,8 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
     addSecondaryTagFromEditor,
     renderNoteMetadata,
     syncNoteEditorScroll,
+    revealNoteEditorSelection,
+    createNoteEditorSourceMirror,
     scheduleNoteEditorScrollMap,
     lockNoteEditorScrollLeader,
     renderNoteEditorPreview,

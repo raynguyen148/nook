@@ -44,6 +44,10 @@
   --border-focus: var(--primary-accent, #9e6b02);
   --focus-ring: var(--focus-color, var(--primary-accent, #9e6b02));
   --focus-ring-soft: var(--primary-accent-focus, rgb(158 107 2 / 24%));
+  --split-highlight-source: rgb(180 126 12 / 28%);
+  --split-highlight-preview: rgb(180 126 12 / 13%);
+  --split-highlight-edge: #9e6b02;
+  --split-highlight-outline: rgb(158 107 2 / 38%);
   --selected-surface: var(--primary-accent-soft, #fdf5db);
   --selected-surface-hover: var(--primary-accent-soft-hover, #fcebc2);
   --selected-text: var(--primary-accent-text, #805600);

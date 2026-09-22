@@ -1,6 +1,6 @@
 "use strict";
 
-const CACHE_VERSION = "nook-app-v66";
+const CACHE_VERSION = "nook-app-v68";
 const APP_ASSETS = [
   "./",
   "./index.html",
@@ -37,6 +37,7 @@ const APP_ASSETS = [
   "./js/app/editor-session.js",
   "./js/app/library.js",
   "./js/app/editor.js",
+  "./js/app/split-selection.js",
   "./js/app/history.js",
   "./js/app/organize.js",
   "./js/app/sync.js",

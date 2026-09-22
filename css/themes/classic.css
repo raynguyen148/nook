@@ -18,6 +18,10 @@ html[data-theme="light"] {
   --primary-accent-border: #f2d184;
   --primary-accent-focus: rgb(158 107 2 / 24%);
   --primary-accent-shadow: rgb(158 107 2 / 20%);
+  --split-highlight-source: rgb(208 151 29 / 30%);
+  --split-highlight-preview: rgb(208 151 29 / 14%);
+  --split-highlight-edge: #9e6b02;
+  --split-highlight-outline: rgb(128 86 0 / 38%);
   --pinned-card-border: #d8c391;
   --pinned-card-border-hover: #c4932e;
   --pinned-card-surface: #fffdf8;
@@ -72,6 +76,11 @@ html[data-theme="light"] body {
   background: #f8fafc;
   color: #0f172a;
   font-family: var(--font-sans);
+}
+
+html[data-theme="light"] ::selection {
+  color: #4e3500;
+  background: #f2d184;
 }
 
 html[data-theme="light"] .sidebar {

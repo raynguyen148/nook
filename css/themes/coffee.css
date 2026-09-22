@@ -30,6 +30,10 @@ html:not([data-theme]) {
   --primary-accent-border: #edd5bc;
   --primary-accent-focus: rgba(163, 86, 22, 0.24);
   --primary-accent-shadow: rgba(163, 86, 22, 0.18);
+  --split-highlight-source: rgb(194 112 47 / 29%);
+  --split-highlight-preview: rgb(194 112 47 / 14%);
+  --split-highlight-edge: #a35616;
+  --split-highlight-outline: rgb(136 67 10 / 38%);
   --pinned-card-border: #c99b70;
   --pinned-card-border-hover: #ad6229;
   --pinned-card-surface: #fbf2e7;

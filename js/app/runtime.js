@@ -12,6 +12,7 @@
     "editor-session",
     "library",
     "editor",
+    "split-selection",
     "history",
     "organize",
     "sync",

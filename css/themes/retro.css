@@ -77,6 +77,10 @@ html[data-theme="retro"] {
   --primary-accent-border: var(--retro-border);
   --primary-accent-focus: var(--retro-yellow);
   --primary-accent-shadow: var(--retro-border);
+  --split-highlight-source: rgb(255 212 71 / 45%);
+  --split-highlight-preview: rgb(255 212 71 / 27%);
+  --split-highlight-edge: #9a6800;
+  --split-highlight-outline: rgb(43 36 30 / 42%);
   --primary-button-text: var(--retro-ink);
   --focus-color: var(--retro-border);
   --focus-radius: var(--retro-radius-control);

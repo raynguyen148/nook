@@ -29,6 +29,10 @@ html[data-theme="forest"] {
   --primary-accent-border: #b8d5c1;
   --primary-accent-focus: rgb(47 107 79 / 28%);
   --primary-accent-shadow: rgb(47 107 79 / 18%);
+  --split-highlight-source: rgb(54 139 94 / 28%);
+  --split-highlight-preview: rgb(54 139 94 / 14%);
+  --split-highlight-edge: #2f6b4f;
+  --split-highlight-outline: rgb(36 81 60 / 40%);
 
   --pinned-card-border: #9bbd9d;
   --pinned-card-border-hover: #5e936d;

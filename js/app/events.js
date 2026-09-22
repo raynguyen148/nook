@@ -170,6 +170,7 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
 
   function bindEvents() {
     api.bindMobileEvents();
+    api.bindSplitSelectionEvents();
     const activateManagementTab = (tab) => {
       closeThemePicker();
       setManagementTab(tab);
