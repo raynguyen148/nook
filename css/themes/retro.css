@@ -460,6 +460,8 @@ html[data-theme="retro"] :where(.detail-commandbar, .dialog-header, .dialog-foot
 html[data-theme="retro"] .note-detail-surface .dialog-header,
 html[data-theme="retro"] .note-detail-surface .dialog-footer {
   border-color: var(--retro-border);
+  /* The surface clips its chrome to the active outer radius, including mobile. */
+  border-radius: 0;
   background: var(--retro-detail-chrome);
 }
 

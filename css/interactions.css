@@ -794,11 +794,13 @@ textarea:focus-visible {
 
 
 
-.shortcut-button:hover .shortcut-tooltip,
-.note-editor-mode:hover .shortcut-tooltip {
-  opacity: 1;
-  transform: translateY(0);
-  transition-delay: 600ms;
+@media (hover: hover) {
+  .shortcut-button:hover .shortcut-tooltip,
+  .note-editor-mode:hover .shortcut-tooltip {
+    opacity: 1;
+    transform: translateY(0);
+    transition-delay: 600ms;
+  }
 }
 
 

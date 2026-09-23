@@ -1528,7 +1528,12 @@ dialog:not([open]),
     background: var(--surface-muted);
   }
   .mobile-editor-actions .button { min-height: 40px; padding: 0.4rem 0.75rem; font-size: 0.8125rem; }
-  #note-dialog .dialog-body { padding: 18px var(--mobile-gutter) 12px; grid-template-rows: auto auto minmax(8rem, 1fr); gap: 10px; }
+  #note-dialog .dialog-body {
+    padding: 18px var(--mobile-gutter) 12px;
+    /* Let wrapped metadata grow and scroll instead of spilling into the editor. */
+    grid-template-rows: max-content max-content minmax(8rem, 1fr);
+    gap: 10px;
+  }
   #note-dialog .dialog-body > #note-meta { display: none; }
   #note-dialog .field--title input { min-height: 44px; padding-block: 2px; font-size: 1.5rem; font-weight: 800; letter-spacing: -0.025em; line-height: 1.25; border: none; background: transparent; outline: none; }
   #note-dialog .field--title input::placeholder { opacity: 0.56; }

@@ -178,7 +178,7 @@ globalThis[Symbol.for("nook.app.modules")].register("mobile", (app) => {
   function openMobileCardActions(card, invoker) {
     if (!mobileQuery.matches) return;
     elements.mobileCardTitle.textContent = card.querySelector(".note-card__title").textContent;
-    const actions = [...card.querySelectorAll(".note-card__pin-toggle, .note-card__actions > button")];
+    const actions = [...card.querySelectorAll(".note-card__pin-toggle, .note-card__actions > button:not(.note-card__action--side-note)")];
     elements.mobileCardActions.replaceChildren(...actions.map((source) => {
       const isDanger = source.classList.contains("note-card__action--danger");
       const button = api.createElement("button", {

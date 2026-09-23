@@ -1143,7 +1143,7 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
     return restoreSecondaryDraft(recovery);
   }
 
-  async function openDualPane() {
+  async function openDualPane({ startWithPicker = false } = {}) {
     if (!isDetailWorkspaceOpen()) return;
     const operationSequence = ++dualPaneOperationSequence;
     const isCurrent = () => operationSequence === dualPaneOperationSequence && ui.dualPaneOpen && !ui.secondaryClosing;
@@ -1163,7 +1163,7 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
     }
     if (!isCurrent()) return;
 
-    if (ui.secondaryNoteId) {
+    if (!startWithPicker && ui.secondaryNoteId) {
       const note = library.notes.find((n) => n.id === ui.secondaryNoteId && !isDeletedNote(n));
       if (note && note.id !== ui.editingNoteId) {
         showSecondaryReader(note);
@@ -1171,7 +1171,8 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
         return;
       }
     }
-    await showSecondaryPicker({ isCurrent });
+    const shown = await showSecondaryPicker({ isCurrent, resetSearch: startWithPicker });
+    if (!shown) return;
     if (!isCurrent()) return;
     animateSecondarySurfaceIn();
   }
@@ -1184,12 +1185,16 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
     }
   }
 
-  async function showSecondaryPicker({ isCurrent = () => true } = {}) {
+  async function showSecondaryPicker({ isCurrent = () => true, resetSearch = false } = {}) {
     if (secondaryEditorSession?.hasUnsavedChanges()) {
       const saved = await saveSecondaryNote({ isAutoSave: true });
       if (!saved) return false;
     }
     if (!isCurrent()) return false;
+    if (resetSearch) {
+      ui.secondarySearchQuery = "";
+      ui.secondaryListScrollTop = 0;
+    }
     clearTimeout(ui.secondaryAutoSaveTimer);
     ui.secondaryAutoSaveTimer = 0;
     ui.secondaryNotePreviewHeaderCollapsed = false;
@@ -1199,7 +1204,9 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
     renderSecondaryNotesList();
     animateSecondaryViewSwitch(elements.secondaryPickerView);
     window.requestAnimationFrame(() => {
-      elements.secondaryNoteSearch?.focus();
+      if (isCurrent() && ui.dualPaneOpen && !ui.secondaryClosing && !elements.secondaryPickerView?.classList.contains("is-hidden")) {
+        elements.secondaryNoteSearch?.focus();
+      }
     });
     return true;
   }
@@ -1995,6 +2002,26 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
     remove.addEventListener("click", () => (isDeleted ? restoreNoteWithFeedback(note) : deleteNoteWithConfirmation(note, { preserveSidePicker: secondary })));
     if (isDeleted) remove.append(createElement("span", { className: "mobile-only", text: "Restore" }));
     actions.append(copy, view);
+    if (!isDeleted && !secondary) {
+      const sideNote = createElement("button", {
+        className: "note-card__action note-card__action--side-note",
+        type: "button",
+        attributes: {
+          "aria-label": `Open ${note.title} with Side Note`,
+          title: "Open with Side Note",
+        },
+      });
+      sideNote.append(createNoteCardActionIcon([
+        ["rect", { x: "3", y: "3", width: "18", height: "18", rx: "3.5" }],
+        ["rect", { x: "13.5", y: "6", width: "4.5", height: "12", rx: "1.5", fill: "currentColor", stroke: "none" }],
+      ]));
+      sideNote.addEventListener("click", () => {
+        if (!window.matchMedia("(min-width: 960px)").matches) return;
+        openQuickView(note, sideNote);
+        void openDualPane({ startWithPicker: true });
+      });
+      actions.append(sideNote);
+    }
     if (!isDeleted) actions.append(edit);
     actions.append(remove);
     if (isDeleted) {

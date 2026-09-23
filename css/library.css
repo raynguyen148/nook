@@ -328,6 +328,12 @@
   min-height: 1.9rem;
 }
 
+@media (max-width: 959px) {
+  .note-card__action.note-card__action--side-note {
+    display: none;
+  }
+}
+
 
 
 .app-dialog {
