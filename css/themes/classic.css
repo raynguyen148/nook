@@ -156,6 +156,16 @@ html[data-theme="light"] .topbar h1 {
   color: #0f172a;
 }
 
+html[data-theme="light"] .search-field input {
+  border-color: var(--note-card-border, #e2e8f0);
+  box-shadow: var(--form-control-resting-shadow);
+}
+
+html[data-theme="light"]:not([data-input-modality="keyboard"]) body .search-field input:focus {
+  border-color: var(--note-card-border, #e2e8f0) !important;
+  box-shadow: var(--form-control-resting-shadow) !important;
+}
+
 html[data-theme="light"] .note-card--pinned {
   border-color: var(--pinned-card-border);
   border-top-width: 1px;
