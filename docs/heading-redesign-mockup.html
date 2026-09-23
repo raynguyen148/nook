@@ -1,0 +1,1207 @@
+<!doctype html>
+<html lang="vi" data-theme="coffee">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Nook — 3 Đề Xuất Thiết Kế Heading</title>
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="../css/app.css" />
+    <style>
+      /* Reset & Showcase Canvas */
+      body {
+        margin: 0;
+        padding: 2rem 1.5rem 5rem;
+        background: #0f172a;
+        color: #f8fafc;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      .showcase-header {
+        max-width: 1300px;
+        margin: 0 auto 2rem;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1.25rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .showcase-title h1 {
+        margin: 0 0 0.35rem;
+        font-size: 1.45rem;
+        font-weight: 750;
+        color: #fff;
+        letter-spacing: -0.02em;
+      }
+
+      .showcase-title p {
+        margin: 0;
+        font-size: 0.88rem;
+        color: #94a3b8;
+      }
+
+      .controls-bar {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .control-group {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .control-label {
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: #64748b;
+      }
+
+      .btn-group {
+        display: inline-flex;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 0.65rem;
+        padding: 0.2rem;
+        gap: 0.25rem;
+      }
+
+      .nav-btn {
+        background: transparent;
+        border: none;
+        color: #cbd5e1;
+        font-size: 0.82rem;
+        font-weight: 500;
+        padding: 0.4rem 0.85rem;
+        border-radius: 0.5rem;
+        cursor: pointer;
+        transition: all 0.15s ease;
+      }
+
+      .nav-btn:hover {
+        background: rgba(255, 255, 255, 0.08);
+        color: #fff;
+      }
+
+      .nav-btn.is-active {
+        background: #3b82f6;
+        color: #fff;
+        font-weight: 600;
+        box-shadow: 0 2px 6px rgba(59, 130, 246, 0.3);
+      }
+
+      .theme-dot-btn {
+        width: 1.4rem;
+        height: 1.4rem;
+        border-radius: 999px;
+        border: 2px solid transparent;
+        cursor: pointer;
+        transition: transform 0.15s ease;
+      }
+
+      .theme-dot-btn:hover {
+        transform: scale(1.18);
+      }
+
+      .theme-dot-btn.is-active {
+        border-color: #fff;
+        transform: scale(1.18);
+        box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3);
+      }
+
+      /* Sub-controls for Option 1 */
+      .context-pill-group {
+        display: inline-flex;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 999px;
+        padding: 0.15rem;
+        gap: 0.2rem;
+      }
+
+      .context-pill {
+        background: transparent;
+        border: none;
+        color: #94a3b8;
+        font-size: 0.76rem;
+        font-weight: 600;
+        padding: 0.25rem 0.65rem;
+        border-radius: 999px;
+        cursor: pointer;
+        transition: all 0.15s ease;
+      }
+
+      .context-pill:hover {
+        color: #fff;
+      }
+
+      .context-pill.is-active {
+        background: #e2e8f0;
+        color: #0f172a;
+      }
+
+      /* Workspace Container */
+      .preview-container {
+        max-width: 1300px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+      }
+
+      .workspace-frame {
+        background: var(--surface-page);
+        border: 1px solid var(--border-subtle);
+        border-radius: 1.25rem;
+        padding: 1.75rem 2.25rem 2.5rem;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.35);
+        color: var(--text-strong);
+        transition: all 0.2s ease;
+        position: relative;
+        overflow: hidden;
+      }
+
+      /* Option Tag Badge inside Frame */
+      .option-banner-indicator {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: rgba(59, 130, 246, 0.1);
+        border: 1px solid rgba(59, 130, 246, 0.25);
+        color: #3b82f6;
+        padding: 0.3rem 0.75rem;
+        border-radius: 0.5rem;
+        font-size: 0.78rem;
+        font-weight: 600;
+        margin-bottom: 1.25rem;
+      }
+
+      /* Shared Mock Topbar */
+      .mock-topbar {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+        transition: all 0.2s ease;
+      }
+
+      /* Base Mock Action buttons */
+      .mock-topbar-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.45rem;
+        flex-shrink: 0;
+      }
+
+      .mock-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        height: var(--control-height, 2.4rem);
+        padding: 0 0.85rem;
+        border-radius: var(--control-radius, 0.72rem);
+        font-size: 0.82rem;
+        font-weight: 600;
+        cursor: pointer;
+        border: 1px solid var(--border-subtle);
+        background: var(--surface-panel);
+        color: var(--text-strong);
+        transition: all 0.15s ease;
+      }
+
+      .mock-btn:hover {
+        border-color: var(--border-strong);
+      }
+
+      .mock-btn-primary {
+        background: var(--primary-accent);
+        border-color: var(--primary-accent);
+        color: var(--primary-button-text, #fff);
+      }
+
+      .mock-btn-primary:hover {
+        background: var(--primary-accent-hover, var(--primary-accent));
+      }
+
+      .mock-btn-danger {
+        background: var(--danger-surface, #fff1f2);
+        border-color: var(--danger-border, #fecdd3);
+        color: var(--danger-text, #e11d48);
+      }
+
+      /* ==========================================================================
+         SPECIFIC STYLES FOR EACH PROPOSAL
+         ========================================================================== */
+
+      /* --- PROPOSAL 1: Contextual Dynamic Masthead --- */
+      .prop1-eyebrow {
+        display: flex;
+        align-items: center;
+        gap: 0.45rem;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--primary-accent);
+        margin: 0 0 0.35rem;
+      }
+
+      .ambient-dot {
+        width: 6.5px;
+        height: 6.5px;
+        border-radius: 999px;
+        background: #10b981;
+        box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+      }
+
+      .ambient-dot.is-trash {
+        background: #ef4444;
+        box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
+      }
+
+      .prop1-title-row {
+        display: flex;
+        align-items: baseline;
+        gap: 0.75rem;
+        margin-bottom: 0.3rem;
+      }
+
+      .prop1-title {
+        font-size: clamp(1.8rem, 2.6vw, 2.2rem);
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        color: var(--text-strong);
+        line-height: 1.15;
+        margin: 0;
+      }
+
+      .prop1-count-pill {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--primary-accent);
+        background: var(--primary-accent-soft, rgba(163, 86, 22, 0.1));
+        border: 1px solid var(--primary-accent-border, rgba(163, 86, 22, 0.2));
+        padding: 0.15rem 0.65rem;
+        border-radius: 999px;
+      }
+
+      .prop1-count-pill.is-trash {
+        color: #e11d48;
+        background: #ffe4e6;
+        border-color: #fecdd3;
+      }
+
+      .prop1-meta {
+        font-size: 0.86rem;
+        color: var(--text-muted);
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .prop1-meta .meta-sep {
+        opacity: 0.4;
+      }
+
+      /* Notice: Option 1 removes the redundant BROWSE label entirely! */
+
+      /* --- PROPOSAL 2: Artisan / Editorial Notebook --- */
+      .prop2-topbar {
+        border-bottom: 1px solid var(--border-subtle);
+        padding-bottom: 1.25rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .prop2-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        font-size: 0.68rem;
+        font-weight: 750;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--primary-accent);
+        margin: 0 0 0.35rem;
+      }
+
+      .prop2-title-row {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 0.35rem;
+      }
+
+      .prop2-title {
+        font-family: var(--font-display);
+        font-size: clamp(1.9rem, 2.8vw, 2.35rem);
+        font-weight: 800;
+        letter-spacing: -0.035em;
+        color: var(--text-strong);
+        line-height: 1.1;
+        margin: 0;
+      }
+
+      .prop2-tag-stamp {
+        font-size: 0.68rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        padding: 0.2rem 0.55rem;
+        border-radius: 0.35rem;
+        background: var(--surface-muted);
+        border: 1px dashed var(--border-strong);
+        color: var(--text-muted);
+      }
+
+      .prop2-subtitle {
+        font-size: 0.88rem;
+        color: var(--text-muted);
+        margin: 0;
+        font-style: normal;
+        line-height: 1.4;
+      }
+
+      .prop2-subtitle strong {
+        color: var(--text-strong);
+        font-weight: 600;
+      }
+
+      /* --- PROPOSAL 3: Compact Single-Row Utility Bar --- */
+      .prop3-topbar {
+        align-items: center;
+        margin-bottom: 1.25rem;
+        padding: 0.6rem 0.85rem;
+        background: var(--surface-panel);
+        border: 1px solid var(--border-subtle);
+        border-radius: 0.85rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+      }
+
+      .prop3-left {
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+        flex-wrap: wrap;
+      }
+
+      .prop3-title {
+        font-size: 1.25rem;
+        font-weight: 750;
+        letter-spacing: -0.02em;
+        color: var(--text-strong);
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+      }
+
+      .prop3-count {
+        font-size: 0.76rem;
+        font-weight: 700;
+        background: var(--surface-muted);
+        border: 1px solid var(--border-subtle);
+        color: var(--text-muted);
+        padding: 0.15rem 0.55rem;
+        border-radius: 999px;
+      }
+
+      .prop3-divider {
+        width: 1px;
+        height: 16px;
+        background: var(--border-subtle);
+      }
+
+      .prop3-status {
+        font-size: 0.78rem;
+        color: var(--text-muted);
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+      }
+
+      /* --- BASELINE: Current UI --- */
+      .baseline-eyebrow {
+        font-size: 0.69rem;
+        font-weight: 600;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: #64748b;
+        margin: 0 0 0.45rem;
+      }
+
+      .baseline-title {
+        font-size: clamp(2rem, 3.2vw, 2.5rem);
+        font-weight: 750;
+        letter-spacing: -0.04em;
+        color: var(--text-strong);
+        line-height: 1.12;
+        margin: 0 0 0.45rem;
+      }
+
+      .baseline-subtitle {
+        font-size: 0.875rem;
+        color: var(--text-muted);
+        margin: 0;
+      }
+
+      /* ==========================================================================
+         PANEL & NOTE CARDS PREVIEW
+         ========================================================================== */
+      .mock-panel {
+        background: var(--surface-panel);
+        border: 1px solid var(--border-subtle);
+        border-radius: var(--surface-radius, 1rem);
+        padding: 1.25rem 1.5rem;
+        position: relative;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+      }
+
+      .mock-panel-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+      }
+
+      .mock-panel-header.is-hidden {
+        display: none !important;
+      }
+
+      .mock-browse-label {
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        margin: 0 0 0.15rem;
+      }
+
+      .mock-panel-title {
+        font-size: 1.35rem;
+        font-weight: 800;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--text-strong);
+      }
+
+      .mock-panel-count {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        background: var(--surface-muted);
+        padding: 0.2rem 0.6rem;
+        border-radius: 999px;
+      }
+
+      /* Mock Search Toolbar */
+      .mock-toolbar {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        margin-bottom: 1.25rem;
+      }
+
+      .mock-search-input {
+        flex: 1;
+        height: 2.3rem;
+        background: var(--form-control-resting-background, var(--surface-muted));
+        border: 1px solid var(--border-subtle);
+        border-radius: 0.65rem;
+        padding: 0 0.85rem;
+        font-size: 0.82rem;
+        color: var(--text-strong);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .mock-kbd {
+        font-size: 0.68rem;
+        padding: 0.15rem 0.4rem;
+        border-radius: 0.35rem;
+        background: rgba(0, 0, 0, 0.06);
+        color: var(--text-muted);
+        font-weight: 600;
+      }
+
+      .mock-select {
+        height: 2.3rem;
+        padding: 0 1.75rem 0 0.85rem;
+        background: var(--surface-panel);
+        border: 1px solid var(--border-subtle);
+        border-radius: 0.65rem;
+        font-size: 0.82rem;
+        font-weight: 500;
+        color: var(--text-strong);
+      }
+
+      /* Mock Note Grid Preview */
+      .mock-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 1rem;
+      }
+
+      .mock-note-card {
+        background: var(--note-card-surface, #fdfbf7);
+        border: 1px solid var(--note-card-border, #e5dacb);
+        border-radius: 0.85rem;
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.65rem;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+      }
+
+      .mock-note-card-meta {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 0.72rem;
+        color: var(--text-muted);
+      }
+
+      .mock-note-badge {
+        padding: 0.15rem 0.45rem;
+        border-radius: 0.3rem;
+        background: var(--primary-accent-soft, #fcf4e8);
+        color: var(--primary-accent-text, #88430a);
+        font-weight: 700;
+        font-size: 0.68rem;
+      }
+
+      .mock-note-title {
+        font-size: 0.95rem;
+        font-weight: 750;
+        margin: 0;
+        color: var(--note-card-title, #261e18);
+        letter-spacing: -0.015em;
+      }
+
+      .mock-note-preview {
+        font-size: 0.8rem;
+        line-height: 1.45;
+        color: var(--note-card-preview, #5e4d41);
+        margin: 0;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+
+      /* Analysis Panel */
+      .analysis-panel {
+        max-width: 1300px;
+        margin: 0 auto;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 1.25rem;
+        padding: 2rem 2.25rem;
+      }
+
+      .analysis-panel h2 {
+        margin: 0 0 1.25rem;
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .analysis-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 1.25rem;
+      }
+
+      .analysis-card {
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid rgba(255, 255, 255, 0.07);
+        border-radius: 0.85rem;
+        padding: 1.25rem;
+      }
+
+      .analysis-card h3 {
+        margin: 0 0 0.5rem;
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: #e2e8f0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .analysis-tag {
+        font-size: 0.68rem;
+        padding: 0.15rem 0.5rem;
+        border-radius: 999px;
+        font-weight: 600;
+      }
+
+      .tag-recommended {
+        background: rgba(16, 185, 129, 0.2);
+        color: #34d399;
+        border: 1px solid rgba(16, 185, 129, 0.3);
+      }
+
+      .tag-neutral {
+        background: rgba(59, 130, 246, 0.2);
+        color: #60a5fa;
+        border: 1px solid rgba(59, 130, 246, 0.3);
+      }
+
+      .analysis-card p {
+        margin: 0;
+        font-size: 0.82rem;
+        line-height: 1.55;
+        color: #94a3b8;
+      }
+
+      .analysis-card ul {
+        margin: 0.6rem 0 0;
+        padding-left: 1.2rem;
+        font-size: 0.8rem;
+        color: #cbd5e1;
+        line-height: 1.6;
+      }
+
+      .comparison-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 1.5rem;
+        font-size: 0.82rem;
+      }
+
+      .comparison-table th,
+      .comparison-table td {
+        padding: 0.75rem 1rem;
+        text-align: left;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      }
+
+      .comparison-table th {
+        color: #94a3b8;
+        font-weight: 600;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        background: rgba(255, 255, 255, 0.02);
+      }
+
+      .comparison-table td {
+        color: #e2e8f0;
+      }
+
+      .diff-highlight {
+        color: #38bdf8;
+        font-weight: 600;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Top Showcase Header -->
+    <header class="showcase-header">
+      <div class="showcase-title">
+        <h1>Nook — 3 Đề Xuất Thiết Kế Heading</h1>
+        <p>So sánh tương tác giữa 3 phương án làm đẹp khu vực masthead và baseline hiện tại.</p>
+      </div>
+
+      <div class="controls-bar">
+        <!-- View Options Switcher -->
+        <div class="control-group">
+          <span class="control-label">Đề xuất:</span>
+          <div class="btn-group">
+            <button class="nav-btn is-active" data-view="prop1">1. Hợp nhất ngữ cảnh</button>
+            <button class="nav-btn" data-view="prop2">2. Sổ tay thủ công</button>
+            <button class="nav-btn" data-view="prop3">3. Tinh gọn 1 hàng</button>
+            <button class="nav-btn" data-view="baseline">Hiện tại (Baseline)</button>
+          </div>
+        </div>
+
+        <!-- Dynamic Context Switcher (For Option 1) -->
+        <div class="control-group" id="context-switcher-group">
+          <span class="control-label">Ngữ cảnh:</span>
+          <div class="context-pill-group">
+            <button class="context-pill is-active" data-context="all">All notes (81)</button>
+            <button class="context-pill" data-context="meeting">Meeting (24)</button>
+            <button class="context-pill" data-context="project">Project (7)</button>
+            <button class="context-pill" data-context="trash">Trash (9)</button>
+          </div>
+        </div>
+
+        <!-- Theme Switcher -->
+        <div class="control-group">
+          <span class="control-label">Theme:</span>
+          <div class="btn-group" style="padding: 0.35rem 0.5rem; gap: 0.5rem;">
+            <button
+              class="theme-dot-btn is-active"
+              data-theme="coffee"
+              title="Coffee (Default)"
+              style="background: #a35616;"
+            ></button>
+            <button
+              class="theme-dot-btn"
+              data-theme="light"
+              title="Classic Light"
+              style="background: #4f46e5;"
+            ></button>
+            <button
+              class="theme-dot-btn"
+              data-theme="midnight"
+              title="Midnight Dark"
+              style="background: #1e1b4b;"
+            ></button>
+            <button
+              class="theme-dot-btn"
+              data-theme="forest"
+              title="Forest"
+              style="background: #235338;"
+            ></button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Interactive Workspace Preview -->
+    <main class="preview-container">
+      <div class="workspace-frame" id="workspace-frame">
+        <!-- Floating Option Badge -->
+        <div class="option-banner-indicator" id="option-badge">
+          <span>✨ Đề xuất 1: Hợp nhất ngữ cảnh động (Contextual Masthead)</span>
+        </div>
+
+        <!-- TOPBAR CONTAINER (Will be swapped dynamically) -->
+        <header class="mock-topbar" id="mock-topbar">
+          <!-- Populated by JS -->
+        </header>
+
+        <!-- NOTES PANEL -->
+        <section class="mock-panel" id="mock-panel">
+          <!-- Panel Header (Only visible in Baseline & Prop 2) -->
+          <div class="mock-panel-header" id="panel-header">
+            <div>
+              <p class="mock-browse-label" id="panel-eyebrow">BROWSE</p>
+              <h2 class="mock-panel-title">
+                <span id="panel-title-text">All notes</span>
+                <span class="mock-panel-count" id="panel-count-badge">81 notes</span>
+              </h2>
+            </div>
+          </div>
+
+          <!-- Mock Search Toolbar -->
+          <div class="mock-toolbar">
+            <div class="mock-search-input">
+              <span style="color: var(--text-muted); display: flex; align-items: center; gap: 0.5rem;">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                Search title or content...
+              </span>
+              <kbd class="mock-kbd">⌘F</kbd>
+            </div>
+            <select class="mock-select">
+              <option>Newest created</option>
+              <option>Recently updated</option>
+              <option>Title (A-Z)</option>
+            </select>
+          </div>
+
+          <!-- Mock Note Cards -->
+          <div class="mock-grid" id="mock-grid">
+            <article class="mock-note-card">
+              <div class="mock-note-card-meta">
+                <span class="mock-note-badge" id="card1-badge">General</span>
+                <span>Sep 21, 2026</span>
+              </div>
+              <h3 class="mock-note-title">Claude Code Architecture</h3>
+              <p class="mock-note-preview">
+                Hiểu đúng về Claude Code: coding agent chạy trong terminal. Hỗ trợ tool use, subagents và git diff...
+              </p>
+            </article>
+
+            <article class="mock-note-card">
+              <div class="mock-note-card-meta">
+                <span class="mock-note-badge" id="card2-badge">Meeting</span>
+                <span>Sep 13, 2026</span>
+              </div>
+              <h3 class="mock-note-title">Weekly Protobloc Sync</h3>
+              <p class="mock-note-preview">
+                Review Input Task II: independent read-only audit. Draft Task Contract Ray approves exact draft...
+              </p>
+            </article>
+
+            <article class="mock-note-card">
+              <div class="mock-note-card-meta">
+                <span class="mock-note-badge" id="card3-badge">Learning</span>
+                <span>Sep 10, 2026</span>
+              </div>
+              <h3 class="mock-note-title">IndexedDB Durable Transactions</h3>
+              <p class="mock-note-preview">
+                Khả năng chịu lỗi và xử lý bất đồng bộ khi ghi batch records. Đảm bảo toàn vẹn dữ liệu local-first...
+              </p>
+            </article>
+
+            <article class="mock-note-card">
+              <div class="mock-note-card-meta">
+                <span class="mock-note-badge" id="card4-badge">Project</span>
+                <span>Sep 01, 2026</span>
+              </div>
+              <h3 class="mock-note-title">Protobloc Region Optimization</h3>
+              <p class="mock-note-preview">
+                Nguyên tắc quan trọng nhất: đặt compute gần Supabase primary database để giảm latency mạng...
+              </p>
+            </article>
+          </div>
+        </section>
+      </div>
+
+      <!-- Analysis Section -->
+      <section class="analysis-panel">
+        <h2>💡 Phân Tích Kỹ Thuật & Trải Nghiệm Người Dùng (*UX & Tech Trade-offs*)</h2>
+        <div class="analysis-grid">
+          <div class="analysis-card">
+            <h3>
+              1. Hợp nhất ngữ cảnh động
+              <span class="analysis-tag tag-recommended">Khuyên dùng</span>
+            </h3>
+            <p>
+              Giải quyết triệt để vấn đề <strong>lặp 2 tầng tiêu đề</strong> (`YOUR LOCAL LIBRARY` + `BROWSE`). Tiêu đề chính phản ánh trực tiếp nơi người dùng đang đứng.
+            </p>
+            <ul>
+              <li><strong>Tiết kiệm ~85px</strong> chiều cao màn hình, kéo ghi chú lên cao hơn.</li>
+              <li>Khi chuyển Space (All notes → Meeting → Trash), tiêu đề và nút chức năng (ví dụ Empty Trash) biến đổi tự nhiên.</li>
+              <li>Thay subtitle tĩnh bằng <em>live metadata</em> (ví dụ: `81 notes across 7 spaces · Last edited today`).</li>
+            </ul>
+          </div>
+
+          <div class="analysis-card">
+            <h3>
+              2. Sổ tay thủ công cá nhân
+              <span class="analysis-tag tag-neutral">Artisan / Warm</span>
+            </h3>
+            <p>
+              Đậm phong cách "Nook" — góc làm việc cá nhân yên tĩnh. Phù hợp nếu Ray muốn giữ cố định thương hiệu không gian riêng.
+            </p>
+            <ul>
+              <li>Cá nhân hóa thành <strong>Ray's Notes</strong> hoặc cho phép đổi tên trong Settings.</li>
+              <li>Có đường hairline phân cách thanh nhã và nhãn tem <em>81 ENTRIES</em> tinh tế.</li>
+              <li>Vẫn giữ panel bên dưới nhưng đổi tên thành <em>Collection</em> nhẹ nhàng hơn.</li>
+            </ul>
+          </div>
+
+          <div class="analysis-card">
+            <h3>
+              3. Tinh gọn 1 hàng (Compact)
+              <span class="analysis-tag tag-neutral">Clean Tech</span>
+            </h3>
+            <p>
+              Ưu tiên mật độ thông tin tối đa (*high information density*). Đưa H1 và toàn bộ nút thao tác lên cùng một hàng ngang.
+            </p>
+            <ul>
+              <li>Bỏ hoàn toàn eyebrow và subtitle, chỉ giữ tiêu đề cô đọng + pill count.</li>
+              <li>Giao diện nhìn hiện đại, sắc nét, không một chi tiết thừa.</li>
+              <li>Thích hợp nhất trên màn hình laptop hoặc người dùng ưa phong cách tối giản.</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Technical Comparison Table -->
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>Tiêu chí</th>
+              <th>Hiện tại (Baseline)</th>
+              <th>Đề xuất 1 (Hợp nhất)</th>
+              <th>Đề xuất 2 (Thủ công)</th>
+              <th>Đề xuất 3 (Tinh gọn 1 hàng)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Số tầng tiêu đề</strong></td>
+              <td>4 tầng (dày cộm)</td>
+              <td class="diff-highlight">2 tầng (tối ưu nhất)</td>
+              <td>3 tầng</td>
+              <td class="diff-highlight">2 tầng (siêu mỏng)</td>
+            </tr>
+            <tr>
+              <td><strong>Chiều cao chiếm dụng</strong></td>
+              <td>~165px</td>
+              <td class="diff-highlight">~80px (giảm ~50%)</td>
+              <td>~120px</td>
+              <td class="diff-highlight">~55px (giảm ~66%)</td>
+            </tr>
+            <tr>
+              <td><strong>Tính sống động</strong></td>
+              <td>Tĩnh (câu slogan marketing)</td>
+              <td class="diff-highlight">Động theo bộ lọc & thời gian</td>
+              <td>Cá nhân hóa theo người dùng</td>
+              <td>Tối giản, hiển thị status ngắn</td>
+            </tr>
+            <tr>
+              <td><strong>Phạm vi sửa code</strong></td>
+              <td>—</td>
+              <td>HTML topbar + 5 dòng JS cập nhật title</td>
+              <td>Chỉ sửa HTML & CSS</td>
+              <td>Chỉ sửa CSS topbar flexbox</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+    </main>
+
+    <script>
+      (function () {
+        "use strict";
+
+        // Current UI state
+        let currentView = "prop1";
+        let currentContext = "all";
+
+        // DOM elements
+        const topbarEl = document.getElementById("mock-topbar");
+        const panelHeaderEl = document.getElementById("panel-header");
+        const optionBadgeEl = document.getElementById("option-badge");
+        const contextSwitcherEl = document.getElementById("context-switcher-group");
+
+        // Action Buttons Template
+        function renderActions(isTrash = false) {
+          if (isTrash) {
+            return `
+              <div class="mock-topbar-actions">
+                <button class="mock-btn mock-btn-danger">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                  </svg>
+                  <span>Empty Trash</span>
+                </button>
+                <button class="mock-btn">
+                  <span>Settings</span>
+                </button>
+              </div>
+            `;
+          }
+          return `
+            <div class="mock-topbar-actions">
+              <button class="mock-btn">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <circle cx="12" cy="12" r="5"></circle>
+                  <line x1="12" y1="1" x2="12" y2="3"></line>
+                  <line x1="12" y1="21" x2="12" y2="23"></line>
+                </svg>
+                <span>Auto</span>
+              </button>
+              <button class="mock-btn">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <circle cx="12" cy="12" r="3"></circle>
+                  <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                </svg>
+                <span>Settings</span>
+              </button>
+              <button class="mock-btn">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <path d="M12 3v12M7.5 10.5 12 15l4.5-4.5M4.5 19.5h15"></path>
+                </svg>
+                <span>Backup</span>
+              </button>
+              <button class="mock-btn">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <path d="M12 15V3M7.5 7.5 12 3l4.5 4.5M4.5 19.5h15"></path>
+                </svg>
+                <span>Import</span>
+              </button>
+              <button class="mock-btn mock-btn-primary">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <path d="M12 5v14M5 12h14"></path>
+                </svg>
+                <span>New note</span>
+              </button>
+            </div>
+          `;
+        }
+
+        // View Renderers
+        const views = {
+          // PROPOSAL 1: Contextual Dynamic Masthead
+          prop1: function () {
+            optionBadgeEl.innerHTML = "✨ <strong>Đề xuất 1:</strong> Hợp nhất ngữ cảnh động (Contextual Masthead) — Đã lược bỏ tầng BROWSE thừa trong Panel!";
+            contextSwitcherEl.style.display = "flex";
+            panelHeaderEl.classList.add("is-hidden"); // Remove duplicate browse header
+
+            const contexts = {
+              all: {
+                eyebrow: '<span class="ambient-dot"></span> Wednesday, Sep 23 · Local & Encrypted',
+                title: "All notes",
+                count: "81",
+                isTrashCount: false,
+                subtitle: "81 notes across 7 spaces · Last edited today at 09:30",
+                isTrash: false
+              },
+              meeting: {
+                eyebrow: '<span class="ambient-dot"></span> Filter / Meeting',
+                title: "Meeting Notes",
+                count: "24",
+                isTrashCount: false,
+                subtitle: "Sync notes, client calls, and sprint retrospective items",
+                isTrash: false
+              },
+              project: {
+                eyebrow: '<span class="ambient-dot"></span> Filter / Project',
+                title: "Project Notes",
+                count: "7",
+                isTrashCount: false,
+                subtitle: "Protobloc architecture, migrations, and tech specs",
+                isTrash: false
+              },
+              trash: {
+                eyebrow: '<span class="ambient-dot is-trash"></span> Space / Trash',
+                title: "Trash",
+                count: "9",
+                isTrashCount: true,
+                subtitle: "Notes waiting to be restored or permanently deleted · Retention: unlimited local",
+                isTrash: true
+              }
+            };
+
+            const data = contexts[currentContext] || contexts.all;
+
+            topbarEl.className = "mock-topbar";
+            topbarEl.innerHTML = `
+              <div>
+                <p class="prop1-eyebrow">${data.eyebrow}</p>
+                <div class="prop1-title-row">
+                  <h1 class="prop1-title">${data.title}</h1>
+                  <span class="prop1-count-pill ${data.isTrashCount ? "is-trash" : ""}">${data.count}</span>
+                </div>
+                <p class="prop1-meta">
+                  <span>${data.subtitle}</span>
+                </p>
+              </div>
+              ${renderActions(data.isTrash)}
+            `;
+          },
+
+          // PROPOSAL 2: Artisan / Editorial Notebook
+          prop2: function () {
+            optionBadgeEl.innerHTML = "🖋️ <strong>Đề xuất 2:</strong> Sổ tay thủ công (Artisan / Warm Notebook) — Phong cách cá nhân hóa đậm chất Nook";
+            contextSwitcherEl.style.display = "none";
+            panelHeaderEl.classList.remove("is-hidden");
+            document.getElementById("panel-eyebrow").textContent = "COLLECTION";
+            document.getElementById("panel-title-text").textContent = "Recent Notes";
+            document.getElementById("panel-count-badge").textContent = "81 notes";
+
+            topbarEl.className = "mock-topbar prop2-topbar";
+            topbarEl.innerHTML = `
+              <div>
+                <p class="prop2-eyebrow">
+                  <span>📓</span>
+                  <span>RAY'S WORKSPACE · LOCAL ARCHIVE</span>
+                </p>
+                <div class="prop2-title-row">
+                  <h1 class="prop2-title">Ray's Notes</h1>
+                  <span class="prop2-tag-stamp">81 ENTRIES</span>
+                </div>
+                <p class="prop2-subtitle">
+                  A private, distraction-free space for <strong>engineering</strong>, <strong>ideas</strong>, and <strong>daily work</strong>.
+                </p>
+              </div>
+              ${renderActions(false)}
+            `;
+          },
+
+          // PROPOSAL 3: Compact Single-Row Utility Bar
+          prop3: function () {
+            optionBadgeEl.innerHTML = "⚡ <strong>Đề xuất 3:</strong> Tinh gọn 1 hàng (Compact Utility Bar) — Tiết kiệm tối đa chiều cao, mật độ thông tin cao";
+            contextSwitcherEl.style.display = "none";
+            panelHeaderEl.classList.add("is-hidden"); // Clean single view
+
+            topbarEl.className = "mock-topbar prop3-topbar";
+            topbarEl.innerHTML = `
+              <div class="prop3-left">
+                <h1 class="prop3-title">
+                  Personal Notes
+                </h1>
+                <span class="prop3-count">81 notes</span>
+                <span class="prop3-divider"></span>
+                <span class="prop3-status">
+                  <span class="ambient-dot"></span>
+                  <span>Updated today</span>
+                </span>
+              </div>
+              ${renderActions(false)}
+            `;
+          },
+
+          // BASELINE: The current UI
+          baseline: function () {
+            optionBadgeEl.innerHTML = "⚠️ <strong>Hiện tại (Baseline):</strong> 4 tầng xếp chồng (Topbar + Panel Browse + Search + Showing count)";
+            contextSwitcherEl.style.display = "none";
+            panelHeaderEl.classList.remove("is-hidden");
+            document.getElementById("panel-eyebrow").textContent = "BROWSE";
+            document.getElementById("panel-title-text").textContent = "All notes";
+            document.getElementById("panel-count-badge").textContent = "81 notes";
+
+            topbarEl.className = "mock-topbar";
+            topbarEl.innerHTML = `
+              <div>
+                <p class="baseline-eyebrow">YOUR LOCAL LIBRARY</p>
+                <h1 class="baseline-title">Personal Notes</h1>
+                <p class="baseline-subtitle">A private, offline space for ideas, work, and learning.</p>
+              </div>
+              ${renderActions(false)}
+            `;
+          }
+        };
+
+        // Navigation Switcher handler
+        const navBtns = document.querySelectorAll("[data-view]");
+        navBtns.forEach((btn) => {
+          btn.addEventListener("click", () => {
+            navBtns.forEach((b) => b.classList.toggle("is-active", b === btn));
+            currentView = btn.dataset.view;
+            if (views[currentView]) views[currentView]();
+          });
+        });
+
+        // Context Switcher handler (for Prop 1)
+        const contextPills = document.querySelectorAll("[data-context]");
+        contextPills.forEach((pill) => {
+          pill.addEventListener("click", () => {
+            contextPills.forEach((p) => p.classList.toggle("is-active", p === pill));
+            currentContext = pill.dataset.context;
+            if (currentView === "prop1") views.prop1();
+          });
+        });
+
+        // Theme Switcher handler
+        const themeBtns = document.querySelectorAll("[data-theme]");
+        themeBtns.forEach((btn) => {
+          btn.addEventListener("click", () => {
+            themeBtns.forEach((b) => b.classList.toggle("is-active", b === btn));
+            const theme = btn.dataset.theme;
+            document.documentElement.dataset.theme = theme;
+          });
+        });
+
+        // Initial render
+        views.prop1();
+      })();
+    </script>
+  </body>
+</html>

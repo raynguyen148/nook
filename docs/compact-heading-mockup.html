@@ -1,0 +1,1046 @@
+<!doctype html>
+<html lang="vi" data-theme="coffee">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Nook — Mockup 3 Hướng Thông Tin Hữu Ích (Single-Row)</title>
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="../css/app.css" />
+    <style>
+      /* Reset & Showcase Canvas */
+      body {
+        margin: 0;
+        padding: 2rem 1.5rem 5rem;
+        background: #0f172a;
+        color: #f8fafc;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      .showcase-header {
+        max-width: 1320px;
+        margin: 0 auto 2rem;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1.25rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .showcase-title h1 {
+        margin: 0 0 0.35rem;
+        font-size: 1.4rem;
+        font-weight: 750;
+        color: #fff;
+        letter-spacing: -0.02em;
+      }
+
+      .showcase-title p {
+        margin: 0;
+        font-size: 0.86rem;
+        color: #94a3b8;
+      }
+
+      .controls-bar {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .control-group {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .control-label {
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: #64748b;
+      }
+
+      .btn-group {
+        display: inline-flex;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 0.65rem;
+        padding: 0.2rem;
+        gap: 0.25rem;
+      }
+
+      .nav-btn {
+        background: transparent;
+        border: none;
+        color: #cbd5e1;
+        font-size: 0.82rem;
+        font-weight: 500;
+        padding: 0.4rem 0.85rem;
+        border-radius: 0.5rem;
+        cursor: pointer;
+        transition: all 0.15s ease;
+      }
+
+      .nav-btn:hover {
+        background: rgba(255, 255, 255, 0.08);
+        color: #fff;
+      }
+
+      .nav-btn.is-active {
+        background: #3b82f6;
+        color: #fff;
+        font-weight: 600;
+        box-shadow: 0 2px 8px rgba(59, 130, 246, 0.35);
+      }
+
+      .theme-dot-btn {
+        width: 1.35rem;
+        height: 1.35rem;
+        border-radius: 999px;
+        border: 2px solid transparent;
+        cursor: pointer;
+        transition: transform 0.15s ease;
+      }
+
+      .theme-dot-btn:hover {
+        transform: scale(1.18);
+      }
+
+      .theme-dot-btn.is-active {
+        border-color: #fff;
+        transform: scale(1.18);
+        box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3);
+      }
+
+      /* Workspace Container */
+      .preview-container {
+        max-width: 1320px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+      }
+
+      .workspace-frame {
+        background: var(--surface-page);
+        border: 1px solid var(--border-subtle);
+        border-radius: 1.25rem;
+        padding: 1.75rem 2.25rem 2.25rem;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.35);
+        color: var(--text-strong);
+        transition: all 0.2s ease;
+        position: relative;
+      }
+
+      /* Indicator Badge */
+      .indicator-banner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: rgba(59, 130, 246, 0.1);
+        border: 1px solid rgba(59, 130, 246, 0.25);
+        color: #3b82f6;
+        padding: 0.45rem 0.9rem;
+        border-radius: 0.65rem;
+        font-size: 0.8rem;
+        font-weight: 600;
+        margin-bottom: 1.25rem;
+      }
+
+      .indicator-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .sub-toggle-btn {
+        background: rgba(59, 130, 246, 0.15);
+        border: 1px solid rgba(59, 130, 246, 0.3);
+        color: #93c5fd;
+        font-size: 0.75rem;
+        font-weight: 600;
+        padding: 0.2rem 0.55rem;
+        border-radius: 0.4rem;
+        cursor: pointer;
+        transition: all 0.15s ease;
+      }
+
+      .sub-toggle-btn:hover {
+        background: #3b82f6;
+        color: #fff;
+      }
+
+      /* Standard Action Buttons */
+      .mock-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.45rem;
+        flex-shrink: 0;
+      }
+
+      .mock-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        height: var(--control-height, 2.4rem);
+        padding: 0 0.85rem;
+        border-radius: var(--control-radius, 0.72rem);
+        font-size: 0.82rem;
+        font-weight: 600;
+        cursor: pointer;
+        border: 1px solid var(--border-subtle);
+        background: var(--surface-panel);
+        color: var(--text-strong);
+        transition: all 0.15s ease;
+      }
+
+      .mock-btn:hover {
+        border-color: var(--border-strong);
+      }
+
+      .mock-btn-primary {
+        background: var(--primary-accent);
+        border-color: var(--primary-accent);
+        color: var(--primary-button-text, #fff);
+      }
+
+      .mock-btn-primary:hover {
+        background: var(--primary-accent-hover, var(--primary-accent));
+      }
+
+      /* ==========================================================================
+         DIRECTION 1: RESUME NOTE (Lối tắt tiếp tục công việc)
+         ========================================================================== */
+      .dir1-topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-bottom: 1.25rem;
+      }
+
+      .dir1-resume-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.6rem;
+        padding: 0.35rem 0.85rem 0.35rem 0.55rem;
+        background: var(--surface-panel);
+        border: 1px solid var(--border-subtle);
+        border-radius: 999px;
+        color: var(--text-strong);
+        cursor: pointer;
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+      }
+
+      .dir1-resume-btn:hover {
+        border-color: var(--primary-accent);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+      }
+
+      .dir1-resume-icon-badge {
+        width: 1.65rem;
+        height: 1.65rem;
+        border-radius: 999px;
+        background: var(--primary-accent-soft, #fcf4e8);
+        color: var(--primary-accent);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .dir1-resume-label {
+        font-size: 0.74rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+      }
+
+      .dir1-resume-title {
+        font-size: 0.88rem;
+        font-weight: 750;
+        color: var(--text-strong);
+        max-width: 260px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .dir1-resume-time {
+        font-size: 0.78rem;
+        color: var(--text-muted);
+      }
+
+      .dir1-resume-arrow {
+        font-size: 0.85rem;
+        color: var(--primary-accent);
+        font-weight: 700;
+        margin-left: 0.15rem;
+      }
+
+      /* Modal simulated when clicking resume */
+      .simulated-toast {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        background: #1e293b;
+        color: #fff;
+        padding: 0.75rem 1.25rem;
+        border-radius: 0.75rem;
+        font-size: 0.85rem;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        display: none;
+        z-index: 9999;
+        animation: toastIn 0.25s ease;
+      }
+
+      @keyframes toastIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* ==========================================================================
+         DIRECTION 2: MASTER TOOLBAR (Gộp Search + Actions làm một)
+         ========================================================================== */
+      .dir2-master-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        padding: 0.45rem 0.55rem 0.45rem 0.85rem;
+        background: var(--surface-panel);
+        border: 1px solid var(--border-subtle);
+        border-radius: var(--surface-radius, 1rem);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+        margin-bottom: 1.25rem;
+      }
+
+      .dir2-left-controls {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        flex: 1;
+        max-width: 650px;
+      }
+
+      .dir2-search-box {
+        flex: 1;
+        height: var(--control-height, 2.4rem);
+        background: var(--form-control-resting-background, var(--surface-muted));
+        border: 1px solid var(--border-subtle);
+        border-radius: var(--control-radius, 0.72rem);
+        padding: 0 0.85rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        color: var(--text-strong);
+        transition: border-color 0.15s ease;
+      }
+
+      .dir2-search-box:focus-within {
+        border-color: var(--primary-accent);
+      }
+
+      .dir2-sort-select {
+        height: var(--control-height, 2.4rem);
+        padding: 0 1.75rem 0 0.85rem;
+        background: var(--form-control-resting-background, var(--surface-muted));
+        border: 1px solid var(--border-subtle);
+        border-radius: var(--control-radius, 0.72rem);
+        font-size: 0.82rem;
+        font-weight: 500;
+        color: var(--text-strong);
+        cursor: pointer;
+      }
+
+      .dir2-view-toggle {
+        display: inline-flex;
+        border: 1px solid var(--border-subtle);
+        border-radius: var(--control-radius, 0.72rem);
+        padding: 0.15rem;
+        gap: 0.15rem;
+        background: var(--surface-muted);
+      }
+
+      .dir2-view-btn {
+        width: 1.9rem;
+        height: 1.9rem;
+        border: none;
+        background: transparent;
+        color: var(--text-muted);
+        border-radius: 0.45rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .dir2-view-btn.is-active {
+        background: var(--surface-panel);
+        color: var(--text-strong);
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+      }
+
+      .dir2-divider {
+        width: 1px;
+        height: 24px;
+        background: var(--border-subtle);
+        margin: 0 0.25rem;
+      }
+
+      /* ==========================================================================
+         DIRECTION 3: QUERY & SHORTCUTS (Gợi ý phím tắt & Breadcrumb lọc)
+         ========================================================================== */
+      .dir3-topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-bottom: 1.25rem;
+      }
+
+      /* Idle State: Keyboard shortcut hints */
+      .dir3-shortcuts-hint {
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+        font-size: 0.8rem;
+        color: var(--text-muted);
+      }
+
+      .dir3-kbd {
+        font-family: var(--font-mono, monospace);
+        font-size: 0.72rem;
+        font-weight: 700;
+        padding: 0.15rem 0.45rem;
+        border-radius: 0.35rem;
+        background: var(--surface-muted);
+        border: 1px solid var(--border-subtle);
+        color: var(--text-strong);
+        margin-right: 0.25rem;
+      }
+
+      /* Active Filter State: Breadcrumb with chips */
+      .dir3-filter-breadcrumb {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .dir3-filter-label {
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--text-muted);
+      }
+
+      .dir3-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.2rem 0.65rem;
+        border-radius: 999px;
+        font-size: 0.78rem;
+        font-weight: 700;
+      }
+
+      .dir3-chip-type {
+        background: #fdf5db;
+        border: 1px solid #edd5bc;
+        color: #88430a;
+      }
+
+      .dir3-chip-tag {
+        background: #eef2ff;
+        border: 1px solid #c7d2fe;
+        color: #4338ca;
+      }
+
+      .dir3-clear-btn {
+        background: transparent;
+        border: 1px solid var(--border-subtle);
+        color: var(--text-muted);
+        font-size: 0.74rem;
+        font-weight: 600;
+        padding: 0.2rem 0.55rem;
+        border-radius: 0.4rem;
+        cursor: pointer;
+        transition: all 0.15s ease;
+      }
+
+      .dir3-clear-btn:hover {
+        background: var(--danger-surface, #fff1f2);
+        color: var(--danger-text, #e11d48);
+        border-color: var(--danger-border, #fecdd3);
+      }
+
+      /* ==========================================================================
+         PANEL TOOLBAR & NOTE GRID
+         ========================================================================== */
+      .mock-panel {
+        background: var(--surface-panel);
+        border: 1px solid var(--border-subtle);
+        border-radius: var(--surface-radius, 1rem);
+        padding: 1.25rem 1.5rem;
+      }
+
+      .mock-toolbar {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        margin-bottom: 1.25rem;
+      }
+
+      .mock-search-input {
+        flex: 1;
+        height: 2.3rem;
+        background: var(--form-control-resting-background, var(--surface-muted));
+        border: 1px solid var(--border-subtle);
+        border-radius: 0.65rem;
+        padding: 0 0.85rem;
+        font-size: 0.82rem;
+        color: var(--text-strong);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .mock-kbd {
+        font-size: 0.68rem;
+        padding: 0.15rem 0.4rem;
+        border-radius: 0.35rem;
+        background: rgba(0, 0, 0, 0.06);
+        color: var(--text-muted);
+        font-weight: 600;
+      }
+
+      .mock-select {
+        height: 2.3rem;
+        padding: 0 1.75rem 0 0.85rem;
+        background: var(--surface-panel);
+        border: 1px solid var(--border-subtle);
+        border-radius: 0.65rem;
+        font-size: 0.82rem;
+        font-weight: 500;
+        color: var(--text-strong);
+      }
+
+      .mock-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 1rem;
+      }
+
+      .mock-note-card {
+        background: var(--note-card-surface, #fdfbf7);
+        border: 1px solid var(--note-card-border, #e5dacb);
+        border-radius: 0.85rem;
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.65rem;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+      }
+
+      .mock-note-card-meta {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 0.72rem;
+        color: var(--text-muted);
+      }
+
+      .mock-note-badge {
+        padding: 0.15rem 0.45rem;
+        border-radius: 0.3rem;
+        background: var(--primary-accent-soft, #fcf4e8);
+        color: var(--primary-accent-text, #88430a);
+        font-weight: 700;
+        font-size: 0.68rem;
+      }
+
+      .mock-note-title {
+        font-size: 0.95rem;
+        font-weight: 750;
+        margin: 0;
+        color: var(--note-card-title, #261e18);
+        letter-spacing: -0.015em;
+      }
+
+      .mock-note-preview {
+        font-size: 0.8rem;
+        line-height: 1.45;
+        color: var(--note-card-preview, #5e4d41);
+        margin: 0;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+
+      /* Analysis Panel */
+      .analysis-panel {
+        max-width: 1320px;
+        margin: 0 auto;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 1.25rem;
+        padding: 2rem 2.25rem;
+      }
+
+      .analysis-panel h2 {
+        margin: 0 0 1.25rem;
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #fff;
+      }
+
+      .analysis-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 1.25rem;
+      }
+
+      .analysis-card {
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid rgba(255, 255, 255, 0.07);
+        border-radius: 0.85rem;
+        padding: 1.25rem;
+      }
+
+      .analysis-card h3 {
+        margin: 0 0 0.5rem;
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: #e2e8f0;
+      }
+
+      .analysis-card p {
+        margin: 0;
+        font-size: 0.82rem;
+        line-height: 1.55;
+        color: #94a3b8;
+      }
+
+      .analysis-card ul {
+        margin: 0.6rem 0 0;
+        padding-left: 1.2rem;
+        font-size: 0.8rem;
+        color: #cbd5e1;
+        line-height: 1.6;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Showcase Header -->
+    <header class="showcase-header">
+      <div class="showcase-title">
+        <h1>Nook — 3 Hướng Thông Tin Hữu Ích (Không Trùng Lặp Sidebar)</h1>
+        <p>Thử nghiệm các giá trị thực tế thay vì lặp lại số đếm ghi chú hoặc trạng thái backup.</p>
+      </div>
+
+      <div class="controls-bar">
+        <div class="control-group">
+          <span class="control-label">Chọn Hướng:</span>
+          <div class="btn-group">
+            <button class="nav-btn is-active" data-view="dir1">1. Lối tắt Resume Note</button>
+            <button class="nav-btn" data-view="dir2">2. Master Toolbar (1 Hàng)</button>
+            <button class="nav-btn" data-view="dir3">3. Phím tắt & Breadcrumb</button>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <span class="control-label">Theme:</span>
+          <div class="btn-group" style="padding: 0.35rem 0.5rem; gap: 0.5rem;">
+            <button class="theme-dot-btn is-active" data-theme="coffee" title="Coffee" style="background: #a35616;"></button>
+            <button class="theme-dot-btn" data-theme="light" title="Light" style="background: #4f46e5;"></button>
+            <button class="theme-dot-btn" data-theme="midnight" title="Midnight" style="background: #1e1b4b;"></button>
+            <button class="theme-dot-btn" data-theme="forest" title="Forest" style="background: #235338;"></button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Workspace Preview -->
+    <main class="preview-container">
+      <div class="workspace-frame">
+        <!-- Interactive Banner Indicator -->
+        <div class="indicator-banner" id="indicator-banner">
+          <span id="indicator-text">✨ Hướng 1: Lối tắt tiếp tục ghi chú gần nhất (Resume Note)</span>
+          <div class="indicator-actions" id="indicator-actions">
+            <!-- Dynamic context sub-toggles (e.g. for Dir 3) -->
+          </div>
+        </div>
+
+        <!-- TOPBAR CONTAINER (Replaced dynamically) -->
+        <div id="topbar-container"></div>
+
+        <!-- NOTES PANEL (For Dir 1 & Dir 3, panel has search; For Dir 2, search is inside master bar!) -->
+        <section class="mock-panel" id="main-panel">
+          <!-- Mock Search Toolbar inside Panel -->
+          <div class="mock-toolbar" id="panel-search-toolbar">
+            <div class="mock-search-input">
+              <span style="color: var(--text-muted); display: flex; align-items: center; gap: 0.5rem;">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                Search title or content...
+              </span>
+              <kbd class="mock-kbd">⌘F</kbd>
+            </div>
+            <select class="mock-select">
+              <option>Newest created</option>
+              <option>Recently updated</option>
+              <option>Title (A-Z)</option>
+            </select>
+          </div>
+
+          <!-- Mock Cards Grid -->
+          <div class="mock-grid">
+            <article class="mock-note-card">
+              <div class="mock-note-card-meta">
+                <span class="mock-note-badge">Project</span>
+                <span>Sep 13, 2026</span>
+              </div>
+              <h3 class="mock-note-title">Prompt workflows</h3>
+              <p class="mock-note-preview">
+                Task A: 1 Investigate → Draft Task Contract Ray approves exact Draft → Implement → Verify...
+              </p>
+            </article>
+
+            <article class="mock-note-card">
+              <div class="mock-note-card-meta">
+                <span class="mock-note-badge">General</span>
+                <span>Sep 21, 2026</span>
+              </div>
+              <h3 class="mock-note-title">Claude Code Architecture</h3>
+              <p class="mock-note-preview">
+                Hiểu đúng về Claude Code: coding agent chạy trong terminal. Hỗ trợ tool use, subagents...
+              </p>
+            </article>
+
+            <article class="mock-note-card">
+              <div class="mock-note-card-meta">
+                <span class="mock-note-badge">Meeting</span>
+                <span>Sep 13, 2026</span>
+              </div>
+              <h3 class="mock-note-title">Weekly Protobloc Sync</h3>
+              <p class="mock-note-preview">
+                Review Input Task II: independent read-only audit. Chuẩn bị release version 1.4...
+              </p>
+            </article>
+
+            <article class="mock-note-card">
+              <div class="mock-note-card-meta">
+                <span class="mock-note-badge">Learning</span>
+                <span>Sep 10, 2026</span>
+              </div>
+              <h3 class="mock-note-title">IndexedDB Durable Transactions</h3>
+              <p class="mock-note-preview">
+                Khả năng chịu lỗi và xử lý bất đồng bộ khi ghi batch records. Đảm bảo toàn vẹn dữ liệu...
+              </p>
+            </article>
+          </div>
+        </section>
+      </div>
+
+      <!-- Analysis Breakdown -->
+      <section class="analysis-panel">
+        <h2>💡 Phân Tích Tính Thực Tiễn Của Từng Hướng (*Practical Value*)</h2>
+        <div class="analysis-grid">
+          <div class="analysis-card">
+            <h3>1. Lối tắt Resume Note</h3>
+            <p>
+              Mở ngay note sửa dở dang gần nhất bằng 1 cú click chuột.
+            </p>
+            <ul>
+              <li><strong>Trúng hành vi thực tế:</strong> Phần lớn các lần mở app ghi chú là để viết tiếp note đang làm dở.</li>
+              <li><strong>Tự động cập nhật:</strong> Lấy từ `updatedAt` mới nhất trong IndexedDB.</li>
+              <li>Sidebar hoàn toàn không có thông tin note gần nhất này.</li>
+            </ul>
+          </div>
+
+          <div class="analysis-card">
+            <h3>2. Master Toolbar (Triệt tiêu Topbar)</h3>
+            <p>
+              Gộp toàn bộ Search, Sort và Action buttons vào <strong>1 hàng duy nhất</strong>.
+            </p>
+            <ul>
+              <li><strong>Không còn khái niệm "Heading thừa":</strong> Mọi pixel trên thanh đều là công cụ tương tác thực tế.</li>
+              <li><strong>Tiết kiệm tối đa ~120px:</strong> Thẻ ghi chú đẩy lên sát nóc, cực kỳ đã mắt.</li>
+              <li>Chuẩn UX của các app chuyên nghiệp như Linear, Raycast, Finder.</li>
+            </ul>
+          </div>
+
+          <div class="analysis-card">
+            <h3>3. Phím tắt & Breadcrumb lọc</h3>
+            <p>
+              Hiển thị phím tắt khi bình thường, và biến thành thanh điều kiện lọc khi đang filter.
+            </p>
+            <ul>
+              <li><strong>Hỗ trợ keyboard-first:</strong> Nhắc nhở phím `C` (tạo note), `⌘F` (tìm kiếm), `T` (đổi theme).</li>
+              <li><strong>Quản lý bộ lọc phức tạp:</strong> Khi lọc nhiều điều kiện (ví dụ `Meeting` + `#dev`), có nút `✕ Clear` xóa ngay mà không cần cuộn sidebar.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Simulated Toast for click interactions -->
+    <div class="simulated-toast" id="toast"></div>
+
+    <script>
+      (function () {
+        "use strict";
+
+        const topbarContainer = document.getElementById("topbar-container");
+        const panelSearchToolbar = document.getElementById("panel-search-toolbar");
+        const indicatorText = document.getElementById("indicator-text");
+        const indicatorActions = document.getElementById("indicator-actions");
+        const toast = document.getElementById("toast");
+
+        let currentView = "dir1";
+        let isFilteredState = false; // For Dir 3 toggle
+
+        function showToast(msg) {
+          toast.textContent = msg;
+          toast.style.display = "block";
+          setTimeout(() => {
+            toast.style.display = "none";
+          }, 2400);
+        }
+
+        // Shared action buttons
+        const actionButtonsHTML = `
+          <div class="mock-actions">
+            <button class="mock-btn" title="Toggle theme (T)">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <circle cx="12" cy="12" r="5"></circle>
+                <line x1="12" y1="1" x2="12" y2="3"></line>
+                <line x1="12" y1="21" x2="12" y2="23"></line>
+              </svg>
+              <span>Auto</span>
+            </button>
+            <button class="mock-btn" title="Settings (S)">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+              </svg>
+              <span>Settings</span>
+            </button>
+            <button class="mock-btn" title="Export backup">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <path d="M12 3v12M7.5 10.5 12 15l4.5-4.5M4.5 19.5h15"></path>
+              </svg>
+              <span>Backup</span>
+            </button>
+            <button class="mock-btn" title="Import backup">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <path d="M12 15V3M7.5 7.5 12 3l4.5 4.5M4.5 19.5h15"></path>
+              </svg>
+              <span>Import</span>
+            </button>
+            <button class="mock-btn mock-btn-primary" title="New note (C)">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="M12 5v14M5 12h14"></path>
+              </svg>
+              <span>New note</span>
+            </button>
+          </div>
+        `;
+
+        const views = {
+          // ==========================================
+          // 1. RESUME NOTE
+          // ==========================================
+          dir1: function () {
+            indicatorText.innerHTML = "🎯 <strong>Hướng 1: Lối tắt Resume Note</strong> — Bấm vào để mở ngay note vừa sửa dở dang gần nhất (Thử click vào nút Resume bên dưới!)";
+            indicatorActions.innerHTML = "";
+            panelSearchToolbar.style.display = "flex"; // Keep search in panel
+
+            topbarContainer.innerHTML = `
+              <header class="dir1-topbar">
+                <button class="dir1-resume-btn" id="resume-target-btn" type="button">
+                  <span class="dir1-resume-icon-badge">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="9 14 4 9 9 4"></polyline>
+                      <path d="M20 20v-7a4 4 0 0 0-4-4H4"></path>
+                    </svg>
+                  </span>
+                  <span class="dir1-resume-label">Resume:</span>
+                  <span class="dir1-resume-title">Prompt workflows</span>
+                  <span class="dir1-resume-time">· edited 15m ago</span>
+                  <span class="dir1-resume-arrow">↗</span>
+                </button>
+
+                ${actionButtonsHTML}
+              </header>
+            `;
+
+            document.getElementById("resume-target-btn").addEventListener("click", () => {
+              showToast("📖 Đã mở nhanh ghi chú: \"Prompt workflows\" (Last edited 15m ago)");
+            });
+          },
+
+          // ==========================================
+          // 2. MASTER TOOLBAR (Gộp Search + Actions)
+          // ==========================================
+          dir2: function () {
+            indicatorText.innerHTML = "⚡ <strong>Hướng 2: Master Toolbar</strong> — Triệt tiêu hoàn toàn hàng heading thừa! Search, Sort và Action Buttons hợp nhất 1 hàng!";
+            indicatorActions.innerHTML = "";
+            panelSearchToolbar.style.display = "none"; // Search is now inside Master bar!
+
+            topbarContainer.innerHTML = `
+              <div class="dir2-master-bar">
+                <div class="dir2-left-controls">
+                  <div class="dir2-search-box">
+                    <span style="color: var(--text-muted); display: flex; align-items: center; gap: 0.5rem; font-size: 0.82rem;">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                      </svg>
+                      Search title or content...
+                    </span>
+                    <kbd class="mock-kbd">⌘F</kbd>
+                  </div>
+
+                  <select class="dir2-sort-select">
+                    <option>Newest created</option>
+                    <option>Recently updated</option>
+                    <option>Title (A-Z)</option>
+                  </select>
+
+                  <div class="dir2-view-toggle">
+                    <button class="dir2-view-btn is-active" title="Grid view">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="14" width="7" height="7"></rect>
+                        <rect x="3" y="14" width="7" height="7"></rect>
+                      </svg>
+                    </button>
+                    <button class="dir2-view-btn" title="List view">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="8" y1="6" x2="21" y2="6"></line>
+                        <line x1="8" y1="12" x2="21" y2="12"></line>
+                        <line x1="8" y1="18" x2="21" y2="18"></line>
+                        <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                        <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                        <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="dir2-divider"></div>
+
+                ${actionButtonsHTML}
+              </div>
+            `;
+          },
+
+          // ==========================================
+          // 3. QUERY & KEYBOARD SHORTCUTS
+          // ==========================================
+          dir3: function () {
+            indicatorText.innerHTML = "⌨️ <strong>Hướng 3: Phím tắt & Breadcrumb lọc</strong> — Nhắc phím tắt khi rảnh, biến thành Breadcrumb khi đang lọc";
+            indicatorActions.innerHTML = `
+              <button class="sub-toggle-btn" id="toggle-filter-state-btn">
+                ${isFilteredState ? "↩ Xem trạng thái Rảnh (Shortcuts)" : "⚡ Thử trạng thái Đang Lọc (Filtered)"}
+              </button>
+            `;
+            panelSearchToolbar.style.display = "flex";
+
+            let leftContent = "";
+            if (!isFilteredState) {
+              // Idle state: Helpful shortcuts
+              leftContent = `
+                <div class="dir3-shortcuts-hint">
+                  <span><kbd class="dir3-kbd">C</kbd> New note</span>
+                  <span style="opacity: 0.3;">•</span>
+                  <span><kbd class="dir3-kbd">⌘F</kbd> Search</span>
+                  <span style="opacity: 0.3;">•</span>
+                  <span><kbd class="dir3-kbd">T</kbd> Theme</span>
+                  <span style="opacity: 0.3;">•</span>
+                  <span><kbd class="dir3-kbd">S</kbd> Settings</span>
+                </div>
+              `;
+            } else {
+              // Filtered state: Breadcrumb chips with clear button
+              leftContent = `
+                <div class="dir3-filter-breadcrumb">
+                  <span class="dir3-filter-label">Filtered by:</span>
+                  <span class="dir3-chip dir3-chip-type">📁 Meeting</span>
+                  <span class="dir3-chip dir3-chip-tag">#dev</span>
+                  <button class="dir3-clear-btn" id="clear-chips-btn" type="button" title="Clear all active filters">✕ Clear</button>
+                </div>
+              `;
+            }
+
+            topbarContainer.innerHTML = `
+              <header class="dir3-topbar">
+                ${leftContent}
+                ${actionButtonsHTML}
+              </header>
+            `;
+
+            const toggleBtn = document.getElementById("toggle-filter-state-btn");
+            if (toggleBtn) {
+              toggleBtn.addEventListener("click", () => {
+                isFilteredState = !isFilteredState;
+                views.dir3();
+              });
+            }
+
+            const clearBtn = document.getElementById("clear-chips-btn");
+            if (clearBtn) {
+              clearBtn.addEventListener("click", () => {
+                isFilteredState = false;
+                views.dir3();
+                showToast("✨ Đã xóa tất cả bộ lọc, quay về All notes");
+              });
+            }
+          }
+        };
+
+        // Navigation Switcher handler
+        const navBtns = document.querySelectorAll("[data-view]");
+        navBtns.forEach((btn) => {
+          btn.addEventListener("click", () => {
+            navBtns.forEach((b) => b.classList.toggle("is-active", b === btn));
+            currentView = btn.dataset.view;
+            if (views[currentView]) views[currentView]();
+          });
+        });
+
+        // Theme Switcher handler
+        const themeBtns = document.querySelectorAll("[data-theme]");
+        themeBtns.forEach((btn) => {
+          btn.addEventListener("click", () => {
+            themeBtns.forEach((b) => b.classList.toggle("is-active", b === btn));
+            const theme = btn.dataset.theme;
+            document.documentElement.dataset.theme = theme;
+          });
+        });
+
+        // Initial render
+        views.dir1();
+      })();
+    </script>
+  </body>
+</html>

@@ -229,7 +229,7 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
     window.addEventListener("pagehide", clearAutoThemeTimer);
     elements.organize.addEventListener("click", () => openOrganize());
     elements.export.addEventListener("click", () => exportLibrary());
-    elements.import.addEventListener("click", () => elements.importInput.click());
+    elements.import?.addEventListener("click", () => elements.importInput.click());
     elements.importInput.addEventListener("change", importLibrary);
     elements.newNote.addEventListener("click", () => openNoteEditor());
     elements.search.addEventListener("input", () => {

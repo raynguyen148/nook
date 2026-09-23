@@ -1,6 +1,6 @@
-/* Hallmark · focused redesign: Trash context header · genre: modern-minimal
+/* Hallmark · macrostructure: Workbench · genre: modern-minimal · designed-as-app
  * tone: restrained utilitarian · anchor hue: inherited Nook theme
- * structural fingerprint: preserved sidebar and library workspace
+ * structural fingerprint: side rail + compact library utility bar
  * pre-emit critique: P5 H5 E5 S5 R5 V4
  * ==========================================================================
    Nook - Library Surface
@@ -243,34 +243,55 @@
 
 
 @media (min-width: 821px) {
-  /* Keep the library masthead recognizable while returning more vertical
-   * space to the note grid on laptop and desktop viewports. */
+  /* A single workbench bar replaces the decorative app masthead. Existing
+   * controls keep their behavior and visual language while the note grid gets
+   * the first strong content position. */
   .workspace {
     padding-top: clamp(1rem, 1.5vw, 1.25rem);
   }
 
   .topbar {
-    margin-bottom: clamp(1.1rem, 1.7vw, 1.5rem);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: var(--space-2);
+    margin-bottom: clamp(0.75rem, 1.2vw, 1rem);
+    padding: var(--space-1);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--surface-radius);
+    background: var(--surface-panel);
+    box-shadow: var(--pinned-card-shadow, none);
   }
 
-  .topbar .eyebrow {
-    margin-bottom: 0.3rem;
-    font-size: 0.66rem;
+  .topbar > .toolbar-slot {
+    min-width: 0;
   }
 
-  .topbar h1 {
-    margin-bottom: 0.3rem;
-    font-size: clamp(1.75rem, 2.4vw, 2.15rem);
-    line-height: 1.1;
+  .topbar .toolbar {
+    min-width: 0;
+    grid-template-columns: minmax(12rem, 1fr) auto auto;
+    padding: var(--space-1);
   }
 
-  .topbar .subtitle {
-    font-size: 0.875rem;
-    line-height: 1.45;
+  .topbar-actions {
+    flex-wrap: nowrap;
+  }
+
+  .topbar-actions::before {
+    width: 1px;
+    height: 1.5rem;
+    flex: none;
+    margin-inline: var(--space-1);
+    background: var(--border-subtle);
+    content: "";
   }
 
   .notes-panel {
     padding: clamp(0.9rem, 1.8vw, 1.15rem);
+  }
+
+  .notes-panel:not(.is-trash-view) > .notes-panel__heading {
+    display: none;
   }
 
   .notes-panel__heading {
@@ -288,16 +309,35 @@
     line-height: 1.2;
   }
 
-  .toolbar {
-    padding: 0.36rem;
-  }
-
   .results-meta {
-    margin-top: 0.75rem;
+    margin-top: 0;
   }
 
   .notes-list {
     margin-top: 0.65rem;
+  }
+}
+
+
+
+@media (min-width: 821px) and (max-width: 1100px) {
+  .topbar {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .topbar-actions {
+    width: 100%;
+    justify-content: flex-end;
+    border-top: 1px solid var(--border-subtle);
+    padding-top: var(--space-2);
+  }
+
+  .topbar-actions::before {
+    display: none;
+  }
+
+  .topbar-actions.is-pinned {
+    width: auto;
   }
 }
 

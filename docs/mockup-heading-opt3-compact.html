@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="vi" data-theme="coffee">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Đề xuất 3: Tinh gọn 1 hàng (Compact Single-Row Utility Bar)</title>
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="../css/app.css" />
+    <style>
+      body {
+        margin: 0;
+        padding: 2.5rem 2rem;
+        background: #0f172a;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      }
+      .mockup-wrapper {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+      .badge-header {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: rgba(59, 130, 246, 0.15);
+        color: #60a5fa;
+        border: 1px solid rgba(59, 130, 246, 0.3);
+        padding: 0.4rem 0.85rem;
+        border-radius: 999px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        margin-bottom: 1.25rem;
+      }
+      .workspace-card {
+        background: var(--surface-page);
+        border: 1px solid var(--border-subtle);
+        border-radius: 1.25rem;
+        padding: 1.75rem 2.25rem;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+        color: var(--text-strong);
+      }
+      /* Topbar Proposal 3: Single Row Utility Bar */
+      .topbar-opt3 {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-bottom: 1.25rem;
+        padding: 0.65rem 1rem;
+        background: var(--surface-panel);
+        border: 1px solid var(--border-subtle);
+        border-radius: 0.85rem;
+      }
+      .title-group-opt3 {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+      .title-opt3 {
+        font-size: 1.25rem;
+        font-weight: 750;
+        letter-spacing: -0.02em;
+        color: var(--text-strong);
+        margin: 0;
+      }
+      .count-badge-opt3 {
+        font-size: 0.75rem;
+        font-weight: 700;
+        background: var(--surface-muted);
+        border: 1px solid var(--border-subtle);
+        color: var(--text-muted);
+        padding: 0.15rem 0.55rem;
+        border-radius: 999px;
+      }
+      .divider-opt3 {
+        width: 1px;
+        height: 16px;
+        background: var(--border-subtle);
+      }
+      .status-opt3 {
+        font-size: 0.78rem;
+        color: var(--text-muted);
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+      }
+      .dot-green {
+        width: 6.5px;
+        height: 6.5px;
+        border-radius: 999px;
+        background: #10b981;
+      }
+      /* Action buttons */
+      .actions-opt3 {
+        display: flex;
+        align-items: center;
+        gap: 0.45rem;
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        height: 2.2rem;
+        padding: 0 0.8rem;
+        border-radius: 0.65rem;
+        font-size: 0.8rem;
+        font-weight: 600;
+        cursor: pointer;
+        border: 1px solid var(--border-subtle);
+        background: var(--surface-panel);
+        color: var(--text-strong);
+      }
+      .btn-primary {
+        background: var(--primary-accent);
+        border-color: var(--primary-accent);
+        color: #fff;
+      }
+      /* Panel content */
+      .panel-content {
+        background: var(--surface-panel);
+        border: 1px solid var(--border-subtle);
+        border-radius: 1rem;
+        padding: 1.25rem 1.5rem;
+      }
+      .search-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 2.3rem;
+        background: var(--surface-muted);
+        border: 1px solid var(--border-subtle);
+        border-radius: 0.65rem;
+        padding: 0 0.85rem;
+        font-size: 0.82rem;
+        color: var(--text-muted);
+        margin-bottom: 1.25rem;
+      }
+      .note-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+      }
+      .card {
+        background: var(--note-card-surface, #fdfbf7);
+        border: 1px solid var(--note-card-border, #e5dacb);
+        border-radius: 0.85rem;
+        padding: 1rem;
+      }
+      .card-tag {
+        font-size: 0.68rem;
+        font-weight: 700;
+        color: var(--primary-accent);
+        background: var(--primary-accent-soft);
+        padding: 0.15rem 0.45rem;
+        border-radius: 0.3rem;
+        display: inline-block;
+        margin-bottom: 0.5rem;
+      }
+      .card-title {
+        font-size: 0.95rem;
+        font-weight: 700;
+        margin: 0 0 0.35rem;
+        color: var(--note-card-title);
+      }
+      .card-desc {
+        font-size: 0.8rem;
+        color: var(--note-card-preview);
+        margin: 0;
+        line-height: 1.45;
+      }
+      .nav-links {
+        margin-top: 1.5rem;
+        display: flex;
+        gap: 1rem;
+        font-size: 0.85rem;
+      }
+      .nav-links a {
+        color: #60a5fa;
+        text-decoration: none;
+      }
+      .nav-links a:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="mockup-wrapper">
+      <div class="badge-header">
+        <span>⚡ Đề xuất 3: Tinh gọn 1 hàng (Compact Single-Row Utility Bar)</span>
+      </div>
+
+      <div class="workspace-card">
+        <!-- TOPBAR: Tinh gọn thành 1 hàng ngang duy nhất -->
+        <header class="topbar-opt3">
+          <div class="title-group-opt3">
+            <h1 class="title-opt3">Personal Notes</h1>
+            <span class="count-badge-opt3">81 notes</span>
+            <span class="divider-opt3"></span>
+            <span class="status-opt3">
+              <span class="dot-green"></span>
+              <span>Updated today</span>
+            </span>
+          </div>
+
+          <div class="actions-opt3">
+            <button class="btn">Auto</button>
+            <button class="btn">Settings</button>
+            <button class="btn">Backup</button>
+            <button class="btn">Import</button>
+            <button class="btn btn-primary">+ New note</button>
+          </div>
+        </header>
+
+        <!-- PANEL -->
+        <div class="panel-content">
+          <div class="search-bar">
+            <span>🔍 Search title or content...</span>
+            <span style="font-size: 0.72rem; font-weight: 600;">⌘F</span>
+          </div>
+
+          <div class="note-grid">
+            <div class="card">
+              <span class="card-tag">General</span>
+              <h3 class="card-title">Claude Code Architecture</h3>
+              <p class="card-desc">Hiểu đúng về Claude Code: coding agent chạy trong terminal. Hỗ trợ tool use...</p>
+            </div>
+            <div class="card">
+              <span class="card-tag">Meeting</span>
+              <h3 class="card-title">Weekly Protobloc Sync</h3>
+              <p class="card-desc">Review Input Task II: independent read-only audit. Draft Task Contract...</p>
+            </div>
+            <div class="card">
+              <span class="card-tag">Learning</span>
+              <h3 class="card-title">IndexedDB Durable Transactions</h3>
+              <p class="card-desc">Khả năng chịu lỗi và xử lý bất đồng bộ khi ghi batch records...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="nav-links">
+        <a href="heading-redesign-mockup.html">← Xem Dashboard So Sánh Tổng Hợp (Interactive)</a>
+        <a href="mockup-heading-opt1-contextual.html">Xem Đề xuất 1 (Contextual) →</a>
+        <a href="mockup-heading-opt2-artisan.html">Xem Đề xuất 2 (Artisan) →</a>
+      </div>
+    </div>
+  </body>
+</html>

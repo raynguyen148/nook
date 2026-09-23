@@ -1584,7 +1584,7 @@
   height: 0.9rem;
 }
 
-.secondary-picker-body {
+.note-detail-surface .dialog-body.secondary-picker-body {
   container-type: inline-size;
   display: flex;
   flex-direction: column;
