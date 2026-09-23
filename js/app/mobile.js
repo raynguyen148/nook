@@ -178,7 +178,8 @@ globalThis[Symbol.for("nook.app.modules")].register("mobile", (app) => {
   function openMobileCardActions(card, invoker) {
     if (!mobileQuery.matches) return;
     elements.mobileCardTitle.textContent = card.querySelector(".note-card__title").textContent;
-    const actions = [...card.querySelectorAll(".note-card__pin-toggle, .note-card__actions > button:not(.note-card__action--side-note)")];
+    const pinAction = card.querySelector(".note-card__pin-toggle");
+    const actions = pinAction ? [pinAction] : [];
     elements.mobileCardActions.replaceChildren(...actions.map((source) => {
       const isDanger = source.classList.contains("note-card__action--danger");
       const button = api.createElement("button", {
@@ -193,7 +194,6 @@ globalThis[Symbol.for("nook.app.modules")].register("mobile", (app) => {
       }
       const labelText = source.title === "Pin" ? "Pin note"
         : source.title === "Unpin" ? "Unpin note"
-        : source.title === "Preview" ? "Quick preview"
         : source.title;
       button.append(api.createElement("span", {
         className: "mobile-card-action-item__label",

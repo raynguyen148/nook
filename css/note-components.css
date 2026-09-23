@@ -97,7 +97,7 @@
 
 .toolbar {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto auto;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
   gap: 0.6rem;
 }
@@ -678,6 +678,16 @@ select::-ms-expand {
 
 
 
+.results-meta__end {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.65rem;
+}
+
+
+
 .notes-list {
   --notes-columns: 1;
 
@@ -991,7 +1001,7 @@ select::-ms-expand {
 .note-card__date {
   overflow: hidden;
   color: var(--note-card-muted, #64748b);
-  font-size: 0.72rem;
+  font-size: 0.625rem;
   font-weight: 500;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -1059,9 +1069,16 @@ select::-ms-expand {
 .note-card__tags {
   display: flex;
   align-items: center;
+  flex: 1 1 auto;
   min-width: 0;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 0.32rem;
+  overflow: hidden;
+}
+
+.note-card__tags > .tag-chip,
+.note-card__tags > .more-tags {
+  flex: none;
 }
 
 
@@ -1237,6 +1254,43 @@ select::-ms-expand {
 .note-card--pinned .note-card__pin-toggle:active,
 .note-card--pinned .note-card__pin-toggle.is-active {
   transform: translateY(1px);
+}
+
+
+.note-card__top-actions {
+  position: absolute;
+  z-index: 2;
+  top: 0.58rem;
+  right: 0.58rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity var(--interaction-duration) var(--interaction-easing);
+}
+
+.note-card:hover .note-card__top-actions,
+.note-card:focus-within .note-card__top-actions {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.note-card__top-actions .note-card__pin-toggle {
+  position: static;
+  width: 1.85rem;
+  height: 1.85rem;
+  opacity: 1;
+  pointer-events: auto;
+  transform: none;
+}
+
+.note-card__top-actions .note-card__action--side-note {
+  width: 1.85rem;
+  min-height: 1.85rem;
+  padding: 0.25rem;
 }
 
 

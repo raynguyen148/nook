@@ -240,6 +240,11 @@
   margin-top: 1rem;
 }
 
+.results-meta #notes-range {
+  flex: none;
+  white-space: nowrap;
+}
+
 
 
 @media (min-width: 821px) {
@@ -269,7 +274,7 @@
 
   .topbar .toolbar {
     min-width: 0;
-    grid-template-columns: minmax(12rem, 1fr) auto auto;
+    grid-template-columns: minmax(12rem, 1fr) auto;
   }
 
   .topbar > .toolbar-slot > .toolbar:not(.is-pinned) {
@@ -318,6 +323,21 @@
 
   .results-meta {
     margin-top: 0;
+  }
+
+  .results-meta__start {
+    display: flex;
+    min-width: 0;
+    flex: 1 1 auto;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem 0.7rem;
+  }
+
+  .notes-panel .active-filters {
+    min-width: 0;
+    align-items: center;
+    margin: 0;
   }
 
   .notes-list {
@@ -376,7 +396,7 @@
 }
 
 @media (max-width: 959px) {
-  .note-card__action.note-card__action--side-note {
+  .note-card__top-actions .note-card__action--side-note {
     display: none;
   }
 }
@@ -426,12 +446,6 @@
 
 @media (hover: hover) and (min-width: 621px) {
   .note-card__actions {
-    opacity: 0.8;
-    transition: opacity var(--interaction-duration) var(--interaction-easing);
-  }
-
-  .note-card:hover .note-card__actions,
-  .note-card:focus-within .note-card__actions {
     opacity: 1;
   }
 }
@@ -661,12 +675,6 @@
   background: rgb(248 250 252 / 96%);
   box-shadow: 0 12px 28px rgb(23 30 56 / 14%);
   animation: topbar-actions-pin-in var(--motion-duration-medium) var(--motion-ease-out);
-}
-
-
-
-.toolbar.is-pinned .view-mode-control {
-  display: none;
 }
 
 

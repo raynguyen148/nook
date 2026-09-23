@@ -263,72 +263,6 @@
                   <option value="title-desc">Title Z–A</option>
                 </select>
               </div>
-              <!-- Hallmark · component: layout-view icon set · Finder-inspired, Nook-drawn -->
-              <div class="view-mode-control" role="group" aria-label="Note layout">
-                <div class="view-mode-control__choices">
-                  <div class="view-mode-choice">
-                    <button
-                      id="focus-view-btn"
-                      class="view-mode-button"
-                      type="button"
-                      aria-pressed="true"
-                      aria-label="Focus view: one column"
-                      aria-keyshortcuts="1"
-                      aria-describedby="focus-view-tooltip"
-                    >
-                      <svg class="view-mode-icon view-mode-icon--focus" viewBox="0 0 24 24" aria-hidden="true">
-                        <path d="M4.5 6.75h15M4.5 12h15M4.5 17.25h15" />
-                      </svg>
-                    </button>
-                    <span id="focus-view-tooltip" class="shortcut-tooltip" role="tooltip">
-                      <span>Focus view</span>
-                      <kbd>1</kbd>
-                    </span>
-                  </div>
-                  <div class="view-mode-choice">
-                    <button
-                      id="comfortable-view-btn"
-                      class="view-mode-button"
-                      type="button"
-                      aria-pressed="false"
-                      aria-label="Comfortable view: two columns"
-                      aria-keyshortcuts="2"
-                      aria-describedby="comfortable-view-tooltip"
-                    >
-                      <svg class="view-mode-icon view-mode-icon--comfortable" viewBox="0 0 24 24" aria-hidden="true">
-                        <rect x="3.75" y="4" width="7" height="16" rx="1.6" />
-                        <rect x="13.25" y="4" width="7" height="16" rx="1.6" />
-                      </svg>
-                    </button>
-                    <span id="comfortable-view-tooltip" class="shortcut-tooltip" role="tooltip">
-                      <span>Comfortable view</span>
-                      <kbd>2</kbd>
-                    </span>
-                  </div>
-                  <div class="view-mode-choice">
-                    <button
-                      id="compact-view-btn"
-                      class="view-mode-button"
-                      type="button"
-                      aria-pressed="false"
-                      aria-label="Compact view: four columns"
-                      aria-keyshortcuts="3"
-                      aria-describedby="compact-view-tooltip"
-                    >
-                      <svg class="view-mode-icon view-mode-icon--compact" viewBox="0 0 24 24" aria-hidden="true">
-                        <rect x="4" y="4" width="6.25" height="6.25" rx="1.35" />
-                        <rect x="13.75" y="4" width="6.25" height="6.25" rx="1.35" />
-                        <rect x="4" y="13.75" width="6.25" height="6.25" rx="1.35" />
-                        <rect x="13.75" y="13.75" width="6.25" height="6.25" rx="1.35" />
-                      </svg>
-                    </button>
-                    <span id="compact-view-tooltip" class="shortcut-tooltip" role="tooltip">
-                      <span>Compact view</span>
-                      <kbd>3</kbd>
-                    </span>
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
           <div class="topbar-actions">
@@ -505,11 +439,81 @@
           </header>
           <div id="mobile-type-chips" class="mobile-type-chips mobile-only" role="group" aria-label="Quick filter by note type"></div>
           <div id="mobile-trash-actions" class="mobile-trash-actions mobile-only"></div>
-          <div id="active-filters" class="active-filters" aria-live="polite"></div>
 
           <div class="results-meta">
-            <span id="notes-range"></span>
-            <span id="sort-description"></span>
+            <div class="results-meta__start">
+              <span id="notes-range"></span>
+              <div id="active-filters" class="active-filters" aria-live="polite"></div>
+            </div>
+            <div class="results-meta__end">
+              <span id="sort-description"></span>
+              <!-- Hallmark · component: layout-view icon set · Finder-inspired, Nook-drawn -->
+              <div class="view-mode-control" role="group" aria-label="Note layout">
+                <div class="view-mode-control__choices">
+                  <div class="view-mode-choice">
+                    <button
+                      id="focus-view-btn"
+                      class="view-mode-button"
+                      type="button"
+                      aria-pressed="true"
+                      aria-label="Focus view: one column"
+                      aria-keyshortcuts="1"
+                      aria-describedby="focus-view-tooltip"
+                    >
+                      <svg class="view-mode-icon view-mode-icon--focus" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M4.5 6.75h15M4.5 12h15M4.5 17.25h15" />
+                      </svg>
+                    </button>
+                    <span id="focus-view-tooltip" class="shortcut-tooltip" role="tooltip">
+                      <span>Focus view</span>
+                      <kbd>1</kbd>
+                    </span>
+                  </div>
+                  <div class="view-mode-choice">
+                    <button
+                      id="comfortable-view-btn"
+                      class="view-mode-button"
+                      type="button"
+                      aria-pressed="false"
+                      aria-label="Comfortable view: two columns"
+                      aria-keyshortcuts="2"
+                      aria-describedby="comfortable-view-tooltip"
+                    >
+                      <svg class="view-mode-icon view-mode-icon--comfortable" viewBox="0 0 24 24" aria-hidden="true">
+                        <rect x="3.75" y="4" width="7" height="16" rx="1.6" />
+                        <rect x="13.25" y="4" width="7" height="16" rx="1.6" />
+                      </svg>
+                    </button>
+                    <span id="comfortable-view-tooltip" class="shortcut-tooltip" role="tooltip">
+                      <span>Comfortable view</span>
+                      <kbd>2</kbd>
+                    </span>
+                  </div>
+                  <div class="view-mode-choice">
+                    <button
+                      id="compact-view-btn"
+                      class="view-mode-button"
+                      type="button"
+                      aria-pressed="false"
+                      aria-label="Compact view: four columns"
+                      aria-keyshortcuts="3"
+                      aria-describedby="compact-view-tooltip"
+                    >
+                      <svg class="view-mode-icon view-mode-icon--compact" viewBox="0 0 24 24" aria-hidden="true">
+                        <rect x="4" y="4" width="6.25" height="6.25" rx="1.35" />
+                        <rect x="13.75" y="4" width="6.25" height="6.25" rx="1.35" />
+                        <rect x="4" y="13.75" width="6.25" height="6.25" rx="1.35" />
+                        <rect x="13.75" y="13.75" width="6.25" height="6.25" rx="1.35" />
+                      </svg>
+                    </button>
+                    <span id="compact-view-tooltip" class="shortcut-tooltip" role="tooltip">
+                      <span>Compact view</span>
+                      <kbd>3</kbd>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
 
           <div id="notes-list" class="notes-list" tabindex="-1" aria-busy="true"></div>

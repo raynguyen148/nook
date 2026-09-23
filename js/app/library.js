@@ -19,6 +19,7 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
   let sortPicker = null;
   let tagFilterLayoutFrame = 0;
   let tagFilterResizeObserver = null;
+  let noteCardTagResizeObserver = null;
   const TAG_FILTER_DESKTOP_QUERY = "(min-width: 821px)";
   const TAG_FILTER_HEIGHT_RESERVE = 12;
   const RESPONSIVE_PAGINATION_QUERIES = [
@@ -258,6 +259,60 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
     });
     button.addEventListener("click", () => toggleTagFilter(tag.id));
     return button;
+  }
+
+  function fitNoteCardTagRow(row) {
+    const chips = [...row.querySelectorAll(":scope > .tag-chip")];
+    const more = row.querySelector(":scope > .more-tags");
+    if (!more || !chips.length || !row.clientWidth) return;
+
+    chips.forEach((chip) => chip.classList.remove("is-hidden"));
+    more.classList.add("is-hidden");
+    const widths = chips.map((chip) => chip.getBoundingClientRect().width);
+    const gap = Number.parseFloat(window.getComputedStyle(row).columnGap) || 0;
+    const available = row.clientWidth;
+    const fullWidth = widths.reduce((sum, width) => sum + width, 0) + gap * (chips.length - 1);
+    let visibleCount = chips.length;
+
+    if (fullWidth > available) {
+      visibleCount = 0;
+      for (let candidate = chips.length - 1; candidate >= 0; candidate -= 1) {
+        const hiddenCount = chips.length - candidate;
+        const chipWidth = widths.slice(0, candidate).reduce((sum, width) => sum + width, 0);
+        const chipGaps = gap * Math.max(0, candidate - 1);
+        more.textContent = `+${hiddenCount}`;
+        more.classList.remove("is-hidden");
+        const moreWidth = more.getBoundingClientRect().width;
+        more.classList.add("is-hidden");
+        const moreGap = candidate ? gap : 0;
+        if (chipWidth + chipGaps + moreGap + moreWidth <= available) {
+          visibleCount = candidate;
+          break;
+        }
+      }
+    }
+
+    chips.slice(visibleCount).forEach((chip) => chip.classList.add("is-hidden"));
+    const hiddenCount = chips.length - visibleCount;
+    more.classList.toggle("is-hidden", hiddenCount === 0);
+    if (hiddenCount) {
+      const hiddenLabels = chips.slice(visibleCount).map((chip) => chip.textContent).join(", ");
+      more.textContent = `+${hiddenCount}`;
+      more.title = hiddenLabels;
+      more.setAttribute("aria-label", `${hiddenCount} more tags: ${hiddenLabels}`);
+    }
+  }
+
+  function observeNoteCardTagRows() {
+    const rows = [...document.querySelectorAll(".note-card__tags:has(> .more-tags)")];
+    noteCardTagResizeObserver?.disconnect();
+    if (!noteCardTagResizeObserver && typeof ResizeObserver === "function") {
+      noteCardTagResizeObserver = new ResizeObserver((entries) => {
+        entries.forEach(({ target }) => fitNoteCardTagRow(target));
+      });
+    }
+    rows.forEach((row) => noteCardTagResizeObserver?.observe(row));
+    window.requestAnimationFrame(() => rows.forEach(fitNoteCardTagRow));
   }
 
   function tagFilterOptions() {
@@ -1293,6 +1348,7 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
     availableNotes.forEach((note) => fragment.append(createNoteCard(note, { secondary: true })));
 
     elements.secondaryNotesList.append(fragment);
+    observeNoteCardTagRows();
     elements.secondaryNotesList.scrollTop = scrollTop;
     if (allAvailableNotes.length > availableNotes.length) {
       elements.secondaryNotesList.append(createElement("p", {
@@ -1882,7 +1938,7 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
     });
     const more = createElement("button", {
       className: "icon-button mobile-only mobile-card-more", type: "button",
-      attributes: { "aria-label": `Actions for ${note.title}`, "aria-haspopup": "dialog" },
+      attributes: { "aria-label": `Actions for ${note.title}`, title: "More actions", "aria-haspopup": "dialog" },
     });
     more.append(createNoteCardActionIcon([
       ["circle", { cx: "5", cy: "12", r: "1" }],
@@ -1890,7 +1946,6 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
       ["circle", { cx: "19", cy: "12", r: "1" }],
     ]));
     more.addEventListener("click", () => api.openMobileCardActions(card, more));
-    const actionInvoker = (fallback) => !secondary && window.matchMedia("(max-width: 820px)").matches ? more : fallback;
     const content = createElement("div", { className: "note-card__content" });
     const meta = createElement("div", { className: "note-card__meta" });
     meta.append(makeTypeBadge(type, { isFilter: !secondary && !ui.trashOnly }));
@@ -1905,7 +1960,7 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
     const titleButton = createElement("button", {
       className: "note-card__title",
       type: "button",
-      attributes: { "aria-label": `Preview note: ${note.title}` },
+      attributes: { "aria-label": `Open note: ${note.title}` },
     });
     appendHighlightedText(titleButton, note.title);
     titleButton.addEventListener("click", () => secondary ? selectSecondaryNote(note.id) : openQuickView(note, titleButton));
@@ -1916,37 +1971,23 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
     const footer = createElement("div", { className: "note-card__footer" });
     const tags = createElement("div", { className: "note-card__tags" });
     const resolvedTags = note.tagIds.map(tagFor).filter(Boolean);
-    resolvedTags.slice(0, 3).forEach((tag) => {
+    resolvedTags.forEach((tag) => {
       tags.append(
         (secondary || ui.trashOnly)
-          ? createElement("span", { className: "tag-chip", text: tagLabel(tag) })
+          ? createElement("span", { className: "tag-chip", text: tagLabel(tag), attributes: { title: tagLabel(tag) } })
           : makeTagButton(tag, ui.tagIds.has(tag.id)),
       );
     });
-    if (resolvedTags.length > 3) {
+    if (resolvedTags.length) {
       tags.append(
         createElement("span", {
-          className: "more-tags",
-          text: `+${resolvedTags.length - 3}`,
-          attributes: { title: `${resolvedTags.length - 3} more tags in Preview` },
+          className: "more-tags is-hidden",
         }),
       );
     }
     if (!resolvedTags.length) tags.append(createElement("span", { className: "untagged", text: "No tags" }));
 
     const actions = createElement("div", { className: "note-card__actions" });
-    const view = createElement("button", {
-      className: "note-card__action",
-      type: "button",
-      attributes: { "aria-label": `Preview ${note.title}`, title: "Preview" },
-    });
-    view.append(
-      createNoteCardActionIcon([
-        ["path", { d: "M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" }],
-        ["circle", { cx: "12", cy: "12", r: "3" }],
-      ]),
-    );
-    view.addEventListener("click", () => secondary ? selectSecondaryNote(note.id) : openQuickView(note, actionInvoker(view)));
     const copy = createElement("button", {
       className: "note-card__action",
       type: "button",
@@ -1979,7 +2020,7 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
         ["path", { d: "M4.5 19.5 6 14l9.6-9.6a1.65 1.65 0 0 1 2.35 0l1.65 1.65a1.65 1.65 0 0 1 0 2.35L10 18l-5.5 1.5Z" }],
       ]),
     );
-    edit.addEventListener("click", () => secondary ? selectSecondaryNote(note.id, "edit") : openNoteEditor(note, { invoker: actionInvoker(edit) }));
+    edit.addEventListener("click", () => secondary ? selectSecondaryNote(note.id, "edit") : openNoteEditor(note, { invoker: edit }));
     const remove = createElement("button", {
       className: `note-card__action ${isDeleted ? "note-card__action--restore" : "note-card__action--danger"}`,
       type: "button",
@@ -2001,27 +2042,7 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
     );
     remove.addEventListener("click", () => (isDeleted ? restoreNoteWithFeedback(note) : deleteNoteWithConfirmation(note, { preserveSidePicker: secondary })));
     if (isDeleted) remove.append(createElement("span", { className: "mobile-only", text: "Restore" }));
-    actions.append(copy, view);
-    if (!isDeleted && !secondary) {
-      const sideNote = createElement("button", {
-        className: "note-card__action note-card__action--side-note",
-        type: "button",
-        attributes: {
-          "aria-label": `Open ${note.title} with Side Note`,
-          title: "Open with Side Note",
-        },
-      });
-      sideNote.append(createNoteCardActionIcon([
-        ["rect", { x: "3", y: "3", width: "18", height: "18", rx: "3.5" }],
-        ["rect", { x: "13.5", y: "6", width: "4.5", height: "12", rx: "1.5", fill: "currentColor", stroke: "none" }],
-      ]));
-      sideNote.addEventListener("click", () => {
-        if (!window.matchMedia("(min-width: 960px)").matches) return;
-        openQuickView(note, sideNote);
-        void openDualPane({ startWithPicker: true });
-      });
-      actions.append(sideNote);
-    }
+    actions.append(copy);
     if (!isDeleted) actions.append(edit);
     actions.append(remove);
     if (isDeleted) {
@@ -2046,7 +2067,26 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
       actions.append(permanentRemove);
     }
     footer.append(tags, actions);
+    const topActions = createElement("div", { className: "note-card__top-actions" });
     if (!isDeleted && !secondary) {
+      const sideNote = createElement("button", {
+        className: "note-card__action note-card__action--side-note",
+        type: "button",
+        attributes: {
+          "aria-label": `Open ${note.title} with Side Note`,
+          title: "Open with Side Note",
+        },
+      });
+      sideNote.append(createNoteCardActionIcon([
+        ["rect", { x: "3", y: "3", width: "18", height: "18", rx: "3.5" }],
+        ["rect", { x: "13.5", y: "6", width: "4.5", height: "12", rx: "1.5", fill: "currentColor", stroke: "none" }],
+      ]));
+      sideNote.addEventListener("click", () => {
+        if (!window.matchMedia("(min-width: 960px)").matches) return;
+        openQuickView(note, sideNote);
+        void openDualPane({ startWithPicker: true });
+      });
+      topActions.append(sideNote);
       const pin = createElement("button", {
         className: "note-card__pin-toggle",
         type: "button",
@@ -2058,10 +2098,11 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
       });
       pin.append(createPinIcon());
       pin.addEventListener("click", () => toggleNotePinned(note));
-      card.append(pin);
+      topActions.append(pin);
     }
     card.append(content, footer);
-    if (!secondary) card.append(more);
+    if (topActions.childElementCount) card.append(topActions);
+    if (!isDeleted && !secondary) card.append(more);
     if (secondary) card.addEventListener("click", (event) => {
       if (!event.target.closest("button")) void selectSecondaryNote(note.id);
     });
@@ -2130,6 +2171,7 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
     });
     empty.append(action);
     elements.notesList.replaceChildren(empty);
+    observeNoteCardTagRows();
   }
 
   function paginationItems(totalPages) {
@@ -2324,6 +2366,7 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
     const fragment = document.createDocumentFragment();
     pageNotes.forEach((note) => fragment.append(createNoteCard(note)));
     elements.notesList.replaceChildren(fragment);
+    observeNoteCardTagRows();
     renderPagination(totalPages);
     animateNotesContent(motion);
   }
