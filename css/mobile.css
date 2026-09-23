@@ -305,37 +305,21 @@ dialog:not([open]),
   #search-input { font-size: 16px; min-height: 44px; }
   .notes-panel .search-shortcut { display: none; }
   .notes-panel .clear-search { width: 44px; height: 44px; }
-  .notes-panel .results-meta {
-    margin: 0;
-    padding: 0.35rem 0.25rem 0.45rem;
-    font-size: 0.78125rem;
-    line-height: 1.4;
-    color: var(--text-muted);
-    display: flex;
+  .notes-panel__footer {
+    width: 100%;
     align-items: center;
-    justify-content: space-between;
-    gap: var(--space-2);
-    font-variant-numeric: tabular-nums;
-    flex-wrap: wrap;
+    flex-direction: column;
+    justify-content: center;
+    margin-top: 0.5rem;
+    padding: 0.15rem 0.25rem 0.45rem;
+    gap: 0.35rem 0.65rem;
   }
-  .notes-panel .results-meta__start {
-    display: grid;
-    width: 100%;
-    min-width: 0;
-    gap: 0;
-  }
-  .notes-panel .results-meta__end {
-    width: 100%;
-    justify-content: flex-end;
-  }
-  .notes-panel .results-meta #notes-range {
-    font-weight: 600;
+  .notes-panel__range {
     color: var(--text-strong);
-  }
-  .notes-panel .results-meta #sort-description {
-    font-weight: 500;
-    color: var(--text-muted);
-    font-size: 0.75rem;
+    font-size: 0.78125rem;
+    font-weight: 400;
+    line-height: 1.4;
+    text-align: center;
   }
   .notes-panel .active-filters {
     margin: 0;
@@ -605,8 +589,8 @@ dialog:not([open]),
   }
   /* Pagination Touch Targets & Spacing */
   .notes-panel .pagination {
-    margin-top: 1.5rem;
-    margin-bottom: 0.75rem;
+    width: 100%;
+    margin: 0;
     gap: 0.35rem;
     padding: 0.25rem;
     justify-content: center;

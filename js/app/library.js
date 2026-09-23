@@ -451,10 +451,10 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
 
     const allNotesCount = library.notes.filter((note) => !isDeletedNote(note)).length;
     elements.notesPanel.classList.toggle("is-trash-view", ui.trashOnly);
-    elements.notesEyebrow.textContent = ui.trashOnly ? "Deleted notes" : "Browse";
     elements.notesHeading.textContent = ui.trashOnly ? "Trash" : "All notes";
-    elements.notesDescription.classList.toggle("is-hidden", !ui.trashOnly);
-    elements.leaveTrash.classList.toggle("is-hidden", !ui.trashOnly);
+    elements.notesSubtitle.textContent = ui.trashOnly
+      ? "Deleted notes stay here until you restore or permanently remove them."
+      : "Browse, search, and manage your complete collection of personal notes.";
     elements.allNotesSpaceCount.textContent = allNotesCount;
     elements.allNotesSpace.title = `All notes (${allNotesCount})`;
     elements.trashSpaceCount.textContent = trashCount;
@@ -2345,11 +2345,9 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
     const pageNotes = matchingNotes.slice(start, start + pageSize);
     const end = start + pageNotes.length;
 
-    elements.notesCount.textContent = pluralize(matchingNotes.length, "note");
     elements.notesRange.textContent = matchingNotes.length
-      ? `Showing ${start + 1}–${end} of ${matchingNotes.length}`
+      ? `Showing ${start + 1}–${end} of ${pluralize(matchingNotes.length, "note")}`
       : "No matching notes";
-    elements.sortDescription.textContent = `Sorted: ${SORT_LABELS[ui.sort]}`;
     const hasSearchQuery = Boolean(ui.query);
     elements.clearSearch.classList.toggle("is-hidden", !hasSearchQuery);
     elements.searchShortcut.classList.toggle("is-hidden", hasSearchQuery);

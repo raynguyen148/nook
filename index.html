@@ -375,78 +375,14 @@
         </header>
 
         <section class="notes-panel" aria-labelledby="notes-heading">
-          <div class="notes-panel__heading">
+          <header class="notes-panel__heading">
             <div class="notes-panel__context">
-              <button id="leave-trash-btn" class="text-button notes-panel__back is-hidden" type="button">
-                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <path d="m9.75 4.5-3.5 3.5 3.5 3.5" />
-                </svg>
-                <span>Back to all notes</span>
-              </button>
-              <p id="notes-eyebrow" class="eyebrow">Browse</p>
               <div class="notes-panel__title-row">
                 <h2 id="notes-heading">All notes</h2>
-                <span id="notes-description" class="shortcut-button notes-panel__help is-hidden">
-                  <button
-                    class="notes-panel__help-trigger"
-                    type="button"
-                    aria-label="About Trash"
-                    aria-describedby="notes-description-tooltip"
-                  >
-                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                      <circle cx="8" cy="8" r="6" />
-                      <path d="M8 7.25v4M8 4.75h.01" />
-                    </svg>
-                  </button>
-                  <span id="notes-description-tooltip" class="shortcut-tooltip notes-panel__description" role="tooltip">
-                    <span>Deleted notes stay here until you restore or permanently delete them.</span>
-                  </span>
-                </span>
               </div>
+              <p id="notes-subtitle" class="notes-panel__subtitle">Browse, search, and manage your complete collection of personal notes.</p>
             </div>
             <div class="notes-panel__summary">
-              <span id="notes-count" class="notes-count" aria-live="polite"></span>
-            </div>
-          </div>
-
-          <header class="mobile-library-header mobile-only">
-            <h1>
-              <button id="mobile-space-picker" class="button button-secondary mobile-space-picker" type="button" aria-haspopup="dialog" aria-controls="mobile-space-dialog">
-                <span class="mobile-space-icon" aria-hidden="true">
-                  <svg class="mobile-space-icon__notes" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="3" y="3" width="18" height="18" rx="2" />
-                    <path d="M7 8h10M7 12h10M7 16h6" />
-                  </svg>
-                  <svg class="mobile-space-icon__trash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7m4-7v7" />
-                  </svg>
-                </span>
-                <span id="mobile-library-title">All notes</span>
-                <svg class="mobile-space-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <path d="m6 9 6 6 6-6"/>
-                </svg>
-              </button>
-            </h1>
-            <div class="mobile-library-header__actions">
-              <button id="mobile-theme-btn" class="icon-button" type="button" aria-label="Change theme" title="Change theme">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></svg>
-              </button>
-              <button id="mobile-open-filters" class="icon-button" type="button" aria-label="Filters and sort" aria-haspopup="dialog" aria-controls="mobile-filter-dialog">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M7 12h10m-7 5h4"/></svg>
-                <span id="mobile-active-filter-count" class="mobile-filter-count is-hidden"></span>
-              </button>
-            </div>
-          </header>
-          <div id="mobile-type-chips" class="mobile-type-chips mobile-only" role="group" aria-label="Quick filter by note type"></div>
-          <div id="mobile-trash-actions" class="mobile-trash-actions mobile-only"></div>
-
-          <div class="results-meta">
-            <div class="results-meta__start">
-              <span id="notes-range"></span>
-              <div id="active-filters" class="active-filters" aria-live="polite"></div>
-            </div>
-            <div class="results-meta__end">
-              <span id="sort-description"></span>
               <!-- Hallmark · component: layout-view icon set · Finder-inspired, Nook-drawn -->
               <div class="view-mode-control" role="group" aria-label="Note layout">
                 <div class="view-mode-control__choices">
@@ -514,10 +450,46 @@
                 </div>
               </div>
             </div>
-          </div>
+          </header>
+
+          <header class="mobile-library-header mobile-only">
+            <h1>
+              <button id="mobile-space-picker" class="button button-secondary mobile-space-picker" type="button" aria-haspopup="dialog" aria-controls="mobile-space-dialog">
+                <span class="mobile-space-icon" aria-hidden="true">
+                  <svg class="mobile-space-icon__notes" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="3" width="18" height="18" rx="2" />
+                    <path d="M7 8h10M7 12h10M7 16h6" />
+                  </svg>
+                  <svg class="mobile-space-icon__trash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7m4-7v7" />
+                  </svg>
+                </span>
+                <span id="mobile-library-title">All notes</span>
+                <svg class="mobile-space-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="m6 9 6 6 6-6"/>
+                </svg>
+              </button>
+            </h1>
+            <div class="mobile-library-header__actions">
+              <button id="mobile-theme-btn" class="icon-button" type="button" aria-label="Change theme" title="Change theme">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></svg>
+              </button>
+              <button id="mobile-open-filters" class="icon-button" type="button" aria-label="Filters and sort" aria-haspopup="dialog" aria-controls="mobile-filter-dialog">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M7 12h10m-7 5h4"/></svg>
+                <span id="mobile-active-filter-count" class="mobile-filter-count is-hidden"></span>
+              </button>
+            </div>
+          </header>
+          <div id="mobile-type-chips" class="mobile-type-chips mobile-only" role="group" aria-label="Quick filter by note type"></div>
+          <div id="mobile-trash-actions" class="mobile-trash-actions mobile-only"></div>
+
+          <div id="active-filters" class="active-filters" aria-live="polite"></div>
 
           <div id="notes-list" class="notes-list" tabindex="-1" aria-busy="true"></div>
-          <nav id="pagination" class="pagination is-hidden" aria-label="Notes pagination"></nav>
+          <footer class="notes-panel__footer">
+            <span id="notes-range" class="notes-panel__range" role="status" aria-live="polite" aria-atomic="true"></span>
+            <nav id="pagination" class="pagination is-hidden" aria-label="Notes pagination"></nav>
+          </footer>
         </section>
 
         <section id="note-detail-workspace" class="note-detail-workspace is-hidden" aria-label="Note detail">

@@ -189,7 +189,6 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
     elements.updatedTodayFilter.addEventListener("click", toggleUpdatedTodayFilter);
     elements.allNotesSpace.addEventListener("click", showAllNotesSpace);
     elements.trashSpace.addEventListener("click", showTrashSpace);
-    elements.leaveTrash.addEventListener("click", showAllNotesSpace);
     elements.emptyTrash.addEventListener("click", emptyTrashWithConfirmation);
     elements.clearFilters.addEventListener("click", () => clearFilters());
     elements.toastAction.addEventListener("click", async () => {
