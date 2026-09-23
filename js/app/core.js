@@ -819,7 +819,7 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
     }
 
     return {
-      text: `Created ${formatShortDate(note.createdAt)}`,
+      text: formatShortDate(note.createdAt),
       datetime: note.createdAt,
       title: isEdited
         ? `Created ${formatFullDate(note.createdAt)} · Updated ${formatFullDate(note.updatedAt)}`
