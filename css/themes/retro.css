@@ -252,6 +252,22 @@ html[data-theme="retro"] .tag-filter-option .filter-count { padding-left: 0.05re
 html[data-theme="retro"] :where(.tag-filter-option:has(input:checked), .tag-filter-option.is-active, .tag-chip.is-selected) { border-color: var(--retro-accent); color: var(--retro-accent); background: var(--retro-accent-soft); box-shadow: none; }
 html[data-theme="retro"] :where(.tag-filter-option:has(input:checked), .tag-filter-option.is-active) .filter-count { color: var(--retro-accent); }
 html[data-theme="retro"] .tag-filter-option:has(input:focus-visible) { outline: var(--retro-border-width) solid var(--retro-border); outline-offset: 3px; }
+
+/* Compact view note-card tags: keep identical rectangular stamp styling */
+html[data-theme="retro"] .notes-list--compact .note-card__tags .tag-chip {
+  border-radius: var(--retro-radius-sm);
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  min-height: 1.3rem;
+  padding-block: 0.1rem;
+  padding-inline: 0.38rem;
+}
+
+html[data-theme="retro"] .notes-list--compact .note-card__tags .more-tags {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--retro-muted);
+}
 /* Library stamps keep each type's hue, softened into ink and warm paper.
  * The card selector also takes precedence over the mobile pill styling. */
 html[data-theme="retro"] .type-badge,
@@ -281,7 +297,7 @@ html[data-theme="retro"] .type-badge--filter:focus-visible {
     background: var(--retro-paper-muted);
   }
 }
-html[data-theme="retro"] :where(.more-tags, .untagged) { color: var(--retro-muted); }
+html[data-theme="retro"] :where(.more-tags, .untagged) { color: var(--retro-muted); font-family: var(--font-mono); }
 
 html[data-theme="retro"] :where(.active-filter-pill, .notes-count, .usage-count, .management-row__default) {
   border: var(--retro-border-width) solid var(--retro-border);
