@@ -584,7 +584,7 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
           persistFilters();
           resetToFirstPage();
           renderLibrary({ motion: "filter" });
-        }, ["type", `type-${safeTypeColor(type)}`], `Filter by ${type.name}`),
+        }, ["type", `type-${safeTypeColor(type)}`, `type-badge--${safeTypeColor(type)}`], `Filter by ${type.name}`),
       );
     }
     if (ui.todayOnly) {

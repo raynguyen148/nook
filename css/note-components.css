@@ -703,6 +703,7 @@ select::-ms-expand {
     align-items: center;
     height: auto;
     min-height: 2.85rem;
+    min-width: 0;
     gap: 0.65rem;
     padding: 0.35rem 0.75rem;
     box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.03);
@@ -741,9 +742,9 @@ select::-ms-expand {
   /* 2. Title: primary note identifier - fixed column width for clear visual columnar scanning */
   .notes-list--compact .note-card__title {
     order: 2;
-    flex: 0 0 var(--compact-title-width, 15.5rem);
-    width: var(--compact-title-width, 15.5rem);
+    flex: 0 1 var(--compact-title-width, 15.5rem);
     max-width: var(--compact-title-width, 15.5rem);
+    min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -764,8 +765,7 @@ select::-ms-expand {
     display: flex;
     align-items: center;
     gap: 0.25rem;
-    flex: 0 0 var(--compact-tags-width, 9.5rem);
-    width: var(--compact-tags-width, 9.5rem);
+    flex: 0 1 auto;
     max-width: var(--compact-tags-width, 9.5rem);
     min-width: 0;
     overflow: hidden;
@@ -790,7 +790,9 @@ select::-ms-expand {
     color: var(--note-card-muted, #64748b);
   }
 
-  .notes-list--compact .note-card__tags .untagged {
+  .notes-list--compact .note-card__tags .untagged,
+  .notes-list--compact .note-card__tags:empty,
+  .notes-list--compact .note-card__tags:has(.untagged) {
     display: none;
   }
 
@@ -905,21 +907,20 @@ select::-ms-expand {
   }
 }
 
-@media (min-width: 821px) and (max-width: 1100px) {
-  .notes-list--compact .note-card__tags {
-    display: none !important;
+@media (min-width: 821px) and (max-width: 1250px) {
+  .notes-list--compact .note-card__preview {
+    display: none;
   }
 }
 
-@media (min-width: 821px) and (max-width: 960px) {
-  .notes-list--compact .note-card__preview {
-    display: none;
+@media (min-width: 821px) and (max-width: 1000px) {
+  .notes-list--compact .note-card__tags {
+    display: none !important;
   }
 
   .notes-list--compact .note-card__title {
     flex: 1 1 auto;
-    width: auto;
-    max-width: clamp(150px, 45vw, 360px);
+    max-width: clamp(140px, 40vw, 320px);
   }
 }
 
@@ -1015,6 +1016,7 @@ select::-ms-expand {
 .type-badge {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   min-height: 1.38rem;
   max-width: 12rem;
   border: 1px solid transparent;
@@ -1023,6 +1025,7 @@ select::-ms-expand {
   font-size: 0.68rem;
   font-weight: 700;
   line-height: 1.15;
+  text-align: center;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1158,52 +1161,22 @@ select::-ms-expand {
 
 /* The detail type picker reuses these card-chip tokens without requiring
  * inline styles when the selected type changes. */
-.type-badge--indigo { --detail-type-chip-border: #c7d2fe; --detail-type-chip-color: #4338ca; --detail-type-chip-background: #eef2ff; }
-
-
-.type-badge--blue { --detail-type-chip-border: #bfdbfe; --detail-type-chip-color: #1d4ed8; --detail-type-chip-background: #eff6ff; }
-
-
-.type-badge--sky { --detail-type-chip-border: #bae6fd; --detail-type-chip-color: #0369a1; --detail-type-chip-background: #f0f9ff; }
-
-
-.type-badge--cyan { --detail-type-chip-border: #a5f3fc; --detail-type-chip-color: #0e7490; --detail-type-chip-background: #ecfeff; }
-
-
-.type-badge--teal { --detail-type-chip-border: #99f6e4; --detail-type-chip-color: #0f766e; --detail-type-chip-background: #f0fdfa; }
-
-
-.type-badge--emerald { --detail-type-chip-border: #a7f3d0; --detail-type-chip-color: #047857; --detail-type-chip-background: #ecfdf5; }
-
-
-.type-badge--green { --detail-type-chip-border: #bbf7d0; --detail-type-chip-color: #15803d; --detail-type-chip-background: #f0fdf4; }
-
-
-.type-badge--lime { --detail-type-chip-border: #d9f99d; --detail-type-chip-color: #4d7c0f; --detail-type-chip-background: #f7fee7; }
-
-
-.type-badge--amber { --detail-type-chip-border: #fde68a; --detail-type-chip-color: #b45309; --detail-type-chip-background: #fffbeb; }
-
-
-.type-badge--orange { --detail-type-chip-border: #fed7aa; --detail-type-chip-color: #c2410c; --detail-type-chip-background: #fff7ed; }
-
-
-.type-badge--red { --detail-type-chip-border: #fecaca; --detail-type-chip-color: #b91c1c; --detail-type-chip-background: #fef2f2; }
-
-
-.type-badge--rose { --detail-type-chip-border: #fecdd3; --detail-type-chip-color: #be123c; --detail-type-chip-background: #fff1f2; }
-
-
-.type-badge--pink { --detail-type-chip-border: #fbcfe8; --detail-type-chip-color: #be185d; --detail-type-chip-background: #fdf2f8; }
-
-
-.type-badge--violet { --detail-type-chip-border: #ddd6fe; --detail-type-chip-color: #6d28d9; --detail-type-chip-background: #f5f3ff; }
-
-
-.type-badge--purple { --detail-type-chip-border: #e9d5ff; --detail-type-chip-color: #7e22ce; --detail-type-chip-background: #faf5ff; }
-
-
-.type-badge--slate { --detail-type-chip-border: #cbd5e1; --detail-type-chip-color: #334155; --detail-type-chip-background: #f8fafc; }
+.type-badge--indigo, .active-filter-pill--type-indigo { --detail-type-chip-border: #c7d2fe; --detail-type-chip-color: #4338ca; --detail-type-chip-background: #eef2ff; }
+.type-badge--blue, .active-filter-pill--type-blue { --detail-type-chip-border: #bfdbfe; --detail-type-chip-color: #1d4ed8; --detail-type-chip-background: #eff6ff; }
+.type-badge--sky, .active-filter-pill--type-sky { --detail-type-chip-border: #bae6fd; --detail-type-chip-color: #0369a1; --detail-type-chip-background: #f0f9ff; }
+.type-badge--cyan, .active-filter-pill--type-cyan { --detail-type-chip-border: #a5f3fc; --detail-type-chip-color: #0e7490; --detail-type-chip-background: #ecfeff; }
+.type-badge--teal, .active-filter-pill--type-teal { --detail-type-chip-border: #99f6e4; --detail-type-chip-color: #0f766e; --detail-type-chip-background: #f0fdfa; }
+.type-badge--emerald, .active-filter-pill--type-emerald { --detail-type-chip-border: #a7f3d0; --detail-type-chip-color: #047857; --detail-type-chip-background: #ecfdf5; }
+.type-badge--green, .active-filter-pill--type-green { --detail-type-chip-border: #bbf7d0; --detail-type-chip-color: #15803d; --detail-type-chip-background: #f0fdf4; }
+.type-badge--lime, .active-filter-pill--type-lime { --detail-type-chip-border: #d9f99d; --detail-type-chip-color: #4d7c0f; --detail-type-chip-background: #f7fee7; }
+.type-badge--amber, .active-filter-pill--type-amber { --detail-type-chip-border: #fde68a; --detail-type-chip-color: #b45309; --detail-type-chip-background: #fffbeb; }
+.type-badge--orange, .active-filter-pill--type-orange { --detail-type-chip-border: #fed7aa; --detail-type-chip-color: #c2410c; --detail-type-chip-background: #fff7ed; }
+.type-badge--red, .active-filter-pill--type-red { --detail-type-chip-border: #fecaca; --detail-type-chip-color: #b91c1c; --detail-type-chip-background: #fef2f2; }
+.type-badge--rose, .active-filter-pill--type-rose { --detail-type-chip-border: #fecdd3; --detail-type-chip-color: #be123c; --detail-type-chip-background: #fff1f2; }
+.type-badge--pink, .active-filter-pill--type-pink { --detail-type-chip-border: #fbcfe8; --detail-type-chip-color: #be185d; --detail-type-chip-background: #fdf2f8; }
+.type-badge--violet, .active-filter-pill--type-violet { --detail-type-chip-border: #ddd6fe; --detail-type-chip-color: #6d28d9; --detail-type-chip-background: #f5f3ff; }
+.type-badge--purple, .active-filter-pill--type-purple { --detail-type-chip-border: #e9d5ff; --detail-type-chip-color: #7e22ce; --detail-type-chip-background: #faf5ff; }
+.type-badge--slate, .active-filter-pill--type-slate { --detail-type-chip-border: #cbd5e1; --detail-type-chip-color: #334155; --detail-type-chip-background: #f8fafc; }
 
 
 
