@@ -791,18 +791,19 @@
   position: absolute;
   display: block;
   padding: 0;
-  border-radius: 0.18rem;
+  border-radius: 0.22rem;
   color: transparent;
-  background: var(--split-highlight-source);
-  box-shadow: inset 0 0 0 1px var(--split-highlight-outline);
+  background: color-mix(in srgb, var(--split-highlight-source) 64%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--split-highlight-outline) 64%, transparent);
 }
 
 .note-content-preview .is-selection-match {
-  outline: 2px solid var(--split-highlight-edge);
-  outline-offset: 2px;
+  border-radius: 0.22rem;
+  outline: 1px solid color-mix(in srgb, var(--split-highlight-edge) 42%, transparent);
+  outline-offset: 1px;
   background-image: linear-gradient(
-    var(--split-highlight-preview),
-    var(--split-highlight-preview)
+    color-mix(in srgb, var(--split-highlight-preview) 64%, transparent),
+    color-mix(in srgb, var(--split-highlight-preview) 64%, transparent)
   ) !important;
 }
 
@@ -819,7 +820,9 @@
   }
 
   .note-content-preview .is-selection-match {
-    outline-color: Highlight;
+    border-radius: 0;
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
     background-image: linear-gradient(Highlight, Highlight) !important;
     color: HighlightText !important;
   }
