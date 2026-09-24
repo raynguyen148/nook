@@ -100,8 +100,8 @@ html[data-theme="retro"] {
   --interaction-easing: var(--retro-transition-easing);
   --pinned-card-border: var(--retro-border-strong);
   --pinned-card-border-hover: var(--retro-accent);
-  --pinned-card-surface: var(--retro-paper);
-  --pinned-card-shadow: none;
+  --pinned-card-surface: oklch(93.8% 0.032 82);
+  --pinned-card-shadow: 0 1px 3px oklch(24% 0.018 58 / 8%);
   --pinned-marker-background: var(--retro-red-soft);
   --pinned-marker-border: var(--retro-border);
   --pinned-marker-color: var(--retro-red);
@@ -470,7 +470,18 @@ html[data-theme="retro"] .search-icon {
 
 /* Cards, editor, dialogs, and settings */
 html[data-theme="retro"] .note-card { border: var(--retro-border-width) solid var(--retro-border); border-radius: var(--retro-radius-card); color: var(--retro-ink); background: var(--retro-paper); box-shadow: var(--retro-card-shadow); transition: border-color var(--retro-transition-duration) var(--retro-transition-easing), background-color var(--retro-transition-duration) var(--retro-transition-easing), box-shadow var(--retro-transition-duration) var(--retro-transition-easing); }
-html[data-theme="retro"] .note-card--pinned { background: var(--pinned-card-surface); }
+html[data-theme="retro"] .note-card--pinned {
+  border-color: var(--pinned-card-border);
+  background: var(--pinned-card-surface);
+  box-shadow: var(--pinned-card-shadow);
+}
+html[data-theme="retro"] .note-card--pinned .note-card__pin-toggle {
+  opacity: 1;
+  visibility: visible;
+  color: var(--pinned-marker-color);
+  background-color: var(--pinned-marker-background);
+  border: var(--retro-border-width) solid var(--pinned-marker-border);
+}
 html[data-theme="retro"] .note-card__title { color: var(--retro-ink); font-family: var(--font-display); font-style: normal; font-weight: 700; }
 html[data-theme="retro"] .note-card__preview { font-family: var(--font-sans); }
 html[data-theme="retro"] mark.search-highlight { border: var(--retro-border-width) solid var(--retro-border); border-radius: var(--retro-radius-sm); padding-inline: 0.18em; color: var(--retro-ink); background: var(--retro-pink); box-shadow: none; }
@@ -576,7 +587,7 @@ html[data-theme="retro"] :where(.theme-toggle__icon--sun, .theme-toggle__icon--c
   html[data-theme="retro"] .note-card:hover { box-shadow: var(--retro-card-shadow); }
   html[data-theme="retro"] :where(.space-link, .sidebar-filter):is(.is-active, [aria-pressed="true"]):hover { border-color: var(--retro-accent); color: var(--retro-accent); background: var(--retro-accent-soft); }
   html[data-theme="retro"] :where(.space-link, .sidebar-filter):is(.is-active, [aria-pressed="true"]):hover .filter-count { color: var(--retro-accent); }
-  html[data-theme="retro"] :where(.pagination-button, .note-card__action, .note-formatting-tool__button):hover:not(:disabled) { border-color: var(--retro-border); color: var(--retro-accent); background: var(--retro-accent-soft); box-shadow: none; }
+  html[data-theme="retro"] :where(.pagination-button, .note-card__action, .note-card__pin-toggle, .note-formatting-tool__button):hover:not(:disabled) { border-color: var(--retro-border); color: var(--retro-accent); background: var(--retro-accent-soft); box-shadow: none; }
   html[data-theme="retro"] :where(.text-button, .active-filter-clear-all, .active-filter-pill__clear):hover:not(:disabled) { color: var(--retro-accent); background: var(--retro-accent-soft); }
   html[data-theme="retro"] .note-detail-surface .dialog-footer__tools :where(.icon-button, .note-save-shortcut__trigger, .note-markdown-help__trigger):hover:not(:disabled),
   html[data-theme="retro"] .note-detail-surface .dialog-footer__preview-actions :where(.icon-button, .note-save-shortcut__trigger, .note-markdown-help__trigger):hover:not(:disabled) { border-color: transparent; color: var(--retro-accent); background: var(--retro-accent-soft); box-shadow: none; }

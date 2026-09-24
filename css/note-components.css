@@ -683,185 +683,200 @@ select::-ms-expand {
 
 /* Hallmark · component: compact note row · genre: modern-minimal · theme: Nook themes
  * High information density: 1 row = 1 note with pin, type badge, title, preview snippet,
- * tag chips, relative timestamp, and contextual actions.
+ * tag chips, relative timestamp, and contextual actions on desktop (min-width: 821px).
  */
-.notes-list--compact {
-  --notes-columns: 1;
+@media (min-width: 821px) {
+  .notes-list--compact {
+    --notes-columns: 1;
 
-  display: flex;
-  flex-direction: column;
-  gap: 0.375rem;
-  align-items: stretch;
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+    align-items: stretch;
+  }
+
+  .notes-list--compact .note-card {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    height: auto;
+    min-height: 2.85rem;
+    gap: 0.65rem;
+    padding: 0.35rem 0.75rem;
+    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.03);
+  }
+
+  .notes-list--compact .note-card:hover,
+  .notes-list--compact .note-card:focus-within {
+    box-shadow: 0 0 0 2px var(--primary-accent-soft),
+                0 2px 8px -2px rgb(15 23 42 / 0.08);
+  }
+
+  /* Intermediate wrappers dissolve so children flex directly within .note-card */
+  .notes-list--compact .note-card__top-actions,
+  .notes-list--compact .note-card__content,
+  .notes-list--compact .note-card__meta,
+  .notes-list--compact .note-card__footer {
+    display: contents;
+  }
+
+  .notes-list--compact .note-card__top-actions {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  /* 1. Type badge: leftmost category indicator, perfectly aligned to left padding */
+  .notes-list--compact .type-badge {
+    order: 1;
+    flex-shrink: 0;
+    min-height: 1.3rem;
+    max-width: 8rem;
+    padding: 0.1rem 0.45rem;
+    font-size: 0.65rem;
+  }
+
+  /* 2. Title: primary note identifier */
+  .notes-list--compact .note-card__title {
+    order: 2;
+    flex-shrink: 0;
+    max-width: clamp(160px, 28vw, 380px);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.88rem;
+    font-weight: 600;
+    line-height: 1.25;
+    padding: 0;
+  }
+
+  .notes-list--compact .note-card__title:hover {
+    color: var(--primary-accent-strong, #4338ca);
+  }
+
+  /* Tags: hidden in compact view for optimal scanning speed and information density */
+  .notes-list--compact .note-card__tags {
+    display: none !important;
+  }
+
+  /* 3. Preview snippet: flexible middle fill */
+  .notes-list--compact .note-card__preview {
+    order: 3;
+    flex: 1 1 0%;
+    min-width: 0;
+    margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.78rem;
+    line-height: 1.35;
+    color: var(--note-card-muted, #64748b);
+    display: block;
+    -webkit-line-clamp: unset;
+    -webkit-box-orient: unset;
+  }
+
+  .notes-list--compact .note-card__preview:not(:empty)::before {
+    content: "—";
+    margin-right: 0.35rem;
+    opacity: 0.6;
+  }
+
+  /* 4. Date: secondary metadata, non-bold, muted, right-anchored */
+  .notes-list--compact .note-card__date {
+    order: 4;
+    flex-shrink: 0;
+    margin-left: auto;
+    padding-left: 0.75rem;
+    padding-right: 0.25rem;
+    font-size: 0.6875rem;
+    font-weight: 400;
+    color: var(--note-card-muted, #64748b);
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0;
+  }
+
+  /* 5. Pin toggle: grouped with actions on the right */
+  .notes-list--compact .note-card__pin-toggle {
+    order: 5;
+    position: static;
+    display: grid;
+    place-items: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    min-height: 1.75rem;
+    padding: 0.2rem;
+    border-radius: 0.45rem;
+    border: 0;
+    flex-shrink: 0;
+    margin: 0;
+    margin-right: -0.55rem;
+    transform: none;
+    color: var(--note-card-action, #475467);
+    background: transparent;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition:
+      opacity var(--interaction-duration) var(--interaction-easing),
+      visibility var(--interaction-duration) var(--interaction-easing),
+      color var(--interaction-duration) var(--interaction-easing),
+      background-color var(--interaction-duration) var(--interaction-easing);
+  }
+
+  .notes-list--compact .note-card__pin-toggle svg {
+    width: 0.85rem;
+    height: 0.85rem;
+  }
+
+  .notes-list--compact .note-card:hover .note-card__pin-toggle,
+  .notes-list--compact .note-card:focus-within .note-card__pin-toggle {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  .notes-list--compact .note-card__pin-toggle:hover:not(:disabled),
+  .notes-list--compact .note-card__pin-toggle:focus-visible {
+    color: var(--primary-accent, #4338ca);
+    background: var(--note-card-action-hover-surface, #eef2ff);
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  .notes-list--compact .note-card--pinned .note-card__pin-toggle {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    color: var(--pinned-marker-color, var(--primary-accent, #4338ca));
+  }
+
+  /* 6. Action buttons: rightmost cluster */
+  .notes-list--compact .note-card__actions {
+    order: 6;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.1rem;
+    flex-shrink: 0;
+  }
+
+  .notes-list--compact .note-card__action {
+    width: 1.75rem;
+    height: 1.75rem;
+    min-height: 1.75rem;
+    padding: 0.2rem;
+    border-radius: 0.45rem;
+  }
+
+  .notes-list--compact .note-card__action svg {
+    width: 0.85rem;
+    height: 0.85rem;
+  }
 }
 
-.notes-list--compact .note-card {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  height: auto;
-  min-height: 2.85rem;
-  gap: 0.65rem;
-  padding: 0.35rem 0.75rem;
-  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.03);
-}
-
-.notes-list--compact .note-card:hover,
-.notes-list--compact .note-card:focus-within {
-  box-shadow: 0 0 0 2px var(--primary-accent-soft),
-              0 2px 8px -2px rgb(15 23 42 / 0.08);
-}
-
-/* Intermediate wrappers dissolve so children flex directly within .note-card */
-.notes-list--compact .note-card__top-actions,
-.notes-list--compact .note-card__content,
-.notes-list--compact .note-card__meta,
-.notes-list--compact .note-card__footer {
-  display: contents;
-}
-
-
-/* 1. Type badge: leftmost category indicator, perfectly aligned to left padding */
-.notes-list--compact .type-badge {
-  order: 1;
-  flex-shrink: 0;
-  min-height: 1.3rem;
-  max-width: 8rem;
-  padding: 0.1rem 0.45rem;
-  font-size: 0.65rem;
-}
-
-/* 2. Title: primary note identifier */
-.notes-list--compact .note-card__title {
-  order: 2;
-  flex-shrink: 0;
-  max-width: clamp(160px, 28vw, 380px);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-size: 0.88rem;
-  font-weight: 600;
-  line-height: 1.25;
-  padding: 0;
-}
-
-.notes-list--compact .note-card__title:hover {
-  color: var(--primary-accent-strong, #4338ca);
-}
-
-/* Tags: hidden in compact view for optimal scanning speed and information density */
-.notes-list--compact .note-card__tags {
-  display: none !important;
-}
-
-/* 3. Preview snippet: flexible middle fill */
-.notes-list--compact .note-card__preview {
-  order: 3;
-  flex: 1 1 0%;
-  min-width: 0;
-  margin: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-size: 0.78rem;
-  line-height: 1.35;
-  color: var(--note-card-muted, #64748b);
-  display: block;
-  -webkit-line-clamp: unset;
-  -webkit-box-orient: unset;
-}
-
-.notes-list--compact .note-card__preview:not(:empty)::before {
-  content: "—";
-  margin-right: 0.35rem;
-  opacity: 0.6;
-}
-
-/* 4. Date: secondary metadata, non-bold, muted, right-anchored */
-.notes-list--compact .note-card__date {
-  order: 4;
-  flex-shrink: 0;
-  margin-left: auto;
-  padding-left: 0.75rem;
-  padding-right: 0.25rem;
-  font-size: 0.6875rem;
-  font-weight: 400;
-  color: var(--note-card-muted, #64748b);
-  white-space: nowrap;
-  font-variant-numeric: tabular-nums;
-  letter-spacing: 0;
-}
-
-/* 5. Pin toggle: grouped with actions on the right */
-.notes-list--compact .note-card__pin-toggle {
-  order: 5;
-  position: static;
-  display: grid;
-  place-items: center;
-  width: 1.75rem;
-  height: 1.75rem;
-  min-height: 1.75rem;
-  padding: 0.2rem;
-  border-radius: 0.45rem;
-  border: 0;
-  flex-shrink: 0;
-  margin: 0;
-  margin-right: -0.55rem;
-  transform: none;
-  color: var(--note-card-action, #475467);
-  background: transparent;
-  opacity: 0.65;
-  pointer-events: auto;
-  transition:
-    opacity var(--interaction-duration) var(--interaction-easing),
-    color var(--interaction-duration) var(--interaction-easing),
-    background-color var(--interaction-duration) var(--interaction-easing);
-}
-
-.notes-list--compact .note-card__pin-toggle svg {
-  width: 0.85rem;
-  height: 0.85rem;
-}
-
-.notes-list--compact .note-card:hover .note-card__pin-toggle,
-.notes-list--compact .note-card:focus-within .note-card__pin-toggle {
-  opacity: 1;
-}
-
-.notes-list--compact .note-card__pin-toggle:hover:not(:disabled),
-.notes-list--compact .note-card__pin-toggle:focus-visible {
-  color: var(--primary-accent, #4338ca);
-  background: var(--note-card-action-hover-surface, #eef2ff);
-  opacity: 1;
-}
-
-.notes-list--compact .note-card--pinned .note-card__pin-toggle {
-  opacity: 1;
-  color: var(--primary-accent, #4338ca);
-}
-
-/* 6. Action buttons: rightmost cluster */
-.notes-list--compact .note-card__actions {
-  order: 6;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.1rem;
-  flex-shrink: 0;
-}
-
-.notes-list--compact .note-card__action {
-  width: 1.75rem;
-  height: 1.75rem;
-  min-height: 1.75rem;
-  padding: 0.2rem;
-  border-radius: 0.45rem;
-}
-
-.notes-list--compact .note-card__action svg {
-  width: 0.85rem;
-  height: 0.85rem;
-}
-
-@media (max-width: 960px) {
+@media (min-width: 821px) and (max-width: 960px) {
   .notes-list--compact .note-card__preview {
     display: none;
   }
@@ -1428,6 +1443,7 @@ select::-ms-expand {
   transition: opacity var(--interaction-duration) var(--interaction-easing);
 }
 
+.note-card--pinned .note-card__top-actions,
 .note-card:hover .note-card__top-actions,
 .note-card:focus-within .note-card__top-actions {
   opacity: 1;
