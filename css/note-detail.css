@@ -758,9 +758,11 @@
 .note-dialog #note-content,
 .note-secondary-surface #secondary-note-content-editor {
   resize: none;
-  font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace);
-  font-size: 0.94rem;
-  line-height: 1.72;
+  /* Match the rendered Preview text in Edit and Split modes. */
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  font-weight: 400;
+  line-height: 1.7;
 }
 
 /* Counterpart highlights never participate in layout or intercept selection. */
@@ -885,6 +887,36 @@
   align-items: center;
   gap: 0.25rem;
   flex: none;
+}
+
+
+
+.note-detail-surface .dialog-footer__tools > .note-detail-action-tooltip--group-start {
+  align-items: center;
+  gap: 0.5rem;
+  margin-inline-start: 0.35rem;
+}
+
+
+
+.note-detail-surface .dialog-footer__tools > .note-detail-action-tooltip--group-start::before {
+  display: block;
+  width: 1px;
+  min-width: 1px;
+  max-width: 1px;
+  height: 1.15rem;
+  min-height: 1.15rem;
+  max-height: 1.15rem;
+  background: var(--border-subtle);
+  opacity: 0.48;
+  content: "";
+  flex: 0 0 1px;
+}
+
+
+
+.note-detail-surface .dialog-footer__tools > .note-detail-action-tooltip--group-start:has(> #delete-note-btn.is-hidden) {
+  display: none;
 }
 
 

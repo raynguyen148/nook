@@ -513,6 +513,8 @@ html[data-theme="retro"] .startup-error { border-color: var(--retro-border); col
 
 /* Markdown Preview: serif reading copy and restrained semantic cues. */
 html[data-theme="retro"] :where(.quick-view-content, .note-content-preview) { color: var(--retro-ink); background: var(--retro-paper); font-family: var(--font-display); font-variant-numeric: oldstyle-nums; }
+html[data-theme="retro"] .note-dialog #note-content,
+html[data-theme="retro"] .note-secondary-surface #secondary-note-content-editor { font-family: var(--font-display); }
 html[data-theme="retro"] :where(.quick-view-content, .note-content-preview) :where(h1, h2, h3, h4, h5, h6) { color: var(--retro-ink); font-family: var(--font-display); font-style: normal; font-weight: 700; }
 html[data-theme="retro"] :where(.quick-view-content, .note-content-preview) a { color: var(--retro-link); text-decoration-thickness: 0.12em; }
 html[data-theme="retro"] :where(.quick-view-content, .note-content-preview) a:hover { color: var(--retro-ink); }

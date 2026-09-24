@@ -1707,7 +1707,7 @@ dialog:not([open]),
   #note-dialog .note-editor-pane--source { display: flex; flex-direction: column; flex: 1; min-height: 0; padding: 0; }
   #note-dialog .note-editor-pane__label { display: none; }
   #note-dialog #note-content { flex: 1; width: 100%; height: 100%; min-height: 8rem; max-height: none; padding: 10px 0 24px; resize: none; font-family: var(--font-sans); font-size: 16px; line-height: 1.65; letter-spacing: -0.006em; border: none; outline: none; background: transparent; }
-  html[data-theme="retro"] #note-dialog #note-content { font-family: var(--font-mono); letter-spacing: -0.01em; }
+  html[data-theme="retro"] #note-dialog #note-content { font-family: var(--font-display); letter-spacing: -0.01em; }
   #note-dialog .dialog-footer { display: none; }
   #note-dialog form > .note-formatting-toolbar {
     grid-row: 3; display: flex; flex-wrap: nowrap; gap: 0.35rem;

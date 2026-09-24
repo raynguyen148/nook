@@ -741,7 +741,7 @@ html:not([data-theme]) #note-content {
   background: #fdfbf7;
   border-color: #d8ccbd;
   color: #261e18;
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
 }
 
 html[data-theme="coffee"] #note-content:focus,

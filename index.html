@@ -752,25 +752,7 @@
 
         <div class="dialog-footer">
           <div class="dialog-footer__tools">
-            <span class="note-detail-action-tooltip">
-              <button id="note-history-btn" class="icon-button is-hidden" type="button" aria-label="Open version history" aria-describedby="note-history-tooltip">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <path d="M3.5 12a8.5 8.5 0 1 0 2.2-5.7" />
-                  <path d="M3.5 4.8v4.4h4.4M12 7.5V12l3 1.8" />
-                </svg>
-              </button>
-              <span id="note-history-tooltip" class="note-detail-action-tooltip__content" role="tooltip">Version history</span>
-            </span>
-            <span class="note-detail-action-tooltip">
-              <button id="delete-note-btn" class="icon-button note-delete-button is-hidden" type="button" aria-label="Move note to Trash" aria-describedby="delete-note-tooltip">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <path d="M4.5 7h15M9.5 10.5v6M14.5 10.5v6M9 4.5h6l.75 2.5h-7.5L9 4.5Z" />
-                  <path d="M6.5 7 7.4 20h9.2l.9-13" />
-                </svg>
-              </button>
-              <span id="delete-note-tooltip" class="note-detail-action-tooltip__content" role="tooltip">Move to Trash</span>
-            </span>
-            <div id="note-preview-actions" class="dialog-footer__preview-actions">
+            <div id="note-preview-actions" class="dialog-footer__preview-actions" role="group" aria-label="Copy and export note">
               <div class="quick-view-header__utilities">
                 <span class="note-detail-action-tooltip">
                   <button
@@ -824,6 +806,15 @@
                 </div>
               </div>
             </div>
+            <span class="note-detail-action-tooltip note-detail-action-tooltip--group-start">
+              <button id="note-history-btn" class="icon-button is-hidden" type="button" aria-label="Open version history" aria-describedby="note-history-tooltip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M3.5 12a8.5 8.5 0 1 0 2.2-5.7" />
+                  <path d="M3.5 4.8v4.4h4.4M12 7.5V12l3 1.8" />
+                </svg>
+              </button>
+              <span id="note-history-tooltip" class="note-detail-action-tooltip__content" role="tooltip">Version history</span>
+            </span>
             <div class="dialog-footer__help">
               <div class="note-save-shortcut">
               <button
@@ -936,6 +927,15 @@
                 </div>
               </div>
             </div>
+            <span class="note-detail-action-tooltip note-detail-action-tooltip--group-start">
+              <button id="delete-note-btn" class="icon-button note-delete-button is-hidden" type="button" aria-label="Move note to Trash" aria-describedby="delete-note-tooltip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M4.5 7h15M9.5 10.5v6M14.5 10.5v6M9 4.5h6l.75 2.5h-7.5L9 4.5Z" />
+                  <path d="M6.5 7 7.4 20h9.2l.9-13" />
+                </svg>
+              </button>
+              <span id="delete-note-tooltip" class="note-detail-action-tooltip__content" role="tooltip">Move to Trash</span>
+            </span>
           </div>
 
           <div class="dialog-footer__actions">
