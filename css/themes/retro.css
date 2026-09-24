@@ -220,7 +220,8 @@ html[data-theme="retro"] .sidebar-filter--type:is(.is-active, [aria-pressed="tru
 }
 
 /* Tags use archival paper surfaces across the app. */
-html[data-theme="retro"] :where(.tag-filter-option, .tag-chip, .selected-tag, .quick-view-tag, .tag-add-button) {
+html[data-theme="retro"] :where(.tag-filter-option, .tag-chip, .selected-tag, .quick-view-tag, .tag-add-button),
+html[data-theme="retro"] .note-card .tag-chip {
   min-height: 1.48rem;
   border: var(--retro-border-width) solid var(--retro-border);
   border-radius: 999px;
@@ -235,21 +236,24 @@ html[data-theme="retro"] :where(.tag-filter-option, .tag-chip, .selected-tag, .q
 }
 
 /* Sidebar and note-card tags share the same handwritten index treatment. */
-html[data-theme="retro"] :where(.tag-filter-option, .tag-chip) {
+html[data-theme="retro"] :where(.tag-filter-option, .tag-chip),
+html[data-theme="retro"] .note-card .tag-chip {
   border-style: dashed;
   border-radius: var(--retro-radius-sm);
   padding-inline: 0.4rem;
   background: color-mix(in oklch, var(--retro-paper) 68%, transparent);
 }
 
-html[data-theme="retro"] :where(.tag-filter-option__name, .tag-chip)::before {
+html[data-theme="retro"] :where(.tag-filter-option__name, .tag-chip)::before,
+html[data-theme="retro"] .note-card .tag-chip::before {
   content: "#";
   margin-right: 0.08em;
   color: var(--retro-accent);
 }
 
 html[data-theme="retro"] .tag-filter-option .filter-count { padding-left: 0.05rem; color: var(--retro-muted); font: inherit; }
-html[data-theme="retro"] :where(.tag-filter-option:has(input:checked), .tag-filter-option.is-active, .tag-chip.is-selected) { border-color: var(--retro-accent); color: var(--retro-accent); background: var(--retro-accent-soft); box-shadow: none; }
+html[data-theme="retro"] :where(.tag-filter-option:has(input:checked), .tag-filter-option.is-active, .tag-chip.is-selected),
+html[data-theme="retro"] .note-card .tag-chip.is-selected { border-color: var(--retro-accent); color: var(--retro-accent); background: var(--retro-accent-soft); box-shadow: none; }
 html[data-theme="retro"] :where(.tag-filter-option:has(input:checked), .tag-filter-option.is-active) .filter-count { color: var(--retro-accent); }
 html[data-theme="retro"] .tag-filter-option:has(input:focus-visible) { outline: var(--retro-border-width) solid var(--retro-border); outline-offset: 3px; }
 
@@ -297,7 +301,8 @@ html[data-theme="retro"] .type-badge--filter:focus-visible {
     background: var(--retro-paper-muted);
   }
 }
-html[data-theme="retro"] :where(.more-tags, .untagged) { color: var(--retro-muted); font-family: var(--font-mono); }
+html[data-theme="retro"] :where(.more-tags, .untagged),
+html[data-theme="retro"] .note-card :where(.more-tags, .untagged) { color: var(--retro-muted); font-family: var(--font-mono); }
 
 html[data-theme="retro"] :where(.active-filter-pill, .notes-count, .usage-count, .management-row__default) {
   border: var(--retro-border-width) solid var(--retro-border);

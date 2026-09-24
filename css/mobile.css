@@ -584,6 +584,41 @@ dialog:not([open]),
   html[data-theme="retro"] body .notes-panel .note-card {
     border-radius: var(--retro-radius-card);
   }
+  html[data-theme="retro"] body .notes-panel .note-card .tag-chip {
+    border: var(--retro-border-width) dashed var(--retro-border);
+    border-radius: var(--retro-radius-sm);
+    color: var(--retro-ink);
+    background: color-mix(in oklch, var(--retro-paper) 68%, transparent);
+    box-shadow: var(--retro-shadow-xs);
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    font-weight: 600;
+    line-height: 1.2;
+    padding: 0.15rem 0.45rem;
+  }
+  html[data-theme="retro"] body .notes-panel .note-card .tag-chip::before {
+    content: "#";
+    margin-right: 0.08em;
+    color: var(--retro-accent);
+  }
+  html[data-theme="retro"] body .notes-panel .note-card .tag-chip:is(:hover, .is-selected) {
+    border-color: var(--retro-accent);
+    color: var(--retro-accent);
+    background: var(--retro-accent-soft);
+    box-shadow: none;
+  }
+  html[data-theme="retro"] body .notes-panel .note-card .tag-chip:active {
+    transform: scale(0.95);
+    background: var(--retro-accent-soft);
+    color: var(--retro-accent);
+    border-color: var(--retro-accent);
+  }
+  html[data-theme="retro"] body .notes-panel .note-card .more-tags,
+  html[data-theme="retro"] body .notes-panel .note-card .untagged {
+    font-family: var(--font-mono);
+    color: var(--retro-muted);
+    font-size: 0.68rem;
+  }
   html[data-theme="retro"] body .notes-panel .note-card--pinned .note-card__pin-toggle {
     border: var(--retro-border-width) solid var(--retro-border);
     border-radius: var(--retro-radius-control);
@@ -931,6 +966,31 @@ dialog:not([open]),
     border-color: transparent;
     background: transparent;
     color: var(--retro-disabled-ink);
+  }
+  html[data-theme="retro"] #mobile-filter-dialog .tag-filter-option {
+    border: var(--retro-border-width) dashed var(--retro-border);
+    border-radius: var(--retro-radius-sm);
+    color: var(--retro-ink);
+    background: color-mix(in oklch, var(--retro-paper) 68%, transparent);
+    box-shadow: var(--retro-shadow-xs);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+  html[data-theme="retro"] #mobile-filter-dialog .tag-filter-option.is-active,
+  html[data-theme="retro"] #mobile-filter-dialog .tag-filter-option:has(input:checked) {
+    border-color: var(--retro-accent);
+    color: var(--retro-accent);
+    background: var(--retro-accent-soft);
+    box-shadow: none;
+  }
+  html[data-theme="retro"] #mobile-filter-dialog .tag-filter-option .filter-count {
+    color: var(--retro-muted);
+    font-family: var(--font-mono);
+  }
+  html[data-theme="retro"] #mobile-filter-dialog .tag-filter-option.is-active .filter-count,
+  html[data-theme="retro"] #mobile-filter-dialog .tag-filter-option:has(input:checked) .filter-count {
+    color: var(--retro-accent);
   }
   #mobile-card-dialog .mobile-sheet__body {
     padding: 0.85rem var(--mobile-gutter) calc(1.25rem + env(safe-area-inset-bottom));
@@ -1712,6 +1772,38 @@ dialog:not([open]),
   #note-dialog .note-editor-pane__label { display: none; }
   #note-dialog #note-content { flex: 1; width: 100%; height: 100%; min-height: 8rem; max-height: none; padding: 10px 0 24px; resize: none; font-family: var(--font-sans); font-size: 16px; line-height: 1.65; letter-spacing: -0.006em; border: none; outline: none; background: transparent; }
   html[data-theme="retro"] #note-dialog #note-content { font-family: var(--font-display); letter-spacing: -0.01em; }
+  html[data-theme="retro"] #note-dialog .selected-tag {
+    border: var(--retro-border-width) solid var(--retro-border);
+    border-radius: var(--retro-radius-sm);
+    color: var(--retro-ink);
+    background: var(--retro-paper);
+    box-shadow: var(--retro-shadow-xs);
+    font-family: var(--font-mono);
+    font-weight: 600;
+  }
+  html[data-theme="retro"] #note-dialog .selected-tag__remove {
+    color: var(--retro-muted);
+    background: transparent;
+  }
+  html[data-theme="retro"] #note-dialog .selected-tag__remove:active {
+    color: var(--retro-ink);
+    background: var(--retro-paper-muted);
+  }
+  html[data-theme="retro"] #note-dialog .tag-suggestions {
+    border: var(--retro-border-width) solid var(--retro-border);
+    border-radius: var(--retro-radius-control);
+    background: var(--retro-paper);
+    color: var(--retro-ink);
+    box-shadow: var(--retro-shadow-md);
+  }
+  html[data-theme="retro"] #note-dialog .tag-suggestion {
+    color: var(--retro-ink);
+    font-family: var(--font-mono);
+  }
+  html[data-theme="retro"] #note-dialog .tag-suggestion:is(:hover, :focus-visible, [aria-selected="true"]) {
+    color: var(--retro-accent);
+    background: var(--retro-accent-soft);
+  }
   #note-dialog .dialog-footer { display: none; }
   #note-dialog form > .note-formatting-toolbar {
     grid-row: 3; display: flex; flex-wrap: nowrap; gap: 0.35rem;
