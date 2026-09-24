@@ -43,7 +43,7 @@ practice, and personal ideas in one calm, searchable local library.
 - Export and import a complete JSON backup, including version history. The local backup-health indicator reminds you when an export is missing or old.
 - Keep the primary editor and Side note as independent sessions with per-pane draft recovery and stale-write conflict handling.
 - Manage note types and tags from Settings → Organize Notes.
-- Choose Light, Coffee, Forest, Midnight, Dark, Retro, or Auto theme, switch between Focus, Comfortable, and Compact layouts, or collapse the sidebar into an icon rail.
+- Choose Light, Coffee, Forest, Midnight, Dark, Retro, or Auto theme, switch between Compact, Comfortable, and Grid layouts, or collapse the sidebar into an icon rail.
 - Recover an unfinished local editor draft after an interrupted session.
 - Keep multiple open tabs in sync when the browser supports `BroadcastChannel`.
 - Use `C` for quick capture plus platform-aware editor shortcuts for formatting, saving, and switching editor modes.
@@ -169,7 +169,7 @@ does not silently overwrite either copy.
 - Use **Created Today** or **Updated Today** for date-based review.
 - Remove filters from the active-filter pills or select **Clear**.
 - Choose a sort order from the toolbar. Pinned notes remain above unpinned notes.
-- Use **Focus**, **Comfortable**, and **Compact** to change the card layout.
+- Use **Compact**, **Comfortable**, and **Grid** to change the card layout.
 - On narrow screens, open **Filters** to reveal spaces, date filters, types, and tags without leaving the library.
 - Use the sidebar toggle to keep the navigation available as a narrow icon rail.
 
@@ -222,7 +222,7 @@ The modifier is `Command` on macOS and `Control` on Windows/Linux.
 | Library | `⌘/Ctrl + F` or `/` | Focus search when no modal dialog is open |
 | Library | `C` | Start a new note when focus is not inside a form field |
 | Library | `V` | Preview the note card currently under the pointer |
-| Library | `1` / `2` / `3` | Switch to Focus / Comfortable / Compact layout |
+| Library | `1` / `2` / `3` | Switch to Compact / Comfortable / Grid layout |
 | App | `⌘/Ctrl + \` | Toggle the sidebar when no modal dialog is open |
 | App, outside form controls | `T` | Cycle to the next theme |
 | Library / Settings | `S` | Open or close Settings |

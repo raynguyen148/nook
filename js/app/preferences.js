@@ -672,32 +672,33 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
 
   function syncViewModeUI() {
     const viewButtons = [
-      ["focus", elements.focusView],
+      ["compact", elements.compactView || elements.focusView],
       ["comfortable", elements.comfortableView],
-      ["compact", elements.compactView],
+      ["grid", elements.gridView],
     ];
-    elements.notesList.classList.remove("notes-list--focus", "notes-list--comfortable", "notes-list--compact");
+    elements.notesList.classList.remove("notes-list--focus", "notes-list--comfortable", "notes-list--compact", "notes-list--grid");
     elements.notesList.classList.add(`notes-list--${ui.viewMode}`);
     viewButtons.forEach(([mode, button]) => {
       const isActive = mode === ui.viewMode;
-      button.classList.toggle("is-active", isActive);
-      button.setAttribute("aria-pressed", String(isActive));
+      button?.classList.toggle("is-active", isActive);
+      button?.setAttribute("aria-pressed", String(isActive));
     });
   }
 
   function setViewMode(mode) {
-    if (!["focus", "comfortable", "compact"].includes(mode)) return;
-    if (mode === ui.viewMode) return;
+    const targetMode = mode === "focus" ? "compact" : mode;
+    if (!["compact", "comfortable", "grid"].includes(targetMode)) return;
+    if (targetMode === ui.viewMode) return;
 
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     viewModeListAnimation?.cancel();
     viewModeListAnimation = null;
 
-    ui.viewMode = mode;
+    ui.viewMode = targetMode;
     syncViewModeUI();
 
     try {
-      window.localStorage.setItem(VIEW_MODE_STORAGE_KEY, mode);
+      window.localStorage.setItem(VIEW_MODE_STORAGE_KEY, targetMode);
     } catch {
       // The layout still works when browser privacy settings block localStorage.
     }

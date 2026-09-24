@@ -95,9 +95,10 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
     searchShortcutHelp: document.querySelector("#search-shortcut-help"),
     clearSearch: document.querySelector("#clear-search-btn"),
     sort: document.querySelector("#sort-select"),
-    focusView: document.querySelector("#focus-view-btn"),
-    comfortableView: document.querySelector("#comfortable-view-btn"),
     compactView: document.querySelector("#compact-view-btn"),
+    focusView: document.querySelector("#compact-view-btn") || document.querySelector("#focus-view-btn"),
+    comfortableView: document.querySelector("#comfortable-view-btn"),
+    gridView: document.querySelector("#grid-view-btn"),
     activeFilters: document.querySelector("#active-filters"),
     notesHeading: document.querySelector("#notes-heading"),
     notesSubtitle: document.querySelector("#notes-subtitle"),
@@ -406,7 +407,8 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
   function getStoredViewMode() {
     try {
       const storedMode = window.localStorage.getItem(VIEW_MODE_STORAGE_KEY);
-      return ["focus", "comfortable", "compact"].includes(storedMode) ? storedMode : "comfortable";
+      if (storedMode === "focus") return "compact";
+      return ["compact", "comfortable", "grid"].includes(storedMode) ? storedMode : "comfortable";
     } catch {
       return "comfortable";
     }

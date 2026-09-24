@@ -85,7 +85,7 @@
   --space-5: 1.25rem;
   --spacing-control: var(--control-height);
   --radius-control: var(--control-radius);
-  --radius-card: var(--surface-radius);
+  --radius-card: 0.625rem;
   --radius-dialog: 1rem;
   --radius-pill: 999px;
   --motion-duration-state: var(--motion-duration-short);

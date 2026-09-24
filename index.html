@@ -388,20 +388,20 @@
                 <div class="view-mode-control__choices">
                   <div class="view-mode-choice">
                     <button
-                      id="focus-view-btn"
+                      id="compact-view-btn"
                       class="view-mode-button"
                       type="button"
-                      aria-pressed="true"
-                      aria-label="Focus view: one column"
+                      aria-pressed="false"
+                      aria-label="Compact view: single row per note"
                       aria-keyshortcuts="1"
-                      aria-describedby="focus-view-tooltip"
+                      aria-describedby="compact-view-tooltip"
                     >
-                      <svg class="view-mode-icon view-mode-icon--focus" viewBox="0 0 24 24" aria-hidden="true">
+                      <svg class="view-mode-icon view-mode-icon--compact" viewBox="0 0 24 24" aria-hidden="true">
                         <path d="M4.5 6.75h15M4.5 12h15M4.5 17.25h15" />
                       </svg>
                     </button>
-                    <span id="focus-view-tooltip" class="shortcut-tooltip" role="tooltip">
-                      <span>Focus view</span>
+                    <span id="compact-view-tooltip" class="shortcut-tooltip" role="tooltip">
+                      <span>Compact view</span>
                       <kbd>1</kbd>
                     </span>
                   </div>
@@ -410,7 +410,7 @@
                       id="comfortable-view-btn"
                       class="view-mode-button"
                       type="button"
-                      aria-pressed="false"
+                      aria-pressed="true"
                       aria-label="Comfortable view: two columns"
                       aria-keyshortcuts="2"
                       aria-describedby="comfortable-view-tooltip"
@@ -427,23 +427,23 @@
                   </div>
                   <div class="view-mode-choice">
                     <button
-                      id="compact-view-btn"
+                      id="grid-view-btn"
                       class="view-mode-button"
                       type="button"
                       aria-pressed="false"
-                      aria-label="Compact view: four columns"
+                      aria-label="Grid view: four columns"
                       aria-keyshortcuts="3"
-                      aria-describedby="compact-view-tooltip"
+                      aria-describedby="grid-view-tooltip"
                     >
-                      <svg class="view-mode-icon view-mode-icon--compact" viewBox="0 0 24 24" aria-hidden="true">
+                      <svg class="view-mode-icon view-mode-icon--grid" viewBox="0 0 24 24" aria-hidden="true">
                         <rect x="4" y="4" width="6.25" height="6.25" rx="1.35" />
                         <rect x="13.75" y="4" width="6.25" height="6.25" rx="1.35" />
                         <rect x="4" y="13.75" width="6.25" height="6.25" rx="1.35" />
                         <rect x="13.75" y="13.75" width="6.25" height="6.25" rx="1.35" />
                       </svg>
                     </button>
-                    <span id="compact-view-tooltip" class="shortcut-tooltip" role="tooltip">
-                      <span>Compact view</span>
+                    <span id="grid-view-tooltip" class="shortcut-tooltip" role="tooltip">
+                      <span>Grid view</span>
                       <kbd>3</kbd>
                     </span>
                   </div>
@@ -1732,9 +1732,9 @@
               <div class="management-row shortcut-row">
                 <dt class="shortcut-row__label">Switch layout</dt>
                 <dd class="shortcut-keys shortcut-keys--labeled">
-                  <span><kbd>1</kbd> Focus</span>
+                  <span><kbd>1</kbd> Compact</span>
                   <span><kbd>2</kbd> Comfortable</span>
-                  <span><kbd>3</kbd> Compact</span>
+                  <span><kbd>3</kbd> Grid</span>
                 </dd>
               </div>
               <div class="management-row shortcut-row">

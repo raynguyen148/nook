@@ -375,7 +375,7 @@ dialog:not([open]),
     min-width: 0;
     padding: 1.05rem 1.15rem 1rem;
     gap: 0.35rem;
-    border-radius: 1.05rem;
+    border-radius: var(--radius-card, 0.625rem);
     background: var(--surface-panel);
     border: 1px solid color-mix(in srgb, var(--border-subtle) 85%, transparent);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02), 0 3px 10px -2px rgba(15, 23, 42, 0.05);
@@ -579,6 +579,9 @@ dialog:not([open]),
     border: var(--retro-border-width) solid var(--retro-error);
     color: var(--retro-error);
     border-radius: 50% !important;
+  }
+  html[data-theme="retro"] body .notes-panel .note-card {
+    border-radius: var(--retro-radius-card);
   }
   html[data-theme="retro"] body .notes-panel .note-card--pinned .note-card__pin-toggle {
     border: var(--retro-border-width) solid var(--retro-border);

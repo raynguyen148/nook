@@ -342,7 +342,7 @@
 }
 
 @media (max-width: 959px) {
-  .note-card__top-actions .note-card__action--side-note {
+  .note-card__action--side-note {
     display: none;
   }
 }

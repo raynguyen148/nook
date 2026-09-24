@@ -251,9 +251,12 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
       resetToFirstPage();
       renderNotes({ motion: "sort" });
     });
-    elements.focusView.addEventListener("click", () => setViewMode("focus"));
-    elements.comfortableView.addEventListener("click", () => setViewMode("comfortable"));
-    elements.compactView.addEventListener("click", () => setViewMode("compact"));
+    elements.compactView?.addEventListener("click", () => setViewMode("compact"));
+    if (elements.focusView && elements.focusView !== elements.compactView) {
+      elements.focusView.addEventListener("click", () => setViewMode("compact"));
+    }
+    elements.comfortableView?.addEventListener("click", () => setViewMode("comfortable"));
+    elements.gridView?.addEventListener("click", () => setViewMode("grid"));
     elements.noteForm.addEventListener("submit", saveNote);
     elements.noteTitle.addEventListener("input", () => {
       revalidateNoteEditorField("title");
@@ -760,9 +763,9 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
       }
 
       const libraryViewShortcutButton = {
-        1: elements.focusView,
+        1: elements.compactView || elements.focusView,
         2: elements.comfortableView,
-        3: elements.compactView,
+        3: elements.gridView,
       }[event.key];
       const matchesLibraryViewShortcut =
         libraryViewShortcutButton &&

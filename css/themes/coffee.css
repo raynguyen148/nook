@@ -484,7 +484,7 @@ html:not([data-theme]) .active-filter-clear-all {
    -------------------------------------------------------------------------- */
 html[data-theme="coffee"] .note-card,
 html:not([data-theme]) .note-card {
-  border-radius: 1rem;
+  border-radius: var(--radius-card, 0.625rem);
   box-shadow: 0 1px 3px rgba(65, 45, 25, 0.04), 0 3px 8px rgba(65, 45, 25, 0.02);
   transition:
     transform var(--interaction-duration) var(--interaction-easing),

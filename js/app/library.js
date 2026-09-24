@@ -2041,7 +2041,26 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
           ]),
     );
     remove.addEventListener("click", () => (isDeleted ? restoreNoteWithFeedback(note) : deleteNoteWithConfirmation(note, { preserveSidePicker: secondary })));
-    if (isDeleted) remove.append(createElement("span", { className: "mobile-only", text: "Restore" }));
+    if (!isDeleted && !secondary) {
+      const sideNote = createElement("button", {
+        className: "note-card__action note-card__action--side-note",
+        type: "button",
+        attributes: {
+          "aria-label": `Open ${note.title} with Side Note`,
+          title: "Open with Side Note",
+        },
+      });
+      sideNote.append(createNoteCardActionIcon([
+        ["rect", { x: "3", y: "3", width: "18", height: "18", rx: "3.5" }],
+        ["rect", { x: "13.5", y: "6", width: "4.5", height: "12", rx: "1.5", fill: "currentColor", stroke: "none" }],
+      ]));
+      sideNote.addEventListener("click", () => {
+        if (!window.matchMedia("(min-width: 960px)").matches) return;
+        openQuickView(note, sideNote);
+        void openDualPane({ startWithPicker: true });
+      });
+      actions.append(sideNote);
+    }
     actions.append(copy);
     if (!isDeleted) actions.append(edit);
     actions.append(remove);
@@ -2069,24 +2088,6 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
     footer.append(tags, actions);
     const topActions = createElement("div", { className: "note-card__top-actions" });
     if (!isDeleted && !secondary) {
-      const sideNote = createElement("button", {
-        className: "note-card__action note-card__action--side-note",
-        type: "button",
-        attributes: {
-          "aria-label": `Open ${note.title} with Side Note`,
-          title: "Open with Side Note",
-        },
-      });
-      sideNote.append(createNoteCardActionIcon([
-        ["rect", { x: "3", y: "3", width: "18", height: "18", rx: "3.5" }],
-        ["rect", { x: "13.5", y: "6", width: "4.5", height: "12", rx: "1.5", fill: "currentColor", stroke: "none" }],
-      ]));
-      sideNote.addEventListener("click", () => {
-        if (!window.matchMedia("(min-width: 960px)").matches) return;
-        openQuickView(note, sideNote);
-        void openDualPane({ startWithPicker: true });
-      });
-      topActions.append(sideNote);
       const pin = createElement("button", {
         className: "note-card__pin-toggle",
         type: "button",
@@ -2269,7 +2270,7 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
   }
 
   function pageSizeForColumns(columns) {
-    if (ui.viewMode === "focus") return PAGE_SIZE;
+    if (ui.viewMode === "compact" || ui.viewMode === "focus") return PAGE_SIZE;
     return Math.ceil(PAGE_SIZE / columns) * columns;
   }
 
