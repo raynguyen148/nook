@@ -7,6 +7,7 @@ import {
   useState,
   type PropsWithChildren,
 } from 'react'
+import { flushSync } from 'react-dom'
 
 export const THEME_MODES = ['light', 'coffee', 'forest', 'midnight', 'dark', 'retro', 'auto'] as const
 export type ThemeMode = (typeof THEME_MODES)[number]
@@ -30,6 +31,30 @@ interface ThemeContextValue {
 }
 
 const ThemeContext = createContext<ThemeContextValue | null>(null)
+
+function prefersReducedMotion(): boolean {
+  return typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+}
+
+function runThemeTransition(update: () => void): void {
+  const startViewTransition = document.startViewTransition?.bind(document)
+  if (!startViewTransition || prefersReducedMotion()) {
+    update()
+    return
+  }
+
+  document.documentElement.dataset.uiTransition = 'theme'
+  try {
+    const transition = startViewTransition(() => flushSync(update))
+    void transition.ready.catch(() => undefined)
+    void transition.finished.catch(() => undefined).finally(() => {
+      delete document.documentElement.dataset.uiTransition
+    })
+  } catch {
+    delete document.documentElement.dataset.uiTransition
+    update()
+  }
+}
 
 function readStoredTheme(): ThemeMode {
   try {
@@ -92,9 +117,7 @@ export function ThemeProvider({ children }: PropsWithChildren) {
     }
   }, [effectiveTheme, theme])
 
-  const setTheme = useCallback((mode: ThemeMode) => {
-    if (!THEME_MODES.includes(mode)) return
-    setThemeState(mode)
+  const persistTheme = useCallback((mode: ThemeMode) => {
     try {
       window.localStorage.setItem(THEME_STORAGE_KEY, mode)
     } catch {
@@ -102,18 +125,34 @@ export function ThemeProvider({ children }: PropsWithChildren) {
     }
   }, [])
 
+  const setTheme = useCallback((mode: ThemeMode) => {
+    if (!THEME_MODES.includes(mode) || mode === theme) return
+    runThemeTransition(() => setThemeState(mode))
+    persistTheme(mode)
+  }, [persistTheme, theme])
+
   const cycleTheme = useCallback(() => {
-    setThemeState((currentTheme) => {
-      const currentIndex = THEME_MODES.indexOf(currentTheme)
-      const nextTheme = THEME_MODES[(currentIndex + 1) % THEME_MODES.length]
-      try {
-        window.localStorage.setItem(THEME_STORAGE_KEY, nextTheme)
-      } catch {
-        // The selected theme remains available for the current session.
-      }
-      return nextTheme
-    })
-  }, [])
+    const currentIndex = THEME_MODES.indexOf(theme)
+    const nextTheme = THEME_MODES[(currentIndex + 1) % THEME_MODES.length]
+    runThemeTransition(() => setThemeState(nextTheme))
+    persistTheme(nextTheme)
+  }, [persistTheme, theme])
+
+  useEffect(() => {
+    function handleThemeShortcut(event: KeyboardEvent) {
+      if (event.defaultPrevented || event.repeat || event.isComposing) return
+      if (event.metaKey || event.ctrlKey || event.altKey || event.shiftKey) return
+      if (event.key.toLowerCase() !== 't') return
+      const target = event.target instanceof HTMLElement ? event.target : null
+      const isFormTarget = Boolean(target?.closest('input, textarea, select, [contenteditable="true"], [role="combobox"], [role="listbox"]'))
+      if (isFormTarget) return
+      event.preventDefault()
+      cycleTheme()
+    }
+
+    document.addEventListener('keydown', handleThemeShortcut)
+    return () => document.removeEventListener('keydown', handleThemeShortcut)
+  }, [cycleTheme])
 
   const value = useMemo(
     () => ({ theme, effectiveTheme, setTheme, cycleTheme }),

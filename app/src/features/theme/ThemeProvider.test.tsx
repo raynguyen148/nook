@@ -1,4 +1,4 @@
-import { act, render, screen } from '@testing-library/react'
+import { act, fireEvent, render, screen } from '@testing-library/react'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { useTheme, ThemeProvider } from './ThemeProvider'
 
@@ -68,5 +68,25 @@ describe('ThemeProvider', () => {
       window.dispatchEvent(new StorageEvent('storage', { key: 'nook:theme', newValue: 'unexpected' }))
     })
     expect(screen.getByTestId('theme').textContent).toContain('forest')
+  })
+
+  it('cycles with T globally but ignores form-entry focus and modifiers', () => {
+    render(<ThemeProvider><ThemeProbe /><input aria-label="Title" /><select aria-label="Type"><option>General</option></select></ThemeProvider>)
+
+    fireEvent.keyDown(document.body, { key: 't' })
+    expect(screen.getByTestId('theme').textContent).toContain('coffee')
+
+    const title = screen.getByRole('textbox', { name: 'Title' })
+    title.focus()
+    fireEvent.keyDown(title, { key: 't' })
+    expect(screen.getByTestId('theme').textContent).toContain('coffee')
+
+    const type = screen.getByRole('combobox', { name: 'Type' })
+    type.focus()
+    fireEvent.keyDown(type, { key: 't' })
+    expect(screen.getByTestId('theme').textContent).toContain('coffee')
+
+    fireEvent.keyDown(document.body, { key: 't', ctrlKey: true })
+    expect(screen.getByTestId('theme').textContent).toContain('coffee')
   })
 })

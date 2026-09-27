@@ -1,0 +1,10 @@
+[
+  {
+    "date": "2026-09-27",
+    "scope": "app",
+    "macrostructure": "Workbench",
+    "theme": "existing Nook themes",
+    "enrichment": "none",
+    "brief": "Restore the React migration to the established Nook library, workspace, and Settings interaction system."
+  }
+]

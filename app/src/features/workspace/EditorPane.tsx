@@ -1,27 +1,26 @@
 import { useLayoutEffect, useRef, useState, type ReactNode } from 'react'
 import {
-  Bold,
-  Check,
   Clock3,
-  Code2,
-  Columns2,
   Copy,
   Download,
-  Eye,
-  FileText,
   Hash,
-  Italic,
   Keyboard,
-  List,
-  ListOrdered,
-  Pin,
   Plus,
   Save,
-  Strikethrough,
-  Table2,
   Trash2,
   X,
 } from 'lucide-react'
+import {
+  AlertFormatIcon,
+  CheckIcon,
+  EditModeIcon,
+  FootnoteFormatIcon,
+  PreviewModeIcon,
+  SplitModeIcon,
+  TableFormatIcon,
+  TaskFormatIcon,
+} from '@/components/NookIcons'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -30,8 +29,10 @@ import { Textarea } from '@/components/ui/textarea'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import type { NoteDraft, WorkspaceMode } from '@/domain/contracts'
 import type { EditorSessionState } from '@/features/editor-session/session'
+import { TypeDot } from '@/features/library/LibraryComponents'
 import { MarkdownPreview } from '@/features/markdown/MarkdownPreview'
 import { buildMarkdownScrollMap, interpolateScrollMap, isMarkdownScrollMapCurrent, type MarkdownScrollMap } from './split-scroll'
+import { useSplitSelectionHighlight } from './split-selection'
 import type { EditorPaneProps, FormattingCommand } from './workspace-types'
 
 export function formatDate(value?: string): string {
@@ -58,30 +59,50 @@ export function WorkspaceSaveStatus({ state }: { state: EditorSessionState }) {
 }
 
 export function WorkspaceModeSwitch({ mode, paneLabel, onModeChange }: { mode: WorkspaceMode; paneLabel: string; onModeChange(mode: WorkspaceMode): void }) {
-  return <div className="workspace-mode-switch" role="group" aria-label={`${paneLabel} display mode`}>
-    {([
-      ['edit', <FileText aria-hidden="true" />, 'Edit'],
-      ['split', <Columns2 aria-hidden="true" />, 'Split'],
-      ['preview', <Eye aria-hidden="true" />, 'Preview'],
-    ] as const).map(([value, icon, label]) => <Button key={value} type="button" size="sm" variant={mode === value ? 'secondary' : 'ghost'} aria-pressed={mode === value} onClick={() => onModeChange(value)}>{icon}<span>{label}</span></Button>)}
-  </div>
+  const modes = [
+    { value: 'edit' as const, icon: <EditModeIcon className="size-4" aria-hidden="true" />, label: 'Edit', shortcut: '1', tooltip: 'Markdown editor' },
+    { value: 'split' as const, icon: <SplitModeIcon className="size-4" aria-hidden="true" />, label: 'Split', shortcut: '2', tooltip: 'Split editor and preview' },
+    { value: 'preview' as const, icon: <PreviewModeIcon className="size-4" aria-hidden="true" />, label: 'Preview', shortcut: '3', tooltip: 'Preview rendered note' },
+  ]
+  return (
+    <div className="workspace-mode-switch" role="group" aria-label={`${paneLabel} display mode`}>
+      {modes.map(({ value, icon, label, shortcut, tooltip }) => (
+        <Tooltip key={value}>
+          <TooltipTrigger render={
+            <Button
+              type="button"
+              size="sm"
+              variant={mode === value ? 'secondary' : 'ghost'}
+              aria-label={label}
+              aria-pressed={mode === value}
+              aria-keyshortcuts={shortcut}
+              onClick={() => onModeChange(value)}
+            >
+              {icon}<span>{label}</span>
+            </Button>
+          } />
+          <TooltipContent role="tooltip">{tooltip} · {shortcut}</TooltipContent>
+        </Tooltip>
+      ))}
+    </div>
+  )
 }
 
 function MarkdownToolbar({ onFormat }: { onFormat(command: FormattingCommand): void }) {
   const modifier = typeof navigator !== 'undefined' && /Mac|iPhone|iPad|iPod/.test(navigator.platform) ? '⌘' : 'Ctrl'
   const commands: Array<{ command: FormattingCommand; label: string; hint: string; icon: ReactNode }> = [
-    { command: 'heading', label: 'Toggle heading', hint: 'Prefix selected lines with a heading', icon: <span className="workspace-format-mark">H</span> },
-    { command: 'bold', label: 'Toggle bold', hint: `${modifier}+B`, icon: <Bold aria-hidden="true" /> },
-    { command: 'italic', label: 'Toggle italic', hint: `${modifier}+I`, icon: <Italic aria-hidden="true" /> },
-    { command: 'strike', label: 'Toggle strikethrough', hint: 'Wrap in ~~', icon: <Strikethrough aria-hidden="true" /> },
-    { command: 'code', label: 'Toggle inline code', hint: `${modifier}+E`, icon: <Code2 aria-hidden="true" /> },
-    { command: 'code-block', label: 'Insert code block', hint: 'Wrap selected text in a fenced block', icon: <span className="workspace-format-mark">{'{ }'}</span> },
-    { command: 'bullet', label: 'Toggle bullet list', hint: `${modifier}+Shift+8`, icon: <List aria-hidden="true" /> },
-    { command: 'ordered', label: 'Toggle numbered list', hint: `${modifier}+Shift+7`, icon: <ListOrdered aria-hidden="true" /> },
-    { command: 'task', label: 'Toggle task list', hint: 'Prefix selected lines with task boxes', icon: <Check aria-hidden="true" /> },
-    { command: 'table', label: 'Insert table', hint: 'Insert a two-column Markdown table', icon: <Table2 aria-hidden="true" /> },
-    { command: 'alert', label: 'Insert note alert', hint: 'Insert a Markdown alert', icon: <span className="workspace-format-mark">[!]</span> },
-    { command: 'footnote', label: 'Insert footnote', hint: 'Insert a numbered footnote', icon: <span className="workspace-format-mark">[^]</span> },
+    { command: 'heading', label: 'Heading', hint: 'Toggle line heading', icon: <span className="workspace-format-mark font-semibold">H</span> },
+    { command: 'bold', label: 'Bold', hint: `${modifier}+B`, icon: <span className="workspace-format-mark font-bold">B</span> },
+    { command: 'italic', label: 'Italic', hint: `${modifier}+I`, icon: <span className="workspace-format-mark italic font-serif">I</span> },
+    { command: 'strike', label: 'Strikethrough', hint: 'Wrap in ~~', icon: <span className="workspace-format-mark line-through">S</span> },
+    { command: 'code', label: 'Inline code', hint: `${modifier}+E`, icon: <span className="workspace-format-mark font-mono text-[0.72rem]">&lt;/&gt;</span> },
+    { command: 'code-block', label: 'Code block', hint: 'Wrap in fenced block', icon: <span className="workspace-format-mark font-mono">{'{ }'}</span> },
+    { command: 'bullet', label: 'Bullet list', hint: `${modifier}+Shift+8`, icon: <span className="workspace-format-mark font-mono">•≡</span> },
+    { command: 'ordered', label: 'Numbered list', hint: `${modifier}+Shift+7`, icon: <span className="workspace-format-mark font-mono">1≡</span> },
+    { command: 'task', label: 'Task list', hint: 'Prefix with task checkboxes', icon: <TaskFormatIcon className="size-3.5" /> },
+    { command: 'table', label: 'Table', hint: 'Insert Markdown table', icon: <TableFormatIcon className="size-3.5" /> },
+    { command: 'alert', label: 'Alert', hint: 'Insert note callout alert', icon: <AlertFormatIcon className="size-3.5" /> },
+    { command: 'footnote', label: 'Footnote', hint: 'Insert numbered footnote', icon: <FootnoteFormatIcon className="size-3.5" /> },
   ]
   return (
     <div className="workspace-formatting" role="toolbar" aria-label="Markdown formatting">
@@ -92,18 +113,69 @@ function MarkdownToolbar({ onFormat }: { onFormat(command: FormattingCommand): v
               type="button"
               size="icon-sm"
               variant="ghost"
-              aria-label={label}
+              aria-label={`Toggle ${label.toLowerCase()}`}
               onPointerDown={(event) => event.preventDefault()}
               onClick={() => onFormat(command)}
-            />
-          }>
-            {icon}
-          </TooltipTrigger>
-          <TooltipContent role="tooltip">{label} · {hint}</TooltipContent>
+            >
+              {icon}
+            </Button>
+          } />
+          <TooltipContent role="tooltip">Toggle {label.toLowerCase()} · {hint}</TooltipContent>
         </Tooltip>
       ))}
     </div>
   )
+}
+
+function ShortcutHelp({ modifier }: { modifier: string }) {
+  const rows = [
+    ['Markdown editor', ['1']],
+    ['Split preview', ['2']],
+    ['Preview', ['3']],
+    ['Bold', [modifier, 'B']],
+    ['Italic', [modifier, 'I']],
+    ['Insert link', [modifier, 'K']],
+    ['Inline code', [modifier, 'E']],
+    ['Numbered list', [modifier, 'Shift', '7']],
+    ['Bullet list', [modifier, 'Shift', '8']],
+    ['Quick save', [modifier, 'Shift', 'S']],
+    ['Save & close', [modifier, 'Enter']],
+  ] as const
+
+  return <div className="contents">
+    <strong className="workspace-help-tooltip__title">Note shortcuts</strong>
+    {rows.map(([label, keys]) => <div className="workspace-help-tooltip__row" key={label}>
+      <span>{label}</span>
+      <span className="workspace-help-tooltip__keys">{keys.map((key, index) => <span className="contents" key={`${label}-${key}`}>
+        {index > 0 && <span aria-hidden="true">+</span>}<kbd>{key}</kbd>
+      </span>)}</span>
+    </div>)}
+  </div>
+}
+
+function MarkdownHelp() {
+  const rows = [
+    ['Heading', '#  ##  ###'],
+    ['Bold', '**text**'],
+    ['Italic', '*text*'],
+    ['Strikethrough', '~~text~~'],
+    ['Inline code', '`code`'],
+    ['Code block', '```js … ```'],
+    ['Bullet list', '- item'],
+    ['Numbered list', '1. item'],
+    ['Quote', '> text'],
+    ['Task list', '- [ ] item'],
+    ['Table', '| A | B |'],
+    ['Alert', '> [!NOTE]'],
+    ['Footnote', 'Text[^1]'],
+  ] as const
+
+  return <div className="contents">
+    <strong className="workspace-help-tooltip__title">Markdown guide</strong>
+    {rows.map(([label, syntax]) => <div className="workspace-help-tooltip__row" key={label}>
+      <span>{label}</span><code>{syntax}</code>
+    </div>)}
+  </div>
 }
 
 export function EditorPane({
@@ -115,6 +187,8 @@ export function EditorPane({
   tags,
   isActive,
   showHeader = true,
+  headerLeading,
+  headerTrailing,
   recovery,
   error,
   textareaRef,
@@ -125,7 +199,6 @@ export function EditorPane({
   onKeepMine,
   onClose,
   onHistory,
-  onTogglePinned,
   onMoveToTrash,
   onCreateTag,
   onCopy,
@@ -149,6 +222,14 @@ export function EditorPane({
   const update = (patch: Partial<NoteDraft>) => onDraftChange({ ...draft, ...patch })
   const isEditing = mode === 'edit' || mode === 'split'
   const modifier = typeof navigator !== 'undefined' && /Mac|iPhone|iPad|iPod/.test(navigator.platform) ? '⌘' : 'Ctrl'
+  const selectedType = types.find((type) => type.id === draft.typeId) ?? types.find((type) => type.isFallback) ?? null
+
+  useSplitSelectionHighlight({
+    enabled: mode === 'split',
+    content: draft.content,
+    sourceRef: textareaRef,
+    previewRef,
+  })
 
   useLayoutEffect(() => {
     const source = textareaRef.current
@@ -219,9 +300,16 @@ export function EditorPane({
     target.scrollTop = top
   }
 
+  const [copied, setCopied] = useState(false)
+  const handleCopy = () => {
+    onCopy()
+    setCopied(true)
+    setTimeout(() => setCopied(false), 1500)
+  }
+
   return (
     <Card
-      className={`workspace-pane ${pane === 'secondary' ? 'workspace-pane--side' : ''} ${isActive ? 'is-active' : ''}`}
+      className={`workspace-pane workspace-pane--${mode} ${pane === 'secondary' ? 'workspace-pane--side' : ''} ${isActive ? 'is-active' : ''}`}
       onPointerDown={onActivate}
       onFocusCapture={onActivate}
       data-pane={pane}
@@ -229,17 +317,17 @@ export function EditorPane({
       aria-label={`${paneLabel} workspace pane`}
     >
       {showHeader && <CardHeader className="workspace-pane__header">
-        <div className="workspace-pane__heading">
-          <span className="workspace-pane__eyebrow">{pane === 'primary' ? 'PRIMARY NOTE' : 'SIDE NOTE'}</span>
-          <div className="workspace-pane__title-row">
+        <div className="workspace-pane__header-leading">
+          {headerLeading ?? <>
             {pane === 'primary'
-              ? <h1 id="workspace-heading" tabIndex={-1} className="workspace-pane__title">{draft.id ? 'Edit note' : 'New note'}</h1>
-              : <h2 className="workspace-pane__title">Side note</h2>}
+              ? <h1 id="workspace-heading" tabIndex={-1} className="workspace-pane__state-label">{mode === 'preview' ? 'Preview note' : draft.id ? 'Edit note' : 'New note'}</h1>
+              : <h2 className="workspace-pane__state-label">Side note</h2>}
             <WorkspaceSaveStatus state={state} />
-          </div>
+          </>}
         </div>
         <div className="workspace-pane__header-actions">
           <WorkspaceModeSwitch mode={mode} paneLabel={paneLabel} onModeChange={onModeChange} />
+          {headerTrailing}
           {pane === 'secondary' && (
             <Button type="button" variant="ghost" size="icon" aria-label="Close Side note" title="Close Side note" onClick={onClose}>
               <X aria-hidden="true" />
@@ -260,7 +348,7 @@ export function EditorPane({
         )}
 
         {isEditing ? <>
-          <div className="workspace-metadata">
+          <div className="workspace-metadata mb-3">
             <label className="workspace-field workspace-field--title">
               <span className="sr-only">Title</span>
               <Input
@@ -276,40 +364,63 @@ export function EditorPane({
                 disabled={isDeleted}
               />
             </label>
-            <label className="workspace-field workspace-field--type">
-              <span className="sr-only">Type</span>
-              <Select items={Object.fromEntries(types.map((type) => [type.id, type.name]))} value={draft.typeId || types[0]?.id || ''} onValueChange={(value) => { if (value) update({ typeId: value }) }} disabled={isDeleted}>
-                <SelectTrigger aria-label={`${paneLabel} type`}>
-                  <SelectValue placeholder="Choose a type" />
-                </SelectTrigger>
-                <SelectContent>
-                  {types.map((type) => <SelectItem key={type.id} value={type.id}>{type.name}</SelectItem>)}
-                </SelectContent>
-              </Select>
-            </label>
-          <fieldset className="workspace-tags" disabled={isDeleted}>
-            <legend className="sr-only">Tags</legend>
-            <div className="workspace-tags__list">
-              {tags.filter((tag) => draft.tagIds.includes(tag.id)).map((tag) => <Button key={tag.id} type="button" size="xs" variant="secondary" aria-label={`Remove tag ${tag.name}`} onClick={() => update({ tagIds: draft.tagIds.filter((id) => id !== tag.id) })}>{tag.name}<X aria-hidden="true" /></Button>)}
-              <details className="workspace-tag-picker">
-                <summary className="workspace-tag-picker__trigger inline-flex cursor-pointer items-center gap-1 rounded-full border border-border px-2 py-1 text-xs text-muted-foreground" aria-label="Add tag" title="Add tag"><Plus size={14} aria-hidden="true" /><span className="sr-only">Add tag</span></summary>
-                <div className="workspace-tag-picker__panel rounded-md border border-border bg-popover p-2 shadow-md">
-                  <div className="workspace-tag-picker__options" role="group" aria-label="Available tags">
-                    {tags.filter((tag) => !draft.tagIds.includes(tag.id)).map((tag) => <Button key={tag.id} type="button" size="xs" variant="ghost" onClick={() => update({ tagIds: [...draft.tagIds, tag.id] })}>{tag.name}</Button>)}
-                  </div>
-                  <div className="workspace-tag-create">
-                    <Input name={`${pane}-new-tag`} autoComplete="off" value={newTagName} maxLength={40} aria-label={`Create tag for ${paneLabel}`} placeholder="Create a tag" onChange={(event) => { setNewTagName(event.currentTarget.value); setTagError('') }} disabled={isDeleted || creatingTag} onKeyDown={(event) => { if (event.key === 'Enter') { event.preventDefault(); void createTag() } }} />
-                    <Button type="button" size="sm" variant="outline" disabled={isDeleted || creatingTag || !newTagName.trim()} onClick={() => { void createTag() }}>{creatingTag ? 'Adding…' : 'Add tag'}</Button>
-                  </div>
-                  {tagError && <p className="workspace-inline-message" role="alert">{tagError}</p>}
+            <div className="workspace-editor-meta">
+              <label className="workspace-field workspace-field--type">
+                <span className="sr-only">Type</span>
+                <Select items={Object.fromEntries(types.map((type) => [type.id, type.name]))} value={selectedType?.id || draft.typeId || types[0]?.id || ''} onValueChange={(value) => { if (value) update({ typeId: value }) }} disabled={isDeleted}>
+                  <SelectTrigger className="workspace-type-select" aria-label={`${paneLabel} type`}>
+                    <TypeDot color={selectedType?.color ?? 'slate'} />
+                    <SelectValue placeholder="Choose a type" />
+                  </SelectTrigger>
+                  <SelectContent className="workspace-type-select__content" align="start" alignItemWithTrigger={false}>
+                    {types.map((type) => <SelectItem key={type.id} value={type.id} className="workspace-type-select__option"><TypeDot color={type.color} /><span>{type.name}</span></SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </label>
+              <fieldset className="workspace-tags" disabled={isDeleted}>
+                <legend className="sr-only">Tags</legend>
+                <div className="workspace-tags__list flex items-center flex-wrap gap-1.5">
+                  {tags.filter((tag) => draft.tagIds.includes(tag.id)).map((tag) => <Badge key={tag.id} render={<button type="button" />} variant="tag" className="workspace-tag-badge" aria-label={`Remove tag ${tag.name}`} onClick={() => update({ tagIds: draft.tagIds.filter((id) => id !== tag.id) })}>{tag.name}<X aria-hidden="true" /></Badge>)}
+                  <details className="workspace-tag-picker">
+                    <summary className="workspace-tag-picker__trigger inline-flex cursor-pointer items-center justify-center size-6 rounded-full border border-border text-xs text-muted-foreground hover:bg-muted" aria-label="Add tag" title="Add tag"><Plus size={14} aria-hidden="true" /><span className="sr-only">Add tag</span></summary>
+                    <div className="workspace-tag-picker__panel rounded-md border border-border bg-popover p-2 shadow-md">
+                      <div className="workspace-tag-picker__options" role="group" aria-label="Available tags">
+                        {tags.filter((tag) => !draft.tagIds.includes(tag.id)).map((tag) => <Badge key={tag.id} render={<button type="button" />} variant="tag" className="workspace-tag-badge workspace-tag-badge--option" onClick={() => update({ tagIds: [...draft.tagIds, tag.id] })}>{tag.name}</Badge>)}
+                      </div>
+                      <div className="workspace-tag-create">
+                        <Input name={`${pane}-new-tag`} autoComplete="off" value={newTagName} maxLength={40} aria-label={`Create tag for ${paneLabel}`} placeholder="Create a tag" onChange={(event) => { setNewTagName(event.currentTarget.value); setTagError('') }} disabled={isDeleted || creatingTag} onKeyDown={(event) => { if (event.key === 'Enter') { event.preventDefault(); void createTag() } }} />
+                        <Button type="button" size="sm" variant="outline" disabled={isDeleted || creatingTag || !newTagName.trim()} onClick={() => { void createTag() }}>{creatingTag ? 'Adding…' : 'Add tag'}</Button>
+                      </div>
+                      {tagError && <p className="workspace-inline-message" role="alert">{tagError}</p>}
+                    </div>
+                  </details>
                 </div>
-              </details>
+              </fieldset>
             </div>
-          </fieldset>
           </div>
-        </> : <section className="workspace-readonly-metadata" aria-label={pane === 'primary' ? 'Note details' : 'Side note details'}>
-          <h2 className="workspace-readonly-title">{draft.title || 'Untitled note'}</h2>
-          <div className="workspace-readonly-chips"><span className="workspace-readonly-type rounded-full border border-border bg-secondary px-2 py-1 text-xs text-secondary-foreground">{types.find((type) => type.id === draft.typeId)?.name || 'General'}</span>{draft.tagIds.map((id) => tags.find((tag) => tag.id === id)).filter((tag) => Boolean(tag)).map((tag) => <span key={tag!.id} className="rounded-full border border-border bg-secondary px-2 py-1 text-xs text-secondary-foreground">{tag!.name}</span>)}</div>
+        </> : <section className="workspace-readonly-section mb-4" aria-label={pane === 'primary' ? 'Note details' : 'Side note details'}>
+          <h1 className="workspace-readonly-title text-2xl font-bold tracking-tight text-foreground my-3">{draft.title || 'Untitled note'}</h1>
+          <div className="workspace-readonly-context">
+            {(() => {
+              const currentType = types.find((type) => type.id === draft.typeId) ?? types.find((type) => type.isFallback)
+              return currentType ? (
+                <div className="workspace-readonly-type flex items-center gap-1.5 text-xs font-semibold text-foreground">
+                  <TypeDot color={currentType.color} />
+                  <span>{currentType.name}</span>
+                </div>
+              ) : null
+            })()}
+            {draft.tagIds.length > 0 && (
+              <div className="workspace-readonly-tags flex flex-wrap items-center gap-1 mt-1">
+                {draft.tagIds.map((id) => tags.find((tag) => tag.id === id)).filter((tag): tag is typeof tags[number] => Boolean(tag)).map((tag) => (
+                  <Badge key={tag.id} variant="tag">
+                    {tag.name}
+                  </Badge>
+                ))}
+              </div>
+            )}
+            {draft.tagIds.length === 0 && <span className="text-xs text-muted-foreground">No tags</span>}
+          </div>
         </section>}
 
         {isDeleted && <p className="workspace-inline-message" role="status">This note is in Trash. Restore it from the library before editing.</p>}
@@ -342,6 +453,7 @@ export function EditorPane({
               <div className="workspace-preview-column">
                 <div className="workspace-editor-label"><span>PREVIEW</span></div>
                 <div
+                  key={`${pane}-split-preview`}
                   ref={previewRef}
                   className="workspace-preview-scroll note-content-preview"
                   tabIndex={0}
@@ -361,11 +473,12 @@ export function EditorPane({
           </section>
         )}
 
-        {mode === 'preview' && (
-          <div className="workspace-preview-scroll workspace-preview-scroll--full quick-view-content" tabIndex={0} aria-label={`${paneLabel} rendered Markdown preview`} onFocus={onActivate}>
+        {mode === 'preview' && <>
+          <div className="workspace-preview-label">CONTENT</div>
+          <div key={`${pane}-full-preview`} className="workspace-preview-scroll workspace-preview-scroll--full quick-view-content" tabIndex={0} aria-label={`${paneLabel} rendered Markdown preview`} onFocus={onActivate}>
             <MarkdownPreview source={draft.content} pane={`${pane}-full`} className="workspace-markdown-body" emptyText="No content yet." label={`${paneLabel} rendered Markdown`} />
           </div>
-        )}
+        </>}
 
         {note && (note.createdAt || note.updatedAt) && (
           <div className="workspace-note-dates">
@@ -391,43 +504,65 @@ export function EditorPane({
         {error === 'content' && <p className="workspace-inline-message" role="alert">This note is longer than the 50,000 character limit.</p>}
       </CardContent>
 
-      <CardFooter className="workspace-pane__footer">
+      <CardFooter className={`workspace-pane__footer ${pane === 'secondary' ? 'workspace-pane__footer--side' : ''}`}>
         <div className="workspace-export-actions">
-          {draft.id && !isDeleted && <>
-            <Button type="button" size="sm" variant="ghost" onClick={onMoveToTrash} disabled={state.saving} aria-label="Move note to Trash" title="Move to Trash"><Trash2 aria-hidden="true" /><span>Trash</span></Button>
-            <Button type="button" size="sm" variant="ghost" onClick={onTogglePinned} disabled={state.dirty || state.saving} aria-label={note?.isPinned ? 'Unpin note' : 'Pin note'} title={state.dirty ? 'Save changes before pinning' : note?.isPinned ? 'Unpin note' : 'Pin note'}><Pin aria-hidden="true" fill={note?.isPinned ? 'currentColor' : 'none'} /><span>{note?.isPinned ? 'Unpin' : 'Pin'}</span></Button>
-          </>}
-          <Button type="button" size="sm" variant="ghost" onClick={onCopy}><Copy aria-hidden="true" /><span>Copy Markdown</span></Button>
-          <Button type="button" size="sm" variant="ghost" onClick={() => onExport('md')}><Download aria-hidden="true" /><span>.md</span></Button>
-          <Button type="button" size="sm" variant="ghost" onClick={() => onExport('txt')}><Download aria-hidden="true" /><span>.txt</span></Button>
-          {draft.id && <Button type="button" size="sm" variant="ghost" onClick={onHistory}><Clock3 aria-hidden="true" /><span>History</span></Button>}
+          <Tooltip>
+            <TooltipTrigger render={
+              <Button type="button" size="icon-xs" variant="ghost" className="workspace-icon-action" aria-label="Copy Markdown" onClick={handleCopy}>
+                {copied ? <CheckIcon className="size-4 text-primary" /> : <Copy className="size-4" aria-hidden="true" />}
+              </Button>
+            } />
+            <TooltipContent role="tooltip">{copied ? 'Copied to clipboard!' : 'Copy raw Markdown source'}</TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger render={
+              <Button type="button" size="icon-xs" variant="ghost" className="workspace-icon-action" aria-label="Export .md file" onClick={onExport}>
+                <Download className="size-4" aria-hidden="true" />
+              </Button>
+            } />
+            <TooltipContent role="tooltip">Export as Markdown (.md)</TooltipContent>
+          </Tooltip>
+          {draft.id && (
+            <Tooltip>
+              <TooltipTrigger render={
+                <Button type="button" size="icon-xs" variant="ghost" className="workspace-icon-action" aria-label="Open version history" onClick={onHistory}>
+                  <Clock3 className="size-4" aria-hidden="true" />
+                </Button>
+              } />
+              <TooltipContent role="tooltip">Version history</TooltipContent>
+            </Tooltip>
+          )}
           {pane === 'primary' && <>
             <span className="workspace-help-divider" aria-hidden="true" />
             <Tooltip>
-              <TooltipTrigger render={<Button type="button" size="sm" variant="ghost" aria-label="Show note shortcuts" />}><Keyboard aria-hidden="true" /></TooltipTrigger>
-              <TooltipContent className="workspace-help-tooltip" align="start" role="tooltip"><strong>Note shortcuts</strong><span>1 Edit · 2 Split · 3 Preview</span><span>{modifier}+B Bold · {modifier}+I Italic · {modifier}+K Link</span><span>{modifier}+Shift+S Quick Save · {modifier}+Enter Save &amp; close</span></TooltipContent>
+              <TooltipTrigger render={<Button type="button" size="icon-xs" variant="ghost" className="workspace-icon-action" aria-label="Show note shortcuts"><Keyboard className="size-4" aria-hidden="true" /></Button>} />
+              <TooltipContent className="workspace-help-tooltip" align="start" sideOffset={8} role="tooltip"><ShortcutHelp modifier={modifier} /></TooltipContent>
             </Tooltip>
             <Tooltip>
-              <TooltipTrigger render={<Button type="button" size="sm" variant="ghost" aria-label="Show Markdown guide" />}><Hash aria-hidden="true" /></TooltipTrigger>
-              <TooltipContent className="workspace-help-tooltip" align="start" role="tooltip"><strong>Markdown guide</strong><span># Heading · **bold** · *italic* · `code`</span><span>- List · - [ ] Task · &gt; Quote</span><span>``` Code block · | A | B | Table</span></TooltipContent>
+              <TooltipTrigger render={<Button type="button" size="icon-xs" variant="ghost" className="workspace-icon-action" aria-label="Show Markdown guide"><Hash className="size-4" aria-hidden="true" /></Button>} />
+              <TooltipContent className="workspace-help-tooltip workspace-help-tooltip--markdown" align="start" sideOffset={8} role="tooltip"><MarkdownHelp /></TooltipContent>
             </Tooltip>
           </>}
+          {draft.id && !isDeleted && <Tooltip>
+            <TooltipTrigger render={<Button type="button" size="icon-xs" variant="ghost" className="workspace-icon-action workspace-icon-action--danger" aria-label="Move note to Trash" onClick={onMoveToTrash} disabled={state.saving}><Trash2 className="size-4" aria-hidden="true" /></Button>} />
+            <TooltipContent role="tooltip">Move note to Trash</TooltipContent>
+          </Tooltip>}
         </div>
         <div className="workspace-save-actions">
-          {pane === 'primary' && <Button type="button" size="sm" variant="outline" onClick={onClose}>Close</Button>}
-          <Tooltip>
-            <TooltipTrigger render={<Button type="button" size="sm" variant="outline" onClick={() => onSave(false)} disabled={isDeleted || state.saving} />}>
-              <Save aria-hidden="true" /><span>Save changes</span>
-            </TooltipTrigger>
+          {pane === 'primary' && <Button type="button" size="sm" variant="outline" className="h-8 px-3 text-xs" onClick={onClose}>Close</Button>}
+          {isEditing && state.dirty && <Tooltip>
+            <TooltipTrigger render={
+              <Button type="button" size="sm" variant="outline" className="h-8 px-3 text-xs flex items-center gap-1.5" onClick={() => onSave(false)} disabled={isDeleted || state.saving}>
+                <Save className="size-4" aria-hidden="true" /><span>Save changes</span>
+              </Button>
+            } />
             <TooltipContent role="tooltip">Save and keep editing · {modifier}+Shift+S</TooltipContent>
-          </Tooltip>
+          </Tooltip>}
           <Tooltip>
             <TooltipTrigger render={pane === 'primary'
-              ? <Button type="button" size="sm" onClick={() => onSave(true)} />
-              : <Button type="button" size="sm" variant="outline" onClick={onClose} />
-            }>
-              {pane === 'primary' ? 'Done' : 'Close side note'}
-            </TooltipTrigger>
+              ? <Button type="button" size="sm" className="h-8 rounded-lg px-4 text-xs font-medium" onClick={() => onSave(true)}>Done</Button>
+              : <Button type="button" size="sm" variant="outline" className="h-8 px-3 text-xs" onClick={onClose}>Close side note</Button>
+            } />
             <TooltipContent role="tooltip">{pane === 'primary' ? `Finish editing · ${modifier}+Enter` : 'Close Side note'}</TooltipContent>
           </Tooltip>
         </div>

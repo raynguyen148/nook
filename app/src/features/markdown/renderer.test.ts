@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { markdownToPlainText, renderMarkdownInto } from './renderer'
+import { renderMarkdownInto } from './renderer'
 
 describe('the local Markdown adapter', () => {
   it('renders existing rich Markdown while keeping raw HTML inert and remote images local', () => {
@@ -48,10 +48,6 @@ describe('the local Markdown adapter', () => {
     expect(primaryTarget).not.toBe(sideTarget)
     expect(primaryTarget).toMatch(/^#fn-primary-pane/)
     expect(sideTarget).toMatch(/^#fn-side-pane/)
-  })
-
-  it('provides the renderer’s plain-text conversion for local text exports', () => {
-    expect(markdownToPlainText('# Title\n\n**Raw** [source](https://example.com)')).toContain('Title Raw source')
   })
 
   it('exposes source-line anchors for split-pane scroll synchronization', () => {

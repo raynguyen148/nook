@@ -1,10 +1,13 @@
 import { useId } from 'react'
-import { Copy, Grid2X2, List, Pencil, Save, Trash2, X } from 'lucide-react'
+import { Save, X } from 'lucide-react'
 import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import { ComfortableLayoutIcon, CompactLayoutIcon } from '@/components/NookIcons'
 import type { Note, NoteType, NoteVersion, Tag } from '@/domain/contracts'
+import { NoteCard } from '@/features/library/LibraryComponents'
 import { MarkdownPreview } from '@/features/markdown/MarkdownPreview'
 import { formatDate } from './EditorPane'
 import type { CloseIntent, HistoryDialogState, PaneId, SideNoteLayoutMode, TrashConfirmationState } from './workspace-types'
@@ -44,6 +47,87 @@ interface WorkspaceDialogsProps {
   onSaveAndTrash(): void
   onDiscardAndTrash(): void
   onCloseConflictPreview(): void
+}
+
+interface SideNotePickerProps {
+  types: NoteType[]
+  tags: Tag[]
+  sideSearch: string
+  availableSideNotes: Note[]
+  sideNoteLayout: SideNoteLayoutMode
+  onClose(): void
+  onSideSearchChange(value: string): void
+  onChooseSideNote(note: Note, mode: 'preview' | 'edit'): void
+  onCopySideNote(note: Note): void
+  onTrashSideNote(note: Note): void
+  onSideNoteLayoutChange(mode: SideNoteLayoutMode): void
+}
+
+export function SideNotePicker({
+  types,
+  tags,
+  sideSearch,
+  availableSideNotes,
+  sideNoteLayout,
+  onClose,
+  onSideSearchChange,
+  onChooseSideNote,
+  onCopySideNote,
+  onTrashSideNote,
+  onSideNoteLayoutChange,
+}: SideNotePickerProps) {
+  const titleId = useId()
+  const fallbackType = types.find((type) => type.isFallback)
+  return <section className="workspace-side-picker" id="side-note-picker" aria-labelledby={titleId}>
+    <header className="workspace-side-picker__header">
+      <h2 id={titleId}>Choose a side note</h2>
+      <Button type="button" variant="ghost" size="icon-sm" className="rounded-lg text-muted-foreground hover:text-foreground" aria-label="Close Side note picker" onClick={onClose}><X className="size-4" aria-hidden="true" /></Button>
+    </header>
+    <div className="workspace-side-picker__toolbar">
+      <Input name="side-note-search" autoComplete="off" autoFocus value={sideSearch} aria-label="Search notes for Side note" placeholder="Search title or content…" onChange={(event) => onSideSearchChange(event.currentTarget.value)} className="h-9 rounded-lg" />
+      <div className="nook-layout-toggle workspace-note-picker__controls" role="group" aria-label="Side note picker layout">
+        <Tooltip>
+          <TooltipTrigger render={<Button type="button" size="icon-sm" variant={sideNoteLayout === 'focus' ? 'secondary' : 'ghost'} aria-label="Focus layout" aria-pressed={sideNoteLayout === 'focus'} onClick={() => onSideNoteLayoutChange('focus')}><CompactLayoutIcon /></Button>} />
+          <TooltipContent role="tooltip">Focus view · 1</TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger render={<Button type="button" size="icon-sm" variant={sideNoteLayout === 'comfortable' ? 'secondary' : 'ghost'} aria-label="Comfortable layout" aria-pressed={sideNoteLayout === 'comfortable'} onClick={() => onSideNoteLayoutChange('comfortable')}><ComfortableLayoutIcon /></Button>} />
+          <TooltipContent role="tooltip">Comfortable view · 2</TooltipContent>
+        </Tooltip>
+      </div>
+    </div>
+    <div className={`workspace-note-picker__list workspace-note-picker__list--side workspace-note-picker__list--${sideNoteLayout}`} role="region" aria-label="Side notes to open">
+      {availableSideNotes.length ? availableSideNotes.map((note) => {
+        const type = types.find((item) => item.id === note.typeId) ?? fallbackType
+        return <NoteCard
+          key={note.id}
+          note={note}
+          type={type}
+          tags={note.tagIds.flatMap((id) => {
+            const tag = tags.find((item) => item.id === id)
+            return tag ? [tag] : []
+          })}
+          trash={false}
+          sort="updated-desc"
+          busy={false}
+          layout={sideNoteLayout === 'focus' ? 'compact' : 'comfortable'}
+          secondary
+          openAriaLabel={`Open ${note.title || 'Untitled note'} as Side note`}
+          editAriaLabel={`Edit ${note.title || 'Untitled note'} as Side note`}
+          onOpen={() => onChooseSideNote(note, 'preview')}
+          onEdit={() => onChooseSideNote(note, 'edit')}
+          onPin={() => {}}
+          onCopy={() => onCopySideNote(note)}
+          onTrash={() => onTrashSideNote(note)}
+          onRestore={() => {}}
+          onPermanentlyDelete={() => {}}
+          onTag={() => {}}
+          onType={() => {}}
+          onHover={() => {}}
+        />
+      }) : <p className="workspace-muted workspace-note-picker__empty text-center py-6 text-sm text-muted-foreground">No other notes are available.</p>}
+    </div>
+  </section>
 }
 
 export function WorkspaceDialogs({
@@ -91,31 +175,48 @@ export function WorkspaceDialogs({
   return <>
     <Dialog open={sidePickerOpen} onOpenChange={onSidePickerOpenChange}>
       <DialogContent className="workspace-dialog workspace-dialog--picker" aria-labelledby={pickerTitleId} initialFocus={false} showCloseButton={false}>
-        <header className="workspace-dialog__header">
-          <div><DialogTitle id={pickerTitleId}>Open a Side note</DialogTitle><DialogDescription>Choose a note to keep beside your current work.</DialogDescription></div>
-          <Button type="button" variant="ghost" size="icon" aria-label="Close Side note picker" onClick={() => onSidePickerOpenChange(false)}><X aria-hidden="true" /></Button>
+        <header className="workspace-dialog__header flex items-start justify-between pb-1">
+          <div>
+            <DialogTitle id={pickerTitleId} className="text-lg font-bold tracking-tight text-foreground">Open a Side note</DialogTitle>
+            <DialogDescription className="text-xs text-muted-foreground mt-0.5">Choose a note to keep beside your current work.</DialogDescription>
+          </div>
+          <Button type="button" variant="ghost" size="icon-sm" className="rounded-lg text-muted-foreground hover:text-foreground" aria-label="Close Side note picker" onClick={() => onSidePickerOpenChange(false)}><X className="size-4" aria-hidden="true" /></Button>
         </header>
-        <Input name="side-note-search" autoComplete="off" value={sideSearch} aria-label="Search notes for Side note" placeholder="Search notes" onChange={(event) => onSideSearchChange(event.currentTarget.value)} />
-        <div className="workspace-note-picker__controls" role="group" aria-label="Side note picker layout">
-          <Button type="button" size="sm" variant={sideNoteLayout === 'focus' ? 'secondary' : 'ghost'} aria-pressed={sideNoteLayout === 'focus'} onClick={() => onSideNoteLayoutChange('focus')}><List aria-hidden="true" />Focus</Button>
-          <Button type="button" size="sm" variant={sideNoteLayout === 'comfortable' ? 'secondary' : 'ghost'} aria-pressed={sideNoteLayout === 'comfortable'} onClick={() => onSideNoteLayoutChange('comfortable')}><Grid2X2 aria-hidden="true" />Comfortable</Button>
+        <Input name="side-note-search" autoComplete="off" value={sideSearch} aria-label="Search notes for Side note" placeholder="Search notes" onChange={(event) => onSideSearchChange(event.currentTarget.value)} className="h-9 rounded-lg" />
+        <div className="nook-layout-toggle workspace-note-picker__controls flex items-center justify-end gap-2 my-1" role="group" aria-label="Side note picker layout">
+          <Button type="button" size="icon-sm" variant={sideNoteLayout === 'focus' ? 'secondary' : 'ghost'} aria-label="Focus layout" aria-pressed={sideNoteLayout === 'focus'} onClick={() => onSideNoteLayoutChange('focus')}><CompactLayoutIcon /></Button>
+          <Button type="button" size="icon-sm" variant={sideNoteLayout === 'comfortable' ? 'secondary' : 'ghost'} aria-label="Comfortable layout" aria-pressed={sideNoteLayout === 'comfortable'} onClick={() => onSideNoteLayoutChange('comfortable')}><ComfortableLayoutIcon /></Button>
         </div>
-        <div className={`workspace-note-picker__list workspace-note-picker__list--${sideNoteLayout}`}>
-          {availableSideNotes.length ? availableSideNotes.map((note) => (
-            <article key={note.id} className="workspace-note-picker__card">
-              <button type="button" className="workspace-note-picker__item" aria-label={`Open ${note.title || 'Untitled note'} as Side note`} onClick={() => onChooseSideNote(note, 'preview')}>
-                <span className="workspace-note-picker__title">{note.title || 'Untitled note'}</span>
-                <span className="workspace-note-picker__meta">{types.find((type) => type.id === note.typeId)?.name || 'General'} · {formatDate(note.updatedAt)}</span>
-                <span className="workspace-note-picker__preview">{note.content.slice(0, 140).replace(/\s+/g, ' ') || 'No content yet.'}</span>
-                {sideNoteLayout === 'comfortable' && <span className="workspace-note-picker__tags">{note.tagIds.map((id) => tags.find((tag) => tag.id === id)?.name).filter(Boolean).join(' · ') || 'No tags'}</span>}
-              </button>
-              <div className="workspace-note-picker__actions" role="group" aria-label={`${note.title || 'Untitled note'} actions`}>
-                <Button type="button" size="icon-sm" variant="ghost" aria-label={`Edit ${note.title || 'Untitled note'} as Side note`} title="Edit in Side note" onClick={() => onChooseSideNote(note, 'edit')}><Pencil aria-hidden="true" /></Button>
-                <Button type="button" size="icon-sm" variant="ghost" aria-label={`Copy ${note.title || 'Untitled note'} Markdown`} title="Copy Markdown" onClick={() => onCopySideNote(note)}><Copy aria-hidden="true" /></Button>
-                <Button type="button" size="icon-sm" variant="ghost" aria-label={`Move ${note.title || 'Untitled note'} to Trash`} title="Move to Trash" onClick={() => onTrashSideNote(note)}><Trash2 aria-hidden="true" /></Button>
-              </div>
-            </article>
-          )) : <p className="workspace-muted workspace-note-picker__empty">No other notes are available.</p>}
+        <div className={`workspace-note-picker__list workspace-note-picker__list--dialog workspace-note-picker__list--${sideNoteLayout}`}>
+          {availableSideNotes.length ? availableSideNotes.map((note) => {
+            const type = types.find((item) => item.id === note.typeId)
+            return <NoteCard
+              key={note.id}
+              note={note}
+              type={type}
+              tags={note.tagIds.flatMap((id) => {
+                const tag = tags.find((item) => item.id === id)
+                return tag ? [tag] : []
+              })}
+              trash={false}
+              sort="updated-desc"
+              busy={false}
+              layout={sideNoteLayout === 'focus' ? 'compact' : 'comfortable'}
+              secondary
+              openAriaLabel={`Open ${note.title || 'Untitled note'} as Side note`}
+              editAriaLabel={`Edit ${note.title || 'Untitled note'} as Side note`}
+              onOpen={() => onChooseSideNote(note, 'preview')}
+              onEdit={() => onChooseSideNote(note, 'edit')}
+              onPin={() => {}}
+              onCopy={() => onCopySideNote(note)}
+              onTrash={() => onTrashSideNote(note)}
+              onRestore={() => {}}
+              onPermanentlyDelete={() => {}}
+              onTag={() => {}}
+              onType={() => {}}
+              onHover={() => {}}
+            />
+          }) : <p className="workspace-muted workspace-note-picker__empty text-center py-6 text-sm text-muted-foreground">No other notes are available.</p>}
         </div>
       </DialogContent>
     </Dialog>

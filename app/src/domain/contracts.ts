@@ -92,4 +92,4 @@ export interface NoteRepository {
 }
 
 export type WorkspaceMode = 'preview' | 'edit' | 'split'
-export interface WorkspaceLocation { noteId: string | null; mode: WorkspaceMode }
+export interface WorkspaceLocation { noteId: string | null; mode: WorkspaceMode; openSideNotePicker?: boolean }

@@ -10,7 +10,6 @@ export interface MarkdownRenderOptions {
 
 export interface NookMarkdownApi {
   renderInto(container: HTMLElement, source: string, emptyText?: string, options?: MarkdownRenderOptions): void
-  toPlainText(source: string): string
 }
 
 declare global {
@@ -32,8 +31,4 @@ export function renderMarkdownInto(
   options: MarkdownRenderOptions = {},
 ): void {
   getRenderer().renderInto(container, source, emptyText, options)
-}
-
-export function markdownToPlainText(source: string): string {
-  return getRenderer().toPlainText(source)
 }

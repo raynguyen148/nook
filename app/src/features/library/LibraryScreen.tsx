@@ -1,24 +1,20 @@
-import { useCallback, useEffect, useMemo, useRef, useState, type ChangeEvent } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ChangeEvent } from 'react'
 import {
-  Copy,
   FileText,
   Filter,
-  Grid2X2,
-  List,
-  Menu,
   Plus,
   Search,
-  Settings2,
-  SunMoon,
   Trash2,
   Undo2,
   X,
 } from 'lucide-react'
+import { BackupIcon, ComfortableLayoutIcon, CompactLayoutIcon, GridLayoutIcon, SettingsIcon, ThemeIcon } from '@/components/NookIcons'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog'
 import { Sheet, SheetContent, SheetDescription, SheetTitle } from '@/components/ui/sheet'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { useNook } from '@/app/NookContext'
 import type { BackupInspection, Note } from '@/domain/contracts'
 import { SettingsDialog } from '@/features/settings/SettingsDialog'
@@ -103,7 +99,7 @@ function readLayout(): LayoutMode {
     const value = window.localStorage.getItem(VIEW_STORAGE_KEY)
     return value === 'compact' || value === 'grid' ? value : 'comfortable'
   } catch {
-    return 'compact'
+    return 'comfortable'
   }
 }
 
@@ -144,6 +140,8 @@ export function LibraryScreen({ workspaceActive = false }: { workspaceActive?: b
   const [sort, setSort] = useState<SortMode>(() => returningFromWorkspace?.sort ?? readStoredSort())
   const [layout, setLayout] = useState<LayoutMode>(() => returningFromWorkspace?.layout ?? readLayout())
   const [collapsed, setCollapsed] = useState(() => returningFromWorkspace?.collapsed ?? readSidebarCollapsed())
+  const [sidebarMotion, setSidebarMotion] = useState<'idle' | 'collapsing' | 'expanding'>('idle')
+  const [sidebarResizing, setSidebarResizing] = useState(false)
   const [query, setQuery] = useState(() => returningFromWorkspace?.query ?? '')
   const [page, setPage] = useState(() => returningFromWorkspace?.page ?? 1)
   const [wideGrid, setWideGrid] = useState(() => window.matchMedia?.('(min-width: 1201px)').matches ?? false)
@@ -157,6 +155,44 @@ export function LibraryScreen({ workspaceActive = false }: { workspaceActive?: b
   const [pendingBackup, setPendingBackup] = useState<{ data: unknown; inspection: BackupInspection; filename: string } | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const searchRef = useRef<HTMLInputElement>(null)
+  const noteListRef = useRef<HTMLDivElement>(null)
+  const layoutAnimationReadyRef = useRef(false)
+  const sidebarTargetRef = useRef(collapsed)
+  const sidebarTimersRef = useRef<number[]>([])
+  const clearSidebarTimers = useCallback(() => {
+    sidebarTimersRef.current.forEach((timer) => window.clearTimeout(timer))
+    sidebarTimersRef.current = []
+  }, [])
+  const toggleSidebar = useCallback(() => {
+    const nextCollapsed = !sidebarTargetRef.current
+    sidebarTargetRef.current = nextCollapsed
+    clearSidebarTimers()
+    const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false
+    if (reduceMotion || window.innerWidth < 768) {
+      setSidebarMotion('idle')
+      setSidebarResizing(false)
+      setCollapsed(nextCollapsed)
+      return
+    }
+
+    if (nextCollapsed === collapsed) {
+      setSidebarMotion('idle')
+      setSidebarResizing(false)
+      return
+    }
+
+    setSidebarMotion(nextCollapsed ? 'collapsing' : 'expanding')
+    setSidebarResizing(true)
+    sidebarTimersRef.current = [
+      window.setTimeout(() => setCollapsed(nextCollapsed), 120),
+      window.setTimeout(() => setSidebarMotion('idle'), 300),
+      window.setTimeout(() => {
+        setSidebarResizing(false)
+        sidebarTimersRef.current = []
+      }, 380),
+    ]
+  }, [clearSidebarTimers, collapsed])
+  useEffect(() => () => clearSidebarTimers(), [clearSidebarTimers])
   const requestWorkspaceReturn = useCallback(() => {
     if (workspaceActive) window.dispatchEvent(new Event('nook:request-workspace-close'))
   }, [workspaceActive])
@@ -169,6 +205,10 @@ export function LibraryScreen({ workspaceActive = false }: { workspaceActive?: b
   const openNoteFromCard = useCallback((noteId: string, mode: 'preview' | 'edit', focusKey?: string) => {
     rememberLibraryReturn(focusKey ?? `note-${noteId}-${mode === 'edit' ? 'edit' : 'title'}`)
     openNote(noteId, mode)
+  }, [openNote, rememberLibraryReturn])
+  const openNoteWithSidePicker = useCallback((noteId: string) => {
+    rememberLibraryReturn(`note-${noteId}-side-note`)
+    openNote(noteId, 'preview', { openSideNotePicker: true })
   }, [openNote, rememberLibraryReturn])
   const startNewNote = useCallback(() => {
     rememberLibraryReturn('new-note')
@@ -225,6 +265,20 @@ export function LibraryScreen({ workspaceActive = false }: { workspaceActive?: b
     window.addEventListener('storage', sync)
     return () => window.removeEventListener('storage', sync)
   }, [])
+  useLayoutEffect(() => {
+    if (!layoutAnimationReadyRef.current) {
+      layoutAnimationReadyRef.current = true
+      return
+    }
+    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return
+    noteListRef.current?.animate(
+      [
+        { transform: 'translateY(4px)', opacity: 0.68 },
+        { transform: 'translateY(0)', opacity: 1 },
+      ],
+      { duration: 180, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' },
+    )
+  }, [layout])
   useEffect(() => {
     const reset = () => {
       setQuery('')
@@ -260,7 +314,7 @@ export function LibraryScreen({ workspaceActive = false }: { workspaceActive?: b
       }
       if (modifier && event.key === '\\' && !settingsOpen && !mobileFiltersOpen && !confirmation) {
         event.preventDefault()
-        setCollapsed((current) => !current)
+        toggleSidebar()
         return
       }
       if (modifier || event.altKey || event.shiftKey || isEditingField || settingsOpen || mobileFiltersOpen || confirmation) return
@@ -276,8 +330,6 @@ export function LibraryScreen({ workspaceActive = false }: { workspaceActive?: b
       } else if (event.key.toLowerCase() === 's') {
         event.preventDefault()
         setSettingsOpen(true)
-      } else if (event.key.toLowerCase() === 't') {
-        cycleTheme()
       } else if (event.key === '1') {
         setLayout('compact')
       } else if (event.key === '2') {
@@ -288,7 +340,7 @@ export function LibraryScreen({ workspaceActive = false }: { workspaceActive?: b
     }
     document.addEventListener('keydown', handleShortcut)
     return () => document.removeEventListener('keydown', handleShortcut)
-  }, [confirmation, cycleTheme, filters.trashOnly, hoveredNoteId, mobileFiltersOpen, openNoteFromCard, settingsOpen, startNewNote, workspaceActive])
+  }, [confirmation, filters.trashOnly, hoveredNoteId, mobileFiltersOpen, openNoteFromCard, settingsOpen, startNewNote, toggleSidebar, workspaceActive])
 
   const visibleNotes = useMemo(() => {
     const normalizedQuery = query.trim().toLocaleLowerCase()
@@ -433,7 +485,6 @@ export function LibraryScreen({ workspaceActive = false }: { workspaceActive?: b
   async function copyNote(note: Note) {
     try {
       await navigator.clipboard.writeText(note.content)
-      setNotice({ message: 'Markdown copied to clipboard.' })
       setError(null)
     } catch {
       setError('Clipboard access is unavailable. Open the note to copy its Markdown.')
@@ -496,10 +547,6 @@ export function LibraryScreen({ workspaceActive = false }: { workspaceActive?: b
     setLayout(nextLayout)
   }
 
-  function toggleSidebar() {
-    setCollapsed((current) => !current)
-  }
-
   function removeFilter(kind: 'type' | 'created' | 'updated'): void
   function removeFilter(kind: 'tag', tagId: string): void
   function removeFilter(kind: 'type' | 'tag' | 'created' | 'updated', tagId?: string) {
@@ -521,37 +568,117 @@ export function LibraryScreen({ workspaceActive = false }: { workspaceActive?: b
     onClear: clearFilters,
     onSpace: selectSpace,
     searchActive: Boolean(query.trim()),
+    collapsed,
+    onToggleSidebar: toggleSidebar,
   }
   const searchShortcut = typeof navigator !== 'undefined' && /Mac|iPhone|iPad/.test(navigator.platform) ? '⌘ F' : 'Ctrl F'
 
-  return <div className={`nook-library-shell bg-background ${collapsed ? 'sidebar-collapsed' : ''} ${workspaceActive ? 'workspace-active' : ''}`}>
+  return <div className={`nook-library-shell bg-background ${collapsed ? 'sidebar-collapsed' : ''} ${sidebarMotion !== 'idle' ? `is-sidebar-${sidebarMotion}` : ''} ${sidebarResizing ? 'is-sidebar-resizing' : ''} ${workspaceActive ? 'workspace-active' : ''}`}>
     <aside className="nook-desktop-sidebar rounded-xl border border-sidebar-border bg-sidebar text-sidebar-foreground shadow-sm" aria-label="Library navigation"><FilterList {...filterPanelProps} /></aside>
     <main id={workspaceActive ? 'library-content' : 'main-content'} tabIndex={-1} className="nook-library-main" inert={workspaceActive} aria-hidden={workspaceActive}>
       <header className="nook-topbar">
-        <Button variant="ghost" size="icon-sm" className="nook-collapse-toggle hidden md:inline-flex" aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'} title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'} onClick={toggleSidebar}><Menu /></Button>
         <div className="nook-mobile-heading">
           <Button variant="outline" size="sm" onClick={() => setMobileFiltersOpen(true)}>{filters.trashOnly ? <Trash2 aria-hidden="true" /> : <FileText aria-hidden="true" />}{filters.trashOnly ? 'Trash' : 'All notes'}</Button>
         </div>
         <div className="nook-search-wrap text-muted-foreground"><Search size={17} aria-hidden="true" /><Input ref={searchRef} name="search-notes" autoComplete="off" value={query} onChange={(event) => setQuery(event.currentTarget.value)} placeholder="Search title or content…" aria-label="Search title or content" />{query && <Button variant="ghost" size="icon-xs" aria-label="Clear search" onClick={() => setQuery('')}><X /></Button>}<kbd className="rounded border border-border px-1.5 py-0.5 text-xs" aria-label={`${searchShortcut} focuses search`}>{searchShortcut}</kbd></div>
         <div className="nook-sort-wrap"><Select items={SORT_LABELS} value={sort} onValueChange={(value) => { if (value) setSort(value as SortMode) }}><SelectTrigger aria-label="Sort notes"><SelectValue /></SelectTrigger><SelectContent>{Object.entries(SORT_LABELS).map(([value, label]) => <SelectItem key={value} value={value}>{label}</SelectItem>)}</SelectContent></Select></div>
+        <div className="nook-topbar-divider hidden sm:block" aria-hidden="true" />
         <div className="nook-topbar-actions">
-          <Button variant="outline" className="nook-theme-button" aria-label={`Theme ${THEME_LABELS[theme]}. Switch theme`} title={`Theme: ${THEME_LABELS[theme]}`} onClick={cycleTheme}><SunMoon aria-hidden="true" /><span>{THEME_LABELS[theme]}</span></Button>
+          <Tooltip>
+            <TooltipTrigger render={
+              <Button variant="outline" className="nook-theme-button" aria-label={`Current theme: ${THEME_LABELS[theme]}. Switch theme`} title={`Theme: ${THEME_LABELS[theme]}`} onClick={cycleTheme}>
+                <ThemeIcon theme={theme} />
+                <span className="nook-button-label">{THEME_LABELS[theme]}</span>
+              </Button>
+            } />
+            <TooltipContent role="tooltip">Theme: {THEME_LABELS[theme]} · T</TooltipContent>
+          </Tooltip>
           <Button variant="outline" className="nook-mobile-filter-button" aria-label={filtersCount ? `Filters, ${filtersCount} active` : 'Filters and sort'} onClick={() => setMobileFiltersOpen(true)}><Filter aria-hidden="true" /></Button>
-          <Button variant="outline" aria-label="Settings" onClick={() => setSettingsOpen(true)}><Settings2 /> <span>Settings</span></Button>
-          <Button variant="outline" aria-label="Backup" onClick={() => void exportBackup()}><Copy /> <span>Backup</span></Button>
-          {!filters.trashOnly && <Button data-library-focus-key="new-note" aria-label="New note" onClick={startNewNote}><Plus /> <span>New note</span></Button>}
-          {filters.trashOnly && <Button variant="destructive" disabled={!totalTrash} onClick={askEmptyTrash}><Trash2 /> Empty Trash</Button>}
-          <input ref={fileInputRef} className="sr-only" type="file" accept="application/json,.json" aria-label="Choose a Nook backup file" onChange={(event) => { void inspectBackupFile(event) }} />
+          <Tooltip>
+            <TooltipTrigger render={
+              <Button variant="outline" aria-label="Settings" onClick={() => setSettingsOpen(true)}>
+                <SettingsIcon />
+                <span className="nook-button-label">Settings</span>
+              </Button>
+            } />
+            <TooltipContent role="tooltip">Settings · S</TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger render={
+              <Button variant="outline" aria-label="Backup" onClick={() => void exportBackup()}>
+                <BackupIcon />
+                <span className="nook-button-label">Backup</span>
+              </Button>
+            } />
+            <TooltipContent role="tooltip">Export backup</TooltipContent>
+          </Tooltip>
+          {!filters.trashOnly && (
+            <Tooltip>
+              <TooltipTrigger render={
+                <Button data-library-focus-key="new-note" aria-label="New note" className="nook-new-note-btn font-medium" onClick={startNewNote}>
+                  <Plus className="size-4" strokeWidth={2} />
+                  <span>New note</span>
+                </Button>
+              } />
+              <TooltipContent role="tooltip">New note · C</TooltipContent>
+            </Tooltip>
+          )}
+          {filters.trashOnly && <Button variant="destructive" disabled={!totalTrash} onClick={askEmptyTrash}><Trash2 className="size-4" /> Empty Trash</Button>}
+          <input ref={fileInputRef} className="hidden" tabIndex={-1} type="file" accept="application/json,.json" aria-label="Choose a Nook backup file" onChange={(event) => { void inspectBackupFile(event) }} />
         </div>
       </header>
 
       <section className="nook-browse-panel min-h-svh rounded-xl border border-border bg-card p-5 shadow-sm" aria-labelledby="browse-title">
         <div className="nook-browse-heading border-b border-border pb-4">
-          <div><h1 id="browse-title" className="text-lg font-semibold tracking-tight text-foreground">{filters.trashOnly ? 'Trash' : 'All notes'}</h1><p className="text-sm text-muted-foreground">{filters.trashOnly ? 'Deleted notes stay here until you restore or permanently remove them.' : 'Browse, search, and manage your complete collection of personal notes.'}</p></div>
+          <div>
+            <div className="nook-browse-title-row flex items-center gap-2.5">
+              <h1 id="browse-title" className="text-lg font-semibold tracking-tight text-foreground">{filters.trashOnly ? 'Trash' : 'All notes'}</h1>
+            </div>
+            <p className="mt-1 text-sm text-muted-foreground">{filters.trashOnly ? 'Deleted notes stay here until you restore or permanently remove them.' : 'Browse, search, and manage your complete collection of personal notes.'}</p>
+          </div>
           <div className="nook-layout-toggle" role="group" aria-label="Note layout">
-            <Button variant={layout === 'compact' ? 'secondary' : 'ghost'} size="icon" aria-label="Compact layout" aria-pressed={layout === 'compact'} onClick={() => changeLayout('compact')}><List /></Button>
-            <Button variant={layout === 'comfortable' ? 'secondary' : 'ghost'} size="icon" aria-label="Comfortable layout" aria-pressed={layout === 'comfortable'} onClick={() => changeLayout('comfortable')}><FileText /></Button>
-            <Button variant={layout === 'grid' ? 'secondary' : 'ghost'} size="icon" aria-label="Grid layout" aria-pressed={layout === 'grid'} onClick={() => changeLayout('grid')}><Grid2X2 /></Button>
+            <Tooltip>
+              <TooltipTrigger render={
+                <Button
+                  variant={layout === 'compact' ? 'secondary' : 'ghost'}
+                  size="icon-sm"
+                  aria-label="Compact layout"
+                  aria-pressed={layout === 'compact'}
+                  onClick={() => changeLayout('compact')}
+                >
+                  <CompactLayoutIcon />
+                </Button>
+              } />
+              <TooltipContent role="tooltip">Compact view · 1</TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger render={
+                <Button
+                  variant={layout === 'comfortable' ? 'secondary' : 'ghost'}
+                  size="icon-sm"
+                  aria-label="Comfortable layout"
+                  aria-pressed={layout === 'comfortable'}
+                  onClick={() => changeLayout('comfortable')}
+                >
+                  <ComfortableLayoutIcon />
+                </Button>
+              } />
+              <TooltipContent role="tooltip">Comfortable view · 2</TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger render={
+                <Button
+                  variant={layout === 'grid' ? 'secondary' : 'ghost'}
+                  size="icon-sm"
+                  aria-label="Grid layout"
+                  aria-pressed={layout === 'grid'}
+                  onClick={() => changeLayout('grid')}
+                >
+                  <GridLayoutIcon />
+                </Button>
+              } />
+              <TooltipContent role="tooltip">Grid view · 3</TooltipContent>
+            </Tooltip>
           </div>
         </div>
         {!filters.trashOnly && <div className="nook-quick-types" role="group" aria-label="Quick filter by note type"><Button size="sm" variant={filters.typeId === 'all' ? 'secondary' : 'ghost'} aria-pressed={filters.typeId === 'all'} onClick={() => updateFilters({ typeId: 'all' })}>All {snapshot.notes.filter((note) => !note.deletedAt).length}</Button>{snapshot.types.map((type) => <Button key={type.id} size="sm" variant={filters.typeId === type.id ? 'secondary' : 'ghost'} aria-pressed={filters.typeId === type.id} onClick={() => toggleType(type.id)}><TypeDot color={type.color} />{type.name} {snapshot.notes.filter((note) => !note.deletedAt && note.typeId === type.id).length}</Button>)}</div>}
@@ -561,11 +688,11 @@ export function LibraryScreen({ workspaceActive = false }: { workspaceActive?: b
           {filters.createdToday && <button type="button" onClick={() => removeFilter('created')} className="nook-filter-pill rounded-full border border-border bg-secondary px-2 py-1 text-xs text-secondary-foreground">Created Today<X size={13} aria-hidden="true" /></button>}
           {filters.updatedToday && <button type="button" onClick={() => removeFilter('updated')} className="nook-filter-pill rounded-full border border-border bg-secondary px-2 py-1 text-xs text-secondary-foreground">Updated Today<X size={13} aria-hidden="true" /></button>}
           {filters.tagIds.map((id) => <button key={id} type="button" onClick={() => removeFilter('tag', id)} className="nook-filter-pill rounded-full border border-border bg-secondary px-2 py-1 text-xs text-secondary-foreground">#{tagById.get(id)?.name ?? 'tag'}<X size={13} aria-hidden="true" /></button>)}
-          {filtersCount > 0 && <button type="button" className="nook-filter-pill px-2 py-1 text-xs text-muted-foreground underline underline-offset-4" onClick={clearFilters}>Clear all</button>}
+          {filtersCount > 0 && <Button type="button" variant="secondary" size="xs" className="nook-clear-filters rounded-full border border-border px-2.5" onClick={clearFilters}>Clear all</Button>}
         </div>
         {error && <div className="nook-library-alert my-3 flex items-center justify-between gap-3 rounded-md border border-destructive/40 bg-destructive/10 p-2 text-sm text-destructive" role="alert">{error}<button className="inline-flex" type="button" aria-label="Dismiss error" onClick={() => setError(null)}><X size={14} /></button></div>}
         {notice && <div className="nook-library-notice my-3 flex items-center justify-between gap-3 rounded-md border border-border bg-muted p-2 text-sm text-foreground" role="status">{notice.message}{notice.undoNoteId && <Button className="ml-auto" variant="ghost" size="sm" onClick={undoTrash}><Undo2 /> Undo</Button>}<button className="inline-flex" type="button" aria-label="Dismiss status" onClick={() => setNotice(null)}><X size={14} /></button></div>}
-        {shownNotes.length ? <div className={`nook-note-list nook-note-list--${layout}`}>
+        {shownNotes.length ? <div ref={noteListRef} className={`nook-note-list nook-note-list--${layout}`}>
           {shownNotes.map((note) => <NoteCard
             key={note.id}
             note={note}
@@ -577,7 +704,9 @@ export function LibraryScreen({ workspaceActive = false }: { workspaceActive?: b
             trash={filters.trashOnly}
             sort={sort}
             busy={busyNotes.has(note.id)}
+            layout={layout}
             onOpen={(focusKey) => openNoteFromCard(note.id, 'preview', focusKey)}
+            onOpenWithSideNote={() => openNoteWithSidePicker(note.id)}
             onEdit={() => openNoteFromCard(note.id, 'edit')}
             onPin={() => { void runMutation(() => repository.setNotePinned(note.id, !note.isPinned)) }}
             onCopy={() => { void copyNote(note) }}
@@ -610,7 +739,7 @@ export function LibraryScreen({ workspaceActive = false }: { workspaceActive?: b
       <Button type="button" variant="ghost" aria-label="Search notes" onClick={() => setMobileFiltersOpen(true)}><Search aria-hidden="true" /><span>Search</span></Button>
       <Button type="button" className="nook-mobile-nav__create" aria-label="Create note" onClick={() => { if (filters.trashOnly) selectSpace(false); startNewNote() }}><Plus aria-hidden="true" /></Button>
       <Button type="button" variant={filters.trashOnly ? 'secondary' : 'ghost'} aria-label="Open Trash" aria-current={filters.trashOnly ? 'page' : undefined} onClick={() => selectSpace(true)}><Trash2 aria-hidden="true" /><span>Trash</span></Button>
-      <Button type="button" variant="ghost" aria-label="Open mobile settings" onClick={() => setSettingsOpen(true)}><Settings2 aria-hidden="true" /><span>Settings</span></Button>
+      <Button type="button" variant="ghost" aria-label="Open mobile settings" onClick={() => setSettingsOpen(true)}><SettingsIcon className="size-4" aria-hidden="true" /><span>Settings</span></Button>
     </nav>}
 
     <Sheet open={mobileFiltersOpen} onOpenChange={setMobileFiltersOpen}>

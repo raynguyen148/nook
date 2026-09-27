@@ -1,0 +1,44 @@
+/* Hallmark · pre-emit critique: P5 H5 E5 S5 R5 V4 */
+/* Hallmark · genre: modern-minimal · macrostructure: Workbench · design-system: design.md · designed-as-app · contrast: pass (40–41) · slop: pass (42–49) · mobile: pass (34, 49–57) */
+:root {
+  --color-paper: var(--background);
+  --color-paper-2: var(--card);
+  --color-paper-3: var(--muted);
+  --color-ink: var(--foreground);
+  --color-ink-2: var(--card-foreground);
+  --color-rule: var(--border);
+  --color-rule-2: var(--input);
+  --color-neutral: var(--muted-foreground);
+  --color-focus: var(--ring);
+  --color-status-positive: #178255;
+
+  --font-display: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-body: var(--font-display);
+  --font-outlier: ui-monospace, "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+
+  --space-3xs: 0.25rem;
+  --space-2xs: 0.5rem;
+  --space-xs: 0.75rem;
+  --space-sm: 1rem;
+  --space-md: 1.5rem;
+  --space-lg: 2rem;
+  --space-xl: 3rem;
+  --space-2xl: 4.5rem;
+  --space-3xl: 7rem;
+
+  --rule-hair: 1px;
+  --rule-fine: 2px;
+  --radius-card: var(--radius-lg);
+  --radius-pill: 999px;
+  --radius-input: var(--radius-md);
+  --shadow-card: 0 1px 2px color-mix(in oklch, var(--foreground) 5%, transparent);
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-extra-short: 100ms;
+  --dur-micro: 120ms;
+  --dur-short: 180ms;
+  --dur-medium: 260ms;
+  --dur-long: 360ms;
+}

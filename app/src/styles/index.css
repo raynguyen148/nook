@@ -2,6 +2,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+@import "../../tokens.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -66,8 +67,29 @@
 
 @layer base {
   * { @apply border-border outline-ring/50; }
-  html { @apply font-sans; }
-  body { @apply bg-background text-foreground; }
+  html { overflow-x: clip; @apply font-sans; }
+  body { overflow-x: clip; @apply bg-background text-foreground; }
+}
+
+html[data-ui-transition="theme"]::view-transition-old(root),
+html[data-ui-transition="theme"]::view-transition-new(root) {
+  mix-blend-mode: normal;
+}
+
+html[data-ui-transition="theme"]::view-transition-old(root) {
+  animation: nook-theme-fade-out var(--dur-short) var(--ease-in) both;
+}
+
+html[data-ui-transition="theme"]::view-transition-new(root) {
+  animation: nook-theme-fade-in var(--dur-medium) var(--ease-out) both;
+}
+
+@keyframes nook-theme-fade-out {
+  to { opacity: 0; }
+}
+
+@keyframes nook-theme-fade-in {
+  from { opacity: 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {

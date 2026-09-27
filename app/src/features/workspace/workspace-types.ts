@@ -1,4 +1,4 @@
-import type { RefObject } from 'react'
+import type { ReactNode, RefObject } from 'react'
 import type { Note, NoteDraft, NoteType, NoteVersion, Tag, WorkspaceMode } from '@/domain/contracts'
 import type { DraftRecoveryRecord, EditorPaneId, EditorSession, EditorSessionState } from '@/features/editor-session/session'
 
@@ -38,6 +38,8 @@ export interface EditorPaneProps {
   tags: Tag[]
   isActive: boolean
   showHeader?: boolean
+  headerLeading?: ReactNode
+  headerTrailing?: ReactNode
   recovery: DraftRecoveryRecord | null
   error: string
   textareaRef: RefObject<HTMLTextAreaElement | null>
@@ -52,7 +54,7 @@ export interface EditorPaneProps {
   onMoveToTrash(): void
   onCreateTag(name: string): Promise<void>
   onCopy(): void
-  onExport(extension: 'md' | 'txt'): void
+  onExport(): void
   onFormat(command: FormattingCommand): void
   onRecover(): void
   onDiscardRecovery(): void

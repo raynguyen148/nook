@@ -12,7 +12,7 @@ interface NookContextValue {
   error: string | null
   refresh(): Promise<void>
   mutate<T>(operation: () => Promise<T>): Promise<T>
-  openNote(id: string, mode?: WorkspaceMode): void
+  openNote(id: string, mode?: WorkspaceMode, options?: { openSideNotePicker?: boolean }): void
   createNote(): void
   closeWorkspace(): void
   setWorkspaceMode(mode: WorkspaceMode): void
@@ -71,8 +71,8 @@ export function NookProvider({ children }: { children: ReactNode }) {
     return result
   }, [refresh])
 
-  const openNote = useCallback((id: string, mode: WorkspaceMode = 'preview') => {
-    setWorkspace({ noteId: id, mode })
+  const openNote = useCallback((id: string, mode: WorkspaceMode = 'preview', options: { openSideNotePicker?: boolean } = {}) => {
+    setWorkspace({ noteId: id, mode, openSideNotePicker: options.openSideNotePicker })
   }, [])
   const createNote = useCallback(() => setWorkspace({ noteId: null, mode: 'edit' }), [])
   const closeWorkspace = useCallback(() => setWorkspace(null), [])

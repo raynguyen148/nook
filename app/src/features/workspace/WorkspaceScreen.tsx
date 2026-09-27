@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
-import { ArrowLeft, Clock3, Copy, Download, MoreHorizontal, PanelRightOpen, Trash2, X } from 'lucide-react'
+import { ArrowLeft, Clock3, Copy, Download, MoreHorizontal, Trash2, X } from 'lucide-react'
 import { useNook } from '@/app/NookContext'
+import { SideNoteIcon } from '@/components/NookIcons'
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetDescription, SheetTitle } from '@/components/ui/sheet'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import type { Note, NoteDraft, NoteVersion, WorkspaceMode } from '@/domain/contracts'
-import { markdownToPlainText } from '@/features/markdown/renderer'
 import { EditorPane, WorkspaceModeSwitch, WorkspaceSaveStatus } from './EditorPane'
 import {
   createDraftRecoveryStore,
@@ -15,7 +16,7 @@ import {
   type EditorSessionState,
 } from '@/features/editor-session/session'
 import { formatTextarea, safeFilename } from './formatting'
-import { WorkspaceDialogs } from './WorkspaceDialogs'
+import { SideNotePicker, WorkspaceDialogs } from './WorkspaceDialogs'
 import type { CloseIntent, FormattingCommand, HistoryDialogState, PaneId, SideNoteLayoutMode, SidePane, TrashConfirmationState } from './workspace-types'
 import './workspace.css'
 
@@ -98,7 +99,7 @@ export function WorkspaceScreen() {
   const [sideRecovery, setSideRecovery] = useState<DraftRecoveryRecord | null>(null)
   const [sideError, setSideError] = useState('')
   const [activePane, setActivePane] = useState<PaneId>('primary')
-  const [sidePickerOpen, setSidePickerOpen] = useState(false)
+  const [sidePickerOpen, setSidePickerOpen] = useState(Boolean(workspace?.openSideNotePicker))
   const [mobileActionsOpen, setMobileActionsOpen] = useState(false)
   const [sideSearch, setSideSearch] = useState('')
   const [sideNoteLayout, setSideNoteLayout] = useState<SideNoteLayoutMode>(readSideNoteLayout)
@@ -580,21 +581,20 @@ export function WorkspaceScreen() {
     setAnnouncement(await copyText(note.content) ? 'Raw Markdown copied.' : 'Clipboard access is unavailable in this browser.')
   }, [])
 
-  const exportNote = useCallback(async (pane: PaneId, extension: 'md' | 'txt') => {
+  const exportNote = useCallback(async (pane: PaneId) => {
     const draft = pane === 'primary' ? primarySessionRef.current?.currentDraft : sideSessionRef.current?.currentDraft
     if (!draft) return
     try {
-      const contents = extension === 'txt' ? markdownToPlainText(draft.content) : draft.content
-      const blob = new Blob([contents], { type: extension === 'txt' ? 'text/plain;charset=utf-8' : 'text/markdown;charset=utf-8' })
+      const blob = new Blob([draft.content], { type: 'text/markdown;charset=utf-8' })
       const url = URL.createObjectURL(blob)
       const anchor = document.createElement('a')
       anchor.href = url
-      anchor.download = `${safeFilename(draft.title)}.${extension}`
+      anchor.download = `${safeFilename(draft.title)}.md`
       document.body.append(anchor)
       anchor.click()
       anchor.remove()
       window.setTimeout(() => URL.revokeObjectURL(url), 0)
-      setAnnouncement(`Note exported as .${extension}.`)
+      setAnnouncement('Note exported as .md.')
     } catch {
       setAnnouncement('The note could not be exported in this browser.')
     }
@@ -716,32 +716,47 @@ export function WorkspaceScreen() {
   const previewConflict = conflictPreview
   const conflictState = previewConflict?.pane === 'primary' ? primaryState.conflict : sideState?.conflict
   const conflictNote = previewConflict?.note || conflictState?.latestNote || null
+  const hasSideSurface = Boolean(sidePane || sidePickerOpen)
+  const workspaceStateLabel = primaryMode === 'preview' ? 'Preview note' : primarySession.noteId ? 'Edit note' : 'New note'
+  const sideNoteControl = <Tooltip>
+    <TooltipTrigger render={
+      <Button
+        type="button"
+        variant={hasSideSurface ? 'secondary' : 'outline'}
+        size="sm"
+        className="workspace-side-control"
+        aria-label={sidePickerOpen ? 'Close Side note picker' : sidePane ? 'Switch side note' : 'Open Side note picker'}
+        aria-expanded={sidePickerOpen}
+        aria-controls="side-note-picker"
+        onClick={() => setSidePickerOpen((open) => !open)}
+      >
+        <SideNoteIcon className="size-4" /><span>{sidePickerOpen ? 'Close side note' : sidePane ? 'Switch side note' : 'Side note'}</span>
+      </Button>
+    } />
+    <TooltipContent role="tooltip">{sidePickerOpen ? 'Close side note picker' : sidePane ? 'Switch side note' : 'Open side note'}</TooltipContent>
+  </Tooltip>
+  const returnToNotesControl = <Tooltip>
+    <TooltipTrigger render={
+      <Button type="button" variant="outline" size="sm" className="workspace-back-control" aria-label="Return to all notes" onClick={requestCloseWorkspace}>
+        <ArrowLeft aria-hidden="true" className="size-4" /><span>All notes</span>
+      </Button>
+    } />
+    <TooltipContent role="tooltip">Return to all notes · Esc</TooltipContent>
+  </Tooltip>
 
   return (
-      <main className={`workspace-screen ${sidePane ? 'workspace-screen--with-side' : ''}`} id="main-content" tabIndex={-1}>
-      <header className="workspace-topbar">
+      <main className={`workspace-screen ${hasSideSurface ? 'workspace-screen--with-side' : ''}`} id="main-content" tabIndex={-1}>
+      {!hasSideSurface && <header className="workspace-topbar">
         <div className="workspace-topbar__leading">
-          <Button type="button" variant="outline" size="sm" aria-label="All notes" onClick={requestCloseWorkspace}>
-            <ArrowLeft aria-hidden="true" /><span>All notes</span>
-          </Button>
-          {!sidePane && <div className="workspace-topbar__state"><h1>{primaryMode === 'preview' ? 'Preview note' : primarySession.noteId ? 'Edit note' : 'New note'}</h1><WorkspaceSaveStatus state={primaryState} /></div>}
+          {returnToNotesControl}
+          <div className="workspace-topbar__state"><h1>{workspaceStateLabel}</h1><WorkspaceSaveStatus state={primaryState} /></div>
         </div>
-        <div className="workspace-topbar__center">{sidePane && <><span>{currentPrimaryNote?.title || primaryState.currentDraft.title || 'Untitled note'}</span><span className="workspace-topbar__side-indicator">Side note open</span></>}</div>
         <div className="workspace-topbar__trailing">
-          {!sidePane && <WorkspaceModeSwitch mode={primaryMode} paneLabel="Note" onModeChange={mainModeChange} />}
-          <Button
-            type="button"
-            variant={sidePane ? 'secondary' : 'outline'}
-            size="sm"
-            aria-label={sidePane ? 'Switch side note' : 'Open Side note picker'}
-            aria-expanded={sidePickerOpen}
-            onClick={() => setSidePickerOpen(true)}
-          >
-            <PanelRightOpen aria-hidden="true" /><span>{sidePane ? 'Switch side note' : 'Side note'}</span>
-          </Button>
+          <WorkspaceModeSwitch mode={primaryMode} paneLabel="Note" onModeChange={mainModeChange} />
+          {sideNoteControl}
           <Button type="button" variant="ghost" size="icon-sm" className="workspace-mobile-actions" aria-label="Note actions" aria-haspopup="dialog" onClick={() => setMobileActionsOpen(true)}><MoreHorizontal aria-hidden="true" /></Button>
         </div>
-      </header>
+      </header>}
 
       <Sheet open={mobileActionsOpen} onOpenChange={setMobileActionsOpen}>
         <SheetContent side="bottom" className="workspace-action-sheet" showCloseButton={false}>
@@ -751,8 +766,7 @@ export function WorkspaceScreen() {
           <div className="workspace-action-sheet__actions">
             {primaryState.currentDraft.id && <Button type="button" variant="ghost" onClick={() => { setMobileActionsOpen(false); void openHistory('primary') }}><Clock3 aria-hidden="true" />Version history</Button>}
             <Button type="button" variant="ghost" disabled={!primaryState.currentDraft.content} onClick={() => { setMobileActionsOpen(false); void copyRawMarkdown('primary') }}><Copy aria-hidden="true" />Copy content</Button>
-            <Button type="button" variant="ghost" onClick={() => { setMobileActionsOpen(false); void exportNote('primary', 'md') }}><Download aria-hidden="true" />Export .md</Button>
-            <Button type="button" variant="ghost" onClick={() => { setMobileActionsOpen(false); void exportNote('primary', 'txt') }}><Download aria-hidden="true" />Export .txt</Button>
+            <Button type="button" variant="ghost" onClick={() => { setMobileActionsOpen(false); void exportNote('primary') }}><Download aria-hidden="true" />Export .md</Button>
             {primaryState.currentDraft.id && !currentPrimaryNote?.deletedAt && <Button type="button" variant="ghost" className="text-destructive" onClick={() => { setMobileActionsOpen(false); beginTrashForPane('primary') }}><Trash2 aria-hidden="true" />Move to Trash</Button>}
           </div>
         </SheetContent>
@@ -760,7 +774,13 @@ export function WorkspaceScreen() {
 
       <div className="workspace-pane-grid">
         <EditorPane
-          showHeader={Boolean(sidePane)}
+          showHeader={hasSideSurface}
+          headerLeading={hasSideSurface ? <>
+            {returnToNotesControl}
+            <h1 id="workspace-heading" tabIndex={-1} className="workspace-pane__state-label">{workspaceStateLabel}</h1>
+            <WorkspaceSaveStatus state={primaryState} />
+          </> : undefined}
+          headerTrailing={hasSideSurface ? sideNoteControl : undefined}
           pane="primary"
           mode={primaryMode}
           state={primaryState}
@@ -782,7 +802,7 @@ export function WorkspaceScreen() {
           onMoveToTrash={() => beginTrashForPane('primary')}
           onCreateTag={(name) => createTagForPane('primary', name)}
           onCopy={() => { void copyRawMarkdown('primary') }}
-          onExport={(extension) => { void exportNote('primary', extension) }}
+          onExport={() => { void exportNote('primary') }}
           onFormat={(command) => applyFormatting('primary', command)}
           onRecover={() => recoverDraft('primary')}
           onDiscardRecovery={() => discardRecovery('primary')}
@@ -792,7 +812,21 @@ export function WorkspaceScreen() {
           }}
         />
 
-        {sidePane && sideState ? (
+        {sidePickerOpen ? (
+          <SideNotePicker
+            types={snapshot.types}
+            tags={snapshot.tags}
+            sideSearch={sideSearch}
+            availableSideNotes={availableSideNotes}
+            sideNoteLayout={sideNoteLayout}
+            onClose={() => { setSidePickerOpen(false); setSideSearch('') }}
+            onSideSearchChange={setSideSearch}
+            onChooseSideNote={(note, mode) => chooseSideNote(note, mode)}
+            onCopySideNote={(note) => { void copySideNote(note) }}
+            onTrashSideNote={(note) => beginTrash(note, sidePane?.noteId === note.id ? 'secondary' : null)}
+            onSideNoteLayoutChange={changeSideNoteLayout}
+          />
+        ) : sidePane && sideState ? (
           <EditorPane
             pane="secondary"
             mode={sidePane.mode}
@@ -815,7 +849,7 @@ export function WorkspaceScreen() {
             onMoveToTrash={() => beginTrashForPane('secondary')}
             onCreateTag={(name) => createTagForPane('secondary', name)}
             onCopy={() => { void copyRawMarkdown('secondary') }}
-            onExport={(extension) => { void exportNote('secondary', extension) }}
+            onExport={() => { void exportNote('secondary') }}
             onFormat={(command) => applyFormatting('secondary', command)}
             onRecover={() => recoverDraft('secondary')}
             onDiscardRecovery={() => discardRecovery('secondary')}
@@ -826,7 +860,7 @@ export function WorkspaceScreen() {
           />
         ) : sidePane ? (
           <section className="workspace-side-empty" aria-label="Side note pane">
-            <div className="workspace-side-empty__icon"><PanelRightOpen aria-hidden="true" /></div>
+            <div className="workspace-side-empty__icon"><SideNoteIcon className="size-6" aria-hidden="true" /></div>
             <h2>Keep another note close</h2>
             <p>Open a Side note to compare or edit another note without losing this draft.</p>
             <Button type="button" variant="outline" onClick={() => setSidePickerOpen(true)}>Choose a note</Button>
@@ -839,7 +873,7 @@ export function WorkspaceScreen() {
       <WorkspaceDialogs
         types={snapshot.types}
         tags={snapshot.tags}
-        sidePickerOpen={sidePickerOpen}
+        sidePickerOpen={false}
         sideSearch={sideSearch}
         availableSideNotes={availableSideNotes}
         sideNoteLayout={sideNoteLayout}

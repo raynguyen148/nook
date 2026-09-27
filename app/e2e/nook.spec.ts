@@ -101,9 +101,10 @@ test('mobile note actions match the reference sheet and open version history', a
   await page.getByRole('button', { name: 'Preview Code review checklist for risky changes' }).click()
   await page.getByRole('button', { name: 'Note actions' }).click()
   const actions = page.getByRole('dialog', { name: 'Note actions' })
-  for (const label of ['Version history', 'Copy content', 'Export .md', 'Export .txt', 'Move to Trash']) {
+  for (const label of ['Version history', 'Copy content', 'Export .md', 'Move to Trash']) {
     await expect(actions.getByRole('button', { name: label })).toBeVisible()
   }
+  await expect(actions.getByRole('button', { name: 'Export .txt' })).toHaveCount(0)
   await actions.getByRole('button', { name: 'Version history' }).click()
   await expect(page.getByRole('dialog', { name: 'Version history' })).toBeVisible()
   await page.getByRole('button', { name: 'Close version history' }).click()
@@ -183,7 +184,7 @@ test('library and workspace controls fit narrow and tablet viewports', async ({ 
   const actions = page.getByRole('dialog', { name: 'Note actions' })
   await expect(actions.getByRole('button', { name: 'Copy content' })).toBeDisabled()
   await expect(actions.getByRole('button', { name: 'Export .md' })).toBeVisible()
-  await expect(actions.getByRole('button', { name: 'Export .txt' })).toBeVisible()
+  await expect(actions.getByRole('button', { name: 'Export .txt' })).toHaveCount(0)
   await expect(actions.getByRole('button', { name: 'Open Side note' })).toHaveCount(0)
   await actions.getByRole('button', { name: 'Close note actions' }).click()
   await expect(page.getByRole('button', { name: 'Edit', exact: true })).toBeVisible()
@@ -226,6 +227,14 @@ test('all themes and the note workspace expose accessible content', async ({ pag
   }
 
   await page.getByRole('button', { name: 'Edit Code review checklist for risky changes' }).click()
+  const themeBeforeShortcut = await page.locator('html').getAttribute('data-theme-mode')
+  await page.locator('.workspace-topbar').getByRole('button', { name: 'All notes' }).focus()
+  await page.keyboard.press('t')
+  await expect(page.locator('html')).not.toHaveAttribute('data-theme-mode', themeBeforeShortcut || '')
+  const themeAfterShortcut = await page.locator('html').getAttribute('data-theme-mode')
+  await page.getByRole('textbox', { name: 'Note title' }).focus()
+  await page.keyboard.press('t')
+  await expect(page.locator('html')).toHaveAttribute('data-theme-mode', themeAfterShortcut || '')
   const workspaceAudit = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']).analyze()
   expect(workspaceAudit.violations.map(({ id, nodes }) => ({ id, targets: nodes.slice(0, 5).map(({ target }) => target), count: nodes.length }))).toEqual([])
 })

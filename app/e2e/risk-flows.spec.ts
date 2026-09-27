@@ -139,8 +139,35 @@ test('editor tag picker adds and removes tags, then shows saved chips in Preview
   await openLibrary(page)
   await importBackup(page, demoBackup)
   await editDemoNote(page)
+
+  await page.getByRole('combobox', { name: 'Note type' }).click()
+  const typeOptionAlignment = await page.getByRole('option').first().evaluate((option) => {
+    const optionRect = option.getBoundingClientRect()
+    const dotRect = option.querySelector<HTMLElement>('.nook-type-dot')?.getBoundingClientRect()
+    return dotRect ? Math.abs((optionRect.top + optionRect.height / 2) - (dotRect.top + dotRect.height / 2)) : Number.POSITIVE_INFINITY
+  })
+  expect(typeOptionAlignment).toBeLessThanOrEqual(1)
+  await page.keyboard.press('Escape')
+
   await page.locator('summary.workspace-tag-picker__trigger').click()
-  await page.getByRole('group', { name: 'Available tags' }).getByRole('button', { name: 'dev', exact: true }).click()
+  const availableTags = page.getByRole('group', { name: 'Available tags' })
+  const editorTag = availableTags.getByRole('button', { name: 'dev', exact: true })
+  const sidebarTag = page.locator('.nook-tag-filter').filter({ hasText: /^dev/ }).first()
+  const [editorTagStyle, sidebarTagStyle] = await Promise.all([editorTag, sidebarTag].map((tag) => tag.evaluate((element) => {
+    const style = getComputedStyle(element)
+    return {
+      backgroundColor: style.backgroundColor,
+      borderColor: style.borderColor,
+      borderRadius: style.borderRadius,
+      color: style.color,
+      fontSize: style.fontSize,
+      fontWeight: style.fontWeight,
+      paddingBlock: `${style.paddingTop} ${style.paddingBottom}`,
+      paddingInline: `${style.paddingLeft} ${style.paddingRight}`,
+    }
+  })))
+  expect(editorTagStyle).toEqual(sidebarTagStyle)
+  await editorTag.click()
   await expect(page.getByRole('button', { name: 'Remove tag dev' })).toBeVisible()
   await page.getByRole('button', { name: 'Remove tag dev' }).click()
   await page.getByRole('textbox', { name: 'Create tag for Note' }).fill('ux-check')
@@ -247,15 +274,21 @@ test('Side note keeps an independent editor and formatting shortcuts target the 
   await openLibrary(page)
   await importBackup(page, demoBackup)
   await page.getByRole('textbox', { name: 'Search title or content' }).fill('Code review checklist for risky changes')
-  await page.getByRole('button', { name: 'Preview Code review checklist for risky changes' }).click()
-  await page.getByRole('button', { name: 'Open Side note picker' }).click()
-  const picker = page.getByRole('dialog', { name: 'Open a Side note' })
-  await picker.getByRole('textbox', { name: 'Search notes for Side note' }).fill('PostgreSQL indexes')
+  await page.getByRole('button', { name: 'Open Code review checklist for risky changes with Side Note' }).click()
+  const picker = page.getByRole('region', { name: 'Side notes to open' })
+  await expect(picker).toBeVisible()
+  await page.getByRole('textbox', { name: 'Search notes for Side note' }).fill('PostgreSQL indexes')
   await picker.getByRole('button', { name: 'Open PostgreSQL indexes — start from the query as Side note' }).click()
 
   const primary = page.getByRole('region', { name: 'Note workspace pane', exact: true })
   const secondary = page.getByRole('region', { name: 'Side note workspace pane', exact: true })
   await expect(secondary).toContainText('PostgreSQL indexes')
+  await primary.getByRole('button', { name: 'Split', exact: true }).click()
+  const splitPreview = primary.locator('.workspace-preview-scroll')
+  await splitPreview.evaluate((element) => { element.scrollTop = 240 })
+  expect(await splitPreview.evaluate((element) => element.scrollTop)).toBeGreaterThan(0)
+  await primary.getByRole('button', { name: 'Preview', exact: true }).click()
+  await expect.poll(() => primary.locator('.workspace-preview-scroll--full').evaluate((element) => element.scrollTop)).toBe(0)
   await primary.getByRole('button', { name: 'Edit' }).click()
   await secondary.getByRole('button', { name: 'Edit' }).click()
 
@@ -289,10 +322,5 @@ test('copy and note downloads use the raw Markdown source', async ({ page, conte
   const markdownFile = await markdownDownload
   expect(markdownFile.suggestedFilename()).toBe('Synthetic export.md')
   expect(readFileSync((await markdownFile.path())!, 'utf8')).toBe(source)
-
-  const textDownload = page.waitForEvent('download')
-  await page.getByRole('button', { name: '.txt' }).click()
-  const textFile = await textDownload
-  expect(textFile.suggestedFilename()).toBe('Synthetic export.txt')
-  expect(readFileSync((await textFile.path())!, 'utf8')).toContain('Heading Strong link')
+  await expect(page.getByRole('button', { name: 'Export .txt file' })).toHaveCount(0)
 })
