@@ -1,0 +1,38 @@
+/* Personal notes app; restrained Light tone; warm gold anchor; sidebar, browse canvas, and focused note workspace. */
+:root {
+  --background: #f8fafc;
+  --foreground: #0f172a;
+  --card: #ffffff;
+  --card-foreground: #0f172a;
+  --popover: #ffffff;
+  --popover-foreground: #0f172a;
+  --primary: #9e6b02;
+  --primary-foreground: #ffffff;
+  --secondary: #f1f5f9;
+  --secondary-foreground: #334155;
+  --muted: #f8fafc;
+  --muted-foreground: #64748b;
+  --accent: #fdf5db;
+  --accent-foreground: #805600;
+  --border: #e2e8f0;
+  --input: #d9e2ec;
+  --ring: #b78932;
+  --radius: .75rem;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #334155;
+  --sidebar-primary: #9e6b02;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #fdf5db;
+  --sidebar-accent-foreground: #805600;
+  --sidebar-border: #e2e8f0;
+  --sidebar-ring: #b78932;
+  --nook-canvas: #f8fafc;
+  --nook-ink: #0f172a;
+  --nook-text: #334155;
+  --nook-muted: #64748b;
+  --nook-line: #e2e8f0;
+  --nook-gold: #9e6b02;
+  --nook-gold-soft: #fdf5db;
+  --nook-pinned: #fffdf8;
+  --nook-pinned-line: #d8c391;
+}

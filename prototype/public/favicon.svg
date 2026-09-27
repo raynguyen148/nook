@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="nook-brand-gradient" x1="12" y1="6" x2="52" y2="58" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#9a5619" />
+      <stop offset="0.55" stop-color="#824410" />
+      <stop offset="1" stop-color="#663206" />
+    </linearGradient>
+    <linearGradient id="nook-right-stem-gradient" x1="38" y1="15" x2="46" y2="49" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#f0f5fa" />
+      <stop offset="0.65" stop-color="#e1ebf4" />
+      <stop offset="1" stop-color="#d3dfec" />
+    </linearGradient>
+  </defs>
+  <rect x="2" y="2" width="60" height="60" rx="16" fill="url(#nook-brand-gradient)" />
+  <path d="M 38,15 L 46,15 L 46,49 L 38,49 Z" fill="url(#nook-right-stem-gradient)" />
+  <path d="M 18,15 L 26,15 L 46,49 L 38,49 L 26,28.5 L 26,49 L 18,49 Z" fill="#ffffff" />
+</svg>

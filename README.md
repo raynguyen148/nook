@@ -1,478 +1,67 @@
 # Nook
 
-[![No Dependencies](https://img.shields.io/badge/dependencies-none-brightgreen.svg)](package.json)
-[![Vanilla JS](https://img.shields.io/badge/JavaScript-Vanilla-yellow.svg)](js/)
-[![Offline First](https://img.shields.io/badge/offline-first-blue.svg)](js/storage.js)
-[![License: Unlicense](https://img.shields.io/badge/license-Unlicense-blue.svg)](LICENSE)
+Nook is a private, offline personal notes app. Notes stay in the current browser's IndexedDB. The app has no account, backend, analytics, CDN, remote font, or API call for note content.
 
-Nook is a private, offline-first personal notes workspace. It is a static web
-app made with vanilla HTML, CSS, and JavaScript. Notes stay in the current
-browser's IndexedDB; there is no account, backend, sync service, analytics,
-CDN, or runtime dependency.
+The current app is built with Vite, React, TypeScript, Tailwind CSS, and shadcn/ui components on Base UI. The previous vanilla app remains in the repository root (`index.html`, `js/`, `css/`, `sw.js`) for comparison while the rebuild is reviewed. The untracked `prototype/` directory is separate from both apps.
 
-Use it for work notes, learning material, research, project context, interview
-practice, and personal ideas in one calm, searchable local library.
+## Run
 
-## Table of contents
-
-- [Highlights](#highlights)
-- [Screenshots](#screenshots)
-- [Quick start](#quick-start)
-- [Browser support](#browser-support)
-- [Using Nook](#using-nook)
-- [Markdown support](#markdown-support)
-- [Local data and privacy](#local-data-and-privacy)
-- [Offline access and storage health](#offline-access-and-storage-health)
-- [Limitations and FAQ](#limitations-and-faq)
-- [Backup, restore, and demo data](#backup-restore-and-demo-data)
-- [Project structure](#project-structure)
-- [Development and validation](#development-and-validation)
-- [Feedback and contributing](#feedback-and-contributing)
-- [License](#license)
-
-## Highlights
-
-- Create and edit notes with a title, one note type, optional reusable tags, and raw Markdown.
-- Open a note in the detail workspace and switch between Preview, Edit Markdown, and Split views.
-- Search note titles and content without sending data anywhere.
-- Combine type, multiple-tag, Created Today, Updated Today, and search filters. Multiple tags use an “all selected tags” match.
-- Sort by created date, updated date, or title. Pinned notes stay above unpinned notes.
-- Move notes to Trash, restore them, undo a move, permanently delete one note, or empty Trash.
-- Keep up to 50 earlier saved versions per note, preview them, and restore one without losing the current version.
-- Copy the raw Markdown source or export the current note as `.md` or `.txt`.
-- Export and import a complete JSON backup, including version history. The local backup-health indicator reminds you when an export is missing or old.
-- Keep the primary editor and Side note as independent sessions with per-pane draft recovery and stale-write conflict handling.
-- Manage note types and tags from Settings → Organize Notes.
-- Choose Light, Coffee, Forest, Midnight, Dark, Retro, or Auto theme, switch between Compact, Comfortable, and Grid layouts, or collapse the sidebar into an icon rail.
-- Recover an unfinished local editor draft after an interrupted session.
-- Keep multiple open tabs in sync when the browser supports `BroadcastChannel`.
-- Use `C` for quick capture plus platform-aware editor shortcuts for formatting, saving, and switching editor modes.
-
-## Screenshots
-
-The gallery uses the reusable [demo library](docs/sample-data/nook-demo-library.json):
-44 active notes, 4 notes in Trash, 9 note types, 12 tags, 6 pinned notes, and
-18 active Coding notes with realistic Markdown content. The content is synthetic and safe to replace. Nook
-stores it in the current browser's IndexedDB; no note content is sent to a
-server.
-
-Full-library screenshots use one consistent desktop setup: Chrome at 125% zoom,
-the Compact four-column layout, and an expanded sidebar. The demo fixture keeps
-the sidebar to 12 tags so the tag list fits without an internal scrollbar.
-
-### Library theme gallery
-
-![Nook Light theme library in a compact four-column layout](docs/screenshots/nook-library-light.jpg)
-
-![Nook Coffee theme library in a compact four-column layout](docs/screenshots/nook-library-coffee.jpg)
-
-![Nook Forest theme library in a compact four-column layout](docs/screenshots/nook-library-forest.jpg)
-
-![Nook Midnight theme library in a compact four-column layout](docs/screenshots/nook-library-midnight.jpg)
-
-![Nook Dark theme library in a compact four-column layout](docs/screenshots/nook-library-dark.jpg)
-
-### Note detail workspace
-
-![Nook Quick View rendering a rich Markdown note in the detail workspace](docs/screenshots/nook-component-preview.jpg)
-
-![Nook Edit Markdown mode with tags, formatting tools, save status, and keyboard hints](docs/screenshots/nook-component-editor.jpg)
-
-![Nook Split mode showing raw Markdown beside its rendered preview](docs/screenshots/nook-component-split.jpg)
-
-### Settings and recovery UI
-
-![Nook Settings dialog for managing note types](docs/screenshots/nook-component-settings.jpg)
-
-![Nook Settings dialog for managing tags](docs/screenshots/nook-component-settings-tags.jpg)
-
-## Quick start
-
-Nook has no build step and no package installation. Open [`index.html`](index.html)
-directly in a modern browser:
-
-```text
-index.html → Open with your browser
-```
-
-For a consistent localhost origin, you can optionally serve the repository with
-any static web server:
+Use Node.js **24.18.0** (`.nvmrc`) and npm. Dependency versions are locked in `package-lock.json`.
 
 ```bash
-cd nook
-python3 -m http.server 8000 --bind 127.0.0.1
+npm ci
+npm run dev
 ```
 
-Then open <http://localhost:8000>. JavaScript is required in both modes.
-
-`file://`, `localhost`, and different ports are separate browser origins, so
-their IndexedDB and localStorage data do not transfer automatically. Export a
-JSON backup before moving between origins, browsers, or browser profiles. The
-Service Worker is optional and is used only on HTTPS, `localhost`, or
-`127.0.0.1`; direct `file://` use remains supported without it.
-
-## Browser support
-
-Nook relies on modern Web APIs and runs without compilation. It requires a browser that provides:
-
-- **IndexedDB**: For local data persistence.
-- **`<dialog>` element**: For native accessible modals.
-- **`localStorage`**: For UI preferences and unfinished editor recovery when available.
-- **`BroadcastChannel`**: Optional same-origin tab notifications; the app still works without it.
-- **`navigator.storage`** and **Service Worker**: Optional storage-health and hosted offline capabilities.
-
-Application code uses classic `<script>` tags and a small registry; it does not
-require native ES Modules, a bundler, or a package install. Browser support is
-feature-based rather than a claim that every browser/version has been fully
-validated.
-
-## Using Nook
-
-### Create and edit a note
-
-1. Select **New note**.
-2. Enter a title and choose a note type.
-3. Add existing tags or type a new tag and press Enter.
-4. Write raw Markdown in the editor.
-5. Select **Done** to save and close, or **Save changes** to save while keeping the editor open.
-
-Opening a saved note's Preview action takes you to the detail workspace. Use
-**Edit**, **Split**, and **Preview** in the command bar to change the surface
-without losing the note context. The back action returns to the library and
-restores the previous scroll position when possible.
-
-Existing titled notes autosave after about 1.5 seconds of inactivity. A new
-untitled draft is not persisted until its first explicit save. Nook keeps the
-primary editor and Side note in separate editor sessions. Each session tracks
-its committed snapshot, draft, save sequence, base revision, and conflict
-state; a late save result cannot overwrite a newer session or draft.
-
-Unfinished drafts are stored locally in separate, per-tab/per-pane recovery
-records. A tab keeps its recovery identity in `sessionStorage`, so reloading it
-does not make it claim or discard another open tab's draft. Drafts are offered
-for recovery after an interrupted session and expire after about 30 days.
-Closing a dirty editor asks before discarding changes.
-Recovery records are not part of a JSON backup.
-
-If another tab or pane saves the same note first, Nook reports a conflict and
-keeps the local draft. **Keep editing** leaves the draft untouched, **View
-latest** previews the newer committed note, and **Keep mine** retries with the
-latest revision as the new comparison point. If the saved note was deleted,
-Nook replaces the unavailable actions with **Save as new**. The conflict flow
-does not silently overwrite either copy.
-
-### Find and organize notes
-
-- Search the title and raw Markdown content from the library search field.
-- Choose a type from the sidebar or from a note card's type badge.
-- Select one or more tags. A note must contain every selected tag to match.
-- Use **Created Today** or **Updated Today** for date-based review.
-- Remove filters from the active-filter pills or select **Clear**.
-- Choose a sort order from the toolbar. Pinned notes remain above unpinned notes.
-- Use **Compact**, **Comfortable**, and **Grid** to change the card layout.
-- On narrow screens, open **Filters** to reveal spaces, date filters, types, and tags without leaving the library.
-- Use the sidebar toggle to keep the navigation available as a narrow icon rail.
-
-**Settings → Organize Notes** lets you add, rename, recolor, and delete note
-types and tags. Every note has one type. The built-in **General** type cannot be
-deleted; notes from a deleted custom type move to General. Tags are optional and
-can be shared by many notes.
-
-### Quick View and note actions
-
-The detail workspace provides:
-
-- **Copy** — copies the raw Markdown source.
-- **Export `.md`** — downloads the original Markdown.
-- **Export `.txt`** — downloads a plain-text rendering.
-- **Edit**, **Split**, and **Preview** — switch the current detail surface.
-- **Close** — returns to the library.
-
-The pin control is available on each active note card. In Trash, a note can be
-restored or permanently deleted. Moving a note to Trash is recoverable until it
-is permanently deleted or Trash is emptied.
-
-### Version history
-
-Open **Version history** from the primary note detail workspace or the Side
-note. Earlier committed versions are listed newest first and can be previewed
-before restore. Nook retains at most 50 versions and 5 MiB of version content
-per note. Restoring archives the current note first and then creates a new
-current revision, so the current state is not silently discarded. Save or close
-an unfinished draft before restoring history.
-
-The Side note is an independent pane in the detail workspace. The active pane
-is selected by focus or pointer interaction. Mode shortcuts (`1`, `2`, `3`),
-formatting shortcuts, and save shortcuts route to that active pane; each pane
-has its own autosave, recovery record, conflict state, and history action.
-
-### Themes
-
-Nook has a light, clean interface by default. You can use the theme button (or `T`) to cycle between seven
-modes: Light, Coffee, Forest, Midnight, Dark, Retro, and Auto. Auto matches
-your device's system color scheme preference (Light or Dark). Hover over or keyboard-focus the button to see the
-current and next theme. Auto stays selected after reload and updates when the system theme changes.
-
-### Keyboard shortcuts
-
-The modifier is `Command` on macOS and `Control` on Windows/Linux.
-
-| Context | Shortcut | Action |
-| --- | --- | --- |
-| Library | `⌘/Ctrl + F` or `/` | Focus search when no modal dialog is open |
-| Library | `C` | Start a new note when focus is not inside a form field |
-| Library | `V` | Preview the note card currently under the pointer |
-| Library | `1` / `2` / `3` | Switch to Compact / Comfortable / Grid layout |
-| App | `⌘/Ctrl + \` | Toggle the sidebar when no modal dialog is open |
-| App, outside form controls | `T` | Cycle to the next theme |
-| Library / Settings | `S` | Open or close Settings |
-| Active note editor pane | `1` / `2` / `3` | Switch to Markdown / Split / Preview mode |
-| Active note editor pane | `⌘/Ctrl + B` | Toggle bold around selected editor text |
-| Active note editor pane | `⌘/Ctrl + I` | Toggle italic around selected editor text |
-| Active note editor pane | `⌘/Ctrl + K` | Insert a link around selected editor text |
-| Active note editor pane | `⌘/Ctrl + E` | Toggle inline code around selected editor text |
-| Active note editor pane | `⌘/Ctrl + Shift + 7` | Toggle a numbered list on the selected lines |
-| Active note editor pane | `⌘/Ctrl + Shift + 8` | Toggle a bullet list on the selected lines |
-| Active note editor pane | `⌘/Ctrl + Shift + S` | Save changes and keep the pane open |
-| Active note editor pane | `⌘/Ctrl + Enter` | Save changes and close the pane |
-| Note view / dialog | `Esc` | Close the current view or dialog |
-
-The complete shortcut reference is available in Settings. Shortcut and Markdown
-help also remain available from the editor footer through hover and keyboard
-focus. Plain keys are scoped away from editable fields so typing inside a note
-is unaffected. Version history is opened with its note action rather than a
-global keyboard shortcut.
-
-## Markdown support
-
-Nook includes a dependency-free, safe Markdown-to-DOM renderer. It supports a
-broad CommonMark/GFM-style subset, including:
-
-- ATX and setext headings; bold, italic, strikethrough, inline code, entities, and hard line breaks
-- Fenced and indented code blocks with an optional language label
-- Unordered, ordered, nested, and task lists
-- Blockquotes and GitHub-style alerts: `NOTE`, `TIP`, `IMPORTANT`, `WARNING`, and `CAUTION`
-- Inline links, reference links, autolinks, and safe `http`, `https`, `mailto`, and `tel` destinations
-- Tables with alignment, footnotes, allowlisted `<details>`/`<summary>` blocks, and mathematical-expression text blocks
-- Horizontal rules
-
-This is not a claim of complete GitHub renderer parity. Math is displayed as
-text rather than typeset. Remote images are represented by accessible alt text
-so Nook does not load untrusted image assets. Raw HTML remains inert except for
-the explicitly supported details/summary syntax, and unsafe URL schemes are
-not rendered as links.
-
-Rendering is bounded for safety: sources over 5,000 lines or block/inline
-nesting deeper than 24 levels fall back to an inert `<pre>` containing the raw
-source. Footnote definitions and references are scoped to one render call, and
-generated footnote IDs include a render-specific scope so previews in different
-surfaces cannot collide.
-
-## Local data and privacy
-
-Nook keeps the note library in the current browser profile:
-
-- IndexedDB database: `personal-notes`
-- Current database version: `3`
-- Object stores: `notes`, `types`, `tags`, `noteVersions`, and `meta`
-- UI preferences such as theme, sidebar state, layout, sort order, and active filters use `localStorage`
-- Unfinished primary/Side note drafts use per-session `localStorage` recovery records; they are not part of IndexedDB or backups
-
-The app does not send note content to a server and does not call external APIs.
-Browser site data is not a backup: clearing site data, changing browser
-profiles, or using another browser can make the local library unavailable. JSON
-backups are plain text and are not encrypted by Nook.
-
-### Note data model
-
-Each note contains:
-
-| Field | Description |
-| --- | --- |
-| `id` | Stable local note identifier |
-| `title` | Required title, up to 160 characters |
-| `typeId` | Required reference to one note type |
-| `tagIds` | Zero or more tag references |
-| `content` | Raw Markdown, up to 50,000 characters |
-| `createdAt` | ISO timestamp |
-| `updatedAt` | ISO timestamp |
-| `isPinned` | Whether the note is pinned |
-| `deletedAt` | ISO timestamp when in Trash, otherwise `null` |
-| `revision` | Positive integer incremented by each committed mutation; used for stale-write detection |
-
-The storage layer owns normalization and validation. Note content is trimmed and
-line endings are normalized before saving; the Markdown syntax is preserved.
-Editor saves compare an optional `expectedRevision` in the same IndexedDB
-transaction that writes the note. A mismatch raises `NOTE_CONFLICT` with the
-latest stored note; a semantic no-op does not create a revision or history row.
-
-Each `noteVersions` record is a committed note snapshot keyed by
-`<noteId>::<revision>`. Actual saves archive the previous current snapshot
-before writing the next revision. Pin, Trash, type, and tag mutations also use
-the revision/history path where they change the stored note. History keeps the
-newest 50 snapshots and at most 5 MiB of UTF-8 content per note.
-
-The UI uses only the frozen global `PersonalNotesStorage` API. Application
-modules do not open IndexedDB directly.
-
-## Offline access and storage health
-
-Nook remains usable as a static `file://` site. A Service Worker is not
-registered there. On HTTPS, `localhost`, or `127.0.0.1`, Nook may register the
-versioned local-resource cache in `sw.js` and reopen the app offline after the
-assets have been cached. Other hosted origins keep local IndexedDB behavior but
-do not receive this Service Worker path.
-
-On a supported desktop browser, open Settings → Data and choose **Install app**
-when it is available. Nook then opens in a standalone window and receives its
-own desktop, dock, or app-launcher icon. Browsers that do not expose the in-app
-prompt may offer **Install App** or **Add to Dock** in their own menu. Standard
-PWA installation requires HTTPS or localhost and is not available from
-`file://`.
-
-When a new worker is waiting, Nook offers **Apply update**. It does not force a
-reload while the primary editor or Side note has unsaved changes; save or
-preserve those drafts first. The worker is activated only after an explicit
-request, and a reload is performed only when no active draft remains.
-
-The Settings storage panel uses `navigator.storage.estimate()` and
-`navigator.storage.persisted()` when available. It reports usage/quota when the
-browser exposes them and offers a best-effort `navigator.storage.persist()`
-request. A granted persistent-storage flag can reduce eviction risk but is not
-guaranteed, does not increase the browser's quota contract, and never replaces
-a separate JSON backup. Unsupported or failed APIs are reported without
-changing note data.
-
-## Limitations and FAQ
-
-- **Will I lose my notes if I clear browser data?** Yes. Nook strictly relies on the browser's IndexedDB. If you clear "Site Data" or use strict anti-tracking modes that clear local data on exit, your notes will be permanently deleted. Regularly export JSON backups.
-- **Does it sync across my devices?** No. Nook is purely local to the current browser profile. To move data, export a backup on one device and import it on the other.
-- **Storage Limits**: Browsers may cap IndexedDB storage or automatically evict it if the OS runs out of disk space. For raw Markdown notes, you are highly unlikely to hit size limits, but eviction remains a risk on full disks.
-
-## Backup, restore, and demo data
-
-### Full library backup
-
-Select **Backup** to request a browser download named like
-`personal-notes-backup-YYYY-MM-DD.json`. The current format is:
-
-```json
-{
-  "format": "personal-notes-backup",
-  "schemaVersion": 3,
-  "exportedAt": "2026-01-01T00:00:00.000Z",
-  "data": {
-    "noteTypes": [],
-    "tags": [],
-    "notes": [],
-    "noteVersions": []
-  }
-}
-```
-
-The download action creates a local Blob and asks the browser to download it;
-the browser may still block or redirect the download, so confirm that the file
-appears before deleting local data. The backup contains notes, types, tags,
-Trash state, and retained version history. Unfinished editor recovery drafts
-are intentionally excluded.
-
-Select **Import** and choose a JSON file to inspect and validate before
-replacing the current library. Import is a full replacement, not a merge; the
-confirmation step shows notes, types, tags, and saved-version counts. After
-confirmation, the replacement of notes, types, tags, and history is one atomic
-IndexedDB transaction. The UI asks you to save or close dirty primary/Side note
-drafts before replacement.
-
-The [Nook demo library](docs/sample-data/nook-demo-library.json) is a reusable,
-fictional sample collection for reviewing the UI, practicing import/export, and
-refreshing the README gallery. It contains active notes plus four Trash records
-so restore and permanent-delete states are available immediately. Import it
-from the app's **Import** button whenever you need the same demo state again.
-
-Nook exports schema version `3` and accepts schema versions `1`, `2`, and `3`,
-including the older `types` naming in place of `noteTypes`. It also accepts the
-legacy library shape containing `interviewQuestions` and `protoblocNotes`.
-Legacy and older backups are upgraded into the current note/type/tag model;
-older notes begin at revision 1 and have no history until a new committed
-mutation occurs.
-
-## Project structure
-
-| File | Responsibility |
-| --- | --- |
-| [`index.html`](index.html) | Semantic page structure, accessible controls, detail workspace, and native dialogs |
-| [`css/app.css`](css/app.css) | Single cascade manifest for foundations, components, features, accessibility, and themes |
-| [`css/`](css) | Stylesheets organized by component, feature, responsive, accessibility, and theme ownership |
-| [`js/storage.js`](js/storage.js) | IndexedDB v3 setup, validation, migration, revisioned CRUD, history, Trash lifecycle, and backup import/export |
-| [`js/markdown.js`](js/markdown.js) | Safe dependency-free Markdown parser and DOM renderer |
-| [`js/app/runtime.js`](js/app/runtime.js) | Registers application modules and initializes them in an explicit dependency order |
-| [`js/app/editor-session.js`](js/app/editor-session.js) | DOM-independent primary/Side note session state, CAS saves, conflict state, and per-session draft recovery |
-| [`js/app/history.js`](js/app/history.js) | Version-history preview and restore controller |
-| [`js/app/offline.js`](js/app/offline.js) | Optional storage-health, persistent-storage request, and hosted Service Worker update controls |
-| [`sw.js`](sw.js) | Versioned cache for local hosted app resources; never owns note data |
-| [`manifest.webmanifest`](manifest.webmanifest) | Local install metadata for hosted browsers |
-| [`icons/`](icons) | Local PNG application icons used by installed browsers and operating systems |
-| [`js/app/`](js/app) | UI modules split by responsibility: shared state, preferences, feedback, library, editor, settings/import-export, tab sync, offline capabilities, and event/bootstrap wiring |
-| [`docs/architecture.md`](docs/architecture.md) | Module boundaries, CSS ownership, extension rules, and structural validation |
-| [`favicon.svg`](favicon.svg) | Local Nook application icon used by the browser tab |
-| [`docs/sample-data/nook-demo-library.json`](docs/sample-data/nook-demo-library.json) | Reusable fictional import/export fixture for demos and screenshot QA |
-| [`LICENSE`](LICENSE) | Unlicense / public-domain dedication |
-
-The storage and Markdown namespaces load first, followed by the classic-script
-application registry and feature registrations:
-
-```text
-js/storage.js → js/markdown.js → js/app/runtime.js → classic-script registrations
-```
-
-`js/storage.js` exposes the frozen `PersonalNotesStorage` API and
-`js/markdown.js` exposes the frozen `NookMarkdown` API. The application modules
-register installers in any script-tag order. `runtime.js` initializes them as
-`core → preferences → feedback → editor-session → library → editor → history → organize → sync → offline → events`, reports missing or duplicate modules, and
-`events.js` removes the temporary registry before bootstrap. This is a
-classic-script registry, not an ES Module graph. The UI continues to use the
-storage API instead of accessing IndexedDB directly.
-
-`index.html` links only `css/app.css`. That manifest makes the existing cascade
-order explicit in one place; selectors remain in their owning stylesheet. See
-[`docs/architecture.md`](docs/architecture.md) before adding a module, moving a
-selector, or introducing a cross-layer override.
-
-## Development and validation
-
-There is no `package.json`, bundler, framework, or remote runtime dependency.
-The regression tests use Node's built-in `node:test` module. Useful checks are:
+Open the localhost URL printed by Vite. For a production build:
 
 ```bash
-node --check js/storage.js
-node --check js/markdown.js
-for file in js/app/*.js; do node --check "$file"; done
-node --test tests/*.test.js
-git diff --check
+npm run build
+npm run preview
 ```
 
-The storage contract harness is `tests/browser/storage-harness.html`; run its
-`v1`, `v2`, `save`, `bytes`, and `backup` scenarios on a fresh isolated
-localhost origin. The EditorSession and Markdown harnesses cover their own
-boundaries. These harnesses do not prove full application startup, two-tab
-rendering, Service Worker update behavior, quota grants, or responsive and
-accessibility QA.
+The new app needs a local or HTTPS server for its bundled assets and Service Worker. Node.js is only used for development, build, and serving the static result. After the first successful production load and Service Worker activation, the cached app can reopen offline. Notes are always read and written locally through IndexedDB, regardless of network state. Do not clear browser site data without a separate JSON backup.
 
-When changing behavior, manually exercise the affected flow through a local
-server or by opening `index.html`. For editor and responsive changes, check new
-notes, existing notes, dirty-draft confirmation, keyboard focus, sidebar state,
-and a narrow mobile viewport. For storage changes, check save, Trash restore,
-permanent deletion, import/export, validation, and backward-compatible data.
+Browser origins have separate IndexedDB databases. For example, `file://`, `http://localhost:8000`, and `http://127.0.0.1:4173` do not share notes. There is no automatic transfer between them.
 
-Keep changes focused and preserve the offline-only boundary. Do not add hosted
-fonts, CDNs, analytics, authentication, external APIs, or a framework without
-an explicit product decision.
+## Move notes from the previous app
 
-## Feedback and contributing
+1. Open the previous Nook at its original URL or `file://` location and download a JSON backup.
+2. Open the new Nook at its chosen localhost or HTTPS origin.
+3. Select **Import**, choose the backup, inspect the note/type/tag/history counts, and confirm **Replace library**.
+4. Verify the notes in the new library. Keep the downloaded backup separately.
 
-Nook is built to serve a highly specific personal workflow. While major feature requests or large pull requests are generally not accepted to keep the app focused and dependency-free, bug reports are welcome. Feel free to open an issue if you encounter unexpected behavior.
+The importer accepts Nook backup schema v1, v2, and v3, including older field names and the legacy shape supported by the original storage module. Import validates before replacing data and commits the replacement in one IndexedDB transaction. Draft recovery records are local to their tab and are not included in backups. JSON backups are plain text, not encrypted.
 
-## License
+## Features
 
-Nook is released under the [Unlicense](LICENSE). It is provided without
-warranty; see the full license text for details.
+- Create and edit raw Markdown notes with one type and multiple tags. Manage types and tags in Settings.
+- Search title and content; combine type, all-selected-tag, Created Today, and Updated Today filters. Sort by title or creation/update date, with pinned notes first.
+- Browse in Compact, Comfortable, or Grid layout. Use the sidebar, mobile filter sheet, and Trash.
+- Work in Preview, Edit Markdown, and Split modes, with an independent Side note pane. Copy raw Markdown or export `.md`/`.txt`.
+- Autosave, explicit save, draft recovery, version conflict choices, and up to 50 earlier revisions per note.
+- Export/import a complete JSON library backup, including saved history.
+- Choose Light, Coffee, Forest, Midnight, Dark, Retro, or Auto. Settings shows browser storage and install/update options when supported.
+
+The Markdown preview uses the existing local safe renderer. Raw HTML stays inert except its documented `details`/`summary` subset; unsafe URLs do not become links, and images are represented by accessible alt text instead of loading remote assets. See [architecture](docs/architecture.md) for the data, session, and renderer contracts.
+
+## Development and checks
+
+```bash
+npm run typecheck
+npm run lint
+npm run test
+npm run build
+npm run check
+npm run test:e2e
+```
+
+`test` runs Vitest and the retained legacy Node tests. `check` runs the quick typecheck, lint, unit/legacy test, and build gates. `test:e2e` runs Playwright against the production preview; install its Chromium browser with `npx playwright install chromium` if it is not already available, or set `NOOK_E2E_CHROME_PATH` to the executable path of a locally installed Chrome. E2E uses clean browser contexts and synthetic fixture data from `docs/sample-data/`, never a personal library.
+
+The [feature parity matrix](docs/refactor-feature-matrix.md) links old modules, new owners, and acceptance checks. The [UI and accessibility review](docs/ui-review.md) records findings and fixes. The previous browser harnesses remain in `tests/browser/` for comparison. New visual baselines are under `docs/screenshots/react-baseline/`; older screenshots under `docs/screenshots/` show the macrostructure used as a reference, not the new styling.
+
+## Privacy and limits
+
+Data is stored per browser profile and origin. Export a backup before changing origin, clearing site data, or replacing the browser profile. The app cannot synchronize notes across devices by itself. Browser persistent storage can reduce eviction risk but does not replace a backup. The offline Service Worker caches only app resources and never stores note content in its cache.
+
+Nook is distributed under the [Unlicense](LICENSE).

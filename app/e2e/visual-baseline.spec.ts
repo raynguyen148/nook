@@ -1,0 +1,76 @@
+import { readFileSync } from 'node:fs'
+import { expect, test } from '@playwright/test'
+
+const demoBackup = readFileSync(new URL('../../docs/sample-data/nook-demo-library.json', import.meta.url))
+
+test('captures synthetic Library, workspace, Settings, Trash, and mobile baselines', async ({ page }, testInfo) => {
+  async function capture(name: string) {
+    await page.waitForFunction(() => document.getAnimations().every((animation) => animation.playState !== 'running'))
+    await page.screenshot({ path: testInfo.outputPath(name) })
+  }
+  await page.setViewportSize({ width: 1280, height: 800 })
+  await page.goto('/')
+  await expect(page.getByRole('heading', { name: 'All notes' })).toBeVisible()
+  await page.getByLabel('Choose a Nook backup file').setInputFiles({
+    name: 'nook-demo-library.json', mimeType: 'application/json', buffer: demoBackup,
+  })
+  await page.getByRole('tab', { name: 'Data' }).click()
+  await page.getByRole('button', { name: 'Replace library' }).click()
+  await page.getByRole('alertdialog').getByRole('button', { name: 'Replace library' }).click()
+  await page.getByRole('button', { name: 'Close settings' }).click()
+  await expect(page.getByRole('dialog', { name: 'Settings' })).toHaveCount(0)
+  await expect(page.getByRole('button', { name: 'Preview Code review checklist for risky changes' })).toBeVisible()
+  await expect(page.getByRole('combobox', { name: 'Sort notes' })).toContainText('Newest created')
+  await capture('library-desktop.png')
+
+  await page.getByRole('button', { name: 'Preview Code review checklist for risky changes' }).click()
+  await expect(page.getByRole('region', { name: 'Note workspace pane' })).toBeVisible()
+  await capture('workspace-preview.png')
+  await page.getByRole('button', { name: 'Edit', exact: true }).click()
+  await expect(page.getByRole('combobox', { name: 'Note type' })).toContainText('Coding')
+  await capture('workspace-edit.png')
+  await page.getByRole('button', { name: 'Split', exact: true }).click()
+  await capture('workspace-split.png')
+  await page.getByRole('button', { name: 'Open Side note picker' }).click()
+  const picker = page.getByRole('dialog', { name: 'Open a Side note' })
+  await picker.getByRole('textbox', { name: 'Search notes for Side note' }).fill('PostgreSQL indexes')
+  await picker.getByRole('button', { name: 'Open PostgreSQL indexes — start from the query as Side note' }).click()
+  await expect(page.getByRole('region', { name: 'Side note workspace pane' })).toBeVisible()
+  const sideGeometry = await page.evaluate(() => {
+    const sidebar = document.querySelector('.nook-desktop-sidebar')?.getBoundingClientRect()
+    const screen = document.querySelector('.workspace-screen')?.getBoundingClientRect()
+    return { sidebarRight: sidebar?.right ?? 0, screenLeft: screen?.left ?? 0, scrollWidth: document.documentElement.scrollWidth, viewportWidth: window.innerWidth }
+  })
+  expect(sideGeometry.screenLeft, JSON.stringify(sideGeometry)).toBeGreaterThan(sideGeometry.sidebarRight)
+  expect(sideGeometry.scrollWidth, JSON.stringify(sideGeometry)).toBeLessThanOrEqual(sideGeometry.viewportWidth)
+  await capture('workspace-side-note.png')
+
+  await page.locator('.workspace-topbar').getByRole('button', { name: 'All notes' }).click()
+  await page.getByRole('button', { name: 'Settings' }).click()
+  await capture('settings.png')
+  await page.getByRole('tab', { name: 'Display' }).click()
+  await capture('settings-display.png')
+  await page.getByRole('tab', { name: 'Data' }).click()
+  await capture('settings-data.png')
+  await page.getByRole('button', { name: 'Close settings' }).click()
+  await expect(page.getByRole('dialog', { name: 'Settings' })).toHaveCount(0)
+  await page.getByRole('button', { name: 'Trash', exact: true }).click()
+  await capture('trash.png')
+  await page.getByRole('navigation', { name: 'Library spaces' }).getByRole('button', { name: 'All notes' }).click()
+
+  await page.setViewportSize({ width: 375, height: 812 })
+  await capture('library-mobile-375.png')
+  await page.getByRole('button', { name: 'Open mobile settings' }).click()
+  await capture('settings-mobile-375.png')
+  await page.getByRole('button', { name: 'Close settings' }).click()
+  await page.getByRole('button', { name: 'Filters and sort' }).click()
+  await capture('mobile-filters-375.png')
+  await page.getByRole('button', { name: 'Close filters' }).click()
+  await page.getByRole('button', { name: 'Preview Code review checklist for risky changes' }).click()
+  await capture('workspace-mobile-preview-375.png')
+  await page.getByRole('button', { name: 'Edit', exact: true }).click()
+  await capture('workspace-mobile-edit-375.png')
+  await page.getByRole('button', { name: 'Note actions' }).click()
+  await expect(page.getByRole('dialog', { name: 'Note actions' }).getByRole('button', { name: 'Version history' })).toBeVisible()
+  await capture('workspace-mobile-actions-375.png')
+})
