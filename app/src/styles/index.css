@@ -105,3 +105,80 @@ html[data-ui-transition="theme"]::view-transition-new(root) {
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
 }
+
+/* ==========================================================================
+   Focus & Input Modality Management
+   Rule: NO element in the app is highlighted when focused/clicked with mouse.
+   Focus ring/outline is ONLY displayed on Tab navigation (keyboard modality).
+   ========================================================================== */
+
+/* 1. Triệt tiêu mọi outline, box-shadow ring khi không ở chế độ keyboard (click chuột/con trỏ) */
+html:not([data-input-modality="keyboard"]) *:focus,
+html:not([data-input-modality="keyboard"]) *:focus-visible,
+html:not([data-input-modality="keyboard"]) *:focus-within {
+  outline: none !important;
+  outline-offset: 0 !important;
+  box-shadow: none !important;
+}
+
+/* 2. Đảm bảo border-color của form controls giữ nguyên viền nghỉ, không đổi màu sang var(--ring) khi click chuột */
+html:not([data-input-modality="keyboard"]) input:focus,
+html:not([data-input-modality="keyboard"]) input:focus-visible,
+html:not([data-input-modality="keyboard"]) textarea:focus,
+html:not([data-input-modality="keyboard"]) textarea:focus-visible,
+html:not([data-input-modality="keyboard"]) select:focus,
+html:not([data-input-modality="keyboard"]) select:focus-visible,
+html:not([data-input-modality="keyboard"]) [contenteditable]:focus,
+html:not([data-input-modality="keyboard"]) [contenteditable]:focus-visible {
+  border-color: var(--input) !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* 3. Textbox không viền trong workspace (Title input, Markdown textarea) */
+html:not([data-input-modality="keyboard"]) .workspace-title-input,
+html:not([data-input-modality="keyboard"]) .workspace-title-input:focus,
+html:not([data-input-modality="keyboard"]) .workspace-title-input:focus-visible,
+html:not([data-input-modality="keyboard"]) .workspace-source,
+html:not([data-input-modality="keyboard"]) .workspace-source:focus,
+html:not([data-input-modality="keyboard"]) .workspace-source:focus-visible {
+  border-color: transparent !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* 4. Khung tìm kiếm ở Topbar Library */
+html:not([data-input-modality="keyboard"]) .nook-topbar .nook-search-wrap,
+html:not([data-input-modality="keyboard"]) .nook-topbar .nook-search-wrap:focus-within {
+  border-color: var(--input) !important;
+  box-shadow: none !important;
+}
+
+/* 5. Note Card focus-within: Không outline / ring khi click chuột */
+html:not([data-input-modality="keyboard"]) .nook-note-card:focus-within {
+  box-shadow: none !important;
+}
+
+/* 6. Khi thực sự dùng bàn phím (Tab): Hiển thị outline focus chuẩn cho các phần tử tương tác */
+html[data-input-modality="keyboard"] :focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+html[data-input-modality="keyboard"] .workspace-title-input:focus-visible {
+  outline: 2px solid var(--ring) !important;
+  outline-offset: 3px !important;
+  border-radius: var(--radius-sm);
+  box-shadow: none !important;
+}
+
+html[data-input-modality="keyboard"] .workspace-source:focus-visible {
+  outline: 2px solid var(--ring) !important;
+  outline-offset: -2px !important;
+  box-shadow: none !important;
+}
+
+html[data-input-modality="keyboard"] .nook-topbar .nook-search-wrap:has(input:focus-visible) {
+  border-color: var(--ring) !important;
+  box-shadow: 0 0 0 2px color-mix(in oklch, var(--ring) 25%, transparent) !important;
+}

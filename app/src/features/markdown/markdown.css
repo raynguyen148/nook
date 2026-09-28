@@ -31,7 +31,7 @@
 .workspace-markdown-body li + li { margin-top: .25rem; }
 .workspace-markdown-body li > p { margin: 0; }
 .workspace-markdown-body a { color: var(--primary); text-decoration: underline; text-underline-offset: .2em; }
-.workspace-markdown-body a:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+html[data-input-modality="keyboard"] .workspace-markdown-body a:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
 .workspace-markdown-body blockquote { border-inline-start: 3px solid var(--border); padding-inline-start: 1rem; color: var(--muted-foreground); }
 .workspace-markdown-body hr { margin-block: 1.5rem; border: 0; border-top: 1px solid var(--border); }
 :where(.workspace-markdown-body, .quick-view-content, .note-content-preview) code:not(pre code) {

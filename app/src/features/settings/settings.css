@@ -62,7 +62,7 @@
 .nook-settings-nav [data-slot='tabs-trigger']:active {
   transform: scale(0.97);
 }
-.nook-settings-nav [data-slot='tabs-trigger']:focus-visible {
+html[data-input-modality="keyboard"] .nook-settings-nav [data-slot='tabs-trigger']:focus-visible {
   z-index: 1;
   outline: 2px solid var(--ring);
   outline-offset: 2px;

@@ -190,52 +190,54 @@ export function FilterList({
           ))}
         </nav>
       </div>
-      <div className="nook-sidebar-section nook-tag-section">
-        <p className="nook-sidebar-label mb-2 flex items-center justify-between text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-          Tags <span className="text-xs font-normal normal-case text-primary">{filters.tagIds.length ? `${filters.tagIds.length} selected` : ''}</span>
-        </p>
-        {tags.length === 0 ? <p className="text-sm text-muted-foreground">No tags yet.</p> : <p className="nook-filter-help mb-2 text-xs text-muted-foreground">Match all selected tags</p>}
-        <div className="nook-tag-filter-list flex flex-wrap gap-1.5">
-          {displayedTags.map((tag) => (
-            <Badge
-              key={tag.id}
-              render={<label />}
-              variant={filters.tagIds.includes(tag.id) ? 'tagSelected' : 'tag'}
-              className="nook-tag-filter max-w-full cursor-pointer"
-              title={`Filter by ${tag.name} (${tagCounts.get(tag.id) ?? 0})`}
+      {!collapsed && (
+        <div className="nook-sidebar-section nook-tag-section">
+          <p className="nook-sidebar-label mb-2 flex items-center justify-between text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            Tags <span className="text-xs font-normal normal-case text-primary">{filters.tagIds.length ? `${filters.tagIds.length} selected` : ''}</span>
+          </p>
+          {tags.length === 0 ? <p className="text-sm text-muted-foreground">No tags yet.</p> : <p className="nook-filter-help mb-2 text-xs text-muted-foreground">Match all selected tags</p>}
+          <div className="nook-tag-filter-list flex flex-wrap gap-1.5">
+            {displayedTags.map((tag) => (
+              <Badge
+                key={tag.id}
+                render={<label />}
+                variant={filters.tagIds.includes(tag.id) ? 'tagSelected' : 'tag'}
+                className="nook-tag-filter max-w-full cursor-pointer"
+                title={`Filter by ${tag.name} (${tagCounts.get(tag.id) ?? 0})`}
+              >
+                <input
+                  type="checkbox"
+                  className="sr-only"
+                  checked={filters.tagIds.includes(tag.id)}
+                  onChange={() => onToggleTag(tag.id)}
+                  aria-label={`Filter by tag ${tag.name}`}
+                />
+                <span className="nook-tag-filter-name max-w-32 truncate">{tag.name}</span>
+                <span className="nook-nav-count text-xs" aria-hidden="true">{tagCounts.get(tag.id) ?? 0}</span>
+              </Badge>
+            ))}
+          </div>
+          {tags.length > TAG_COLLAPSED_LIMIT && (
+            <button
+              type="button"
+              className="nook-text-button mt-1.5 inline-flex items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-foreground"
+              onClick={() => setTagsExpanded((prev) => !prev)}
             >
-              <input
-                type="checkbox"
-                className="sr-only"
-                checked={filters.tagIds.includes(tag.id)}
-                onChange={() => onToggleTag(tag.id)}
-                aria-label={`Filter by tag ${tag.name}`}
-              />
-              <span className="nook-tag-filter-name max-w-32 truncate">{tag.name}</span>
-              <span className="nook-nav-count text-xs" aria-hidden="true">{tagCounts.get(tag.id) ?? 0}</span>
-            </Badge>
-          ))}
+              {tagsExpanded ? (
+                <>
+                  <span>Show less</span>
+                  <ChevronUp className="size-3.5" aria-hidden="true" />
+                </>
+              ) : (
+                <>
+                  <span>Show {tags.length - displayedTags.length} more</span>
+                  <ChevronDown className="size-3.5" aria-hidden="true" />
+                </>
+              )}
+            </button>
+          )}
         </div>
-        {tags.length > TAG_COLLAPSED_LIMIT && (
-          <button
-            type="button"
-            className="nook-text-button mt-1.5 inline-flex items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-foreground"
-            onClick={() => setTagsExpanded((prev) => !prev)}
-          >
-            {tagsExpanded ? (
-              <>
-                <span>Show less</span>
-                <ChevronUp className="size-3.5" aria-hidden="true" />
-              </>
-            ) : (
-              <>
-                <span>Show {tags.length - displayedTags.length} more</span>
-                <ChevronDown className="size-3.5" aria-hidden="true" />
-              </>
-            )}
-          </button>
-        )}
-      </div>
+      )}
     </>}
   </div>
 }

@@ -352,7 +352,7 @@ export function EditorPane({
 
   return (
     <Card
-      className={`workspace-pane workspace-pane--${mode} ${pane === 'secondary' ? 'workspace-pane--side' : ''} ${isActive ? 'is-active' : ''} ${className || ''}`}
+      className={`workspace-pane workspace-pane--${mode} ring-0 ${pane === 'secondary' ? 'workspace-pane--side' : ''} ${isActive ? 'is-active' : ''} ${className || ''}`}
       onPointerDown={onActivate}
       onFocusCapture={onActivate}
       data-pane={pane}

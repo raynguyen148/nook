@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { NookProvider, useNook } from '@/app/NookContext'
 import { OfflineProvider } from '@/app/OfflineContext'
 import { Button } from '@/components/ui/button'
@@ -6,6 +7,7 @@ import { TooltipProvider } from '@/components/ui/tooltip'
 import { LibraryScreen } from '@/features/library/LibraryScreen'
 import { ThemeProvider } from '@/features/theme/ThemeProvider'
 import { WorkspaceScreen } from '@/features/workspace/WorkspaceScreen'
+import { setupInputModality } from '@/lib/modality'
 
 function NookSurface() {
   const { ready, error, refresh, workspace } = useNook()
@@ -20,5 +22,23 @@ function NookSurface() {
 }
 
 export default function App() {
-  return <ThemeProvider><TooltipProvider><NookProvider><OfflineProvider><a className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-md focus:bg-background focus:p-2 focus:text-foreground focus:ring-2 focus:ring-ring" href="#main-content">Skip to main content</a><NookSurface /><Toaster /></OfflineProvider></NookProvider></TooltipProvider></ThemeProvider>
+  useEffect(() => {
+    return setupInputModality()
+  }, [])
+
+  return (
+    <ThemeProvider>
+      <TooltipProvider>
+        <NookProvider>
+          <OfflineProvider>
+            <a className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-md focus:bg-background focus:p-2 focus:text-foreground focus:ring-2 focus:ring-ring" href="#main-content">
+              Skip to main content
+            </a>
+            <NookSurface />
+            <Toaster />
+          </OfflineProvider>
+        </NookProvider>
+      </TooltipProvider>
+    </ThemeProvider>
+  )
 }
