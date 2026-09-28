@@ -238,6 +238,20 @@ html[data-theme="eink"] .sidebar-toggle-btn:hover {
   background-color: var(--eink-paper-hover);
 }
 
+html[data-theme="eink"] .app-shell.is-sidebar-collapsed .sidebar-toggle-btn,
+html[data-theme="eink"][data-sidebar-collapsed="true"] .app-shell .sidebar-toggle-btn {
+  border-color: var(--eink-border);
+  color: var(--eink-ink);
+  background-color: var(--eink-paper);
+}
+
+html[data-theme="eink"] .app-shell.is-sidebar-collapsed .sidebar-toggle-btn:hover,
+html[data-theme="eink"][data-sidebar-collapsed="true"] .app-shell .sidebar-toggle-btn:hover {
+  border-color: #141414;
+  color: #000000;
+  background-color: var(--eink-paper-hover);
+}
+
 html[data-theme="eink"] .brand-mark {
   filter: grayscale(100%) contrast(150%);
 }

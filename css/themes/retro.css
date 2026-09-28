@@ -195,6 +195,22 @@ html[data-theme="retro"] :where(.sidebar-toggle-btn, .storage-status) {
   box-shadow: var(--retro-shadow-sm);
 }
 
+html[data-theme="retro"] .app-shell.is-sidebar-collapsed .sidebar-toggle-btn,
+html[data-theme="retro"][data-sidebar-collapsed="true"] .app-shell .sidebar-toggle-btn {
+  border-color: var(--retro-border);
+  color: var(--retro-ink);
+  background: var(--retro-paper);
+  box-shadow: var(--retro-shadow-sm);
+}
+
+html[data-theme="retro"] .app-shell.is-sidebar-collapsed .sidebar-toggle-btn:hover,
+html[data-theme="retro"][data-sidebar-collapsed="true"] .app-shell .sidebar-toggle-btn:hover {
+  border-color: var(--retro-border-strong);
+  color: var(--retro-ink);
+  background: var(--retro-paper-hover);
+  box-shadow: none;
+}
+
 html[data-theme="retro"] .storage-status {
   flex-wrap: nowrap;
   gap: 0.3rem;

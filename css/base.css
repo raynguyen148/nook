@@ -367,8 +367,8 @@ select:focus-visible {
   align-items: center;
   justify-content: center;
   flex: none;
-  width: 1.55rem;
-  height: 1.55rem;
+  width: 1.45rem;
+  height: 1.45rem;
   border: 1px solid #e2e8f0;
   border-radius: 50%;
   padding: 0;
@@ -410,8 +410,8 @@ select:focus-visible {
 
 
 .sidebar-toggle-btn__icon {
-  width: 0.75rem;
-  height: 0.75rem;
+  width: 0.7rem;
+  height: 0.7rem;
   transition: transform var(--motion-duration-medium) var(--motion-ease-in-out);
 }
 

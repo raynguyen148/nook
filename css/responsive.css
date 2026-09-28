@@ -85,7 +85,8 @@
   html[data-sidebar-collapsed="true"] .app-shell .sidebar__header {
     flex-direction: column;
     align-items: center;
-    gap: 0.35rem;
+    gap: 0.65rem;
+    margin-bottom: 0.85rem;
   }
 
   .app-shell.is-sidebar-collapsed .brand,
@@ -108,8 +109,8 @@
   /* ── Toggle button: persistent, discoverable affordance in the narrow rail ── */
   .app-shell.is-sidebar-collapsed .sidebar-toggle-btn,
   html[data-sidebar-collapsed="true"] .app-shell .sidebar-toggle-btn {
-    width: 1.85rem;
-    height: 1.85rem;
+    width: 1.35rem;
+    height: 1.35rem;
     border-color: var(--primary-accent-border);
     color: var(--primary-accent-text);
     background: var(--primary-accent-soft);
@@ -125,8 +126,8 @@
 
   .app-shell.is-sidebar-collapsed .sidebar-toggle-btn__icon,
   html[data-sidebar-collapsed="true"] .app-shell .sidebar-toggle-btn__icon {
-    width: 0.85rem;
-    height: 0.85rem;
+    width: 0.7rem;
+    height: 0.7rem;
     transform: rotate(180deg);
   }
 
@@ -159,6 +160,11 @@
   .app-shell.is-sidebar-collapsed .space-navigation,
   html[data-sidebar-collapsed="true"] .app-shell .space-navigation {
     margin: 0 0 0.5rem;
+  }
+
+  .app-shell.is-sidebar-collapsed .space-navigation__list,
+  html[data-sidebar-collapsed="true"] .app-shell .space-navigation__list {
+    margin-top: 0;
   }
 
   .app-shell.is-sidebar-collapsed .space-navigation .filter-section-title,
