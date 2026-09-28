@@ -569,15 +569,39 @@ html[data-theme="eink"] :where(
   box-shadow: none !important;
 }
 
-html[data-theme="eink"] :where(.view-mode-button, .note-editor-mode__button) {
+html[data-theme="eink"] .view-mode-button,
+html[data-theme="eink"] .note-editor-mode__button {
   border-radius: var(--eink-radius-sm) !important;
   color: var(--eink-ink-muted);
 }
 
-html[data-theme="eink"] :where(.view-mode-button.is-active, .view-mode-button[aria-pressed="true"], .note-editor-mode__button[aria-pressed="true"]) {
-  border-color: #141414;
-  color: #efece4;
-  background: #141414;
+html[data-theme="eink"] .view-mode-button:hover:not(.is-active):not([aria-pressed="true"]),
+html[data-theme="eink"] .note-editor-mode__button:hover:not([aria-pressed="true"]) {
+  color: var(--eink-ink) !important;
+  background-color: var(--eink-paper-hover) !important;
+}
+
+html[data-theme="eink"] .view-mode-button.is-active,
+html[data-theme="eink"] .view-mode-button[aria-pressed="true"],
+html[data-theme="eink"] .note-editor-mode__button[aria-pressed="true"] {
+  border-color: #141414 !important;
+  color: #efece4 !important;
+  background: #141414 !important;
+  font-weight: 600;
+  box-shadow: none !important;
+}
+
+html[data-theme="eink"] .view-mode-button.is-active:hover,
+html[data-theme="eink"] .view-mode-button[aria-pressed="true"]:hover,
+html[data-theme="eink"] .note-editor-mode__button[aria-pressed="true"]:hover {
+  border-color: #000000 !important;
+  color: #ffffff !important;
+  background: #000000 !important;
+}
+
+html[data-theme="eink"] .note-editor-mode--side-note,
+html[data-theme="eink"] .note-editor-mode--compare {
+  border-left-color: var(--eink-border);
 }
 
 html[data-theme="eink"] :where(
