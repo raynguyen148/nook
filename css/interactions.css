@@ -52,7 +52,7 @@ html[data-theme-mode="auto"] .theme-toggle .theme-toggle__icon--auto {
 }
 
 
-/* Primary accent: golden yellow-brown, symbolizing classic notebook & stationery warmth. */
+/* Primary accent: Warm Stationery Gold/Amber matching logo */
 :root {
   --primary-accent: #9e6b02;
   --primary-accent-hover: #805600;
@@ -60,18 +60,18 @@ html[data-theme-mode="auto"] .theme-toggle .theme-toggle__icon--auto {
   --primary-accent-soft: #fdf5db;
   --primary-accent-soft-hover: #fcebc2;
   --primary-accent-border: #f2d184;
-  --primary-accent-focus: rgb(158 107 2 / 24%);
-  --primary-accent-shadow: rgb(158 107 2 / 20%);
-  --pinned-card-border: #d8c391;
-  --pinned-card-border-hover: #c4932e;
+  --primary-accent-focus: rgb(158 107 2 / 20%);
+  --primary-accent-shadow: rgb(158 107 2 / 16%);
+  --pinned-card-border: #f2d184;
+  --pinned-card-border-hover: #d8c391;
   --pinned-card-surface: #fffdf8;
-  --pinned-card-shadow: 0 1px 2px rgb(15 23 42 / 5%);
+  --pinned-card-shadow: 0 1px 3px 0 rgb(158 107 2 / 8%), 0 1px 2px -1px rgb(158 107 2 / 8%);
   --pinned-marker-background: #f9efd5;
   --pinned-marker-border: #e6d2a2;
   --pinned-marker-color: #805600;
-  --primary-button-text: #fff;
+  --primary-button-text: #ffffff;
   --focus-color: var(--primary-accent);
-  --focus-radius: 0.7rem;
+  --focus-radius: 0.625rem;
   --interaction-duration: var(--motion-duration-short);
   --interaction-easing: var(--motion-ease-out);
 }
@@ -79,7 +79,7 @@ html[data-theme-mode="auto"] .theme-toggle .theme-toggle__icon--auto {
 
 
 body {
-  background: #f8fafc;
+  background: var(--surface-page, #fafafa);
 }
 
 

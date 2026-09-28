@@ -1,15 +1,16 @@
 /* ==========================================================================
-   Nook - Theme: Classic Light (Original)
-   Clean minimal Slate 50 background with Inter typography & golden accent
+   Nook - Theme: Light (Shadcn Luma Style)
+   Clean Neutral base with Geist typography & warm gold primary accent
+   Preset: b2D0wqNxT (Luma Style / Neutral Base / Warm Gold Theme)
    ========================================================================== */
 
 :root,
 html[data-theme="light"] {
-  --theme-surface-page: #f8fafc;
-  --theme-danger-border: #eccbd0;
+  --theme-surface-page: #fafafa;
+  --theme-danger-border: #fecaca;
   --form-control-resting-background: #ffffff;
-  --font-sans: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
-  --font-display: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  --font-sans: "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  --font-display: "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
   --primary-accent: #9e6b02;
   --primary-accent-hover: #805600;
   --primary-accent-text: #805600;
@@ -25,96 +26,96 @@ html[data-theme="light"] {
   --pinned-card-border: #d8c391;
   --pinned-card-border-hover: #c4932e;
   --pinned-card-surface: #fffdf8;
-  --pinned-card-shadow: 0 1px 2px rgb(15 23 42 / 5%);
+  --pinned-card-shadow: 0 1px 3px 0 rgb(158 107 2 / 8%), 0 1px 2px -1px rgb(158 107 2 / 8%);
   --pinned-marker-background: #f9efd5;
   --pinned-marker-border: #e6d2a2;
   --pinned-marker-color: #805600;
   --note-card-surface: #ffffff;
-  --note-card-border: #e2e8f0;
-  --note-card-title: #0f172a;
-  --note-card-title-letter-spacing: -0.016em;
-  --note-card-preview: #334155;
-  --note-card-muted: #64748b;
-  --note-card-actions-border: #e2e8f0;
-  --note-card-actions-surface: #f8fafc;
-  --note-card-action: #475467;
+  --note-card-border: #e4e4e7;
+  --note-card-title: #18181b;
+  --note-card-title-letter-spacing: -0.015em;
+  --note-card-preview: #3f3f46;
+  --note-card-muted: #71717a;
+  --note-card-actions-border: #e4e4e7;
+  --note-card-actions-surface: #fafafa;
+  --note-card-action: #71717a;
   --note-card-action-hover: var(--primary-accent-text);
   --note-card-action-hover-surface: var(--primary-accent-soft);
   --note-card-action-danger: #dc2626;
   --note-card-action-danger-surface: #fef2f2;
-  --note-card-action-disabled: #cbd5e1;
+  --note-card-action-disabled: #d4d4d8;
   --primary-button-text: #ffffff;
   --focus-color: var(--primary-accent);
-  --focus-radius: 0.7rem;
+  --focus-radius: 0.625rem;
   --interaction-duration: 160ms;
-  --interaction-easing: cubic-bezier(0.2, 0, 0, 1);
-  --toast-surface: #fffaf0;
-  --toast-border: #e6d6aa;
-  --toast-text: #4e3a10;
-  --toast-status-surface: #f3e3b5;
-  --toast-status-icon: #705108;
-  --toast-action: #785400;
-  --toast-action-hover: #533900;
+  --interaction-easing: cubic-bezier(0.16, 1, 0.3, 1);
+  --toast-surface: #ffffff;
+  --toast-border: #e4e4e7;
+  --toast-text: #18181b;
+  --toast-status-surface: #fdf5db;
+  --toast-status-icon: #9e6b02;
+  --toast-action: #9e6b02;
+  --toast-action-hover: #805600;
   --toast-focus: #9e6b02;
-  --toast-shadow: 0 12px 30px rgb(96 72 20 / 15%);
-  --toast-error-surface: #fff7f7;
-  --toast-error-border: #eccbd0;
-  --toast-error-text: #7c2636;
-  --toast-error-status-surface: #f8dde1;
-  --toast-error-status-icon: #9b2f43;
-  --toast-error-action: #8c2035;
-  --toast-error-action-hover: #681526;
-  --toast-error-focus: #a32e43;
+  --toast-shadow: 0 10px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --toast-error-surface: #fef2f2;
+  --toast-error-border: #fecaca;
+  --toast-error-text: #991b1b;
+  --toast-error-status-surface: #fee2e2;
+  --toast-error-status-icon: #dc2626;
+  --toast-error-action: #dc2626;
+  --toast-error-action-hover: #b91c1c;
+  --toast-error-focus: #dc2626;
 }
 
 html[data-theme="light"] {
-  background: #f8fafc;
-  color: #0f172a;
+  background: #fafafa;
+  color: #18181b;
 }
 
 html[data-theme="light"] body {
-  background: #f8fafc;
-  color: #0f172a;
+  background: #fafafa;
+  color: #18181b;
   font-family: var(--font-sans);
 }
 
 html[data-theme="light"] ::selection {
-  color: #4e3500;
-  background: #f2d184;
+  color: #805600;
+  background: #fcebc2;
 }
 
 html[data-theme="light"] .sidebar {
-  border-color: #e2e8f0;
-  background: #ffffff;
+  border-color: #e4e4e7;
+  background: #fafafa;
 }
 
 html[data-theme="light"] .sidebar-toggle-btn {
-  border-color: #e2e8f0;
-  color: #94a3b8;
-  background: #f8fafc;
+  border-color: #e4e4e7;
+  color: #71717a;
+  background: #ffffff;
 }
 
 html[data-theme="light"] .sidebar-toggle-btn:hover {
-  color: #0f172a;
-  background: #f1f5f9;
-  border-color: #cbd5e1;
+  color: #18181b;
+  background: #f4f4f5;
+  border-color: #d4d4d8;
 }
 
 html[data-theme="light"] .brand strong {
   font-family: var(--font-display);
-  color: #0f172a;
+  color: #18181b;
 }
 
 html[data-theme="light"] .brand small,
 html[data-theme="light"] .filter-heading,
 html[data-theme="light"] .filter-section-title h2 {
-  color: #64748b;
+  color: #71717a;
 }
 
 html[data-theme="light"] .storage-status {
-  border-color: var(--backup-health-border, #e2e8f0);
-  color: var(--backup-health-text, #334155);
-  background: var(--backup-health-surface, #f8fafc);
+  border-color: var(--backup-health-border, #e4e4e7);
+  color: var(--backup-health-text, #3f3f46);
+  background: var(--backup-health-surface, #ffffff);
 }
 
 /* Selected navigation items reserve a transparent border so active states do
@@ -128,7 +129,7 @@ html[data-theme="light"] :where(.space-link, .sidebar-filter).is-active {
   border-color: var(--primary-accent-border);
   color: var(--primary-accent-text);
   background: var(--primary-accent-soft);
-  font-weight: 600;
+  font-weight: 550;
 }
 
 html[data-theme="light"] :where(.space-link, .sidebar-filter).is-active .filter-count {
@@ -153,11 +154,11 @@ html[data-theme="light"] .space-link--trash.is-active {
 
 html[data-theme="light"] .topbar h1 {
   font-family: var(--font-display);
-  color: #0f172a;
+  color: #18181b;
 }
 
 html[data-theme="light"] .search-field input {
-  border-color: var(--note-card-border, #e2e8f0);
+  border-color: var(--note-card-border, #e4e4e7);
   box-shadow: var(--form-control-resting-shadow);
 }
 
@@ -191,10 +192,10 @@ html[data-theme="light"] .note-card:hover .note-card__title {
 
 html[data-theme="light"] .quick-view-document-header h1 {
   font-family: var(--font-display);
-  color: #0f172a;
+  color: #18181b;
 }
 
-/* Classic Light Theme Toggle Icon */
+/* Light Theme Toggle Icon */
 html[data-theme="light"] .theme-toggle__icon--sun {
   display: inline-flex !important;
 }

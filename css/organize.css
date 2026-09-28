@@ -13,9 +13,9 @@
   --management-search-resting-shadow: 0 1px 2px rgb(0 0 0 / 4%);
   --management-row-input-resting-border: #cbd5e1;
   --management-row-input-resting-shadow: none;
-  --theme-swatch-light-paper: #fffdf8;
+  --theme-swatch-light-paper: #ffffff;
   --theme-swatch-light-accent: #9e6b02;
-  --theme-swatch-light-rule: #ded5c4;
+  --theme-swatch-light-rule: #e4e4e7;
   --theme-swatch-coffee-paper: #faf5ee;
   --theme-swatch-coffee-accent: #a35616;
   --theme-swatch-coffee-rule: #dfcdb8;
@@ -25,9 +25,9 @@
   --theme-swatch-midnight-paper: #0f1b2d;
   --theme-swatch-midnight-accent: #4aa8ed;
   --theme-swatch-midnight-rule: #29415f;
-  --theme-swatch-dark-paper: #1e1e1e;
+  --theme-swatch-dark-paper: #09090b;
   --theme-swatch-dark-accent: #c48828;
-  --theme-swatch-dark-rule: #51442e;
+  --theme-swatch-dark-rule: #27272a;
   --theme-swatch-auto-paper: var(--theme-swatch-light-paper);
   --theme-swatch-auto-accent: var(--theme-swatch-dark-paper);
   --theme-swatch-auto-rule: #9aa0a6;

@@ -11,15 +11,15 @@
  * editor, and reading surfaces without changing any note data or interaction
  * contracts. */
 ::selection {
-  color: #6b4700;
-  background: #fae4a4;
+  color: var(--primary-accent-text, #805600);
+  background: var(--primary-accent-soft-hover, #fcebc2);
 }
 
 
 
 .sidebar {
-  border-color: #e2e8f0;
-  background: #ffffff;
+  border-color: var(--border-subtle, #e4e4e7);
+  background: var(--surface-page, #fafafa);
 }
 
 

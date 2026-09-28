@@ -303,7 +303,7 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
         coffee: "#a35616",
         forest: "#2f6b4f",
         "midnight": "#18263f",
-        dark: "#0b0f19",
+        dark: "#09090b",
         retro: "#2f5b3e",
       };
       themeColorMeta.content = themeColors[theme] || themeColors.light;
