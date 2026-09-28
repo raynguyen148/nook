@@ -336,3 +336,30 @@ html[data-input-modality="keyboard"]
 .theme-toggle__icon--moon {
   display: none;
 }
+
+
+
+@media (prefers-reduced-motion: reduce) {
+  :where(
+    button,
+    [role="button"],
+    .button,
+    .icon-button,
+    .note-card__action,
+    .note-card__pin-toggle,
+    .space-link,
+    .sidebar-filter,
+    .tag-chip,
+    .tag-filter-option,
+    .pagination-button,
+    .view-mode-button,
+    .note-editor-mode__button,
+    .note-formatting-tool__button,
+    .clear-search,
+    .tag-add-button,
+    .detail-back-button,
+    .note-card
+  ):active {
+    transform: none !important;
+  }
+}

@@ -433,7 +433,7 @@ html[data-theme="retro"] .search-field input::placeholder {
   color: var(--retro-search-hint);
   opacity: 1;
 }
-html[data-theme="retro"] :where(input:not([type]), input[type="text"], input[type="search"], input[type="email"], input[type="url"], textarea, select, .color-picker__trigger):focus-visible,
+html[data-theme="retro"] :where(input:not([type]), input[type="text"], input[type="search"], input[type="email"], input[type="url"], textarea, select, .color-picker__trigger):is(:focus, :focus-visible),
 html[data-theme="retro"] .tag-picker:focus-within {
   border-color: var(--retro-accent) !important;
   outline: 2px solid var(--retro-accent) !important;

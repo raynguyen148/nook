@@ -181,11 +181,11 @@ select::-ms-expand {
   min-height: var(--control-height);
   padding: 0 4.75rem 0 2.25rem;
   font-size: 0.84rem;
-  border: 1px solid transparent;
+  border: 1px solid var(--note-card-border, #cbd5e1);
   border-radius: var(--control-radius);
-  color: #0f172a;
-  background: #fff;
-  box-shadow: none;
+  color: var(--note-card-title, #0f172a);
+  background: var(--component-surface, #fff);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 4%);
   letter-spacing: -0.005em;
   transition:
     background-color var(--motion-duration-short) var(--motion-ease-out),
@@ -194,9 +194,9 @@ select::-ms-expand {
 }
 
 .search-field input:focus {
-  background: #ffffff;
-  border-color: #cbd5e1;
-  box-shadow: 0 0 0 3px rgb(158 107 2 / 10%);
+  background: var(--component-surface, #ffffff);
+  border-color: var(--border-focus, #9e6b02);
+  box-shadow: 0 0 0 3px var(--focus-ring-soft, rgb(158 107 2 / 18%));
   outline: 0;
 }
 
@@ -321,6 +321,14 @@ select::-ms-expand {
 
 
 
+.clear-search:active {
+  transform: translateY(-50%) scale(0.92);
+  transition-duration: 80ms;
+  transition-timing-function: cubic-bezier(0.2, 0, 0, 1);
+}
+
+
+
 .sort-field {
   display: inline-flex;
   align-items: center;
@@ -380,10 +388,22 @@ select::-ms-expand {
   line-height: 1.2;
   text-align: left;
   cursor: pointer;
+  transform-origin: center center;
   transition:
     background-color var(--motion-duration-short) var(--motion-ease-out),
     border-color var(--motion-duration-short) var(--motion-ease-out),
-    color var(--motion-duration-short) var(--motion-ease-out);
+    box-shadow var(--motion-duration-short) var(--motion-ease-out),
+    color var(--motion-duration-short) var(--motion-ease-out),
+    transform var(--motion-duration-short) var(--motion-ease-out);
+}
+
+
+
+.sort-field__trigger:active {
+  transform: scale(0.975);
+  box-shadow: none;
+  transition-duration: 80ms;
+  transition-timing-function: cubic-bezier(0.2, 0, 0, 1);
 }
 
 
@@ -446,9 +466,19 @@ select::-ms-expand {
   line-height: 1.2;
   text-align: left;
   cursor: pointer;
+  transform-origin: center center;
   transition:
     background-color var(--motion-duration-short) var(--motion-ease-out),
-    color var(--motion-duration-short) var(--motion-ease-out);
+    color var(--motion-duration-short) var(--motion-ease-out),
+    transform var(--motion-duration-short) var(--motion-ease-out);
+}
+
+
+
+.sort-field__option:active {
+  transform: scale(0.98);
+  transition-duration: 80ms;
+  transition-timing-function: cubic-bezier(0.2, 0, 0, 1);
 }
 
 
@@ -523,11 +553,20 @@ select::-ms-expand {
   color: #64748b;
   background: transparent;
   cursor: pointer;
+  transform-origin: center center;
   transition:
     color var(--interaction-duration) var(--interaction-easing),
     background-color var(--interaction-duration) var(--interaction-easing),
     box-shadow var(--interaction-duration) var(--interaction-easing),
-    transform var(--motion-duration-micro) var(--motion-ease-out);
+    transform var(--motion-duration-short) var(--motion-ease-out);
+}
+
+
+
+.view-mode-button:active:not(:disabled) {
+  transform: scale(0.92);
+  transition-duration: 80ms;
+  transition-timing-function: cubic-bezier(0.2, 0, 0, 1);
 }
 
 
@@ -1289,6 +1328,20 @@ select::-ms-expand {
 
 .tag-chip {
   cursor: pointer;
+  transform-origin: center center;
+  transition:
+    color var(--motion-duration-short) var(--motion-ease-out),
+    background-color var(--motion-duration-short) var(--motion-ease-out),
+    border-color var(--motion-duration-short) var(--motion-ease-out),
+    transform var(--motion-duration-short) var(--motion-ease-out);
+}
+
+
+
+.tag-chip:active {
+  transform: scale(0.95);
+  transition-duration: 80ms;
+  transition-timing-function: cubic-bezier(0.2, 0, 0, 1);
 }
 
 
@@ -1332,6 +1385,19 @@ select::-ms-expand {
   padding: 0.3rem;
   color: var(--note-card-action, #475467);
   background: transparent;
+  transform-origin: center center;
+  transition:
+    color var(--motion-duration-short) var(--motion-ease-out),
+    background-color var(--motion-duration-short) var(--motion-ease-out),
+    transform var(--motion-duration-short) var(--motion-ease-out);
+}
+
+
+
+.note-card__action:active:not(:disabled) {
+  transform: scale(0.92);
+  transition-duration: 80ms;
+  transition-timing-function: cubic-bezier(0.2, 0, 0, 1);
 }
 
 
@@ -1433,9 +1499,12 @@ select::-ms-expand {
 
 
 
+.note-card__pin-toggle:active:not(:disabled),
 .note-card--pinned .note-card__pin-toggle:active,
 .note-card--pinned .note-card__pin-toggle.is-active {
-  transform: translateY(1px);
+  transform: scale(0.92);
+  transition-duration: 80ms;
+  transition-timing-function: cubic-bezier(0.2, 0, 0, 1);
 }
 
 
@@ -1557,10 +1626,19 @@ html .note-card.note-card--pinned[data-state="success"] {
   background: transparent;
   font-size: 1.45rem;
   line-height: 1;
+  transform-origin: center center;
   transition:
     color var(--motion-duration-short) var(--motion-ease-out),
     background-color var(--motion-duration-short) var(--motion-ease-out),
-    transform var(--motion-duration-micro) var(--motion-ease-out);
+    transform var(--motion-duration-short) var(--motion-ease-out);
+}
+
+
+
+.icon-button:active:not(:disabled) {
+  transform: scale(0.92);
+  transition-duration: 80ms;
+  transition-timing-function: cubic-bezier(0.2, 0, 0, 1);
 }
 
 
@@ -1694,6 +1772,13 @@ html .note-card.note-card--pinned[data-state="success"] {
   background: transparent;
   font-size: 0.75rem;
   font-weight: 680;
+  transform-origin: center center;
+  transition:
+    color var(--motion-duration-short) var(--motion-ease-out),
+    background-color var(--motion-duration-short) var(--motion-ease-out),
+    border-color var(--motion-duration-short) var(--motion-ease-out),
+    box-shadow var(--motion-duration-short) var(--motion-ease-out),
+    transform var(--motion-duration-short) var(--motion-ease-out);
 }
 
 
@@ -1702,6 +1787,15 @@ html .note-card.note-card--pinned[data-state="success"] {
   border-color: #e0e3ec;
   color: #4b566a;
   background: #f6f7f9;
+}
+
+
+
+.pagination-button:active:not(:disabled) {
+  transform: scale(0.93);
+  box-shadow: none;
+  transition-duration: 80ms;
+  transition-timing-function: cubic-bezier(0.2, 0, 0, 1);
 }
 
 

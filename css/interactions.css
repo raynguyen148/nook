@@ -1154,7 +1154,6 @@ html body .note-markdown-help__trigger:focus-visible {
 
 /* Compact form controls use the shared keyboard ring only. Their focused
  * border and glow otherwise create a second visible outline. */
-html body .search-field input:focus-visible,
 html body .sort-field select:focus-visible,
 html body .management-row input:focus-visible,
 html body .management-search input:focus-visible {
@@ -1164,13 +1163,10 @@ html body .management-search input:focus-visible {
 
 
 
-/* Pointer focus should keep the resting control treatment. Chrome can match
- * :focus-visible for native form controls after a click, so the app tracks
- * Tab versus pointer modality explicitly for these controls. */
+/* Pointer focus keeps crisp theme border and accent glow instead of dropping outlines. */
 html:not([data-input-modality="keyboard"]) body .search-field input:focus {
-  border-color: transparent !important;
-  background-color: var(--form-control-resting-background) !important;
-  box-shadow: none !important;
+  border-color: var(--border-focus, var(--primary-accent)) !important;
+  box-shadow: 0 0 0 3px var(--focus-ring-soft, var(--primary-accent-focus)) !important;
   outline: none !important;
 }
 
@@ -1223,7 +1219,13 @@ html:not([data-input-modality="keyboard"])
 
 
 
-html[data-input-modality="keyboard"] body .search-field input:focus,
+html[data-input-modality="keyboard"] body .search-field input:focus {
+  border-color: var(--border-focus, var(--primary-accent)) !important;
+  box-shadow: 0 0 0 3px var(--focus-ring-soft, var(--primary-accent-focus)) !important;
+  outline: 2px solid var(--focus-color) !important;
+  outline-offset: 2px !important;
+}
+
 html[data-input-modality="keyboard"] body .sort-field select:focus,
 html[data-input-modality="keyboard"] body .management-row input:focus,
 html[data-input-modality="keyboard"] body .management-search input:focus {
@@ -1394,5 +1396,223 @@ html:not([data-input-modality="keyboard"]) body .note-dialog .tag-picker:focus-w
 .note-editor-mode__button:disabled,
 .note-formatting-tool__button:disabled,
 .tag-add-button:disabled {
+  cursor: not-allowed;
+}
+
+
+
+/* ==========================================================================
+   Tactile Press & ShadCN-style Click Feedback
+   ========================================================================== */
+
+/* Universal tactile baseline for all interactive, button and clickable elements */
+:where(
+  button,
+  [role="button"],
+  .button,
+  .icon-button,
+  .text-button,
+  .space-link,
+  .sidebar-filter,
+  .tag-chip,
+  .tag-filter-option,
+  .pagination-button,
+  .organize-tab,
+  .view-mode-button,
+  .note-editor-mode__button,
+  .note-formatting-tool__button,
+  .note-card__action,
+  .note-card__pin-toggle,
+  .note-type-picker__trigger,
+  .color-picker__trigger,
+  .theme-picker__trigger,
+  .sort-field__trigger,
+  .mobile-navigation__item,
+  .mobile-card-action-item,
+  .mobile-space-option,
+  .mobile-type-chip,
+  .tag-suggestion,
+  .toast__action,
+  .clear-search,
+  .tag-add-button,
+  .detail-back-button,
+  .quick-view-header-toggle,
+  .mobile-filter-toggle
+) {
+  transform-origin: center center;
+  transition-property: color, background-color, border-color, box-shadow, transform;
+  transition-duration: var(--motion-duration-short);
+  transition-timing-function: var(--motion-ease-out);
+}
+
+/* Medium & standard controls: 0.97 scale press-down */
+:where(
+  .button,
+  .text-button,
+  .space-link,
+  .sidebar-filter,
+  .pagination-button,
+  .organize-tab,
+  .note-editor-mode__button,
+  .note-type-picker__trigger,
+  .color-picker__trigger,
+  .theme-picker__trigger,
+  .sort-field__trigger,
+  .mobile-space-option,
+  .mobile-type-chip,
+  .mobile-card-action-item,
+  .tag-suggestion,
+  .toast__action,
+  input[type="button"],
+  input[type="submit"],
+  input[type="reset"],
+  button:not(.icon-button):not(.note-formatting-tool__button):not(.note-card__action):not(.note-card__pin-toggle):not(.clear-search):not(.tag-add-button):not(.selected-tag__remove):not(.active-filter-pill__clear):not(.mobile-card-more):not(.sidebar-toggle-btn):not(.detail-back-button):not(.quick-view-header-toggle):not(.mobile-navigation__item)
+):active:not(:disabled):not([aria-disabled="true"]):not(.is-disabled) {
+  transform: scale(0.97);
+  transition-duration: 80ms;
+  transition-timing-function: cubic-bezier(0.2, 0, 0, 1);
+}
+
+/* Tag chips & filter options: 0.95 scale press-down */
+:where(
+  .tag-chip,
+  .tag-filter-option
+):active:not(:disabled):not([aria-disabled="true"]):not(.is-disabled) {
+  transform: scale(0.95);
+  transition-duration: 80ms;
+  transition-timing-function: cubic-bezier(0.2, 0, 0, 1);
+}
+
+/* Compact & icon buttons: 0.92 scale press-down */
+:where(
+  .icon-button,
+  .note-formatting-tool__button,
+  .note-card__action,
+  .note-card__pin-toggle,
+  .tag-add-button,
+  .selected-tag button,
+  .selected-tag__remove,
+  .active-filter-pill__clear,
+  .mobile-card-more,
+  .sidebar-toggle-btn,
+  .detail-back-button,
+  .quick-view-header-toggle,
+  .mobile-filter-toggle,
+  .mobile-navigation__item,
+  .note-save-shortcut__trigger,
+  .note-markdown-help__trigger,
+  .note-delete-button,
+  .view-mode-button
+):active:not(:disabled):not([aria-disabled="true"]):not(.is-disabled) {
+  transform: scale(0.92);
+  transition-duration: 80ms;
+  transition-timing-function: cubic-bezier(0.2, 0, 0, 1);
+}
+
+/* Specific elements preserving vertical centering layout transforms */
+.clear-search:active:not(:disabled) {
+  transform: translateY(-50%) scale(0.92);
+  transition-duration: 80ms;
+  transition-timing-function: cubic-bezier(0.2, 0, 0, 1);
+}
+
+#mobile-search-slot .clear-search:active:not(:disabled) {
+  transform: scale(0.92);
+  transition-duration: 80ms;
+  transition-timing-function: cubic-bezier(0.2, 0, 0, 1);
+}
+
+.mobile-navigation__new:active:not(:disabled),
+#mobile-nav-new:active:not(:disabled) {
+  transform: translateY(-0.55rem) scale(0.91);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.16);
+  transition-duration: 80ms;
+  transition-timing-function: cubic-bezier(0.2, 0, 0, 1);
+}
+
+/* Subtle physical press on card when clicking its body */
+.note-card:active:not(:has(button:active)):not(:has(input:active)) {
+  transform: scale(0.99);
+  transition-duration: 80ms;
+  transition-timing-function: cubic-bezier(0.2, 0, 0, 1);
+}
+
+/* Depressed depth - flatten box-shadows on active */
+.button-primary:active:not(:disabled) {
+  box-shadow: 0 1px 2px var(--primary-accent-shadow);
+}
+
+.button-secondary:active:not(:disabled) {
+  box-shadow: none;
+}
+
+.button-danger:active:not(:disabled) {
+  box-shadow: 0 1px 2px rgb(220 38 38 / 20%);
+}
+
+.notes-panel .pagination-button:active:not(:disabled) {
+  box-shadow: none;
+}
+
+.view-mode-button[aria-pressed="true"]:active {
+  box-shadow: 0 0 1px rgb(0 0 0 / 6%);
+}
+
+.sort-field__trigger:active {
+  box-shadow: none;
+}
+
+/* Dropdown listbox options press feedback */
+:where(
+  .sort-field__option,
+  .note-type-picker__option,
+  .color-picker__option,
+  .theme-picker__option
+):active {
+  transform: scale(0.98);
+  transition-duration: 80ms;
+  transition-timing-function: cubic-bezier(0.2, 0, 0, 1);
+  background-color: var(--primary-accent-soft);
+}
+
+/* Guard: disabled interactive elements never scale */
+:where(
+  button,
+  [role="button"],
+  .button,
+  .icon-button,
+  .note-card__action,
+  .note-card__pin-toggle,
+  .space-link,
+  .sidebar-filter,
+  .tag-chip,
+  .tag-filter-option,
+  .pagination-button,
+  .view-mode-button,
+  .note-editor-mode__button,
+  .note-formatting-tool__button,
+  .tag-add-button,
+  .detail-back-button
+):is(:disabled, [aria-disabled="true"], .is-disabled),
+:where(
+  button,
+  [role="button"],
+  .button,
+  .icon-button,
+  .note-card__action,
+  .note-card__pin-toggle,
+  .space-link,
+  .sidebar-filter,
+  .tag-chip,
+  .tag-filter-option,
+  .pagination-button,
+  .view-mode-button,
+  .note-editor-mode__button,
+  .note-formatting-tool__button,
+  .tag-add-button,
+  .detail-back-button
+):is(:disabled, [aria-disabled="true"], .is-disabled):active {
+  transform: none !important;
+  box-shadow: none;
   cursor: not-allowed;
 }

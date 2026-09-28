@@ -162,8 +162,8 @@ html[data-theme="light"] .search-field input {
 }
 
 html[data-theme="light"]:not([data-input-modality="keyboard"]) body .search-field input:focus {
-  border-color: var(--note-card-border, #e2e8f0) !important;
-  box-shadow: var(--form-control-resting-shadow) !important;
+  border-color: var(--primary-accent) !important;
+  box-shadow: 0 0 0 3px var(--primary-accent-focus) !important;
 }
 
 html[data-theme="light"] .note-card--pinned {

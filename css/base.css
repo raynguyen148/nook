@@ -322,11 +322,13 @@ select:focus-visible {
   color: #94a3b8;
   background: #f8fafc;
   opacity: 0;
+  transform-origin: center center;
   transition:
     color var(--motion-duration-short) var(--motion-ease-out),
     background-color var(--motion-duration-short) var(--motion-ease-out),
     border-color var(--motion-duration-short) var(--motion-ease-out),
-    opacity var(--motion-duration-short) var(--motion-ease-out);
+    opacity var(--motion-duration-short) var(--motion-ease-out),
+    transform var(--motion-duration-short) var(--motion-ease-out);
 }
 
 
@@ -342,6 +344,14 @@ select:focus-visible {
   color: #0f172a;
   background: #f1f5f9;
   border-color: #cbd5e1;
+}
+
+
+
+.sidebar-toggle-btn:active {
+  transform: scale(0.92);
+  transition-duration: 80ms;
+  transition-timing-function: cubic-bezier(0.2, 0, 0, 1);
 }
 
 
@@ -562,9 +572,11 @@ select:focus-visible {
   background: transparent;
   text-align: left;
   font-size: 0.82rem;
+  transform-origin: center center;
   transition:
     color var(--motion-duration-short) var(--motion-ease-out),
-    background-color var(--motion-duration-short) var(--motion-ease-out);
+    background-color var(--motion-duration-short) var(--motion-ease-out),
+    transform var(--motion-duration-short) var(--motion-ease-out);
 }
 
 
@@ -572,6 +584,14 @@ select:focus-visible {
 .space-link:hover {
   color: #0f172a;
   background: #f1f5f9;
+}
+
+
+
+.space-link:active {
+  transform: scale(0.97);
+  transition-duration: 80ms;
+  transition-timing-function: cubic-bezier(0.2, 0, 0, 1);
 }
 
 
@@ -617,10 +637,11 @@ select:focus-visible {
   background: transparent;
   text-align: left;
   font-size: 0.82rem;
+  transform-origin: center center;
   transition:
     color var(--motion-duration-short) var(--motion-ease-out),
     background-color var(--motion-duration-short) var(--motion-ease-out),
-    transform var(--motion-duration-micro) var(--motion-ease-out);
+    transform var(--motion-duration-short) var(--motion-ease-out);
 }
 
 
@@ -628,6 +649,14 @@ select:focus-visible {
 .sidebar-filter:hover {
   color: #0f172a;
   background: #f1f5f9;
+}
+
+
+
+.sidebar-filter:active {
+  transform: scale(0.97);
+  transition-duration: 80ms;
+  transition-timing-function: cubic-bezier(0.2, 0, 0, 1);
 }
 
 
@@ -928,11 +957,13 @@ select:focus-visible {
   font-size: 0.68rem;
   font-weight: 600;
   line-height: 1.2;
+  transform-origin: center center;
   transition:
     color var(--motion-duration-short) var(--motion-ease-out),
     border-color var(--motion-duration-short) var(--motion-ease-out),
     background-color var(--motion-duration-short) var(--motion-ease-out),
-    box-shadow var(--motion-duration-short) var(--motion-ease-out);
+    box-shadow var(--motion-duration-short) var(--motion-ease-out),
+    transform var(--motion-duration-short) var(--motion-ease-out);
 }
 
 
@@ -941,6 +972,14 @@ select:focus-visible {
   border-color: #cbd5e1;
   color: #0f172a;
   background: #f1f5f9;
+}
+
+
+
+.tag-filter-option:active {
+  transform: scale(0.95);
+  transition-duration: 80ms;
+  transition-timing-function: cubic-bezier(0.2, 0, 0, 1);
 }
 
 
@@ -1165,12 +1204,13 @@ h2 {
   font-weight: 650;
   letter-spacing: -0.005em;
   line-height: 1.2;
+  transform-origin: center center;
   transition:
     color var(--motion-duration-short) var(--motion-ease-out),
     background-color var(--motion-duration-short) var(--motion-ease-out),
     border-color var(--motion-duration-short) var(--motion-ease-out),
     box-shadow var(--motion-duration-short) var(--motion-ease-out),
-    transform var(--motion-duration-micro) var(--motion-ease-out);
+    transform var(--motion-duration-short) var(--motion-ease-out);
 }
 
 
@@ -1183,9 +1223,8 @@ h2 {
 
 .button:active:not(:disabled) {
   transform: scale(0.97);
-  opacity: 0.85;
-  transition-duration: var(--motion-duration-extra-short);
-  transition-timing-function: var(--motion-ease-in);
+  transition-duration: 80ms;
+  transition-timing-function: cubic-bezier(0.2, 0, 0, 1);
 }
 
 
@@ -1214,6 +1253,12 @@ h2 {
 
 
 
+.button-primary:active:not(:disabled) {
+  box-shadow: 0 1px 2px rgb(158 107 2 / 20%);
+}
+
+
+
 .button-secondary {
   border-color: var(--component-border-strong);
   color: var(--component-text);
@@ -1232,6 +1277,12 @@ h2 {
 
 
 
+.button-secondary:active:not(:disabled) {
+  box-shadow: none;
+}
+
+
+
 .button-danger {
   border-color: var(--danger-border);
   color: var(--danger-text);
@@ -1245,6 +1296,12 @@ h2 {
   color: #ffffff;
   background: #dc2626;
   box-shadow: 0 4px 12px rgb(220 38 38 / 20%);
+}
+
+
+
+.button-danger:active:not(:disabled) {
+  box-shadow: 0 1px 2px rgb(220 38 38 / 20%);
 }
 
 
