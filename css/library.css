@@ -574,6 +574,10 @@
   animation: topbar-actions-pin-in var(--motion-duration-medium) var(--motion-ease-out);
 }
 
+.topbar-actions.is-pinned::before {
+  display: none;
+}
+
 
 
 .topbar-actions.is-pinned,
