@@ -37,6 +37,7 @@ export interface EditorPaneProps {
   types: NoteType[]
   tags: Tag[]
   isActive: boolean
+  className?: string
   showHeader?: boolean
   headerLeading?: ReactNode
   headerTrailing?: ReactNode

@@ -7,52 +7,65 @@
 .nook-mobile-settings-home, .nook-mobile-settings-back, .nook-mobile-settings-nav { display: none; }
 .nook-settings-layout { display: grid; min-height: 0; flex: 1; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); gap: 0; }
 .nook-settings-nav {
-  display: flex;
-  width: auto;
-  align-self: stretch;
-  gap: 0;
-  margin: 1.25rem 1.25rem 0;
-  padding: 0.2rem;
-  border-radius: 9999px;
-  background: color-mix(in oklch, var(--muted) 88%, var(--card));
-  box-shadow: inset 0 0 0 1px color-mix(in oklch, var(--border) 72%, transparent);
+  display: inline-flex;
+  width: fit-content;
+  max-width: calc(100% - 2.5rem);
+  align-self: flex-start;
+  gap: 0.25rem;
+  margin: 1.25rem 1.25rem 0.25rem;
+  padding: 0.25rem;
+  border-radius: var(--radius-lg);
+  background: var(--muted);
+  border: 1px solid var(--border);
+  box-shadow: inset 0 1px 1px color-mix(in srgb, var(--foreground) 3%, transparent);
+  overflow-x: auto;
+  scrollbar-width: none;
 }
-.dark .nook-settings-nav {
-  background: var(--card);
+.nook-settings-nav::-webkit-scrollbar {
+  display: none;
 }
 .nook-settings-nav [data-slot='tabs-trigger'] {
   position: relative;
   display: inline-flex;
   min-width: 0;
-  flex: 1 1 0;
+  flex: none;
   align-items: center;
   justify-content: center;
-  min-height: 1.95rem;
+  min-height: 2rem;
   border: 0;
-  border-radius: 9999px;
-  padding: 0.32rem 0.5rem;
-  font-size: 0.82rem;
-  font-weight: 600;
-  line-height: 1.15;
+  border-radius: calc(var(--radius-lg) - 0.2rem);
+  padding: 0.35rem 0.85rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  line-height: 1.2;
   color: var(--muted-foreground);
   background: transparent;
-  transition: color var(--dur-micro) var(--ease-out), background-color var(--dur-micro) var(--ease-out), box-shadow var(--dur-micro) var(--ease-out);
+  cursor: pointer;
   white-space: nowrap;
+  user-select: none;
+  transition: color var(--dur-micro) var(--ease-out),
+              background-color var(--dur-micro) var(--ease-out),
+              box-shadow var(--dur-micro) var(--ease-out),
+              transform var(--dur-micro) var(--ease-out);
 }
 .nook-settings-nav [data-slot='tabs-trigger']:hover {
   color: var(--foreground);
-  background: color-mix(in oklch, var(--card) 72%, transparent);
+  background: color-mix(in srgb, var(--foreground) 5%, transparent);
 }
 .nook-settings-nav [data-slot='tabs-trigger'][data-active] {
-  color: var(--foreground);
+  color: var(--card-foreground);
+  font-weight: 600;
   background: var(--card);
-  box-shadow: 0 1px 2px color-mix(in oklch, var(--foreground) 11%, transparent), inset 0 0 0 1px color-mix(in oklch, var(--foreground) 4%, transparent);
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--foreground) 7%, transparent),
+              0 0 0 1px color-mix(in srgb, var(--border) 60%, transparent);
 }
-.nook-settings-nav [data-slot='tabs-trigger']:focus-visible { z-index: 1; outline: 2px solid var(--ring); outline-offset: 2px; }
-.dark .nook-settings-nav [data-slot='tabs-trigger'][data-active] {
-  color: var(--foreground);
-  background: var(--muted);
-  box-shadow: inset 0 0 0 1px color-mix(in oklch, var(--foreground) 12%, transparent), 0 1px 2px color-mix(in oklch, var(--foreground) 28%, transparent);
+.nook-settings-nav [data-slot='tabs-trigger']:active {
+  transform: scale(0.97);
+}
+.nook-settings-nav [data-slot='tabs-trigger']:focus-visible {
+  z-index: 1;
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
 }
 .nook-settings-nav-chevron { display: none; }
 .nook-settings-content { position: relative; display: flex; min-width: 0; min-height: 0; flex-direction: column; overflow: hidden; }

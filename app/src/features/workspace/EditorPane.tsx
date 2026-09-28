@@ -1,24 +1,32 @@
 import { useLayoutEffect, useRef, useState, type ReactNode } from 'react'
 import {
+  Bold,
+  Braces,
   Clock3,
+  Code,
   Copy,
   Download,
   Hash,
+  Heading,
+  Italic,
   Keyboard,
+  List,
+  ListOrdered,
   Plus,
   Save,
+  SquareCheck,
+  Strikethrough,
+  Table,
   Trash2,
+  TriangleAlert,
   X,
 } from 'lucide-react'
 import {
-  AlertFormatIcon,
   CheckIcon,
   EditModeIcon,
   FootnoteFormatIcon,
   PreviewModeIcon,
   SplitModeIcon,
-  TableFormatIcon,
-  TaskFormatIcon,
 } from '@/components/NookIcons'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -81,7 +89,12 @@ export function WorkspaceModeSwitch({ mode, paneLabel, onModeChange }: { mode: W
               {icon}<span>{label}</span>
             </Button>
           } />
-          <TooltipContent role="tooltip">{tooltip} · {shortcut}</TooltipContent>
+          <TooltipContent role="tooltip">
+            <span className="inline-flex items-center gap-2">
+              <span>{tooltip}</span>
+              <kbd>{shortcut}</kbd>
+            </span>
+          </TooltipContent>
         </Tooltip>
       ))}
     </div>
@@ -91,18 +104,18 @@ export function WorkspaceModeSwitch({ mode, paneLabel, onModeChange }: { mode: W
 function MarkdownToolbar({ onFormat }: { onFormat(command: FormattingCommand): void }) {
   const modifier = typeof navigator !== 'undefined' && /Mac|iPhone|iPad|iPod/.test(navigator.platform) ? '⌘' : 'Ctrl'
   const commands: Array<{ command: FormattingCommand; label: string; hint: string; icon: ReactNode }> = [
-    { command: 'heading', label: 'Heading', hint: 'Toggle line heading', icon: <span className="workspace-format-mark font-semibold">H</span> },
-    { command: 'bold', label: 'Bold', hint: `${modifier}+B`, icon: <span className="workspace-format-mark font-bold">B</span> },
-    { command: 'italic', label: 'Italic', hint: `${modifier}+I`, icon: <span className="workspace-format-mark italic font-serif">I</span> },
-    { command: 'strike', label: 'Strikethrough', hint: 'Wrap in ~~', icon: <span className="workspace-format-mark line-through">S</span> },
-    { command: 'code', label: 'Inline code', hint: `${modifier}+E`, icon: <span className="workspace-format-mark font-mono text-[0.72rem]">&lt;/&gt;</span> },
-    { command: 'code-block', label: 'Code block', hint: 'Wrap in fenced block', icon: <span className="workspace-format-mark font-mono">{'{ }'}</span> },
-    { command: 'bullet', label: 'Bullet list', hint: `${modifier}+Shift+8`, icon: <span className="workspace-format-mark font-mono">•≡</span> },
-    { command: 'ordered', label: 'Numbered list', hint: `${modifier}+Shift+7`, icon: <span className="workspace-format-mark font-mono">1≡</span> },
-    { command: 'task', label: 'Task list', hint: 'Prefix with task checkboxes', icon: <TaskFormatIcon className="size-3.5" /> },
-    { command: 'table', label: 'Table', hint: 'Insert Markdown table', icon: <TableFormatIcon className="size-3.5" /> },
-    { command: 'alert', label: 'Alert', hint: 'Insert note callout alert', icon: <AlertFormatIcon className="size-3.5" /> },
-    { command: 'footnote', label: 'Footnote', hint: 'Insert numbered footnote', icon: <FootnoteFormatIcon className="size-3.5" /> },
+    { command: 'heading', label: 'Heading', hint: 'Toggle line heading', icon: <Heading className="size-4" aria-hidden="true" /> },
+    { command: 'bold', label: 'Bold', hint: `${modifier}+B`, icon: <Bold className="size-4" aria-hidden="true" /> },
+    { command: 'italic', label: 'Italic', hint: `${modifier}+I`, icon: <Italic className="size-4" aria-hidden="true" /> },
+    { command: 'strike', label: 'Strikethrough', hint: 'Wrap in ~~', icon: <Strikethrough className="size-4" aria-hidden="true" /> },
+    { command: 'code', label: 'Inline code', hint: `${modifier}+E`, icon: <Code className="size-4" aria-hidden="true" /> },
+    { command: 'code-block', label: 'Code block', hint: 'Wrap in fenced block', icon: <Braces className="size-4" aria-hidden="true" /> },
+    { command: 'bullet', label: 'Bullet list', hint: `${modifier}+Shift+8`, icon: <List className="size-4" aria-hidden="true" /> },
+    { command: 'ordered', label: 'Numbered list', hint: `${modifier}+Shift+7`, icon: <ListOrdered className="size-4" aria-hidden="true" /> },
+    { command: 'task', label: 'Task list', hint: 'Prefix with task checkboxes', icon: <SquareCheck className="size-4" aria-hidden="true" /> },
+    { command: 'table', label: 'Table', hint: 'Insert Markdown table', icon: <Table className="size-4" aria-hidden="true" /> },
+    { command: 'alert', label: 'Alert', hint: 'Insert note callout alert', icon: <TriangleAlert className="size-4" aria-hidden="true" /> },
+    { command: 'footnote', label: 'Footnote', hint: 'Insert numbered footnote', icon: <FootnoteFormatIcon className="size-4" /> },
   ]
   return (
     <div className="workspace-formatting" role="toolbar" aria-label="Markdown formatting">
@@ -120,7 +133,12 @@ function MarkdownToolbar({ onFormat }: { onFormat(command: FormattingCommand): v
               {icon}
             </Button>
           } />
-          <TooltipContent role="tooltip">Toggle {label.toLowerCase()} · {hint}</TooltipContent>
+          <TooltipContent role="tooltip">
+            <span className="inline-flex items-center gap-2">
+              <span>{label}</span>
+              {hint && <kbd>{hint}</kbd>}
+            </span>
+          </TooltipContent>
         </Tooltip>
       ))}
     </div>
@@ -142,15 +160,29 @@ function ShortcutHelp({ modifier }: { modifier: string }) {
     ['Save & close', [modifier, 'Enter']],
   ] as const
 
-  return <div className="contents">
-    <strong className="workspace-help-tooltip__title">Note shortcuts</strong>
-    {rows.map(([label, keys]) => <div className="workspace-help-tooltip__row" key={label}>
-      <span>{label}</span>
-      <span className="workspace-help-tooltip__keys">{keys.map((key, index) => <span className="contents" key={`${label}-${key}`}>
-        {index > 0 && <span aria-hidden="true">+</span>}<kbd>{key}</kbd>
-      </span>)}</span>
-    </div>)}
-  </div>
+  return (
+    <div className="workspace-help-tooltip__inner">
+      <div className="workspace-help-tooltip__header">
+        <Keyboard className="size-3.5 text-primary" aria-hidden="true" />
+        <span className="workspace-help-tooltip__title">Note shortcuts</span>
+      </div>
+      <div className="workspace-help-tooltip__list">
+        {rows.map(([label, keys]) => (
+          <div className="workspace-help-tooltip__row" key={label}>
+            <span className="workspace-help-tooltip__label">{label}</span>
+            <span className="workspace-help-tooltip__keys">
+              {keys.map((key, index) => (
+                <span className="contents" key={`${label}-${key}`}>
+                  {index > 0 && <span className="workspace-help-tooltip__plus" aria-hidden="true">+</span>}
+                  <kbd>{key}</kbd>
+                </span>
+              ))}
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
 }
 
 function MarkdownHelp() {
@@ -167,15 +199,25 @@ function MarkdownHelp() {
     ['Task list', '- [ ] item'],
     ['Table', '| A | B |'],
     ['Alert', '> [!NOTE]'],
-    ['Footnote', 'Text[^1]'],
+    ['Footnote', '[^1] / [^1]: …'],
   ] as const
 
-  return <div className="contents">
-    <strong className="workspace-help-tooltip__title">Markdown guide</strong>
-    {rows.map(([label, syntax]) => <div className="workspace-help-tooltip__row" key={label}>
-      <span>{label}</span><code>{syntax}</code>
-    </div>)}
-  </div>
+  return (
+    <div className="workspace-help-tooltip__inner">
+      <div className="workspace-help-tooltip__header">
+        <Hash className="size-3.5 text-primary" aria-hidden="true" />
+        <span className="workspace-help-tooltip__title">Markdown guide</span>
+      </div>
+      <div className="workspace-help-tooltip__list">
+        {rows.map(([label, syntax]) => (
+          <div className="workspace-help-tooltip__row" key={label}>
+            <span className="workspace-help-tooltip__label">{label}</span>
+            <code>{syntax}</code>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
 }
 
 export function EditorPane({
@@ -186,6 +228,7 @@ export function EditorPane({
   types,
   tags,
   isActive,
+  className,
   showHeader = true,
   headerLeading,
   headerTrailing,
@@ -309,7 +352,7 @@ export function EditorPane({
 
   return (
     <Card
-      className={`workspace-pane workspace-pane--${mode} ${pane === 'secondary' ? 'workspace-pane--side' : ''} ${isActive ? 'is-active' : ''}`}
+      className={`workspace-pane workspace-pane--${mode} ${pane === 'secondary' ? 'workspace-pane--side' : ''} ${isActive ? 'is-active' : ''} ${className || ''}`}
       onPointerDown={onActivate}
       onFocusCapture={onActivate}
       data-pane={pane}
@@ -556,14 +599,24 @@ export function EditorPane({
                 <Save className="size-4" aria-hidden="true" /><span>Save changes</span>
               </Button>
             } />
-            <TooltipContent role="tooltip">Save and keep editing · {modifier}+Shift+S</TooltipContent>
+            <TooltipContent role="tooltip">
+              <span className="inline-flex items-center gap-2">
+                <span>Save and keep editing</span>
+                <kbd>{modifier}+Shift+S</kbd>
+              </span>
+            </TooltipContent>
           </Tooltip>}
           <Tooltip>
             <TooltipTrigger render={pane === 'primary'
               ? <Button type="button" size="sm" className="h-8 rounded-lg px-4 text-xs font-medium" onClick={() => onSave(true)}>Done</Button>
               : <Button type="button" size="sm" variant="outline" className="h-8 px-3 text-xs" onClick={onClose}>Close side note</Button>
             } />
-            <TooltipContent role="tooltip">{pane === 'primary' ? `Finish editing · ${modifier}+Enter` : 'Close Side note'}</TooltipContent>
+            <TooltipContent role="tooltip">
+              <span className="inline-flex items-center gap-2">
+                <span>{pane === 'primary' ? 'Finish editing' : 'Close Side note'}</span>
+                {pane === 'primary' && <kbd>{modifier}+Enter</kbd>}
+              </span>
+            </TooltipContent>
           </Tooltip>
         </div>
       </CardFooter>

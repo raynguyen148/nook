@@ -164,25 +164,25 @@ export function SideNoteIcon({ className = 'size-4' }: { className?: string }) {
 
 export function TaskFormatIcon({ className = 'size-4' }: { className?: string }) {
   return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.65" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <rect x="4" y="4" width="16" height="16" rx="2.2" />
-      <path d="m7.8 12.1 2.65 2.65 5.75-6.1" />
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <rect x="3.5" y="3.5" width="17" height="17" rx="2" />
+      <path d="m8 12 2.5 2.5 5.5-6" />
     </svg>
   )
 }
 
 export function TableFormatIcon({ className = 'size-4' }: { className?: string }) {
   return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.65" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <rect x="3.75" y="4.25" width="16.5" height="15.5" rx="1.8" />
-      <path d="M4.25 9.5h15.5M9.25 4.75v14.5M14.75 4.75v14.5" />
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <rect x="3" y="3" width="18" height="18" rx="2" />
+      <path d="M3 9h18M3 15h18M12 3v18" />
     </svg>
   )
 }
 
 export function AlertFormatIcon({ className = 'size-4' }: { className?: string }) {
   return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.65" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
       <path d="M12 9v4M12 17h.01" />
     </svg>
@@ -191,9 +191,11 @@ export function AlertFormatIcon({ className = 'size-4' }: { className?: string }
 
 export function FootnoteFormatIcon({ className = 'size-4' }: { className?: string }) {
   return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.65" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M5 3.75h9l5 5V20.25H5z" />
-      <path d="M14 3.75v5h5M10.1 13.35l1.45-1.2v5.1" />
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M5 4h9l5 5v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z" />
+      <path d="M14 4v5h5" />
+      <path d="M10 13.5 11.5 12.3V18" />
+      <path d="M10 18h3" />
     </svg>
   )
 }

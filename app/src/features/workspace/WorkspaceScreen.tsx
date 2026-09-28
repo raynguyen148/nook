@@ -100,6 +100,15 @@ export function WorkspaceScreen() {
   const [sideError, setSideError] = useState('')
   const [activePane, setActivePane] = useState<PaneId>('primary')
   const [sidePickerOpen, setSidePickerOpen] = useState(Boolean(workspace?.openSideNotePicker))
+  const [sideClosing, setSideClosing] = useState(false)
+  const [sidePickerClosing, setSidePickerClosing] = useState(false)
+  const [isViewSwitching, setIsViewSwitching] = useState(false)
+  const closeSideTimerRef = useRef<number | null>(null)
+  useEffect(() => {
+    return () => {
+      if (closeSideTimerRef.current) window.clearTimeout(closeSideTimerRef.current)
+    }
+  }, [])
   const [mobileActionsOpen, setMobileActionsOpen] = useState(false)
   const [sideSearch, setSideSearch] = useState('')
   const [sideNoteLayout, setSideNoteLayout] = useState<SideNoteLayoutMode>(readSideNoteLayout)
@@ -326,6 +335,10 @@ export function WorkspaceScreen() {
   }, [sidePane, sideState?.dirty, sideState?.currentDraft, savePane])
 
   const closeSidePaneNow = useCallback((discardRecovery = false) => {
+    if (closeSideTimerRef.current) {
+      window.clearTimeout(closeSideTimerRef.current)
+      closeSideTimerRef.current = null
+    }
     const session = sideSessionRef.current
     session?.dispose({ discardRecovery })
     sideSessionRef.current = null
@@ -335,8 +348,22 @@ export function WorkspaceScreen() {
     setSideError('')
     setActivePane('primary')
     setSidePickerOpen(false)
+    setSideClosing(false)
+    setSidePickerClosing(false)
     setDirtyDraftCount(Number(Boolean(primarySessionRef.current?.isDirty())))
   }, [setDirtyDraftCount])
+
+  const closeSidePaneWithAnimation = useCallback((discardRecovery = false) => {
+    if (sideClosing) return
+    const reducedMotion = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const duration = reducedMotion ? 120 : 180
+    setSideClosing(true)
+    if (closeSideTimerRef.current) window.clearTimeout(closeSideTimerRef.current)
+    closeSideTimerRef.current = window.setTimeout(() => {
+      closeSideTimerRef.current = null
+      closeSidePaneNow(discardRecovery)
+    }, duration)
+  }, [closeSidePaneNow, sideClosing])
 
   const closeWorkspaceNow = useCallback((discardRecovery = false) => {
     primarySessionRef.current?.dispose({ discardRecovery })
@@ -411,11 +438,33 @@ export function WorkspaceScreen() {
     return () => window.removeEventListener('nook:request-workspace-close', requestCloseWorkspace)
   }, [requestCloseWorkspace])
 
+  const closeSidePicker = useCallback(() => {
+    if (sidePickerClosing) return
+    if (sidePane) {
+      setIsViewSwitching(true)
+      setSidePickerOpen(false)
+      setSideSearch('')
+      window.setTimeout(() => setIsViewSwitching(false), 200)
+    } else {
+      const reducedMotion = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      const duration = reducedMotion ? 120 : 180
+      setSidePickerClosing(true)
+      window.setTimeout(() => {
+        setSidePickerClosing(false)
+        setSidePickerOpen(false)
+        setSideSearch('')
+      }, duration)
+    }
+  }, [sidePane, sidePickerClosing])
+
   const requestCloseSide = useCallback(() => {
-    if (!sideSessionRef.current) return
+    if (!sideSessionRef.current) {
+      if (sidePickerOpen) closeSidePicker()
+      return
+    }
     if (sideSessionRef.current.isDirty()) setCloseIntent('secondary')
-    else closeSidePaneNow()
-  }, [closeSidePaneNow])
+    else closeSidePaneWithAnimation()
+  }, [closeSidePaneWithAnimation, closeSidePicker, sidePickerOpen])
 
   const currentPrimaryNote = primarySession?.noteId
     ? snapshot.notes.find((note) => note.id === primarySession.noteId) || primaryNote
@@ -445,7 +494,9 @@ export function WorkspaceScreen() {
   const chooseSideNote = useCallback((note: Note, mode: 'preview' | 'edit' = 'preview') => {
     if (sidePane?.noteId === note.id) {
       setSidePane((current) => current ? { ...current, mode } : current)
+      setIsViewSwitching(true)
       setSidePickerOpen(false)
+      window.setTimeout(() => setIsViewSwitching(false), 200)
       return
     }
     if (sideSessionRef.current?.isDirty()) {
@@ -455,8 +506,16 @@ export function WorkspaceScreen() {
       setSidePickerOpen(false)
       return
     }
+    setIsViewSwitching(true)
     openSideNote(note, mode)
+    window.setTimeout(() => setIsViewSwitching(false), 200)
   }, [openSideNote, sidePane?.noteId])
+
+  const openSidePickerFromNote = useCallback(() => {
+    setIsViewSwitching(true)
+    setSidePickerOpen(true)
+    window.setTimeout(() => setIsViewSwitching(false), 200)
+  }, [])
 
   const discardRecovery = useCallback((pane: PaneId) => {
     const recovery = pane === 'primary' ? primaryRecovery : sideRecovery
@@ -510,8 +569,8 @@ export function WorkspaceScreen() {
     const saved = await savePane(pane)
     if (!saved) return
     if (pane === 'primary') closeWorkspaceNow()
-    else closeSidePaneNow()
-  }, [closeSidePaneNow, closeWorkspaceNow, savePane])
+    else closeSidePaneWithAnimation()
+  }, [closeSidePaneWithAnimation, closeWorkspaceNow, savePane])
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -519,7 +578,7 @@ export function WorkspaceScreen() {
       if (event.key === 'Escape') {
         if (modalOpen) return
         event.preventDefault()
-        if (sidePickerOpen) setSidePickerOpen(false)
+        if (sidePickerOpen) closeSidePicker()
         else if (activePane === 'secondary' && sidePane) requestCloseSide()
         else requestCloseWorkspace()
         return
@@ -661,7 +720,7 @@ export function WorkspaceScreen() {
         const saved = await savePane('secondary')
         if (!saved || sideSessionRef.current?.isDirty()) return
         setCloseIntent(null)
-        if (intent === 'secondary') closeSidePaneNow()
+        if (intent === 'secondary') closeSidePaneWithAnimation()
         else {
           closeSidePaneNow()
           const next = snapshotRef.current.notes.find((note) => note.id === nextSideNoteId && !note.deletedAt)
@@ -682,22 +741,33 @@ export function WorkspaceScreen() {
     } finally {
       setCloseSaveInFlight(false)
     }
-  }, [closeIntent, closeSaveInFlight, closeSidePaneNow, closeWorkspaceNow, getPaneSession, nextSideMode, nextSideNoteId, openSideNote, savePane])
+  }, [closeIntent, closeSaveInFlight, closeSidePaneNow, closeSidePaneWithAnimation, closeWorkspaceNow, getPaneSession, nextSideMode, nextSideNoteId, openSideNote, savePane])
 
   const discardAndResolveClose = useCallback(() => {
     if (closeSaveInFlight) return
     const intent = closeIntent
     setCloseIntent(null)
-    if (intent === 'secondary') closeSidePaneNow(true)
+    if (intent === 'secondary') closeSidePaneWithAnimation(true)
     else if (intent === 'switch-secondary') {
       closeSidePaneNow(true)
       const next = snapshotRef.current.notes.find((note) => note.id === nextSideNoteId && !note.deletedAt)
         if (next) openSideNote(next, nextSideMode)
     } else if (intent === 'workspace') closeWorkspaceNow(true)
-  }, [closeIntent, closeSaveInFlight, closeSidePaneNow, closeWorkspaceNow, nextSideMode, nextSideNoteId, openSideNote])
+  }, [closeIntent, closeSaveInFlight, closeSidePaneNow, closeSidePaneWithAnimation, closeWorkspaceNow, nextSideMode, nextSideNoteId, openSideNote])
 
   const mainModeChange = useCallback((mode: WorkspaceMode) => setWorkspaceMode(mode), [setWorkspaceMode])
   const sideModeChange = useCallback((mode: WorkspaceMode) => setSidePane((current) => current ? { ...current, mode } : current), [])
+
+  const toggleSideNote = useCallback(() => {
+    if (sideClosing || sidePickerClosing) return
+    if (sidePickerOpen) {
+      closeSidePicker()
+    } else if (sidePane) {
+      requestCloseSide()
+    } else {
+      setSidePickerOpen(true)
+    }
+  }, [closeSidePicker, requestCloseSide, sideClosing, sidePane, sidePickerClosing, sidePickerOpen])
 
   if (!workspace) return null
   if (loading) return <main className="workspace-loading" aria-busy="true"><p role="status">Opening note workspace…</p></main>
@@ -716,7 +786,13 @@ export function WorkspaceScreen() {
   const previewConflict = conflictPreview
   const conflictState = previewConflict?.pane === 'primary' ? primaryState.conflict : sideState?.conflict
   const conflictNote = previewConflict?.note || conflictState?.latestNote || null
-  const hasSideSurface = Boolean(sidePane || sidePickerOpen)
+  const hasSideSurface = Boolean(
+    (sidePane && !sideClosing) ||
+    sideClosing ||
+    sidePickerOpen ||
+    sidePickerClosing
+  )
+
   const workspaceStateLabel = primaryMode === 'preview' ? 'Preview note' : primarySession.noteId ? 'Edit note' : 'New note'
   const sideNoteControl = <Tooltip>
     <TooltipTrigger render={
@@ -725,15 +801,15 @@ export function WorkspaceScreen() {
         variant={hasSideSurface ? 'secondary' : 'outline'}
         size="sm"
         className="workspace-side-control"
-        aria-label={sidePickerOpen ? 'Close Side note picker' : sidePane ? 'Switch side note' : 'Open Side note picker'}
-        aria-expanded={sidePickerOpen}
+        aria-label={hasSideSurface ? 'Close side note' : 'Open Side note'}
+        aria-expanded={hasSideSurface}
         aria-controls="side-note-picker"
-        onClick={() => setSidePickerOpen((open) => !open)}
+        onClick={toggleSideNote}
       >
-        <SideNoteIcon className="size-4" /><span>{sidePickerOpen ? 'Close side note' : sidePane ? 'Switch side note' : 'Side note'}</span>
+        <SideNoteIcon className="size-4" /><span>{hasSideSurface ? 'Close side note' : 'Side note'}</span>
       </Button>
     } />
-    <TooltipContent role="tooltip">{sidePickerOpen ? 'Close side note picker' : sidePane ? 'Switch side note' : 'Open side note'}</TooltipContent>
+    <TooltipContent role="tooltip">{hasSideSurface ? 'Close side note' : 'Open side note'}</TooltipContent>
   </Tooltip>
   const returnToNotesControl = <Tooltip>
     <TooltipTrigger render={
@@ -741,7 +817,12 @@ export function WorkspaceScreen() {
         <ArrowLeft aria-hidden="true" className="size-4" /><span>All notes</span>
       </Button>
     } />
-    <TooltipContent role="tooltip">Return to all notes · Esc</TooltipContent>
+    <TooltipContent role="tooltip">
+      <span className="inline-flex items-center gap-2">
+        <span>Return to all notes</span>
+        <kbd>Esc</kbd>
+      </span>
+    </TooltipContent>
   </Tooltip>
 
   return (
@@ -819,7 +900,8 @@ export function WorkspaceScreen() {
             sideSearch={sideSearch}
             availableSideNotes={availableSideNotes}
             sideNoteLayout={sideNoteLayout}
-            onClose={() => { setSidePickerOpen(false); setSideSearch('') }}
+            className={`${sidePickerClosing ? 'workspace-side--exiting' : ''} ${isViewSwitching ? 'workspace-side--view-switch' : ''}`}
+            onClose={closeSidePicker}
             onSideSearchChange={setSideSearch}
             onChooseSideNote={(note, mode) => chooseSideNote(note, mode)}
             onCopySideNote={(note) => { void copySideNote(note) }}
@@ -835,6 +917,24 @@ export function WorkspaceScreen() {
             types={snapshot.types}
             tags={snapshot.tags}
             isActive={activePane === 'secondary'}
+            className={`${sideClosing ? 'workspace-side--exiting' : ''} ${isViewSwitching ? 'workspace-side--view-switch' : ''}`}
+            headerLeading={
+              <div className="flex items-center gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="h-7 gap-1.5 px-2 text-xs"
+                  onClick={openSidePickerFromNote}
+                  aria-label="Switch side note"
+                  title="Choose another note"
+                >
+                  <ArrowLeft className="size-3.5" aria-hidden="true" />
+                  <span>Switch note</span>
+                </Button>
+                <WorkspaceSaveStatus state={sideState} />
+              </div>
+            }
             recovery={sideRecovery}
             error={sideError}
             textareaRef={sideTextareaRef}
@@ -859,7 +959,7 @@ export function WorkspaceScreen() {
             }}
           />
         ) : sidePane ? (
-          <section className="workspace-side-empty" aria-label="Side note pane">
+          <section className={`workspace-side-empty ${sideClosing ? 'workspace-side--exiting' : ''}`} aria-label="Side note pane">
             <div className="workspace-side-empty__icon"><SideNoteIcon className="size-6" aria-hidden="true" /></div>
             <h2>Keep another note close</h2>
             <p>Open a Side note to compare or edit another note without losing this draft.</p>

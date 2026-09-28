@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { ArchiveRestore, CalendarDays, ChevronDown, ChevronRight, ChevronUp, Copy, Eye, FileText, MoreHorizontal, Pencil, Trash2, X } from 'lucide-react'
+import { ArchiveRestore, CalendarDays, ChevronDown, ChevronUp, Copy, Eye, FileText, MoreHorizontal, Pencil, Trash2, X } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
@@ -104,61 +104,6 @@ export function FilterList({
     return [...prioritized, ...remaining].slice(0, TAG_COLLAPSED_LIMIT)
   }, [tags, filters.tagIds, tagsExpanded])
 
-  if (collapsed) {
-    return (
-      <div className="nook-filter-panel nook-filter-panel--collapsed">
-        <div className="nook-sidebar-rail-header">
-          <img className="nook-brand-mark size-9 shrink-0 rounded-xl" src={`${import.meta.env.BASE_URL}favicon.svg`} width="36" height="36" alt="Nook" />
-          {onToggleSidebar && (
-            <Tooltip>
-              <TooltipTrigger render={
-                <Button
-                  variant="ghost"
-                  size="icon-xs"
-                  className="nook-sidebar-rail-toggle"
-                  aria-label="Expand sidebar"
-                  title={`Expand sidebar (${typeof navigator !== 'undefined' && /Mac|iPhone|iPad/.test(navigator.platform) ? '⌘' : 'Ctrl'}\\)`}
-                  onClick={onToggleSidebar}
-                >
-                  <ChevronRight className="size-4" aria-hidden="true" />
-                </Button>
-              } />
-              <TooltipContent role="tooltip">Expand sidebar</TooltipContent>
-            </Tooltip>
-          )}
-        </div>
-
-        <nav className="nook-sidebar-rail-nav" aria-label="Library spaces">
-          <Tooltip>
-            <TooltipTrigger render={<Button type="button" variant={!filters.trashOnly ? 'secondary' : 'ghost'} size="icon-sm" aria-label="All notes" aria-current={!filters.trashOnly ? 'page' : undefined} onClick={() => onSpace(false)}><FileText aria-hidden="true" /></Button>} />
-            <TooltipContent role="tooltip">All notes</TooltipContent>
-          </Tooltip>
-          <Tooltip>
-            <TooltipTrigger render={<Button type="button" variant={filters.trashOnly ? 'secondary' : 'ghost'} size="icon-sm" aria-label="Trash" aria-current={filters.trashOnly ? 'page' : undefined} onClick={() => onSpace(true)}><Trash2 aria-hidden="true" /></Button>} />
-            <TooltipContent role="tooltip">Trash</TooltipContent>
-          </Tooltip>
-        </nav>
-
-        {!filters.trashOnly && <nav className="nook-sidebar-rail-nav nook-sidebar-rail-nav--filters" aria-label="Filter notes">
-          <Tooltip>
-            <TooltipTrigger render={<Button type="button" variant={filters.createdToday ? 'secondary' : 'ghost'} size="icon-sm" aria-label="Created Today" aria-pressed={filters.createdToday} onClick={onToggleCreatedToday}><CalendarDays aria-hidden="true" /></Button>} />
-            <TooltipContent role="tooltip">Created Today</TooltipContent>
-          </Tooltip>
-          <Tooltip>
-            <TooltipTrigger render={<Button type="button" variant={filters.updatedToday ? 'secondary' : 'ghost'} size="icon-sm" aria-label="Updated Today" aria-pressed={filters.updatedToday} onClick={onToggleUpdatedToday}><CalendarDays aria-hidden="true" /></Button>} />
-            <TooltipContent role="tooltip">Updated Today</TooltipContent>
-          </Tooltip>
-          {types.map((type) => (
-            <Tooltip key={type.id}>
-              <TooltipTrigger render={<Button type="button" variant={filters.typeId === type.id ? 'secondary' : 'ghost'} size="icon-sm" aria-label={`Filter by type ${type.name}`} aria-pressed={filters.typeId === type.id} onClick={() => onToggleType(type.id)}><TypeDot color={type.color} /></Button>} />
-              <TooltipContent role="tooltip">{type.name}</TooltipContent>
-            </Tooltip>
-          ))}
-        </nav>}
-      </div>
-    )
-  }
-
   return <div className="nook-filter-panel flex min-h-full flex-col gap-5 p-4">
     <div className="nook-sidebar-brand flex items-center justify-between gap-2">
       <div className="flex items-center gap-3 min-w-0">
@@ -166,47 +111,83 @@ export function FilterList({
         <div className="nook-brand-text min-w-0"><strong className="block text-sm font-semibold text-sidebar-foreground">Nook</strong><span className="mt-0.5 block text-xs text-muted-foreground">Private workspace</span></div>
       </div>
       {onToggleSidebar && (
-        <Button
-          variant="ghost"
-          size="icon-xs"
-          className="nook-sidebar-toggle-btn hidden md:inline-flex shrink-0 text-muted-foreground hover:text-foreground"
-          aria-expanded={!collapsed}
-          aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-          title={`${collapsed ? 'Expand sidebar' : 'Collapse sidebar'} (${typeof navigator !== 'undefined' && /Mac|iPhone|iPad/.test(navigator.platform) ? '⌘' : 'Ctrl'}\\)`}
-          onClick={onToggleSidebar}
-        >
-          <svg className={`size-3.5 transition-transform duration-200 ${collapsed ? 'rotate-180' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <path d="m15 6-6 6 6 6" />
-          </svg>
-        </Button>
+        <Tooltip>
+          <TooltipTrigger render={
+            <Button
+              variant="ghost"
+              size="icon-xs"
+              className="nook-sidebar-toggle-btn hidden md:inline-flex shrink-0 text-muted-foreground hover:text-foreground"
+              aria-expanded={!collapsed}
+              aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+              onClick={onToggleSidebar}
+            >
+              <svg className={`size-3.5 transition-transform duration-200 ${collapsed ? 'rotate-180' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="m15 6-6 6 6 6" />
+              </svg>
+            </Button>
+          } />
+          <TooltipContent side={collapsed ? 'right' : 'bottom'} sideOffset={8} role="tooltip">
+            <span className="inline-flex items-center gap-2">
+              <span>{collapsed ? 'Expand sidebar' : 'Collapse sidebar'}</span>
+              <kbd>{typeof navigator !== 'undefined' && /Mac|iPhone|iPad/.test(navigator.platform) ? '⌘\\' : 'Ctrl\\'}</kbd>
+            </span>
+          </TooltipContent>
+        </Tooltip>
       )}
       {onCloseMobile && <Button variant="ghost" size="icon-sm" className="ml-auto md:hidden" aria-label="Close filters" onClick={onCloseMobile}><X /></Button>}
     </div>
-    <div className="nook-sidebar-status flex items-center gap-2 rounded-md border border-sidebar-border bg-muted/40 px-2 py-1.5 text-xs text-muted-foreground" data-state={backup.state} aria-label={backup.description} title={backup.description}><span className="nook-local-dot size-2 rounded-full" aria-hidden="true" />{backup.label}</div>
+    <div className="nook-sidebar-status flex items-center gap-2 rounded-md border border-sidebar-border bg-muted/40 px-2 py-1.5 text-xs text-muted-foreground" data-state={backup.state} aria-label={backup.description} title={backup.description}><span className="nook-local-dot size-2 rounded-full" aria-hidden="true" /><span className="truncate">{backup.label}</span></div>
     <div className="nook-sidebar-section nook-spaces-section border-t border-sidebar-border pt-4">
       <p className="nook-sidebar-label mb-2 flex items-center justify-between text-xs font-semibold uppercase tracking-wider text-muted-foreground">Spaces</p>
       <nav className="space-y-1" aria-label="Library spaces">
-        <button type="button" aria-label="All notes" className={navItemClasses(!filters.trashOnly)} aria-current={!filters.trashOnly ? 'page' : undefined} onClick={() => { onSpace(false); onCloseMobile?.() }}>
-          <FileText size={16} aria-hidden="true" /><span className="min-w-0 flex-1 truncate">All notes</span><span className={`nook-nav-count text-xs ${!filters.trashOnly ? 'text-sidebar-accent-foreground' : 'text-muted-foreground'}`} aria-hidden="true">{allCount}</span>
-        </button>
-        <button type="button" aria-label="Trash" className={navItemClasses(filters.trashOnly)} aria-current={filters.trashOnly ? 'page' : undefined} onClick={() => { onSpace(true); onCloseMobile?.() }}>
-          <Trash2 size={16} aria-hidden="true" /><span className="min-w-0 flex-1 truncate">Trash</span><span className={`nook-nav-count text-xs ${filters.trashOnly ? 'text-sidebar-accent-foreground' : 'text-muted-foreground'}`} aria-hidden="true">{trashCount}</span>
-        </button>
+        <Tooltip disabled={!collapsed}>
+          <TooltipTrigger render={
+            <button type="button" aria-label="All notes" className={navItemClasses(!filters.trashOnly)} aria-current={!filters.trashOnly ? 'page' : undefined} onClick={() => { onSpace(false); onCloseMobile?.() }}>
+              <FileText size={16} aria-hidden="true" className="shrink-0" /><span className="nook-nav-item-label min-w-0 flex-1 truncate">All notes</span><span className={`nook-nav-count text-xs ${!filters.trashOnly ? 'text-sidebar-accent-foreground' : 'text-muted-foreground'}`} aria-hidden="true">{allCount}</span>
+            </button>
+          } />
+          <TooltipContent side="right" sideOffset={10} role="tooltip">All notes</TooltipContent>
+        </Tooltip>
+        <Tooltip disabled={!collapsed}>
+          <TooltipTrigger render={
+            <button type="button" aria-label="Trash" className={navItemClasses(filters.trashOnly)} aria-current={filters.trashOnly ? 'page' : undefined} onClick={() => { onSpace(true); onCloseMobile?.() }}>
+              <Trash2 size={16} aria-hidden="true" className="shrink-0" /><span className="nook-nav-item-label min-w-0 flex-1 truncate">Trash</span><span className={`nook-nav-count text-xs ${filters.trashOnly ? 'text-sidebar-accent-foreground' : 'text-muted-foreground'}`} aria-hidden="true">{trashCount}</span>
+            </button>
+          } />
+          <TooltipContent side="right" sideOffset={10} role="tooltip">Trash</TooltipContent>
+        </Tooltip>
       </nav>
     </div>
     {!filters.trashOnly && <>
       <div className="nook-sidebar-section border-t border-sidebar-border pt-4">
         <div className="nook-sidebar-heading flex items-center justify-between"><p className="nook-sidebar-label mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Filters</p><button className="nook-text-button px-1 text-xs text-muted-foreground underline-offset-4 hover:underline disabled:opacity-50" type="button" disabled={!activeCount} onClick={onClear}>Clear</button></div>
         <nav className="space-y-1" aria-label="Filter notes">
-          <button type="button" className={navItemClasses(filters.createdToday)} aria-pressed={filters.createdToday} onClick={onToggleCreatedToday}>
-            <CalendarDays size={16} aria-hidden="true" /><span className="min-w-0 flex-1 truncate">Created Today</span><span className={`nook-nav-count text-xs ${filters.createdToday ? 'text-sidebar-accent-foreground' : 'text-muted-foreground'}`} aria-hidden="true">{createdTodayCount}</span>
-          </button>
-          <button type="button" className={navItemClasses(filters.updatedToday)} aria-pressed={filters.updatedToday} onClick={onToggleUpdatedToday}>
-            <CalendarDays size={16} aria-hidden="true" /><span className="min-w-0 flex-1 truncate">Updated Today</span><span className={`nook-nav-count text-xs ${filters.updatedToday ? 'text-sidebar-accent-foreground' : 'text-muted-foreground'}`} aria-hidden="true">{updatedTodayCount}</span>
-          </button>
-          {types.map((type) => <button key={type.id} type="button" className={navItemClasses(filters.typeId === type.id)} aria-pressed={filters.typeId === type.id} onClick={() => onToggleType(type.id)}>
-            <TypeDot color={type.color} /><span className="min-w-0 flex-1 truncate">{type.name}</span><span className={`nook-nav-count text-xs ${filters.typeId === type.id ? 'text-sidebar-accent-foreground' : 'text-muted-foreground'}`} aria-hidden="true">{typeCounts.get(type.id) ?? 0}</span>
-          </button>)}
+          <Tooltip disabled={!collapsed}>
+            <TooltipTrigger render={
+              <button type="button" className={navItemClasses(filters.createdToday)} aria-pressed={filters.createdToday} aria-label="Created Today" onClick={onToggleCreatedToday}>
+                <CalendarDays size={16} aria-hidden="true" className="shrink-0" /><span className="nook-nav-item-label min-w-0 flex-1 truncate">Created Today</span><span className={`nook-nav-count text-xs ${filters.createdToday ? 'text-sidebar-accent-foreground' : 'text-muted-foreground'}`} aria-hidden="true">{createdTodayCount}</span>
+              </button>
+            } />
+            <TooltipContent side="right" sideOffset={10} role="tooltip">Created Today</TooltipContent>
+          </Tooltip>
+          <Tooltip disabled={!collapsed}>
+            <TooltipTrigger render={
+              <button type="button" className={navItemClasses(filters.updatedToday)} aria-pressed={filters.updatedToday} aria-label="Updated Today" onClick={onToggleUpdatedToday}>
+                <CalendarDays size={16} aria-hidden="true" className="shrink-0" /><span className="nook-nav-item-label min-w-0 flex-1 truncate">Updated Today</span><span className={`nook-nav-count text-xs ${filters.updatedToday ? 'text-sidebar-accent-foreground' : 'text-muted-foreground'}`} aria-hidden="true">{updatedTodayCount}</span>
+              </button>
+            } />
+            <TooltipContent side="right" sideOffset={10} role="tooltip">Updated Today</TooltipContent>
+          </Tooltip>
+          {types.map((type) => (
+            <Tooltip key={type.id} disabled={!collapsed}>
+              <TooltipTrigger render={
+                <button type="button" className={navItemClasses(filters.typeId === type.id)} aria-pressed={filters.typeId === type.id} aria-label={`Filter by type ${type.name}`} onClick={() => onToggleType(type.id)}>
+                  <TypeDot color={type.color} /><span className="nook-nav-item-label min-w-0 flex-1 truncate">{type.name}</span><span className={`nook-nav-count text-xs ${filters.typeId === type.id ? 'text-sidebar-accent-foreground' : 'text-muted-foreground'}`} aria-hidden="true">{typeCounts.get(type.id) ?? 0}</span>
+                </button>
+              } />
+              <TooltipContent side="right" sideOffset={10} role="tooltip">{type.name}</TooltipContent>
+            </Tooltip>
+          ))}
         </nav>
       </div>
       <div className="nook-sidebar-section nook-tag-section">

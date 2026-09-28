@@ -61,6 +61,7 @@ interface SideNotePickerProps {
   onCopySideNote(note: Note): void
   onTrashSideNote(note: Note): void
   onSideNoteLayoutChange(mode: SideNoteLayoutMode): void
+  className?: string
 }
 
 export function SideNotePicker({
@@ -69,6 +70,7 @@ export function SideNotePicker({
   sideSearch,
   availableSideNotes,
   sideNoteLayout,
+  className,
   onClose,
   onSideSearchChange,
   onChooseSideNote,
@@ -78,7 +80,7 @@ export function SideNotePicker({
 }: SideNotePickerProps) {
   const titleId = useId()
   const fallbackType = types.find((type) => type.isFallback)
-  return <section className="workspace-side-picker" id="side-note-picker" aria-labelledby={titleId}>
+  return <section className={`workspace-side-picker ${className || ''}`} id="side-note-picker" aria-labelledby={titleId}>
     <header className="workspace-side-picker__header">
       <h2 id={titleId}>Choose a side note</h2>
       <Button type="button" variant="ghost" size="icon-sm" className="rounded-lg text-muted-foreground hover:text-foreground" aria-label="Close Side note picker" onClick={onClose}><X className="size-4" aria-hidden="true" /></Button>
@@ -88,11 +90,21 @@ export function SideNotePicker({
       <div className="nook-layout-toggle workspace-note-picker__controls" role="group" aria-label="Side note picker layout">
         <Tooltip>
           <TooltipTrigger render={<Button type="button" size="icon-sm" variant={sideNoteLayout === 'focus' ? 'secondary' : 'ghost'} aria-label="Focus layout" aria-pressed={sideNoteLayout === 'focus'} onClick={() => onSideNoteLayoutChange('focus')}><CompactLayoutIcon /></Button>} />
-          <TooltipContent role="tooltip">Focus view · 1</TooltipContent>
+          <TooltipContent role="tooltip">
+            <span className="inline-flex items-center gap-2">
+              <span>Focus view</span>
+              <kbd>1</kbd>
+            </span>
+          </TooltipContent>
         </Tooltip>
         <Tooltip>
           <TooltipTrigger render={<Button type="button" size="icon-sm" variant={sideNoteLayout === 'comfortable' ? 'secondary' : 'ghost'} aria-label="Comfortable layout" aria-pressed={sideNoteLayout === 'comfortable'} onClick={() => onSideNoteLayoutChange('comfortable')}><ComfortableLayoutIcon /></Button>} />
-          <TooltipContent role="tooltip">Comfortable view · 2</TooltipContent>
+          <TooltipContent role="tooltip">
+            <span className="inline-flex items-center gap-2">
+              <span>Comfortable view</span>
+              <kbd>2</kbd>
+            </span>
+          </TooltipContent>
         </Tooltip>
       </div>
     </div>

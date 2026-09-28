@@ -591,7 +591,12 @@ export function LibraryScreen({ workspaceActive = false }: { workspaceActive?: b
                 <span className="nook-button-label">{THEME_LABELS[theme]}</span>
               </Button>
             } />
-            <TooltipContent role="tooltip">Theme: {THEME_LABELS[theme]} · T</TooltipContent>
+            <TooltipContent role="tooltip">
+              <span className="inline-flex items-center gap-2">
+                <span>Theme: {THEME_LABELS[theme]}</span>
+                <kbd>T</kbd>
+              </span>
+            </TooltipContent>
           </Tooltip>
           <Button variant="outline" className="nook-mobile-filter-button" aria-label={filtersCount ? `Filters, ${filtersCount} active` : 'Filters and sort'} onClick={() => setMobileFiltersOpen(true)}><Filter aria-hidden="true" /></Button>
           <Tooltip>
@@ -601,7 +606,12 @@ export function LibraryScreen({ workspaceActive = false }: { workspaceActive?: b
                 <span className="nook-button-label">Settings</span>
               </Button>
             } />
-            <TooltipContent role="tooltip">Settings · S</TooltipContent>
+            <TooltipContent role="tooltip">
+              <span className="inline-flex items-center gap-2">
+                <span>Settings</span>
+                <kbd>S</kbd>
+              </span>
+            </TooltipContent>
           </Tooltip>
           <Tooltip>
             <TooltipTrigger render={
@@ -620,7 +630,12 @@ export function LibraryScreen({ workspaceActive = false }: { workspaceActive?: b
                   <span>New note</span>
                 </Button>
               } />
-              <TooltipContent role="tooltip">New note · C</TooltipContent>
+              <TooltipContent role="tooltip">
+                <span className="inline-flex items-center gap-2">
+                  <span>New note</span>
+                  <kbd>C</kbd>
+                </span>
+              </TooltipContent>
             </Tooltip>
           )}
           {filters.trashOnly && <Button variant="destructive" disabled={!totalTrash} onClick={askEmptyTrash}><Trash2 className="size-4" /> Empty Trash</Button>}
@@ -649,7 +664,12 @@ export function LibraryScreen({ workspaceActive = false }: { workspaceActive?: b
                   <CompactLayoutIcon />
                 </Button>
               } />
-              <TooltipContent role="tooltip">Compact view · 1</TooltipContent>
+              <TooltipContent role="tooltip">
+                <span className="inline-flex items-center gap-2">
+                  <span>Compact view</span>
+                  <kbd>1</kbd>
+                </span>
+              </TooltipContent>
             </Tooltip>
             <Tooltip>
               <TooltipTrigger render={
@@ -663,7 +683,12 @@ export function LibraryScreen({ workspaceActive = false }: { workspaceActive?: b
                   <ComfortableLayoutIcon />
                 </Button>
               } />
-              <TooltipContent role="tooltip">Comfortable view · 2</TooltipContent>
+              <TooltipContent role="tooltip">
+                <span className="inline-flex items-center gap-2">
+                  <span>Comfortable view</span>
+                  <kbd>2</kbd>
+                </span>
+              </TooltipContent>
             </Tooltip>
             <Tooltip>
               <TooltipTrigger render={
@@ -677,7 +702,12 @@ export function LibraryScreen({ workspaceActive = false }: { workspaceActive?: b
                   <GridLayoutIcon />
                 </Button>
               } />
-              <TooltipContent role="tooltip">Grid view · 3</TooltipContent>
+              <TooltipContent role="tooltip">
+                <span className="inline-flex items-center gap-2">
+                  <span>Grid view</span>
+                  <kbd>3</kbd>
+                </span>
+              </TooltipContent>
             </Tooltip>
           </div>
         </div>
@@ -747,7 +777,7 @@ export function LibraryScreen({ workspaceActive = false }: { workspaceActive?: b
         <div className="nook-mobile-search-heading"><SheetTitle>Search &amp; filters</SheetTitle><Button type="button" variant="ghost" size="icon" aria-label="Close filters" onClick={() => setMobileFiltersOpen(false)}><X aria-hidden="true" /></Button></div>
         <SheetDescription className="sr-only">Search, sort, and filter notes in this browser.</SheetDescription>
         <div className="nook-mobile-search-controls"><Input name="mobile-search-notes" autoComplete="off" value={query} onChange={(event) => setQuery(event.currentTarget.value)} placeholder="Search title or content…" aria-label="Search notes" /><Select items={SORT_LABELS} value={sort} onValueChange={(value) => { if (value) setSort(value as SortMode) }}><SelectTrigger aria-label="Sort notes in filters"><SelectValue /></SelectTrigger><SelectContent>{Object.entries(SORT_LABELS).map(([value, label]) => <SelectItem key={value} value={value}>{label}</SelectItem>)}</SelectContent></Select></div>
-        <FilterList {...filterPanelProps} onCloseMobile={() => setMobileFiltersOpen(false)} />
+        <FilterList {...filterPanelProps} collapsed={false} onCloseMobile={() => setMobileFiltersOpen(false)} />
       </SheetContent>
     </Sheet>
     <SettingsDialog
