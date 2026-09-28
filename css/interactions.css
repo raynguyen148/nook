@@ -38,6 +38,7 @@
 .theme-toggle__icon--midnight,
 .theme-toggle__icon--moon,
 .theme-toggle__icon--retro,
+.theme-toggle__icon--eink,
 .theme-toggle__icon--auto {
   display: none;
 }

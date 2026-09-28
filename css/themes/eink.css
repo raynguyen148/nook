@@ -1,0 +1,1456 @@
+/* Hallmark · genre: editorial · macrostructure: preserved Nook workspace
+ * theme: eink (source: e-reader paper display, warm matte paper, whisper-quiet micro-grain, pure monochrome ink)
+ * tone: literary e-paper · anchor: carbon ink #141414
+ * design: large-canvas gentle grain only, clean smooth component surfaces, zero visual noise
+ */
+/* ==========================================================================
+   Nook - Theme: E-Ink (Màn hình đọc sách E-Paper)
+   - Canvas: Warm Soft E-Ink Paper (#efece4) with ultra-faint micro-texture
+   - Surfaces: Smooth Book Paper (#f7f5ef) — clean, glare-free, no sandpaper noise
+   - Sidebar: Muted Paper Pulp (#e8e5dc) — cohesive with canvas
+   - Inks: Deep Carbon Ink (#141414), Reading Charcoal (#383838), Muted (#666666)
+   - Accent: Carbon Black (#141414) — 100% Monochrome / Grayscale
+   - Typography: Editorial Serif Display (Headings) + High-Legibility Body
+   ========================================================================== */
+
+html[data-theme="eink"] {
+  color-scheme: light;
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  --font-display: "Newsreader", Charter, "Times New Roman", Georgia, Times, serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+
+  /* Ultra-subtle, whisper-quiet paper grain (applied ONLY to large page background) */
+  --eink-paper-grain: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAQAAAAAYLlVAAAJfElEQVR42m1ZaXK0OgxM4Q0YTuMTfuf2r6eltRhepZKZALZlq9Vqib/5/Puzn1lXT/+1f3+rrWLf7Rm6WufgO6uve8md1fBb1qmfPIafm2WNmEdmoDVmmde6eSZcXGOVWfSm/scD1uDl6PNax6rr5v/mvS660m1Bm5buV15Qvp9iJLYzr9nnKWPV2BKbXE2WlKF0c2LhWflHH6bhshBPTbtpa+B6nW2fzK6vzlsR8079tDOa534KPDvb19ahlrMpssdqOxT7L/k800SPOEAWxy4b318jDOFz002I04rNQOa1bDLtesLv5n95+FJj4krGgUyDp8nAyh4N5NCBt3nv5xKz5+PnGXW57SYPph2e28PVpiDgFbu2LyMOuNV57HOcYMtbUZNp6Y7Tvl42eTRU9ncs7oNPjRpGsDulYuc86tJ5EBvdXED3igGS4qRgS00MII8XBgT9fSLUeCpyj+yD/zJK6Im+qtq/O4mOvQiU+zokGPc9V3kCoUh32xQM8fwJlfqoetpMESwPDSGOa8YuG8ZnsAxcg56AMyaW5mjw5S2Yi4P4Wo6nF9TkdoGHa0yiiGDqkfM4hUTgXfFnca/+5JmhW9CANOZQ19GzOtshBgisbhk+sHBR6Mxqpqj3+eDIh+cqFhGzZPRQMFcE8IlTYtceWG7s2zM3CZTAfyAhIVCgQIfO84X2kyEnKMEp0JURR77SaDMwzBZTkwsKTTaEAw82hXzbIxcYycLuxt9j57KrHCPDIdnjqVm+DBDjEgeQ94xCmyDAidQe1gXICdXCKNGXXFtX+D9TDwA4FOaUWziddX5C+D/spIsj7aiDTCp+ndHmudqeN2V5JBtJXSNxYzH2R3g3pTuAkGP7c0jH2/oc098khAWGjmPcO6n9YtSW6Ie5ILO40s3QBz6ZrgUxz4dhKAd6giGJiihJGeMJz/MJ0lkZ/uuWTYaeJcuGlsKpx1Kr5vw9mefHbopE/Gmgc1FSPa+qiUJjlr5WMoPPfmN7sv+Ep9qWSLv5DH+Hehzptgv0hOXtLi3bTTnN+nUxqJxBuHhgCS9NExw9JaAWuRBhNoB6YzXmDj2H7hkVmop1AZn3sGuJL7rP2gFCsydyAlPSSuplxs4esPtYF3ZfxNyG82rO/+q+Y105l24OLG6AWDYcyywpoFuIpIGDTCcacPTMsysGzFVccNwRbtvoatubZ7JuJYhBA3ZzzGqAFlLxLFlDT9x1kA7nxLbJHLgoB+WfZ/7OSi84IKDDRGxBR3kQOT+l22pRLd+65geiNGbTR9HEY5IwZ+x0NVLtvXJ4SQ6rFlxJit4sX5dF/rP7k0A1eDkdDyMAVFNDMYKEL+NMNGGfIzTfllrKLsimptwHBlTAkpWOSzlEVJOSpeycqjwZuGGdta4AT/147ed6jsnqMqPMVZbXhYqG5IkrE7lcOQ0jyg5xV3IsZd5d9x4KO/l+mwISFuS48PSqwsJLMIrxiAiOdvp5lBMkzWcCLuvepGw34lAQPfi8HP14LJUYbPlPFupvofLvozBtx6I6OmlBlaxmOtEyU0UXVNYYbDCEii/ihLLnRuX6qWLuEjVxG23zcqp9zQmyKco5qgHkTEUEcWmW1MksSVj9VHgLEsbcilHUiaqVTZgcQeWJipDcWOQZy6rgFTI+nYrt32Sxq7w4fs+AVKKuMcvGBMVNOPWYNark/IZdn/xfWVXVgxORpQ4jIEa9qn5KJPfcS86SSvKRytEaoUtzHJb/Z9JYLOZWtwyyJSMptW5YOnwxUYVieQUaXKjO5mqw5Q1YuSKwK281ZDWWO7P/qXjy46uzzJYrPhBQSUE4Fqj5g34vvRJPHKoXAE2uOUtmm71fUZyzcqtGUgvKsSMKTUivZyZtbDWx4UUMaDnCNlHGtaEeV3iYCUVwcFjKELKFh2m5Gz2BZiMZUtOrhSXBZskcc6lObrsrNLSR8YPN/aDLrn6nozlEmxhXQTWnnMcPd7uek4pTxM612ldRvxabWrumZU08cDEhgXX8nzDfC/Ikck0Z1ZQfh8kWnimHUNVcZdnO5UXZRQmqw6rBFmFnHZE1oKsqCrmWDWQ1yRxhYP9DLgugVEk9mlCGxv27upP+Fj8nuTGpBi63GANSSwoCUE2mRtbhmOuMA/EtmPtMhXU12MkA5AJtrkgBUvamFciac0hHiVuzO0ykz633xPBlq2v0eyTPuVwSBKTTEXE23hJTGK5YX0gqpMQSxKS3GeD1RteCTRQRhIO2jAqOSFXv+eqePcGaBk1OMQly1r489+6AVxUFEIS5TPOYcO/m+Hmc2rbUQ3WiHWD0auVXyGzrDqlsB3S7lr8UXcM4MYgsaX4GyU6w3JjN4bXQGcAJcar6tPIsvFA5ILJWyqgzNbDW7SUmVO65SbTbYMh7mJ4ztHLW6keFx6v8Lu8Ghc9oxNR01TWssFCfpMTLZSWEaa6YNU0f6PRIalHaTiN7ynapYGHHeXNTGtUMdplsumc0mLxb3EQ8eLkyU/BlFUmuIamFyvmnaE9x4b2CwBmQw1Ewy55Av1nLBMTWsDW4Vnkv0JKYb6vO7bXHainHnE7GaIBEZ2vE0sKCl1ez3lLQhl067qaJWmPEM6Y54ZpnumBjRvH8i4kzxttmZusJSyeXKdkbfY2x5ThK4VxA1NfQLJFyTNm/5wnSCiESKkb1PNOvzeSyjpwZdHzUOa/07tAAtc6OTeov4bFBTXaqJCged+wsLq/GK6x6rjYr4t6BN+6DubfGmZLasIgHhBFLLLFIzVuNB70bK+aRaLmpYQXz7pGAcMxYtgRhPxXWhqZ/Ey4j5YraQt2AtFiGaDz0ha62IbCjLlb0hi5R6pDLkQrOve0lS7TWFlvu5/6jBD6sosEoupL7NRTVDu/2pXXVHTazl1oz3iJLkREMP5YF4iRP5IDUqlf1owGFnETLNXkdt7eayt2pnauN4D63uzWoTOQpVNCqFioYPrkE8mKZvJNMS4OrelkL4PSklHZrAvNd+aKoWbhT9HRzVczWgaciqPm1JqG6YeDeyJRUR5ha6HhMcO/7SY42IE+k06Xuqy1j+925U005+M52Dv+cYkRn03DQ6VvPCu67b+0BV3jD7kYvsqypJxAR7a7a/TpR3p7lsv7Ys0BNJaaOyRSMD8ru4gwKYY9Zvlx3tZesASdcb1KFEvAWOHegV2Wz1XeNA+x/fd47+Vkpf/nbvlM7yfs3K5eQKksGU68y7AiX3SEqAWcvJKr/ggRDNp0088x8BqNE7rFEvvwAAAABJRU5ErkJggg==");
+
+  /* Harmonious, close-value paper tones (calm, cohesive, no glare) */
+  --eink-canvas: #efece4;        /* restful warm paper canvas */
+  --eink-sidebar: #e8e5dc;       /* gently defined paper rail (very close to canvas) */
+  --eink-paper: #f7f5ef;         /* smooth, clean book paper surface (no pure white!) */
+  --eink-paper-muted: #e8e5dc;   /* toolbar / dialog chrome / subtle surface */
+  --eink-paper-hover: #eeebe3;   /* soft paper hover */
+  --eink-paper-active: #141414;  /* active pill / inverted surface */
+  --eink-paper-active-text: #efece4;
+
+  /* Inks (Carbon & Grayscale) */
+  --eink-ink: #141414;           /* deep stark carbon ink */
+  --eink-ink-secondary: #383838; /* clean reading body */
+  --eink-ink-muted: #666666;     /* timestamps, counts, secondary info */
+  --eink-ink-subtle: #8c8c8c;    /* placeholders, hints */
+  --eink-border: #d5cfc2;        /* subtle, elegant paper hairline */
+  --eink-border-strong: #141414; /* emphasized / active border */
+  --eink-disabled-surface: #e8e5dc;
+  --eink-disabled-ink: #9a9486;
+
+  /* Anchor: Carbon Black (Monochrome) */
+  --eink-accent: #141414;
+  --eink-accent-hover: #000000;
+  --eink-accent-text: #141414;
+  --eink-accent-soft: #e8e5dc;
+  --eink-accent-soft-hover: #dedad0;
+  --eink-accent-ink: #efece4;
+
+  --eink-border-width: 1px;
+  --eink-radius-sm: 0.25rem;
+  --eink-radius-control: 0.375rem;
+  --eink-radius-card: 0.625rem;
+  --eink-radius-dialog: 0.75rem;
+  --eink-radius-pill: 999px;
+
+  /* Foundation token mappings */
+  --control-radius: var(--eink-radius-control);
+  --surface-radius: var(--eink-radius-card);
+  --theme-surface-page: var(--eink-canvas);
+  --theme-danger-border: var(--eink-border-strong);
+  --form-control-resting-background: var(--eink-paper);
+  --form-control-resting-shadow: none;
+  --management-search-resting-shadow: none;
+  --management-row-input-resting-shadow: none;
+  --theme-picker-menu-shadow: none;
+
+  --primary-accent: #141414;
+  --primary-accent-hover: #000000;
+  --primary-accent-text: #141414;
+  --primary-accent-soft: var(--eink-accent-soft);
+  --primary-accent-soft-hover: var(--eink-accent-soft-hover);
+  --primary-accent-border: #141414;
+  --primary-accent-focus: rgba(20, 20, 20, 0.2);
+  --primary-accent-shadow: none;
+  --primary-button-text: #efece4;
+
+  --pinned-card-border: #141414;
+  --pinned-card-border-hover: #000000;
+  --pinned-card-surface: #eae7df;
+  --pinned-card-shadow: none;
+  --pinned-marker-background: #141414;
+  --pinned-marker-border: #141414;
+  --pinned-marker-color: #efece4;
+
+  --note-card-surface: var(--eink-paper);
+  --note-card-border: var(--eink-border);
+  --note-card-title: var(--eink-ink);
+  --note-card-title-letter-spacing: -0.015em;
+  --note-card-preview: var(--eink-ink-secondary);
+  --note-card-muted: var(--eink-ink-muted);
+  --note-card-actions-border: var(--eink-border);
+  --note-card-actions-surface: var(--eink-paper);
+  --note-card-action: var(--eink-ink-muted);
+  --note-card-action-hover: var(--eink-ink);
+  --note-card-action-hover-surface: var(--eink-paper-hover);
+  --note-card-action-danger: var(--eink-ink);
+  --note-card-action-danger-surface: var(--eink-paper-hover);
+  --note-card-action-disabled: var(--eink-disabled-ink);
+
+  --focus-color: #141414;
+  --focus-radius: var(--eink-radius-control);
+  --interaction-duration: 120ms;
+  --interaction-easing: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --toast-surface: #141414;
+  --toast-border: #333333;
+  --toast-text: #efece4;
+  --toast-status-surface: #262626;
+  --toast-status-icon: #efece4;
+  --toast-action: #efece4;
+  --toast-action-hover: #ffffff;
+  --toast-focus: #ffffff;
+  --toast-shadow: none;
+
+  --toast-error-surface: #141414;
+  --toast-error-border: #444444;
+  --toast-error-text: #efece4;
+  --toast-error-status-surface: #262626;
+  --toast-error-status-icon: #efece4;
+  --toast-error-action: #efece4;
+  --toast-error-action-hover: #ffffff;
+  --toast-error-focus: #ffffff;
+
+  --backup-good-accent: #141414;
+  --backup-warning-accent: #555555;
+  --backup-never-accent: #141414;
+
+  --split-highlight-source: rgba(0, 0, 0, 0.08);
+  --split-highlight-preview: rgba(0, 0, 0, 0.04);
+  --split-highlight-edge: #141414;
+  --split-highlight-outline: rgba(0, 0, 0, 0.3);
+
+  --select-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='m4 6 4 4 4-4' stroke='%23141414' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+
+  /* Root canvas: subtle matte paper texture */
+  background-color: var(--eink-canvas);
+  background-image: var(--eink-paper-grain);
+  background-repeat: repeat;
+  color: var(--eink-ink);
+}
+
+/* Page body inherits the gentle paper grain */
+html[data-theme="eink"] body {
+  background-color: var(--eink-canvas);
+  background-image: var(--eink-paper-grain);
+  background-repeat: repeat;
+  color: var(--eink-ink);
+  font-family: var(--font-sans);
+}
+
+html[data-theme="eink"] ::selection {
+  background: #141414;
+  color: #efece4;
+}
+
+html[data-theme="eink"] * {
+  scrollbar-color: var(--eink-border) transparent;
+}
+
+/* --------------------------------------------------------------------------
+   Absolute Zero Drop-Shadows (Pure Flat Ink-on-Paper Experience)
+   -------------------------------------------------------------------------- */
+html[data-theme="eink"] :where(*, *::before, *::after) {
+  text-shadow: none !important;
+}
+
+html[data-theme="eink"] :where(
+  body,
+  .topbar,
+  .toolbar,
+  .topbar-actions,
+  .notes-panel,
+  .note-card,
+  .app-dialog,
+  .note-detail-surface,
+  .button,
+  .icon-button,
+  .tag-filter-option,
+  .tag-chip,
+  .type-badge,
+  .sort-field__trigger,
+  .sort-field__menu,
+  .tag-suggestions,
+  .note-type-picker__trigger,
+  .note-type-picker__menu,
+  .color-picker__trigger,
+  .color-picker__menu,
+  .theme-picker__trigger,
+  .theme-picker__menu,
+  .theme-toggle,
+  .shortcut-tooltip,
+  .note-save-shortcut__tooltip,
+  .note-markdown-help__tooltip,
+  .note-detail-action-tooltip__content,
+  .note-formatting-tool__tooltip,
+  .app-toast,
+  .toast,
+  .management-row,
+  .management-create-row,
+  .management-list,
+  .organize-tabs,
+  .note-formatting-toolbar,
+  .mobile-navigation,
+  .mobile-filter-sheet,
+  #mobile-filter-dialog,
+  #mobile-space-dialog,
+  input,
+  textarea,
+  select,
+  kbd,
+  mark
+) {
+  box-shadow: none !important;
+}
+
+/* --------------------------------------------------------------------------
+   Sidebar & Brand (Smooth Muted Paper Rail — No gritty texture)
+   -------------------------------------------------------------------------- */
+html[data-theme="eink"] .sidebar {
+  border-color: var(--eink-border);
+  background-color: var(--eink-sidebar);
+  background-image: none;
+}
+
+html[data-theme="eink"] .sidebar-toggle-btn {
+  border-color: var(--eink-border);
+  color: var(--eink-ink);
+  background-color: var(--eink-paper);
+  background-image: none;
+}
+
+html[data-theme="eink"] .sidebar-toggle-btn:hover {
+  border-color: #141414;
+  color: #000000;
+  background-color: var(--eink-paper-hover);
+}
+
+html[data-theme="eink"] .brand-mark {
+  filter: grayscale(100%) contrast(150%);
+}
+
+html[data-theme="eink"] .brand strong {
+  font-family: var(--font-display);
+  color: var(--eink-ink);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+html[data-theme="eink"] .brand small,
+html[data-theme="eink"] .filter-heading,
+html[data-theme="eink"] .filter-section-title h2 {
+  color: var(--eink-ink-muted);
+  font-weight: 600;
+}
+
+html[data-theme="eink"] .storage-status {
+  border-color: var(--eink-border);
+  color: var(--eink-ink);
+  background-color: var(--eink-paper);
+  background-image: none;
+}
+
+/* Neutralize ALL type dots in sidebar to monochrome ink */
+html[data-theme="eink"] :where(
+  .type-dot,
+  .type-dot--indigo, .type-dot--blue, .type-dot--sky, .type-dot--cyan,
+  .type-dot--teal, .type-dot--emerald, .type-dot--green, .type-dot--lime,
+  .type-dot--amber, .type-dot--orange, .type-dot--red, .type-dot--rose,
+  .type-dot--pink, .type-dot--violet, .type-dot--purple, .type-dot--slate
+) {
+  background-color: #141414 !important;
+}
+
+/* --------------------------------------------------------------------------
+   Navigation & Active Filter Pills
+   Active pill = Solid carbon black with crisp cream text (matches 'All' in photo)
+   -------------------------------------------------------------------------- */
+html[data-theme="eink"] :where(.space-link, .sidebar-filter) {
+  border: 1px solid transparent;
+  border-radius: var(--eink-radius-control) !important;
+  color: var(--eink-ink);
+  background-image: none;
+  transition:
+    background-color var(--interaction-duration) var(--interaction-easing),
+    border-color var(--interaction-duration) var(--interaction-easing),
+    color var(--interaction-duration) var(--interaction-easing);
+}
+
+html[data-theme="eink"] :where(.space-link, .sidebar-filter):hover {
+  border-color: var(--eink-border);
+  color: #000000;
+  background-color: var(--eink-paper-hover);
+}
+
+html[data-theme="eink"] :where(.space-link, .sidebar-filter).is-active {
+  border-color: #141414 !important;
+  border-radius: var(--eink-radius-control) !important;
+  color: #efece4 !important;
+  background: #141414 !important;
+  font-weight: 600;
+}
+
+html[data-theme="eink"] :where(.space-link, .sidebar-filter).is-active .filter-count {
+  color: #d5cfc2 !important;
+}
+
+html[data-theme="eink"] .sidebar-filter--type.is-active {
+  border-color: #141414 !important;
+  border-radius: var(--eink-radius-control) !important;
+  color: #efece4 !important;
+  background: #141414 !important;
+}
+
+html[data-theme="eink"] .sidebar-filter--type.is-active .filter-count {
+  color: #d5cfc2 !important;
+}
+
+html[data-theme="eink"] .space-link--trash.is-active {
+  border-color: #141414 !important;
+  border-radius: var(--eink-radius-control) !important;
+  color: #efece4 !important;
+  background: #141414 !important;
+}
+
+html[data-theme="eink"] .backup-health {
+  border: 1px solid var(--eink-border) !important;
+  border-radius: var(--eink-radius-control) !important;
+  color: var(--eink-ink) !important;
+  background-color: var(--eink-paper) !important;
+}
+
+/* --------------------------------------------------------------------------
+   Tag Badges & Filters (Unified Pill Design across Sidebar, Cards & Detail)
+   -------------------------------------------------------------------------- */
+html[data-theme="eink"] :where(
+  .tag-filter-option,
+  .tag-chip,
+  .quick-view-tag,
+  .selected-tag,
+  .tag-suggestion,
+  .tag-add-button
+),
+html[data-theme="eink"] .note-card .tag-chip,
+html[data-theme="eink"] .notes-panel .note-card .tag-chip {
+  min-height: 1.48rem;
+  border: 1px solid var(--eink-border) !important;
+  border-radius: var(--eink-radius-sm) !important;
+  padding: 0.16rem 0.48rem !important;
+  color: var(--eink-ink) !important;
+  background-color: var(--eink-paper) !important;
+  background-image: none !important;
+  box-shadow: none !important;
+  font-family: var(--font-sans) !important;
+  font-size: 0.68rem !important;
+  font-weight: 600 !important;
+  line-height: 1.2 !important;
+  transition:
+    color var(--interaction-duration) var(--interaction-easing),
+    background-color var(--interaction-duration) var(--interaction-easing),
+    border-color var(--interaction-duration) var(--interaction-easing);
+}
+
+/* Sidebar tag count badge */
+html[data-theme="eink"] .tag-filter-option .filter-count {
+  color: var(--eink-ink-muted) !important;
+  font-size: 0.64rem !important;
+  font-weight: 600 !important;
+  padding-left: 0.05rem;
+  transition: color var(--interaction-duration) var(--interaction-easing);
+}
+
+/* Hover state: crisp darker hairline border + subtle paper hover */
+html[data-theme="eink"] :where(
+  .tag-filter-option,
+  .tag-chip,
+  .quick-view-tag,
+  .selected-tag,
+  .tag-suggestion
+):hover,
+html[data-theme="eink"] .note-card .tag-chip:hover,
+html[data-theme="eink"] .notes-panel .note-card .tag-chip:hover {
+  border-color: #141414 !important;
+  color: #000000 !important;
+  background-color: var(--eink-paper-hover) !important;
+}
+
+html[data-theme="eink"] .tag-filter-option:hover .filter-count {
+  color: #141414 !important;
+}
+
+/* Active / Selected state: Solid carbon ink pill with paper pulp text */
+html[data-theme="eink"] :where(
+  .tag-filter-option:has(input:checked),
+  .tag-filter-option.is-active,
+  .tag-chip.is-selected
+),
+html[data-theme="eink"] .note-card .tag-chip.is-selected,
+html[data-theme="eink"] .notes-panel .note-card .tag-chip.is-selected {
+  border-color: #141414 !important;
+  color: #efece4 !important;
+  background: #141414 !important;
+  font-weight: 600 !important;
+}
+
+html[data-theme="eink"] :where(
+  .tag-filter-option:has(input:checked),
+  .tag-filter-option.is-active
+) .filter-count {
+  color: #d5cfc2 !important;
+}
+
+/* Hover while active */
+html[data-theme="eink"] :where(
+  .tag-filter-option:has(input:checked),
+  .tag-filter-option.is-active,
+  .tag-chip.is-selected
+):hover,
+html[data-theme="eink"] .note-card .tag-chip.is-selected:hover,
+html[data-theme="eink"] .notes-panel .note-card .tag-chip.is-selected:hover {
+  border-color: #000000 !important;
+  color: #ffffff !important;
+  background: #000000 !important;
+}
+
+html[data-theme="eink"] :where(
+  .tag-filter-option:has(input:checked),
+  .tag-filter-option.is-active
+):hover .filter-count {
+  color: #efece4 !important;
+}
+
+/* Keyboard focus */
+html[data-theme="eink"] :where(
+  .tag-filter-option:has(input:focus-visible),
+  .tag-chip:focus-visible,
+  .quick-view-tag:focus-visible,
+  .tag-suggestion:focus-visible
+) {
+  outline: 2px solid #141414 !important;
+  outline-offset: 1px !important;
+}
+
+/* Compact view note-card tags */
+html[data-theme="eink"] .notes-list--compact .note-card__tags .tag-chip {
+  min-height: 1.25rem !important;
+  padding: 0.08rem 0.38rem !important;
+  font-size: 0.63rem !important;
+  line-height: 1.15 !important;
+}
+
+/* --------------------------------------------------------------------------
+   Topbar, Headings & Search
+   -------------------------------------------------------------------------- */
+html[data-theme="eink"] .topbar {
+  border: 1px solid var(--eink-border);
+  border-radius: var(--eink-radius-card);
+  background-color: var(--eink-paper);
+  background-image: none;
+  box-shadow: none;
+}
+
+html[data-theme="eink"] .topbar h1 {
+  font-family: var(--font-display);
+  color: var(--eink-ink);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+html[data-theme="eink"] .search-field input {
+  border: 1px solid var(--eink-border) !important;
+  border-radius: var(--eink-radius-control) !important;
+  color: var(--eink-ink) !important;
+  background-color: var(--eink-paper) !important;
+  background-image: none !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="eink"] .search-field input::placeholder {
+  color: var(--eink-ink-subtle);
+  opacity: 1;
+}
+
+html[data-theme="eink"] .search-field input:focus {
+  border-color: #141414 !important;
+  outline: 2px solid #141414 !important;
+  outline-offset: 1px;
+}
+
+html[data-theme="eink"] .search-shortcut {
+  border: 1px solid var(--eink-border);
+  border-radius: var(--eink-radius-sm);
+  color: var(--eink-ink-muted);
+  background: var(--eink-paper-muted);
+}
+
+html[data-theme="eink"] .search-shortcut kbd {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+}
+
+html[data-theme="eink"] .clear-search {
+  border: 1px solid var(--eink-border);
+  border-radius: var(--eink-radius-sm);
+  color: var(--eink-ink);
+  background: var(--eink-paper-muted);
+}
+
+/* --------------------------------------------------------------------------
+   Toolbar, Segmented Controls & Panels
+   -------------------------------------------------------------------------- */
+html[data-theme="eink"] .toolbar,
+html[data-theme="eink"] .topbar-actions.is-pinned {
+  border: 1px solid var(--eink-border);
+  border-radius: var(--eink-radius-control);
+  background-color: var(--eink-paper-muted);
+  background-image: none;
+  box-shadow: none;
+}
+
+html[data-theme="eink"] .notes-panel {
+  border: 1px solid var(--eink-border);
+  border-radius: var(--eink-radius-dialog);
+  color: var(--eink-ink);
+  background-color: var(--eink-paper);
+  background-image: none;
+  box-shadow: none;
+}
+
+html[data-theme="eink"] .notes-panel__heading {
+  border-bottom-color: var(--eink-border);
+}
+
+html[data-theme="eink"] .notes-panel__heading h2 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--eink-ink);
+}
+
+html[data-theme="eink"] :where(
+  .sort-field__trigger,
+  .view-mode-control__choices,
+  .note-editor-modes,
+  .theme-picker__trigger
+) {
+  border: 1px solid var(--eink-border) !important;
+  border-radius: var(--eink-radius-control) !important;
+  color: var(--eink-ink);
+  background-color: var(--eink-paper);
+  background-image: none;
+  box-shadow: none !important;
+}
+
+html[data-theme="eink"] :where(.view-mode-button, .note-editor-mode__button) {
+  border-radius: var(--eink-radius-sm) !important;
+  color: var(--eink-ink-muted);
+}
+
+html[data-theme="eink"] :where(.view-mode-button.is-active, .view-mode-button[aria-pressed="true"], .note-editor-mode__button[aria-pressed="true"]) {
+  border-color: #141414;
+  color: #efece4;
+  background: #141414;
+}
+
+html[data-theme="eink"] :where(
+  .sort-field__menu,
+  .tag-suggestions,
+  .note-type-picker__menu,
+  .color-picker__menu,
+  .theme-picker__menu
+) {
+  border: 1px solid var(--eink-border) !important;
+  border-radius: var(--eink-radius-control) !important;
+  color: var(--eink-ink);
+  background-color: var(--eink-paper);
+  background-image: none;
+  box-shadow: none !important;
+}
+
+html[data-theme="eink"] :where(.sort-field__option, .tag-suggestion, .note-type-picker__option, .color-picker__option) {
+  color: var(--eink-ink);
+}
+
+html[data-theme="eink"] :where(.sort-field__option, .tag-suggestion, .note-type-picker__option, .color-picker__option):is(:hover, :focus-visible),
+html[data-theme="eink"] :where(.sort-field__option, .tag-suggestion, .note-type-picker__option, .color-picker__option)[aria-selected="true"] {
+  outline: none;
+  color: #efece4;
+  background: #141414;
+}
+
+/* --------------------------------------------------------------------------
+   Note Cards (Smooth, Clean Book Paper Cards — Zero Gritty Static)
+   -------------------------------------------------------------------------- */
+html[data-theme="eink"] .note-card {
+  border: 1px solid var(--eink-border);
+  border-radius: var(--eink-radius-card);
+  color: var(--eink-ink);
+  background-color: var(--eink-paper);
+  background-image: none;
+  box-shadow: none;
+  transition:
+    border-color var(--interaction-duration) var(--interaction-easing),
+    background-color var(--interaction-duration) var(--interaction-easing);
+}
+
+html[data-theme="eink"] .note-card:hover {
+  border-color: #141414;
+  background-color: var(--eink-paper-hover);
+}
+
+html[data-theme="eink"] .note-card--pinned {
+  border-color: #141414;
+  background-color: var(--pinned-card-surface);
+}
+
+html[data-theme="eink"] .note-card__pin-toggle {
+  border: 1px solid var(--eink-border) !important;
+  color: var(--eink-ink) !important;
+  background-color: var(--eink-paper) !important;
+}
+
+html[data-theme="eink"] .note-card__pin-toggle:hover:not(:disabled),
+html[data-theme="eink"] .note-card__pin-toggle:focus-visible {
+  border-color: #141414 !important;
+  color: #141414 !important;
+  background-color: var(--eink-paper-hover) !important;
+}
+
+html[data-theme="eink"] .note-card--pinned .note-card__pin-toggle,
+html[data-theme="eink"] .notes-list--compact .note-card--pinned .note-card__pin-toggle {
+  opacity: 1 !important;
+  visibility: visible !important;
+  border: 1px solid #141414 !important;
+  color: #efece4 !important;
+  background-color: #141414 !important;
+}
+
+html[data-theme="eink"] .note-card--pinned .note-card__pin-toggle:hover:not(:disabled),
+html[data-theme="eink"] .note-card--pinned .note-card__pin-toggle:focus-visible,
+html[data-theme="eink"] .note-card--pinned .note-card__pin-toggle.is-focus,
+html[data-theme="eink"] .notes-list--compact .note-card--pinned .note-card__pin-toggle:hover:not(:disabled),
+html[data-theme="eink"] .notes-list--compact .note-card--pinned .note-card__pin-toggle:focus-visible {
+  border-color: #000000 !important;
+  color: #ffffff !important;
+  background-color: #2b2b2b !important;
+}
+
+html[data-theme="eink"] .note-card__pin-toggle svg {
+  stroke: currentColor !important;
+}
+
+html[data-theme="eink"] .note-card__title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--eink-ink);
+  letter-spacing: -0.015em;
+}
+
+html[data-theme="eink"] .note-card:hover .note-card__title {
+  color: #000000;
+}
+
+html[data-theme="eink"] .note-card__preview {
+  font-family: var(--font-sans);
+  color: var(--eink-ink-secondary);
+  line-height: 1.55;
+}
+
+html[data-theme="eink"] mark.search-highlight {
+  border: 1px solid var(--eink-border);
+  border-radius: var(--eink-radius-sm);
+  color: #141414;
+  background: #dedad0;
+  font-weight: 700;
+}
+
+/* --------------------------------------------------------------------------
+   Strictly Monochrome Note Types & Badges (No Colored Pills)
+   -------------------------------------------------------------------------- */
+html[data-theme="eink"] .type-badge,
+html[data-theme="eink"] .note-card .type-badge,
+html[data-theme="eink"] :is(.note-dialog, #note-dialog, .quick-view-dialog, .note-detail-surface) .type-badge,
+html[data-theme="eink"] :is(.note-dialog, #note-dialog, .quick-view-dialog, .note-detail-surface) .note-type-picker__trigger {
+  --detail-type-chip-border: #141414;
+  --detail-type-chip-color: #141414;
+  --detail-type-chip-background: transparent;
+  border: 1px solid #141414 !important;
+  border-radius: var(--eink-radius-sm) !important;
+  color: #141414 !important;
+  background: transparent !important;
+  font-family: var(--font-sans);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  box-shadow: none !important;
+}
+
+/* Reset every individual colored class to monochrome ink */
+html[data-theme="eink"] :is(
+  .type-badge--indigo, .type-badge--blue, .type-badge--sky, .type-badge--cyan,
+  .type-badge--teal, .type-badge--emerald, .type-badge--green, .type-badge--lime,
+  .type-badge--amber, .type-badge--orange, .type-badge--red, .type-badge--rose,
+  .type-badge--pink, .type-badge--violet, .type-badge--purple, .type-badge--slate
+),
+html[data-theme="eink"] :is(
+  .active-filter-pill--type-indigo, .active-filter-pill--type-blue, .active-filter-pill--type-sky,
+  .active-filter-pill--type-cyan, .active-filter-pill--type-teal, .active-filter-pill--type-emerald,
+  .active-filter-pill--type-green, .active-filter-pill--type-lime, .active-filter-pill--type-amber,
+  .active-filter-pill--type-orange, .active-filter-pill--type-red, .active-filter-pill--type-rose,
+  .active-filter-pill--type-pink, .active-filter-pill--type-violet, .active-filter-pill--type-purple,
+  .active-filter-pill--type-slate
+) {
+  --detail-type-chip-border: #141414 !important;
+  --detail-type-chip-color: #141414 !important;
+  --detail-type-chip-background: transparent !important;
+  border-color: #141414 !important;
+  color: #141414 !important;
+  background: transparent !important;
+}
+
+html[data-theme="eink"] .type-badge--filter:focus-visible {
+  outline: 2px solid #141414;
+  outline-offset: 2px;
+}
+
+@media (hover: hover) {
+  html[data-theme="eink"] .note-card .type-badge--filter:hover {
+    color: #efece4 !important;
+    background: #141414 !important;
+  }
+}
+
+/* Active filter pills */
+html[data-theme="eink"] :where(.active-filter-pill, .notes-count, .usage-count, .management-row__default) {
+  border: 1px solid var(--eink-border);
+  border-radius: var(--eink-radius-sm) !important;
+  color: var(--eink-ink);
+  background: var(--eink-paper-muted);
+  box-shadow: none;
+  font-weight: 600;
+}
+
+html[data-theme="eink"] .active-filter-pill.is-active,
+html[data-theme="eink"] .active-filter-pill.active-filter-pill--type {
+  border-color: #141414 !important;
+  color: #efece4 !important;
+  background: #141414 !important;
+}
+
+html[data-theme="eink"] .active-filter-pill.active-filter-pill--type .active-filter-pill__clear {
+  color: #efece4 !important;
+}
+
+html[data-theme="eink"] .active-filter-pill.active-filter-pill--type .active-filter-pill__clear:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+html[data-theme="eink"] :where(.text-button, .active-filter-clear-all, .active-filter-pill__clear) {
+  color: var(--eink-ink);
+  font-weight: 700;
+}
+
+/* --------------------------------------------------------------------------
+   Tags & Counters (Secondary labels & Editor Tag helpers)
+   -------------------------------------------------------------------------- */
+html[data-theme="eink"] :where(.more-tags, .untagged, .quick-view-no-tags) {
+  color: var(--eink-ink-muted);
+  font-size: 0.68rem;
+  font-weight: 500;
+}
+
+html[data-theme="eink"] :is(.selected-tag button, .selected-tag__remove) {
+  color: var(--eink-ink-muted) !important;
+}
+
+html[data-theme="eink"] :is(.selected-tag button, .selected-tag__remove):hover {
+  color: #141414 !important;
+}
+
+html[data-theme="eink"] .tag-suggestion--create {
+  border-color: var(--eink-border) !important;
+  color: var(--eink-ink) !important;
+  background: var(--eink-paper-muted) !important;
+  font-style: italic;
+}
+
+html[data-theme="eink"] .tag-suggestion--create:is(:hover, :focus-visible) {
+  border-color: #141414 !important;
+  color: #efece4 !important;
+  background: #141414 !important;
+}
+
+/* --------------------------------------------------------------------------
+   Buttons & Action Controls
+   -------------------------------------------------------------------------- */
+html[data-theme="eink"] :where(
+  .button,
+  .button-primary,
+  .button-secondary,
+  .button-danger,
+  .button-compact,
+  .icon-button,
+  .mobile-filter-toggle,
+  .theme-toggle,
+  .topbar-actions .button,
+  .dialog-footer .button
+),
+html[data-theme="eink"] .topbar-actions .button:not(#new-note-btn):not(.button-primary),
+html[data-theme="eink"] .topbar-actions .theme-toggle,
+html[data-theme="eink"] #theme-toggle,
+html[data-theme="eink"] #organize-btn,
+html[data-theme="eink"] #export-btn,
+html[data-theme="eink"] #import-btn,
+html[data-theme="eink"] #empty-trash-btn {
+  border: 1px solid var(--eink-border) !important;
+  border-radius: var(--eink-radius-control) !important;
+  color: var(--eink-ink);
+  box-shadow: none !important;
+  font-weight: 600;
+  transition:
+    color var(--interaction-duration) var(--interaction-easing),
+    background-color var(--interaction-duration) var(--interaction-easing),
+    border-color var(--interaction-duration) var(--interaction-easing);
+}
+
+html[data-theme="eink"] #new-note-btn,
+html[data-theme="eink"] .button-primary {
+  border: 1px solid #141414 !important;
+  border-radius: var(--eink-radius-control) !important;
+  color: #efece4 !important;
+  background: #141414 !important;
+  box-shadow: none !important;
+  font-weight: 600;
+}
+
+html[data-theme="eink"] #new-note-btn:hover:not(:disabled),
+html[data-theme="eink"] .button-primary:hover:not(:disabled) {
+  border-color: #000000 !important;
+  color: #ffffff !important;
+  background: #000000 !important;
+}
+
+html[data-theme="eink"] #new-note-btn svg,
+html[data-theme="eink"] .button-primary svg {
+  stroke: currentColor !important;
+}
+
+html[data-theme="eink"] :where(.button-secondary, .icon-button, .mobile-filter-toggle) {
+  background-color: var(--eink-paper);
+  background-image: none;
+}
+
+html[data-theme="eink"] :where(.button-secondary, .icon-button, .mobile-filter-toggle):hover:not(:disabled) {
+  border-color: #141414;
+  color: #000000;
+  background-color: var(--eink-paper-hover);
+}
+
+html[data-theme="eink"] .button-danger {
+  border-color: #141414;
+  color: #141414;
+  background: transparent;
+  font-weight: 700;
+}
+
+html[data-theme="eink"] .button-danger:hover:not(:disabled) {
+  border-color: #141414;
+  color: #efece4;
+  background: #141414;
+}
+
+html[data-theme="eink"] :where(.button-primary, .button-secondary, .button-danger, .icon-button, .mobile-filter-toggle):focus-visible,
+html[data-theme="eink"] :where(.pagination-button, .note-card__action, .note-formatting-tool__button):focus-visible {
+  outline: 2px solid #141414;
+  outline-offset: 2px;
+}
+
+html[data-theme="eink"] :where(.button-primary, .button-secondary, .button-danger, .icon-button, .mobile-filter-toggle):disabled {
+  border-color: var(--eink-border);
+  color: var(--eink-disabled-ink);
+  background: var(--eink-disabled-surface);
+}
+
+html[data-theme="eink"] :where(.pagination-button, .note-card__action, .note-formatting-tool__button) {
+  border: 1px solid transparent;
+  border-radius: var(--eink-radius-control) !important;
+  color: var(--eink-ink);
+  background: transparent;
+}
+
+html[data-theme="eink"] .pagination-button.is-active {
+  border-color: #141414;
+  color: #efece4;
+  background: #141414;
+}
+
+html[data-theme="eink"] .pagination-button:hover:not(:disabled):not(.is-active) {
+  border-color: var(--eink-border);
+  background: var(--eink-paper-hover);
+}
+
+html[data-theme="eink"] :where(.note-card__action--danger, .note-card__action--permanent):is(:hover, :focus-visible) {
+  border-color: #141414;
+  color: #efece4;
+  background: #141414;
+}
+
+html[data-theme="eink"] .note-card__action--restore:is(:hover, :focus-visible) {
+  border-color: #141414;
+  color: #efece4;
+  background: #141414;
+}
+
+/* --------------------------------------------------------------------------
+   Form Inputs & Menus (Smooth clean paper surface)
+   -------------------------------------------------------------------------- */
+html[data-theme="eink"] :where(
+  input:not([type]),
+  input[type="text"],
+  input[type="search"],
+  input[type="email"],
+  input[type="url"],
+  textarea,
+  select,
+  .color-picker__trigger
+) {
+  border: 1px solid var(--eink-border) !important;
+  border-radius: var(--eink-radius-control) !important;
+  color: var(--eink-ink) !important;
+  background-color: var(--eink-paper) !important;
+  background-image: none !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="eink"] :where(
+  input:not([type]),
+  input[type="text"],
+  input[type="search"],
+  input[type="email"],
+  input[type="url"],
+  textarea,
+  select,
+  .color-picker__trigger
+):is(:focus, :focus-visible),
+html[data-theme="eink"] .tag-picker:focus-within {
+  border-color: #141414 !important;
+  outline: 2px solid #141414 !important;
+  outline-offset: 1px;
+}
+
+/* --------------------------------------------------------------------------
+   Dialogs & Note Detail Surface (Grounded, clean paper surfaces)
+   -------------------------------------------------------------------------- */
+html[data-theme="eink"] :where(.app-dialog, .note-detail-surface) {
+  border: 1px solid var(--eink-border);
+  border-radius: var(--eink-radius-dialog);
+  color: var(--eink-ink);
+  background-color: var(--eink-canvas);
+  background-image: none;
+  box-shadow: none !important;
+}
+
+html[data-theme="eink"] .app-dialog::backdrop {
+  background: rgba(18, 18, 18, 0.45);
+}
+
+html[data-theme="eink"] :where(.detail-commandbar, .dialog-header, .dialog-footer, .note-formatting-toolbar, .organize-tabs) {
+  border-color: var(--eink-border);
+  background-color: var(--eink-paper-muted);
+  background-image: none;
+}
+
+html[data-theme="eink"] .note-detail-surface .dialog-header,
+html[data-theme="eink"] .note-detail-surface .dialog-footer {
+  border-color: var(--eink-border);
+  background-color: var(--eink-paper-muted);
+  background-image: none;
+}
+
+html[data-theme="eink"] #note-title {
+  border: 0 !important;
+  border-bottom: 1px solid var(--eink-border) !important;
+  border-radius: 0 !important;
+  padding-inline: 0;
+  color: var(--eink-ink) !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.45rem;
+}
+
+html[data-theme="eink"] #note-title:focus-visible {
+  border-bottom-color: #141414 !important;
+  outline: none !important;
+}
+
+/* Note editor content surfaces remain clean, seamless, papery */
+html[data-theme="eink"] #note-content,
+html[data-theme="eink"] #secondary-note-content-editor,
+html[data-theme="eink"] .note-dialog #note-content,
+html[data-theme="eink"] .note-secondary-surface #secondary-note-content-editor,
+html[data-theme="eink"] #secondary-reader-view #secondary-note-content-editor,
+html[data-theme="eink"] .note-dialog .note-content-preview,
+html[data-theme="eink"] .note-secondary-surface #secondary-split-preview,
+html[data-theme="eink"] #secondary-reader-view #secondary-split-preview {
+  border: 0 !important;
+  border-color: transparent !important;
+  border-radius: 0 !important;
+  outline: none !important;
+  outline-offset: 0 !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  color: var(--eink-ink) !important;
+}
+
+html[data-theme="eink"] .note-formatting-toolbar {
+  border: 1px solid var(--eink-border);
+  border-radius: var(--eink-radius-control);
+}
+
+html[data-theme="eink"] .note-formatting-tool__button {
+  font-family: var(--font-mono);
+}
+
+html[data-theme="eink"] .note-formatting-tool__button:is(:hover, :focus-visible) {
+  border-color: #141414;
+  color: #efece4;
+  background: #141414;
+}
+
+/* Save Status Badge (Monochrome with subtle border-radius) */
+html[data-theme="eink"] .note-save-status,
+html[data-theme="eink"] .detail-commandbar__info .note-save-status,
+html[data-theme="eink"] .note-detail-surface .note-save-status,
+html[data-theme="eink"] #note-dialog .note-save-status {
+  border: 1px solid var(--eink-border) !important;
+  border-radius: var(--eink-radius-sm) !important;
+  color: var(--eink-ink) !important;
+  background-color: var(--eink-paper) !important;
+  background-image: none !important;
+  font-family: var(--font-sans);
+  font-size: 0.68rem;
+  font-weight: 600;
+  line-height: 1.2;
+  padding: 0.12rem 0.45rem !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="eink"] .note-save-status.is-saved,
+html[data-theme="eink"] .detail-commandbar__info .note-save-status.is-saved,
+html[data-theme="eink"] .note-detail-surface .note-save-status.is-saved,
+html[data-theme="eink"] #note-dialog .note-save-status.is-saved {
+  border-color: var(--eink-border) !important;
+  color: #141414 !important;
+  background-color: var(--eink-paper) !important;
+}
+
+html[data-theme="eink"] .note-save-status.is-new,
+html[data-theme="eink"] .detail-commandbar__info .note-save-status.is-new,
+html[data-theme="eink"] .note-detail-surface .note-save-status.is-new,
+html[data-theme="eink"] #note-dialog .note-save-status.is-new {
+  border-color: var(--eink-border) !important;
+  color: var(--eink-ink-muted) !important;
+  background-color: var(--eink-paper-muted) !important;
+}
+
+html[data-theme="eink"] .note-save-status.is-saving,
+html[data-theme="eink"] .detail-commandbar__info .note-save-status.is-saving,
+html[data-theme="eink"] .note-detail-surface .note-save-status.is-saving,
+html[data-theme="eink"] #note-dialog .note-save-status.is-saving {
+  border-color: #141414 !important;
+  color: #141414 !important;
+  background-color: var(--eink-paper-hover) !important;
+}
+
+html[data-theme="eink"] .note-save-status.is-dirty,
+html[data-theme="eink"] .detail-commandbar__info .note-save-status.is-dirty,
+html[data-theme="eink"] .note-detail-surface .note-save-status.is-dirty,
+html[data-theme="eink"] #note-dialog .note-save-status.is-dirty {
+  border-color: var(--eink-border) !important;
+  color: var(--eink-ink) !important;
+  background-color: var(--eink-paper-muted) !important;
+  font-style: italic;
+}
+
+html[data-theme="eink"] .note-save-status.is-error,
+html[data-theme="eink"] .detail-commandbar__info .note-save-status.is-error,
+html[data-theme="eink"] .note-detail-surface .note-save-status.is-error,
+html[data-theme="eink"] #note-dialog .note-save-status.is-error {
+  border-color: #141414 !important;
+  color: #141414 !important;
+  background-color: var(--eink-paper-muted) !important;
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+html[data-theme="eink"] .note-save-status__icon,
+html[data-theme="eink"] .detail-commandbar__info .note-save-status__icon,
+html[data-theme="eink"] .note-detail-surface .note-save-status__icon,
+html[data-theme="eink"] #note-dialog .note-save-status__icon {
+  stroke: currentColor !important;
+  color: inherit !important;
+}
+
+html[data-theme="eink"] :where(.shortcut-tooltip, .note-save-shortcut__tooltip, .note-markdown-help__tooltip, .note-detail-action-tooltip__content, .note-formatting-tool__tooltip) {
+  border: 1px solid var(--eink-border);
+  color: var(--eink-ink);
+  background-color: var(--eink-paper);
+  background-image: none;
+  box-shadow: none !important;
+}
+
+html[data-theme="eink"] kbd {
+  border: 1px solid var(--eink-border);
+  border-radius: var(--eink-radius-sm);
+  color: var(--eink-ink);
+  background: var(--eink-paper-muted);
+}
+
+/* --------------------------------------------------------------------------
+   Organize & Settings
+   -------------------------------------------------------------------------- */
+html[data-theme="eink"] .organize-tabs {
+  border: 1px solid var(--eink-border) !important;
+  border-radius: var(--eink-radius-control) !important;
+  background-color: var(--eink-paper-muted) !important;
+}
+
+html[data-theme="eink"] .organize-tab {
+  border: 0 !important;
+  border-radius: var(--eink-radius-sm) !important;
+  color: var(--eink-ink-muted);
+  background: transparent;
+  transition:
+    color var(--interaction-duration) var(--interaction-easing),
+    background-color var(--interaction-duration) var(--interaction-easing);
+}
+
+html[data-theme="eink"] .organize-tab:hover:not(.is-active) {
+  color: #141414;
+  background-color: var(--eink-paper-hover);
+}
+
+html[data-theme="eink"] .organize-tab.is-active {
+  border-radius: var(--eink-radius-sm) !important;
+  color: #efece4 !important;
+  background: #141414 !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="eink"] .organize-tab:focus-visible {
+  outline: 2px solid #141414;
+  outline-offset: 1px;
+}
+
+html[data-theme="eink"] :where(.management-create-row, .management-list) {
+  border: 1px solid var(--eink-border);
+  border-radius: var(--eink-radius-card);
+  color: var(--eink-ink);
+  background-color: var(--eink-paper-muted);
+  background-image: none;
+}
+
+html[data-theme="eink"] .management-row {
+  border-color: var(--eink-border);
+  color: var(--eink-ink);
+}
+
+html[data-theme="eink"] .management-row__name {
+  color: var(--eink-ink);
+}
+
+html[data-theme="eink"] :where(.empty-state, .management-empty) {
+  color: var(--eink-ink-muted);
+}
+
+html[data-theme="eink"] .empty-state__icon {
+  border: 1px solid var(--eink-border);
+  color: var(--eink-ink);
+  background: var(--eink-paper-muted);
+}
+
+/* Grayscale neutralization for color picker swatches in E-Ink mode */
+html[data-theme="eink"] .color-picker__swatch {
+  filter: grayscale(100%);
+  border: 1px solid var(--eink-border);
+}
+
+html[data-theme="eink"] .color-picker__swatch[aria-selected="true"] {
+  outline: 2px solid #141414;
+  outline-offset: 2px;
+}
+
+/* --------------------------------------------------------------------------
+   Markdown Preview & Quick View (Literary E-Paper Reading Experience)
+   -------------------------------------------------------------------------- */
+html[data-theme="eink"] :where(.quick-view-content, .note-content-preview) {
+  color: var(--eink-ink);
+  background: transparent;
+  font-family: var(--font-display);
+  font-size: 1.08rem;
+  line-height: 1.78;
+}
+
+html[data-theme="eink"] .quick-view-document-header h1 {
+  font-family: var(--font-display);
+  color: var(--eink-ink);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+html[data-theme="eink"] :where(.quick-view-content, .note-content-preview) :where(h1, h2, h3, h4, h5, h6) {
+  color: var(--eink-ink);
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+html[data-theme="eink"] :where(.quick-view-content, .note-content-preview) a {
+  color: var(--eink-ink);
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 2px;
+}
+
+html[data-theme="eink"] :where(.quick-view-content, .note-content-preview) a:hover {
+  color: #000000;
+}
+
+html[data-theme="eink"] :where(.quick-view-content, .note-content-preview) blockquote {
+  border: 0;
+  border-inline-start: 3px solid #141414;
+  background-color: var(--eink-paper-muted);
+  background-image: none;
+  color: var(--eink-ink);
+  font-style: italic;
+  padding: 0.75rem 1rem;
+}
+
+html[data-theme="eink"] :where(.quick-view-content, .note-content-preview) code:not(pre code) {
+  border: 1px solid var(--eink-border);
+  border-radius: var(--eink-radius-sm);
+  background: var(--eink-paper-muted);
+  color: var(--eink-ink);
+  font-family: var(--font-mono);
+  font-size: 0.88em;
+  font-weight: 600;
+}
+
+html[data-theme="eink"] :where(.quick-view-content, .note-content-preview) pre {
+  border: 1px solid var(--eink-border);
+  border-radius: var(--eink-radius-control);
+  background-color: var(--eink-paper-muted);
+  background-image: none;
+  color: #141414;
+  box-shadow: none;
+}
+
+html[data-theme="eink"] :where(.quick-view-content, .note-content-preview) pre code {
+  border: 0;
+  background: transparent;
+  color: #141414;
+  font-family: var(--font-mono);
+}
+
+html[data-theme="eink"] :where(.quick-view-content, .note-content-preview) .markdown-code-header {
+  border-bottom: 1px solid var(--eink-border);
+  background: var(--eink-paper-hover);
+  color: var(--eink-ink);
+}
+
+html[data-theme="eink"] :where(.quick-view-content, .note-content-preview) .markdown-code-lang {
+  color: var(--eink-ink-muted);
+  font-family: var(--font-mono);
+}
+
+html[data-theme="eink"] :where(.quick-view-content, .note-content-preview) .markdown-code-copy-btn {
+  border: 1px solid var(--eink-border);
+  background: var(--eink-paper);
+  color: var(--eink-ink);
+}
+
+html[data-theme="eink"] :where(.quick-view-content, .note-content-preview) .markdown-code-copy-btn:is(:hover, :focus-visible) {
+  outline: none;
+  border-color: #141414;
+  color: #efece4;
+  background: #141414;
+}
+
+html[data-theme="eink"] :where(.quick-view-content, .note-content-preview) .markdown-code-copy-btn.is-copied {
+  border-color: #141414;
+  color: #efece4;
+  background: #141414;
+}
+
+/* Syntax Highlighting Tokens in Monochrome Grayscale */
+html[data-theme="eink"] .token-keyword { color: #141414; font-weight: 700; }
+html[data-theme="eink"] .token-string { color: #383838; }
+html[data-theme="eink"] .token-function { color: #141414; font-weight: 600; }
+html[data-theme="eink"] .token-number { color: #2e2e2e; }
+html[data-theme="eink"] .token-boolean { color: #141414; font-weight: 700; }
+html[data-theme="eink"] .token-comment { color: #707070; font-style: italic; }
+html[data-theme="eink"] .token-operator { color: #141414; }
+html[data-theme="eink"] :where(.token-property, .token-tag) { color: #2e2e2e; }
+html[data-theme="eink"] .token-type { color: #141414; font-weight: 600; }
+html[data-theme="eink"] .token-punctuation { color: #666666; }
+
+/* Tables, Details, Alerts */
+html[data-theme="eink"] :where(.quick-view-content, .note-content-preview) .markdown-table-wrapper {
+  border: 1px solid var(--eink-border);
+  border-radius: var(--eink-radius-control);
+  background-color: var(--eink-paper);
+  background-image: none;
+}
+
+html[data-theme="eink"] :where(.quick-view-content, .note-content-preview) .markdown-table :where(th, td) {
+  border-color: var(--eink-border);
+}
+
+html[data-theme="eink"] :where(.quick-view-content, .note-content-preview) .markdown-table th {
+  color: var(--eink-ink);
+  background-color: var(--eink-paper-muted);
+  font-family: var(--font-display);
+  font-weight: 700;
+}
+
+html[data-theme="eink"] :where(.quick-view-content, .note-content-preview) .markdown-table tbody tr:nth-child(even) {
+  background-color: var(--eink-paper-muted);
+}
+
+html[data-theme="eink"] :where(.quick-view-content, .note-content-preview) hr {
+  border-color: var(--eink-border);
+  border-top-style: solid;
+}
+
+/* In E-Ink mode, alerts are rendered as restrained monochrome editorial boxes */
+html[data-theme="eink"] :where(.quick-view-content, .note-content-preview) .markdown-alert {
+  border: 1px solid #141414;
+  border-left-width: 4px;
+  border-radius: var(--eink-radius-sm);
+  color: var(--eink-ink);
+  background-color: var(--eink-paper-muted);
+  background-image: none;
+  box-shadow: none;
+}
+
+html[data-theme="eink"] :where(.quick-view-content, .note-content-preview) .markdown-alert__title {
+  color: #141414 !important;
+  font-family: var(--font-display);
+  font-weight: 700;
+}
+
+html[data-theme="eink"] :where(.quick-view-content, .note-content-preview) .markdown-details {
+  border: 1px solid var(--eink-border);
+  border-radius: var(--eink-radius-control);
+  color: var(--eink-ink);
+  background-color: var(--eink-paper-muted);
+  background-image: none;
+}
+
+html[data-theme="eink"] :where(.quick-view-content, .note-content-preview) .markdown-details summary {
+  color: var(--eink-ink);
+  font-family: var(--font-display);
+  font-weight: 700;
+}
+
+html[data-theme="eink"] :where(.quick-view-content, .note-content-preview) .markdown-math {
+  border: 1px solid var(--eink-border);
+  color: var(--eink-ink);
+  background: var(--eink-paper-muted);
+  font-family: var(--font-mono);
+}
+
+html[data-theme="eink"] :where(.quick-view-content, .note-content-preview) .markdown-footnotes {
+  border-color: var(--eink-border);
+  color: var(--eink-ink-muted);
+}
+
+html[data-theme="eink"] :where(.quick-view-content, .note-content-preview) .markdown-footnotes h4 {
+  color: var(--eink-ink);
+  font-family: var(--font-display);
+}
+
+html[data-theme="eink"] :where(.quick-view-content, .note-content-preview) :where(.markdown-footnote-ref, .markdown-footnote-backref) {
+  color: var(--eink-ink);
+  font-weight: 700;
+}
+
+html[data-theme="eink"] :where(.quick-view-content, .note-content-preview) .markdown-task-item > input {
+  accent-color: #141414;
+}
+
+/* --------------------------------------------------------------------------
+   Theme Switcher Icon Display
+   -------------------------------------------------------------------------- */
+html[data-theme="eink"] .theme-toggle__icon--eink {
+  display: inline-flex !important;
+}
+
+html[data-theme="eink"] :where(
+  .theme-toggle__icon--sun,
+  .theme-toggle__icon--coffee,
+  .theme-toggle__icon--forest,
+  .theme-toggle__icon--midnight,
+  .theme-toggle__icon--moon,
+  .theme-toggle__icon--retro,
+  .theme-toggle__icon--auto
+) {
+  display: none !important;
+}
+
+/* --------------------------------------------------------------------------
+   Hover & Accessibility States
+   -------------------------------------------------------------------------- */
+@media (hover: hover) and (pointer: fine) {
+  html[data-theme="eink"] :where(.sidebar-toggle-btn, .button-primary, .button-secondary, .button-danger, .icon-button, .mobile-filter-toggle):hover:not(:disabled),
+  html[data-theme="eink"] :where(.tag-filter-option, .tag-chip, .tag-add-button):hover {
+    box-shadow: none;
+  }
+
+  html[data-theme="eink"] :where(.space-link, .sidebar-filter):is(.is-active, [aria-pressed="true"]):hover {
+    border-color: #000000;
+    color: #ffffff;
+    background: #000000;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-theme="eink"] {
+    --interaction-duration: 0ms;
+  }
+  html[data-theme="eink"] :where(.note-card, button) {
+    transform: none !important;
+  }
+}
+
+@media (max-width: 620px) {
+  html[data-theme="eink"] :where(.app-dialog, .note-detail-surface) {
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+}
+
+@media (forced-colors: active) {
+  html[data-theme="eink"] :where(.tag-filter-option, .tag-chip, .button, .icon-button, .note-card, .app-dialog) {
+    border-color: ButtonText;
+    box-shadow: none;
+  }
+}

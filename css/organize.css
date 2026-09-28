@@ -34,6 +34,9 @@
   --theme-swatch-retro-paper: oklch(91.5% 0.018 78);
   --theme-swatch-retro-accent: oklch(42% 0.075 151);
   --theme-swatch-retro-rule: oklch(69% 0.027 72);
+  --theme-swatch-eink-paper: #efece4;
+  --theme-swatch-eink-accent: #141414;
+  --theme-swatch-eink-rule: #d5cfc2;
   --theme-picker-menu-shadow: 0 0.75rem 1.75rem rgb(42 55 79 / 12%), 0 0.15rem 0.45rem rgb(42 55 79 / 6%);
 }
 
@@ -553,6 +556,14 @@ form.management-row .management-row__controls--editing .color-picker__trigger {
   --theme-preview-paper: var(--theme-swatch-retro-paper);
   --theme-preview-accent: var(--theme-swatch-retro-accent);
   --theme-preview-rule: var(--theme-swatch-retro-rule);
+}
+
+
+
+.theme-preview[data-theme-preview="eink"] {
+  --theme-preview-paper: var(--theme-swatch-eink-paper);
+  --theme-preview-accent: var(--theme-swatch-eink-accent);
+  --theme-preview-rule: var(--theme-swatch-eink-rule);
 }
 
 

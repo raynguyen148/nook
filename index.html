@@ -14,7 +14,7 @@
           const stored = window.localStorage.getItem("nook:theme");
           // Preserve the renamed preferences for existing local installs.
           const storedTheme = stored === "warm" ? "coffee" : stored === "midnight-blue" ? "midnight" : stored;
-          const mode = ["light", "coffee", "forest", "midnight", "dark", "retro", "auto"].includes(storedTheme) ? storedTheme : "light";
+          const mode = ["light", "coffee", "forest", "midnight", "dark", "retro", "eink", "auto"].includes(storedTheme) ? storedTheme : "light";
           // Keep Auto aligned with resolveAutoTheme() in js/app/preferences.js.
           const theme = mode === "auto"
             ? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")
@@ -30,6 +30,7 @@
               "midnight": "#18263f",
               dark: "#09090b",
               retro: "#2f5b3e",
+              eink: "#efece4",
             };
             meta.content = themeColors[theme] || themeColors.light;
           }
@@ -324,6 +325,13 @@
                     <circle cx="8" cy="12" r="0.9" fill="currentColor" stroke="none" />
                     <circle cx="12" cy="12" r="0.9" fill="currentColor" stroke="none" />
                     <path d="M7 15h8" />
+                  </svg>
+                </span>
+                <span class="theme-toggle__icon theme-toggle__icon--eink" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="4" y="2.5" width="16" height="19" rx="2.5" />
+                    <path d="M7.5 7h9M7.5 10.5h9M7.5 14h5.5" />
+                    <circle cx="12" cy="18" r="0.8" fill="currentColor" stroke="none" />
                   </svg>
                 </span>
                 <span id="theme-toggle-label" class="button-label">Light</span>
@@ -1567,6 +1575,7 @@
                 <option value="midnight">Midnight</option>
                 <option value="dark">Dark</option>
                 <option value="retro">Retro</option>
+                <option value="eink">E-Ink</option>
               </select>
               <button
                 id="theme-picker-trigger"
@@ -1616,6 +1625,10 @@
                   <button class="theme-picker__option" type="button" role="option" aria-selected="false" data-theme-option="retro" tabindex="-1">
                     <span class="theme-preview" data-theme-preview="retro" aria-hidden="true"></span>
                     <span class="theme-picker__option-label">Retro</span>
+                  </button>
+                  <button class="theme-picker__option" type="button" role="option" aria-selected="false" data-theme-option="eink" tabindex="-1">
+                    <span class="theme-preview" data-theme-preview="eink" aria-hidden="true"></span>
+                    <span class="theme-picker__option-label">E-Ink</span>
                   </button>
                 </div>
               </div>

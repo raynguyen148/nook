@@ -33,6 +33,7 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
     midnight: "Midnight",
     dark: "Dark",
     retro: "Retro",
+    eink: "E-Ink",
   });
 
   // These core utilities are resolved only when an interaction occurs, after
@@ -305,6 +306,7 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
         "midnight": "#18263f",
         dark: "#09090b",
         retro: "#2f5b3e",
+        eink: "#efece4",
       };
       themeColorMeta.content = themeColors[theme] || themeColors.light;
     }

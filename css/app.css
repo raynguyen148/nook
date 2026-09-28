@@ -27,6 +27,7 @@
 @import url("./themes/midnight.css");
 @import url("./themes/dark.css");
 @import url("./themes/retro.css");
+@import url("./themes/eink.css");
 
 /* Responsive geometry uses the active theme's existing semantic tokens. */
 @import url("./mobile.css");
