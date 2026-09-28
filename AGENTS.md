@@ -46,14 +46,21 @@ runtime dependency. Keep the app openable as a static local website.
 - `js/app/preferences.js`: theme, layout, sidebar, responsive control state, and
   UI preference persistence.
 - `js/app/feedback.js`: toast behavior and confirmation-dialog focus management.
+- `js/app/note-actions.js`: shared pin, Trash/Undo, restore, and permanent-delete
+  mutations used by cards and editor surfaces.
 - `js/app/library.js`: sidebar, note cards, pagination, Quick View, clipboard,
-  pin, restore, and Trash rendering/actions.
+  Side note, and Trash rendering.
 - `js/app/editor.js`: note editor, tag/type pickers, Markdown modes/formatting,
-  autosave, dirty-draft safety, and note save/delete behavior.
+  autosave, dirty-draft safety, and note save behavior.
+- `js/app/split-selection.js`: Split-mode selection mapping and highlight lifecycle.
 - `js/app/organize.js`: type/tag management, library refresh/render orchestration,
   import/export, and per-note downloads.
 - `js/app/sync.js`: same-origin tab notifications and guarded external refreshes.
+- `js/app/offline.js`: storage capability reporting and hosted update controls.
+- `js/app/mobile.js`: responsive control placement, mobile sheets, and Back guards.
 - `js/app/events.js`: event registration, startup arrangement, and bootstrap.
+- `scripts/update-service-worker-cache.cjs`: refreshes the hosted asset cache
+  fingerprint; its regression test rejects missing or stale assets.
 - `favicon.svg`: local app icon.
 
 ## Data and storage conventions

@@ -1,6 +1,6 @@
 # Nook
 
-[![No Dependencies](https://img.shields.io/badge/dependencies-none-brightgreen.svg)](package.json)
+[![No Dependencies](https://img.shields.io/badge/dependencies-none-brightgreen.svg)](#development-and-validation)
 [![Vanilla JS](https://img.shields.io/badge/JavaScript-Vanilla-yellow.svg)](js/)
 [![Offline First](https://img.shields.io/badge/offline-first-blue.svg)](js/storage.js)
 [![License: Unlicense](https://img.shields.io/badge/license-Unlicense-blue.svg)](LICENSE)
@@ -43,7 +43,7 @@ practice, and personal ideas in one calm, searchable local library.
 - Export and import a complete JSON backup, including version history. The local backup-health indicator reminds you when an export is missing or old.
 - Keep the primary editor and Side note as independent sessions with per-pane draft recovery and stale-write conflict handling.
 - Manage note types and tags from Settings → Organize Notes.
-- Choose Light, Coffee, Forest, Midnight, Dark, Retro, or Auto theme, switch between Compact, Comfortable, and Grid layouts, or collapse the sidebar into an icon rail.
+- Choose Light, Coffee, Forest, Midnight, Dark, Retro, E-Ink, or Auto theme, switch between Compact, Comfortable, and Grid layouts, or collapse the sidebar into an icon rail.
 - Recover an unfinished local editor draft after an interrupted session.
 - Keep multiple open tabs in sync when the browser supports `BroadcastChannel`.
 - Use `C` for quick capture plus platform-aware editor shortcuts for formatting, saving, and switching editor modes.
@@ -208,8 +208,8 @@ has its own autosave, recovery record, conflict state, and history action.
 
 ### Themes
 
-Nook has a light, clean interface by default. You can use the theme button (or `T`) to cycle between seven
-modes: Light, Coffee, Forest, Midnight, Dark, Retro, and Auto. Auto matches
+Nook has a light, clean interface by default. You can use the theme button (or `T`) to cycle between eight
+modes: Light, Coffee, Forest, Midnight, Dark, Retro, E-Ink, and Auto. Auto matches
 your device's system color scheme preference (Light or Dark). Hover over or keyboard-focus the button to see the
 current and next theme. Auto stays selected after reload and updates when the system theme changes.
 
@@ -401,14 +401,18 @@ mutation occurs.
 | File | Responsibility |
 | --- | --- |
 | [`index.html`](index.html) | Semantic page structure, accessible controls, detail workspace, and native dialogs |
-| [`css/app.css`](css/app.css) | Single cascade manifest for foundations, components, features, accessibility, and themes |
+| [`css/app.css`](css/app.css) | Shared cascade manifest for foundations, components, features, and accessibility |
 | [`css/`](css) | Stylesheets organized by component, feature, responsive, accessibility, and theme ownership |
 | [`js/storage.js`](js/storage.js) | IndexedDB v3 setup, validation, migration, revisioned CRUD, history, Trash lifecycle, and backup import/export |
 | [`js/markdown.js`](js/markdown.js) | Safe dependency-free Markdown parser and DOM renderer |
 | [`js/app/runtime.js`](js/app/runtime.js) | Registers application modules and initializes them in an explicit dependency order |
 | [`js/app/editor-session.js`](js/app/editor-session.js) | DOM-independent primary/Side note session state, CAS saves, conflict state, and per-session draft recovery |
+| [`js/app/note-actions.js`](js/app/note-actions.js) | Shared pin, Trash, restore, permanent-delete, and undo mutations |
+| [`js/app/split-selection.js`](js/app/split-selection.js) | Split-mode source/preview selection highlighting |
 | [`js/app/history.js`](js/app/history.js) | Version-history preview and restore controller |
 | [`js/app/offline.js`](js/app/offline.js) | Optional storage-health, persistent-storage request, and hosted Service Worker update controls |
+| [`js/app/mobile.js`](js/app/mobile.js) | Responsive control placement, mobile sheets, and Back-button guards |
+| [`scripts/update-service-worker-cache.cjs`](scripts/update-service-worker-cache.cjs) | Recomputes the cache fingerprint from all hosted app assets |
 | [`sw.js`](sw.js) | Versioned cache for local hosted app resources; never owns note data |
 | [`manifest.webmanifest`](manifest.webmanifest) | Local install metadata for hosted browsers |
 | [`icons/`](icons) | Local PNG application icons used by installed browsers and operating systems |
@@ -428,13 +432,14 @@ js/storage.js → js/markdown.js → js/app/runtime.js → classic-script regist
 `js/storage.js` exposes the frozen `PersonalNotesStorage` API and
 `js/markdown.js` exposes the frozen `NookMarkdown` API. The application modules
 register installers in any script-tag order. `runtime.js` initializes them as
-`core → preferences → feedback → editor-session → library → editor → history → organize → sync → offline → events`, reports missing or duplicate modules, and
+`core → preferences → feedback → editor-session → note-actions → library → editor → split-selection → history → organize → sync → offline → mobile → events`, reports missing or duplicate modules, and
 `events.js` removes the temporary registry before bootstrap. This is a
 classic-script registry, not an ES Module graph. The UI continues to use the
 storage API instead of accessing IndexedDB directly.
 
-`index.html` links only `css/app.css`. That manifest makes the existing cascade
-order explicit in one place; selectors remain in their owning stylesheet. See
+`index.html` loads `css/app.css`, one active theme stylesheet, then `css/mobile.css`.
+This keeps inactive theme rules out of the parsed cascade while preserving the
+existing order; selectors remain in their owning stylesheet. See
 [`docs/architecture.md`](docs/architecture.md) before adding a module, moving a
 selector, or introducing a cross-layer override.
 
@@ -448,15 +453,24 @@ node --check js/storage.js
 node --check js/markdown.js
 for file in js/app/*.js; do node --check "$file"; done
 node --test tests/*.test.js
+node scripts/update-service-worker-cache.cjs
 git diff --check
 ```
 
-The storage contract harness is `tests/browser/storage-harness.html`; run its
+Run the cache update script after changing any hosted HTML, CSS, JavaScript,
+font, icon, manifest asset, or Service Worker behavior. The regression test
+recomputes the same fingerprint and fails if the cache version or asset manifest
+is stale. Worker installation bypasses an older HTTP cache before populating the
+new versioned cache.
+
+The Node suite verifies Service Worker asset completeness, cache fingerprints,
+installation, activation cleanup, theme loading, and note-action behavior. The
+storage contract harness is `tests/browser/storage-harness.html`; run its
 `v1`, `v2`, `save`, `bytes`, and `backup` scenarios on a fresh isolated
 localhost origin. The EditorSession and Markdown harnesses cover their own
 boundaries. These harnesses do not prove full application startup, two-tab
-rendering, Service Worker update behavior, quota grants, or responsive and
-accessibility QA.
+rendering, a real-browser cross-release Service Worker activation, quota grants,
+or responsive and accessibility QA.
 
 When changing behavior, manually exercise the affected flow through a local
 server or by opening `index.html`. For editor and responsive changes, check new

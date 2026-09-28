@@ -1,6 +1,6 @@
 "use strict";
 
-const CACHE_VERSION = "nook-app-v118";
+const CACHE_VERSION = "nook-app-8b3155abfc76";
 const APP_ASSETS = [
   "./",
   "./index.html",
@@ -28,6 +28,13 @@ const APP_ASSETS = [
   "./css/themes/forest.css",
   "./css/themes/midnight.css",
   "./css/themes/retro.css",
+  "./css/themes/eink.css",
+  "./fonts/geist/geist-vietnamese-wght-normal.woff2",
+  "./fonts/geist/geist-latin-ext-wght-normal.woff2",
+  "./fonts/geist/geist-latin-wght-normal.woff2",
+  "./fonts/geist/geist-vietnamese-wght-italic.woff2",
+  "./fonts/geist/geist-latin-ext-wght-italic.woff2",
+  "./fonts/geist/geist-latin-wght-italic.woff2",
   "./js/storage.js",
   "./js/markdown.js",
   "./js/app/runtime.js",
@@ -35,6 +42,7 @@ const APP_ASSETS = [
   "./js/app/preferences.js",
   "./js/app/feedback.js",
   "./js/app/editor-session.js",
+  "./js/app/note-actions.js",
   "./js/app/library.js",
   "./js/app/editor.js",
   "./js/app/split-selection.js",
@@ -47,7 +55,11 @@ const APP_ASSETS = [
 ];
 
 self.addEventListener("install", (event) => {
-  event.waitUntil(caches.open(CACHE_VERSION).then((cache) => cache.addAll(APP_ASSETS)));
+  const requests = APP_ASSETS.map((asset) => new Request(
+    new URL(asset, self.registration.scope),
+    { cache: "reload" },
+  ));
+  event.waitUntil(caches.open(CACHE_VERSION).then((cache) => cache.addAll(requests)));
 });
 
 self.addEventListener("activate", (event) => {

@@ -35,6 +35,15 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
     retro: "Retro",
     eink: "E-Ink",
   });
+  const THEME_STYLESHEET_FILES = Object.freeze({
+    light: "classic",
+    coffee: "coffee",
+    forest: "forest",
+    midnight: "midnight",
+    dark: "dark",
+    retro: "retro",
+    eink: "eink",
+  });
 
   // These core utilities are resolved only when an interaction occurs, after
   // every installer has completed.
@@ -278,6 +287,12 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
   function syncThemeUI() {
     const mode = ui.theme;
     const theme = mode === "auto" ? resolveAutoTheme() : mode;
+    const themeFile = THEME_STYLESHEET_FILES[theme] || THEME_STYLESHEET_FILES.light;
+    const themeHref = `css/themes/${themeFile}.css`;
+    if (elements.themeStylesheet?.getAttribute("href") !== themeHref) {
+      elements.themeStylesheet?.setAttribute("href", themeHref);
+    }
+    if (elements.themeStylesheet) elements.themeStylesheet.dataset.themeStylesheet = theme;
     document.documentElement.dataset.theme = theme;
     document.documentElement.dataset.themeMode = mode;
     syncThemePickerUI(mode, theme);

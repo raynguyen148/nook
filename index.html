@@ -8,32 +8,24 @@
       content="Nook is a private, offline-first workspace stored in this browser."
     />
     <meta name="theme-color" content="#9e6b02" />
+    <title>Nook</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="icons/nook-192-v2.png" />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="stylesheet" href="css/app.css" />
     <script>
       (() => {
+        let mode = "light";
+        let theme = "light";
         try {
           const stored = window.localStorage.getItem("nook:theme");
           // Preserve the renamed preferences for existing local installs.
           const storedTheme = stored === "warm" ? "coffee" : stored === "midnight-blue" ? "midnight" : stored;
-          const mode = ["light", "coffee", "forest", "midnight", "dark", "retro", "eink", "auto"].includes(storedTheme) ? storedTheme : "light";
+          mode = ["light", "coffee", "forest", "midnight", "dark", "retro", "eink", "auto"].includes(storedTheme) ? storedTheme : "light";
           // Keep Auto aligned with resolveAutoTheme() in js/app/preferences.js.
-          const theme = mode === "auto"
+          theme = mode === "auto"
             ? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")
             : mode;
-          document.documentElement.dataset.theme = theme;
-          document.documentElement.dataset.themeMode = mode;
-          const meta = document.querySelector('meta[name="theme-color"]');
-          if (meta) {
-            const themeColors = {
-              light: "#9e6b02",
-              coffee: "#a35616",
-              forest: "#2f6b4f",
-              "midnight": "#18263f",
-              dark: "#09090b",
-              retro: "#2f5b3e",
-              eink: "#efece4",
-            };
-            meta.content = themeColors[theme] || themeColors.light;
-          }
           if (window.localStorage.getItem("nook:sidebar-collapsed") === "true") {
             document.documentElement.dataset.sidebarCollapsed = "true";
           }
@@ -45,13 +37,28 @@
         } catch {
           // Keep default UI preferences when browser privacy settings block localStorage.
         }
+        document.documentElement.dataset.theme = theme;
+        document.documentElement.dataset.themeMode = mode;
+        const themeFiles = { light: "classic", coffee: "coffee", forest: "forest", midnight: "midnight", dark: "dark", retro: "retro", eink: "eink" };
+        const themeStylesheet = document.createElement("link");
+        themeStylesheet.id = "nook-theme-stylesheet";
+        themeStylesheet.rel = "stylesheet";
+        themeStylesheet.href = `css/themes/${themeFiles[theme] || themeFiles.light}.css`;
+        themeStylesheet.dataset.themeStylesheet = theme;
+        document.head.append(themeStylesheet);
+        const themeColors = {
+          light: "#9e6b02",
+          coffee: "#a35616",
+          forest: "#2f6b4f",
+          midnight: "#18263f",
+          dark: "#09090b",
+          retro: "#2f5b3e",
+          eink: "#efece4",
+        };
+        document.querySelector('meta[name="theme-color"]').content = themeColors[theme] || themeColors.light;
       })();
     </script>
-    <title>Nook</title>
-    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
-    <link rel="apple-touch-icon" href="icons/nook-192-v2.png" />
-    <link rel="manifest" href="manifest.webmanifest" />
-    <link rel="stylesheet" href="css/app.css" />
+    <link rel="stylesheet" href="css/mobile.css" />
   </head>
   <body>
     <main class="app-shell" aria-label="Nook" aria-busy="true" inert>
@@ -1898,6 +1905,7 @@
     <script src="js/app/runtime.js"></script>
     <script src="js/app/core.js"></script>
     <script src="js/app/editor-session.js"></script>
+    <script src="js/app/note-actions.js"></script>
     <script src="js/app/editor.js"></script>
     <script src="js/app/split-selection.js"></script>
     <script src="js/app/history.js"></script>

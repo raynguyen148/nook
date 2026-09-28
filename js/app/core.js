@@ -54,6 +54,7 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
   const elements = {
     workspace: document.querySelector(".workspace"),
     appShell: document.querySelector(".app-shell"),
+    themeStylesheet: document.querySelector("#nook-theme-stylesheet"),
     createdTodayFilter: document.querySelector("#created-today-filter"),
     createdTodayFilterCount: document.querySelector("#created-today-filter-count"),
     updatedTodayFilter: document.querySelector("#updated-today-filter"),

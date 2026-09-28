@@ -10,6 +10,7 @@
     "preferences",
     "feedback",
     "editor-session",
+    "note-actions",
     "library",
     "editor",
     "split-selection",

@@ -1,7 +1,7 @@
 globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
   "use strict";
 
-  // Library navigation, cards, pagination, Quick View, and Trash actions.
+  // Library navigation, cards, pagination, Quick View, and Side note behavior.
   const { api, storage, elements, library, ui, constants } = app;
   const { PAGE_SIZE, MOTION } = constants;
   let noteDetailAnimation = null;
@@ -68,7 +68,10 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
   const getVisibleNotes = (...args) => api.getVisibleNotes(...args);
   const openNoteEditor = (...args) => api.openNoteEditor(...args);
   const requestNoteEditorClose = (...args) => api.requestNoteEditorClose(...args);
-  const deleteNoteWithConfirmation = (...args) => api.deleteNoteWithConfirmation(...args);
+  const moveNoteToTrash = (...args) => api.moveNoteToTrash(...args);
+  const toggleNotePinned = (...args) => api.toggleNotePinned(...args);
+  const restoreNoteWithFeedback = (...args) => api.restoreNoteWithFeedback(...args);
+  const permanentlyDeleteNoteWithConfirmation = (...args) => api.permanentlyDeleteNoteWithConfirmation(...args);
   const renderLibrary = (...args) => api.renderLibrary(...args);
   const renderSearchResults = (...args) => api.renderSearchResults(...args);
   const refreshLibrary = (...args) => api.refreshLibrary(...args);
@@ -1066,7 +1069,7 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
     const restoreToggleFocus = !immediate && Boolean(elements.secondarySurface?.contains(document.activeElement));
 
     if (!immediate && secondaryEditorSession?.hasUnsavedChanges()) {
-      const saved = await saveSecondaryNote({ isAutoSave: true });
+      const saved = await saveSecondaryNote();
       if (!saved) return false;
     }
     clearTimeout(ui.secondaryAutoSaveTimer);
@@ -1242,7 +1245,7 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
 
   async function showSecondaryPicker({ isCurrent = () => true, resetSearch = false } = {}) {
     if (secondaryEditorSession?.hasUnsavedChanges()) {
-      const saved = await saveSecondaryNote({ isAutoSave: true });
+      const saved = await saveSecondaryNote();
       if (!saved) return false;
     }
     if (!isCurrent()) return false;
@@ -1538,11 +1541,11 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
 
     clearTimeout(ui.secondaryAutoSaveTimer);
     ui.secondaryAutoSaveTimer = setTimeout(() => {
-      void saveSecondaryNote({ isAutoSave: true });
+      void saveSecondaryNote();
     }, 1200);
   }
 
-  async function saveSecondaryNote({ isAutoSave = false } = {}) {
+  async function saveSecondaryNote() {
     if (!ui.secondaryNoteId || !secondaryEditorSession) return true;
     const session = secondaryEditorSession;
     syncSecondaryEditorDraft();
@@ -1612,12 +1615,9 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
       }
       renderSecondaryTimestamps(saved.createdAt, saved.updatedAt);
 
-      if (!isAutoSave) {
-        showToast("Side note saved.");
-      }
       if (ui.secondaryNoteDirty) {
         clearTimeout(ui.secondaryAutoSaveTimer);
-        ui.secondaryAutoSaveTimer = setTimeout(() => void saveSecondaryNote({ isAutoSave: true }), 1200);
+        ui.secondaryAutoSaveTimer = setTimeout(() => void saveSecondaryNote(), 1200);
       }
       return !ui.secondaryNoteDirty;
     } catch (error) {
@@ -1704,7 +1704,7 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
 
   async function selectSecondaryNote(noteId, mode = "preview") {
     if (secondaryEditorSession && ui.secondaryNoteId !== noteId && secondaryEditorSession.hasUnsavedChanges()) {
-      const saved = await saveSecondaryNote({ isAutoSave: true });
+      const saved = await saveSecondaryNote();
       if (!saved) return false;
     }
     const note = library.notes.find((n) => n.id === noteId);
@@ -1856,63 +1856,6 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
     ]);
   }
 
-  async function toggleNotePinned(note) {
-    try {
-      await storage.setNotePinned(note.id, !note.isPinned);
-      await refreshLibrary({ broadcast: true });
-      showToast(note.isPinned ? "Note unpinned." : "Note pinned.");
-    } catch (error) {
-      showError(error, "We could not update this note's pin state.");
-    }
-  }
-
-  async function restoreNoteWithFeedback(note) {
-    try {
-      await storage.restoreNote(note.id);
-      await refreshLibrary({ broadcast: true });
-      showToast("Note restored.");
-    } catch (error) {
-      showError(error, "We could not restore this note.");
-    }
-  }
-
-  async function permanentlyDeleteNoteWithConfirmation(note) {
-    if (!note || ui.noteSaveInFlight) return;
-    const confirmed = await requestConfirmation({
-      title: "Delete note permanently?",
-      description: `“${note.title}” will be deleted permanently from this browser. This cannot be undone.`,
-      confirmLabel: "Delete permanently",
-      cancelLabel: "Keep note",
-    });
-    if (!confirmed) return;
-    try {
-      await storage.permanentlyDeleteNote(note.id);
-      await refreshLibrary({ broadcast: true });
-      showToast("Note permanently deleted.");
-    } catch (error) {
-      showError(error, "We could not permanently delete this note.");
-    }
-  }
-
-  async function emptyTrashWithConfirmation() {
-    const trashedCount = library.notes.filter(isDeletedNote).length;
-    if (!trashedCount) return;
-    const confirmed = await requestConfirmation({
-      title: "Empty Trash?",
-      description: `This will permanently delete ${pluralize(trashedCount, "note")} from this browser. This cannot be undone.`,
-      confirmLabel: "Empty Trash",
-      cancelLabel: "Keep Trash",
-    });
-    if (!confirmed) return;
-    try {
-      const deletedCount = await storage.emptyTrash();
-      await refreshLibrary({ broadcast: true });
-      showToast(`Trash emptied. ${pluralize(deletedCount, "note")} permanently deleted.`);
-    } catch (error) {
-      showError(error, "We could not empty Trash.");
-    }
-  }
-
   function createNoteCardActionIcon(shapes, strokeWidth = "1.7") {
     const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     svg.setAttribute("viewBox", "0 0 24 24");
@@ -2040,7 +1983,7 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
             ["path", { d: "M14 11v5" }],
           ]),
     );
-    remove.addEventListener("click", () => (isDeleted ? restoreNoteWithFeedback(note) : deleteNoteWithConfirmation(note, { preserveSidePicker: secondary })));
+    remove.addEventListener("click", () => (isDeleted ? restoreNoteWithFeedback(note) : moveNoteToTrash(note, { preserveSidePicker: secondary })));
     if (!isDeleted && !secondary) {
       const sideNote = createElement("button", {
         className: "note-card__action note-card__action--side-note",
@@ -2173,6 +2116,12 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
     empty.append(action);
     elements.notesList.replaceChildren(empty);
     observeNoteCardTagRows();
+  }
+
+  function formatNotesRange({ matchingCount, start, end, activeCollectionCount, trashOnly }) {
+    if (matchingCount) return `Showing ${start + 1}–${end} of ${pluralize(matchingCount, "note")}`;
+    if (activeCollectionCount) return "No matching notes";
+    return trashOnly ? "Trash is empty" : "0 notes";
   }
 
   function paginationItems(totalPages) {
@@ -2346,9 +2295,14 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
     const pageNotes = matchingNotes.slice(start, start + pageSize);
     const end = start + pageNotes.length;
 
-    elements.notesRange.textContent = matchingNotes.length
-      ? `Showing ${start + 1}–${end} of ${pluralize(matchingNotes.length, "note")}`
-      : "No matching notes";
+    const activeCollectionCount = notesInActiveCollection().length;
+    elements.notesRange.textContent = formatNotesRange({
+      matchingCount: matchingNotes.length,
+      start,
+      end,
+      activeCollectionCount,
+      trashOnly: ui.trashOnly,
+    });
     const hasSearchQuery = Boolean(ui.query);
     elements.clearSearch.classList.toggle("is-hidden", !hasSearchQuery);
     elements.searchShortcut.classList.toggle("is-hidden", hasSearchQuery);
@@ -2402,13 +2356,10 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
     copyNoteCardContent,
     createPinIcon,
     createRestoreIcon,
-    toggleNotePinned,
-    restoreNoteWithFeedback,
-    permanentlyDeleteNoteWithConfirmation,
-    emptyTrashWithConfirmation,
     createNoteCardActionIcon,
     createNoteCard,
     renderEmptyState,
+    formatNotesRange,
     animateNotesContent,
     enhanceSortSelect,
     syncSortPicker,

@@ -1747,7 +1747,6 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
     syncNoteEditorControls();
     let didSave = false;
     try {
-      const isEditing = Boolean(editorSession.noteId);
       let result = await editorSession.save();
       if (!isCurrentNoteEditorSession(session) || primaryEditorSession !== editorSession) return;
 
@@ -1812,11 +1811,6 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
         setNoteSaveStatus("dirty");
         scheduleNoteAutoSave();
       }
-      if (!isAutoSave) {
-        showToast(closeAfterSave && !editorSession.hasUnsavedChanges()
-          ? (isEditing ? "Note updated." : "Note saved.")
-          : "Changes saved. Keep editing.");
-      }
     } catch (error) {
       if (isCurrentNoteEditorSession(session) && primaryEditorSession === editorSession) {
         ui.noteCloseAfterSaveRequested = false;
@@ -1836,42 +1830,6 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
           void requestNoteEditorClose();
         }
       }
-    }
-  }
-
-  async function deleteNoteWithConfirmation(note, { preserveSidePicker = false } = {}) {
-    if (!note || ui.noteSaveInFlight) return;
-    const confirmed = await requestConfirmation({
-      title: "Move note to Trash?",
-      description: `“${note.title}” will be moved to Trash. You can restore it later or use Undo now.`,
-      confirmLabel: "Move to Trash",
-      cancelLabel: "Keep note",
-    });
-    if (!confirmed) return;
-    const keepPicker = preserveSidePicker && note.id !== ui.editingNoteId &&
-      elements.secondaryPickerView && !elements.secondaryPickerView.classList.contains("is-hidden");
-    if (ui.dualPaneOpen && !keepPicker) {
-      const sideClosed = await api.closeDualPane?.();
-      if (!sideClosed || ui.dualPaneOpen) return;
-    }
-    try {
-      await storage.deleteNote(note.id);
-      await refreshLibrary({ broadcast: true });
-      if (ui.editingNoteId === note.id) closeNoteEditor({ discardStoredDraft: true });
-      showToast("Note moved to Trash.", "success", {
-        label: "Undo",
-        onClick: async () => {
-          try {
-            await storage.restoreNote(note.id);
-            await refreshLibrary({ broadcast: true });
-            showToast("Note restored.");
-          } catch (error) {
-            showError(error, "We could not undo moving this note to Trash.");
-          }
-        },
-      });
-    } catch (error) {
-      showError(error, "We could not delete this note.");
     }
   }
 
@@ -1938,6 +1896,5 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
     selectNoteTag,
     addTagFromEditor,
     saveNote,
-    deleteNoteWithConfirmation,
   });
 });

@@ -1,8 +1,24 @@
 # Nook reliability, history, and offline implementation plan
 
-Status: implementation complete; final evidence recorded below
+Status: historical implementation record; run the current regression suite before release
 
-Last updated: 2026-09-19
+Last updated: 2026-09-28
+
+The evidence log below records the 2026-09-19 implementation pass. It is useful
+history, not proof for later asset, theme, or Service Worker changes.
+
+## 2026-09-28 follow-up
+
+- Hosted assets now use a content fingerprint that also covers normalized
+  Service Worker logic. Installation bypasses the older HTTP cache before
+  populating the new cache.
+- The manifest includes E-Ink, local Geist fonts, and every registered app
+  module. Node regression tests reject missing assets and stale fingerprints.
+- A previously controlled localhost origin exposed the waiting update, applied
+  it through Settings, and reloaded with the new theme loader without console
+  warnings or errors.
+- The page now parses only the active theme stylesheet; inactive themes remain
+  pre-cached so switching themes continues to work offline.
 
 ## Product contract
 

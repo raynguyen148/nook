@@ -1,8 +1,9 @@
 {
-  "date": "2026-09-06",
-  "fontStack": "Inter, system-ui, and the Warm theme's local serif fallbacks",
-  "palette": "Three existing theme palettes defined in CSS custom properties",
-  "motion": "motion-cut; CSS transition tokens only",
+  "date": "2026-09-28",
+  "fontStack": "Local Geist variable fonts; system and editorial serif fallbacks in E-Ink",
+  "palette": "Light, Coffee, Forest, Midnight, Dark, Retro, E-Ink, and Auto modes",
+  "motion": "Shared duration and easing tokens with reduced-motion fallbacks",
   "spacing": "existing rem-based component spacing",
-  "framework": "vanilla HTML, CSS, and JavaScript"
+  "framework": "vanilla HTML, CSS, and JavaScript",
+  "themeLoading": "Shared cascade plus one active theme stylesheet and mobile.css"
 }

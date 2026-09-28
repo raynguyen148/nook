@@ -30,12 +30,15 @@ core
 → preferences
 → feedback
 → editor-session
+→ note-actions
 → library
 → editor
+→ split-selection
 → history
 → organize
 → sync
 → offline
+→ mobile
 → events
 ```
 
@@ -60,12 +63,15 @@ product decision.
 | `js/app/preferences.js` | Theme, layout, sidebar, responsive controls, and preference persistence |
 | `js/app/feedback.js` | Toasts, confirmation dialogs, and focus restoration |
 | `js/app/editor-session.js` | DOM-independent editor state machines, save sequencing, CAS inputs, conflict state, and per-session draft recovery |
-| `js/app/library.js` | Library/sidebar rendering, note detail workspace, Side note pane, pagination, Quick View, clipboard, pin, Trash, and session reconciliation |
+| `js/app/note-actions.js` | Pin, move-to-Trash with Undo, restore, permanent-delete, and empty-Trash mutations shared by cards and editor surfaces |
+| `js/app/library.js` | Library/sidebar rendering, note detail workspace, Side note pane, pagination, Quick View, clipboard, and session reconciliation |
 | `js/app/editor.js` | Primary editor controls, Markdown modes, tag/type pickers, autosave, recovery prompts, and primary conflict handling |
+| `js/app/split-selection.js` | Split-mode source/preview selection mapping and highlight lifecycle |
 | `js/app/history.js` | Version-history list, safe preview, restore confirmation, and history-dialog focus behavior |
 | `js/app/organize.js` | Type/tag management, import/export UI, delete-all flow, and library refresh orchestration |
 | `js/app/sync.js` | Optional same-origin `BroadcastChannel` notifications and guarded external refreshes |
 | `js/app/offline.js` | Optional quota/persistence reporting and explicit hosted Service Worker update flow |
+| `js/app/mobile.js` | Responsive control placement, mobile dialogs/navigation, viewport geometry, and Back-button guards |
 | `js/app/events.js` | Event binding, startup sequencing, and startup error handling |
 | `sw.js` | Versioned cache of local app assets only; never reads or writes note records |
 
@@ -241,8 +247,13 @@ risk but is not guaranteed and is never a replacement for an external JSON
 backup.
 
 `sw.js` is registered only for HTTPS, `localhost`, or `127.0.0.1`. It
-pre-caches the local app shell/assets under a versioned cache, serves same-origin
-cached assets first, and never intercepts note data as a remote service.
+pre-caches the local app shell/assets under a content-fingerprinted cache, serves
+same-origin cached assets first, and never intercepts note data as a remote
+service. `node scripts/update-service-worker-cache.cjs` hashes every manifest
+entry plus the normalized worker source. Installation requests use
+`cache: "reload"` so an older HTTP cache cannot seed the new versioned cache;
+`tests/service-worker.test.js` fails when a referenced runtime asset is missing
+or the fingerprint is stale.
 `file://` skips registration and continues to use the static scripts and
 browser-local storage directly.
 
@@ -254,9 +265,10 @@ no forced reload during active editing.
 
 ## CSS ownership
 
-`css/app.css` is the ordered cascade manifest. Foundations and shared
-components load first; feature rules follow; accessibility and theme layers
-remain late in the cascade.
+`css/app.css` is the shared ordered cascade manifest. Foundations and shared
+components load first; feature rules and accessibility follow. `index.html`
+then loads exactly one active theme stylesheet and finally `mobile.css`, so
+inactive theme selectors are not parsed or added to the live cascade.
 
 - `base.css`: reset, tokens, shell, and primitives.
 - `note-components.css`, `dialogs.css`, `management.css`, `markdown.css`:
@@ -265,7 +277,8 @@ remain late in the cascade.
 - `interactions.css`: shared interactive states and motion.
 - `responsive.css`: cross-feature responsive behavior.
 - `accessibility.css`: focus, reduced-motion, and forced-colors behavior.
-- `themes/*.css`: theme tokens and narrowly scoped structural overrides.
+- `themes/*.css`: one active theme's tokens and intentional structural overrides.
+- `mobile.css`: responsive geometry loaded after the active theme.
 
 Keep selectors in their owning layer, reuse existing semantic tokens, and
 preserve the manifest order when moving rules. Do not mix storage, editor
