@@ -1019,22 +1019,32 @@ html[data-theme="eink"] .note-detail-surface .dialog-footer {
   background-image: none;
 }
 
-html[data-theme="eink"] #note-title {
+html[data-theme="eink"] #note-title,
+html[data-theme="eink"] #secondary-note-title-input,
+html[data-theme="eink"] .note-secondary-surface .field--title input {
+  height: auto !important;
+  min-height: 0 !important;
   border: 0 !important;
   border-bottom: 1px solid var(--eink-border) !important;
   border-radius: 0 !important;
-  padding-inline: 0;
+  padding-inline: 0 !important;
+  padding-block: 0 !important;
   color: var(--eink-ink) !important;
   background: transparent !important;
+  background-color: transparent !important;
   box-shadow: none !important;
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 1.45rem;
+  font-family: var(--font-display) !important;
+  font-weight: 700 !important;
+  font-size: 1.45rem !important;
 }
 
-html[data-theme="eink"] #note-title:focus-visible {
+html[data-theme="eink"] #note-title:is(:focus, :focus-visible),
+html[data-theme="eink"] #secondary-note-title-input:is(:focus, :focus-visible),
+html[data-theme="eink"] .note-secondary-surface .field--title input:is(:focus, :focus-visible) {
   border-bottom-color: #141414 !important;
   outline: none !important;
+  background: transparent !important;
+  background-color: transparent !important;
 }
 
 /* Note editor content surfaces remain clean, seamless, papery */

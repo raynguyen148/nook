@@ -2101,6 +2101,34 @@ html[data-theme="coffee"] #secondary-reader-view #secondary-content-field.is-spl
   border-left-color: #d8cfc4 !important;
 }
 
+/* E-ink theme refinements */
+html[data-theme="eink"] .note-secondary-surface .field--title input,
+html[data-theme="eink"] .note-secondary-surface #secondary-note-title-input {
+  height: auto !important;
+  min-height: 0 !important;
+  border: 0 !important;
+  border-bottom: 1px solid var(--eink-border, #d5cfc2) !important;
+  border-radius: 0 !important;
+  padding-inline: 0 !important;
+  padding-block: 0 !important;
+  color: var(--eink-ink, #141414) !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+  font-family: var(--font-display) !important;
+  font-weight: 700 !important;
+  font-size: 1.45rem !important;
+}
+
+html[data-theme="eink"] .note-secondary-surface .field--title input:is(:focus, :focus-visible),
+html[data-theme="eink"] .note-secondary-surface #secondary-note-title-input:is(:focus, :focus-visible) {
+  border-bottom-color: #141414 !important;
+  outline: none !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+
 
 
 /* Ownership: note-detail state and geometry contract. Keep local scrollers
