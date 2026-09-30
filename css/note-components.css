@@ -946,6 +946,19 @@ select::-ms-expand {
   }
 }
 
+@media (min-width: 1600px) {
+  .notes-list--compact {
+    --notes-columns: 2;
+    --compact-title-width: 14rem;
+    --compact-tags-width: 8.5rem;
+
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.375rem 0.75rem;
+    align-items: stretch;
+  }
+}
+
 @media (min-width: 821px) and (max-width: 1250px) {
   .notes-list--compact .note-card__preview {
     display: none;
