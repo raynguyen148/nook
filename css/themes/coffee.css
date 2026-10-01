@@ -761,7 +761,8 @@ html:not([data-theme]) .dialog-footer {
 
 html[data-theme="coffee"] .note-detail-surface .dialog-footer,
 html:not([data-theme]) .note-detail-surface .dialog-footer {
-  background: #ffffff;
+  border-top-color: #e5dacb;
+  background: #fdfbf7;
 }
 
 html[data-theme="coffee"] .quick-view-document-header h1,
