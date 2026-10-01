@@ -59,6 +59,7 @@
       })();
     </script>
     <link rel="stylesheet" href="css/mobile.css" />
+    <link rel="stylesheet" href="css/note-typography.css" />
   </head>
   <body>
     <main class="app-shell" aria-label="Nook" aria-busy="true" inert>
@@ -767,6 +768,24 @@
 
         <div class="dialog-footer">
           <div class="dialog-footer__tools">
+            <div class="note-font-size-menu">
+              <button id="note-font-size-trigger" class="note-font-size-trigger" type="button" popovertarget="note-font-size-popover" aria-label="Adjust note text size" title="Note text size"><span aria-hidden="true">Aa</span></button>
+              <div id="note-font-size-popover" class="note-font-size-popover" popover="auto">
+                <div class="note-font-size-control note-font-size-control--popover" data-note-font-size-control role="group" aria-labelledby="note-font-size-popover-title" aria-describedby="note-font-size-popover-help">
+                  <div class="note-font-size-popover__header">
+                    <p id="note-font-size-popover-title" class="note-font-size-popover__title">Text size</p>
+                    <button class="note-font-size-popover__reset" type="button" data-note-font-size-action="reset" aria-label="Reset note text size to 16 pixels" title="Reset note text size to 16 px">Reset</button>
+                  </div>
+                  <div class="note-font-size-popover__stepper">
+                    <button class="note-font-size-control__button" type="button" data-note-font-size-action="decrease" aria-label="Decrease note text size" title="Decrease note text size"><span aria-hidden="true">A−</span></button>
+                    <span class="note-font-size-popover__readout" data-note-font-size-value>16 px</span>
+                    <button class="note-font-size-control__button" type="button" data-note-font-size-action="increase" aria-label="Increase note text size" title="Increase note text size"><span aria-hidden="true">A+</span></button>
+                  </div>
+                  <p id="note-font-size-popover-help" class="note-font-size-popover__help"><span>All open notes</span><span>14–18 px</span></p>
+                  <span class="sr-only" data-note-font-size-status role="status" aria-atomic="true"></span>
+                </div>
+              </div>
+            </div>
             <div id="note-preview-actions" class="dialog-footer__preview-actions" role="group" aria-label="Copy and export note">
               <div class="quick-view-header__utilities">
                 <span class="note-detail-action-tooltip">
@@ -1656,6 +1675,18 @@
                 <span>3</span>
                 <span>10</span>
               </div>
+            </div>
+          </div>
+          <div class="management-row display-setting display-setting--note-font">
+            <div class="display-setting__copy">
+              <h3 id="note-font-size-title" class="management-row__name">Note text size</h3>
+              <p id="note-font-size-help" class="dialog-description display-setting__description">Applies to content in Edit, Split, and Preview, including side notes. Choose 14–18 px; select the size to reset to 16 px.</p>
+            </div>
+            <div class="note-font-size-control" data-note-font-size-control role="group" aria-labelledby="note-font-size-title" aria-describedby="note-font-size-help">
+              <button class="note-font-size-control__button" type="button" data-note-font-size-action="decrease" aria-label="Decrease note text size" title="Decrease note text size"><span aria-hidden="true">A−</span></button>
+              <button class="note-font-size-control__value" type="button" data-note-font-size-action="reset" data-note-font-size-value aria-label="Note text size: 16 pixels. Reset to 16 pixels." title="Reset note text size to 16 px">16 px</button>
+              <button class="note-font-size-control__button" type="button" data-note-font-size-action="increase" aria-label="Increase note text size" title="Increase note text size"><span aria-hidden="true">A+</span></button>
+              <span class="sr-only" data-note-font-size-status role="status" aria-atomic="true"></span>
             </div>
           </div>
         </div>

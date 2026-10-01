@@ -272,6 +272,13 @@ globalThis[Symbol.for("nook.app.modules")].register("mobile", (app) => {
   function syncMobileLayout() {
     const next = mobileQuery.matches;
     const breakpointChanged = next !== mobileLayout;
+    if (breakpointChanged) {
+      api.closeNoteFontSizePopover();
+      // The same control lives inline at the top of the existing mobile sheet.
+      // Returning to desktop restores native light-dismiss and Escape behavior.
+      if (next) elements.noteFontSizePopover.removeAttribute("popover");
+      else elements.noteFontSizePopover.setAttribute("popover", "auto");
+    }
     const controlsMoved = placeResponsiveControls(next);
     if (breakpointChanged) {
       mobileLayout = next;
@@ -351,6 +358,7 @@ globalThis[Symbol.for("nook.app.modules")].register("mobile", (app) => {
       [elements.primarySortField, elements.mobileSortSlot],
       [elements.emptyTrash, elements.mobileTrashActions],
       [elements.primaryFormatting, elements.noteForm],
+      [elements.noteFontSizePopover, elements.mobileNoteActionsBody],
       [elements.primaryFooterTools, elements.mobileNoteActionsBody],
       [elements.primarySearchField, elements.mobileSearchSlot],
     ].map(([node, target]) => {

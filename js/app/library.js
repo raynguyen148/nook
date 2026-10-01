@@ -763,6 +763,7 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
   }
 
   function closeNoteDetail({ restoreFocus = true, invoker = ui.viewInvoker } = {}) {
+    api.closeNoteFontSizePopover();
     resetCopyButtonFeedback(elements.copyNoteContent);
     const transitionSequence = ++noteDetailTransitionSequence;
     noteDetailAnimation?.cancel();

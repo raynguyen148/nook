@@ -281,6 +281,11 @@ globalThis[Symbol.for("nook.app.modules")].register("split-selection", (app) => 
     });
   }
 
+  function refreshSplitSelection() {
+    sessions.forEach((session) => clearMatch(session));
+    scheduleSelection();
+  }
+
   function bindSplitSelectionEvents() {
     [
       [elements.noteContent, elements.noteContentPreview, () => ui.noteEditorMode === "split", elements.noteDialog],
@@ -324,11 +329,10 @@ globalThis[Symbol.for("nook.app.modules")].register("split-selection", (app) => 
       if (event.key === "Shift" || event.shiftKey) scheduleSelection(true);
     });
     document.addEventListener("focusin", () => scheduleSelection());
-    new MutationObserver(() => {
-      sessions.forEach((session) => clearMatch(session));
-      scheduleSelection();
-    }).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+    new MutationObserver(refreshSplitSelection).observe(document.documentElement, {
+      attributes: true, attributeFilter: ["data-theme"],
+    });
   }
 
-  Object.assign(api, { bindSplitSelectionEvents });
+  Object.assign(api, { bindSplitSelectionEvents, refreshSplitSelection });
 });

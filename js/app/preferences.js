@@ -8,6 +8,10 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
     MOTION,
     NOTE_PREVIEW_LINES_DEFAULT,
     NOTE_PREVIEW_LINES_STORAGE_KEY,
+    NOTE_DETAIL_FONT_SIZE_DEFAULT,
+    NOTE_DETAIL_FONT_SIZE_MAX,
+    NOTE_DETAIL_FONT_SIZE_MIN,
+    NOTE_DETAIL_FONT_SIZE_STORAGE_KEY,
     SIDEBAR_COLLAPSED_STORAGE_KEY,
     SORT_STORAGE_KEY,
     THEME_STORAGE_KEY,
@@ -773,6 +777,99 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
     }
   }
 
+  function syncNoteDetailFontSizeUI() {
+    document.documentElement.style.setProperty("--note-detail-font-size", `${ui.noteDetailFontSize / 16}rem`);
+    elements.noteFontSizeTrigger.title = `Note text size: ${ui.noteDetailFontSize} px. Applies to all open notes.`;
+    elements.noteFontSizeControls.forEach((control) => {
+      const decrease = control.querySelector('[data-note-font-size-action="decrease"]');
+      const increase = control.querySelector('[data-note-font-size-action="increase"]');
+      const value = control.querySelector("[data-note-font-size-value]");
+      const reset = control.querySelector('[data-note-font-size-action="reset"]');
+      const atMinimum = ui.noteDetailFontSize === NOTE_DETAIL_FONT_SIZE_MIN;
+      const atMaximum = ui.noteDetailFontSize === NOTE_DETAIL_FONT_SIZE_MAX;
+      // Keep a button reachable when a click takes it to a limit. The handler
+      // guards aria-disabled actions while keyboard focus stays in place.
+      decrease.setAttribute("aria-disabled", String(atMinimum));
+      increase.setAttribute("aria-disabled", String(atMaximum));
+      decrease.title = atMinimum ? "Minimum note text size: 14 px" : "Decrease note text size";
+      increase.title = atMaximum ? "Maximum note text size: 18 px" : "Increase note text size";
+      value.textContent = `${ui.noteDetailFontSize} px`;
+      if (value === reset) {
+        value.title = "Reset note text size to 16 px";
+        value.setAttribute("aria-label", `Note text size: ${ui.noteDetailFontSize} pixels. Reset to 16 pixels.`);
+      } else {
+        reset.setAttribute("aria-disabled", String(ui.noteDetailFontSize === NOTE_DETAIL_FONT_SIZE_DEFAULT));
+      }
+    });
+  }
+
+  function positionNoteFontSizePopover(event) {
+    const panel = elements.noteFontSizePopover;
+    const opening = event?.type === "beforetoggle" && event.newState === "open";
+    // Measure its real height after opening, then reveal it above the footer.
+    // This avoids a frame at the wrong edge before native popover layout runs.
+    if (opening) {
+      panel.classList.add("is-positioning");
+      return;
+    }
+    if (!panel.matches(":popover-open")) {
+      panel.classList.remove("is-positioning");
+      return;
+    }
+    const trigger = elements.noteFontSizeTrigger.getBoundingClientRect();
+    const bounds = panel.getBoundingClientRect();
+    const gap = 8;
+    const left = Math.max(gap, Math.min(trigger.left, window.innerWidth - bounds.width - gap));
+    const above = trigger.top - bounds.height - gap;
+    const below = trigger.bottom + gap;
+    const top = above >= gap ? above
+      : below + bounds.height <= window.innerHeight - gap ? below
+      : Math.max(gap, Math.min(above, window.innerHeight - bounds.height - gap));
+    panel.style.left = `${left}px`;
+    panel.style.top = `${top}px`;
+    panel.classList.remove("is-positioning");
+  }
+
+  function closeNoteFontSizePopover() {
+    if (elements.noteFontSizePopover.matches(":popover-open")) elements.noteFontSizePopover.hidePopover();
+    elements.noteFontSizePopover.classList.remove("is-positioning");
+  }
+
+  function setNoteDetailFontSize(value, { persist = true } = {}) {
+    const nextValue = api.normalizeNoteDetailFontSize(value);
+    if (nextValue === ui.noteDetailFontSize) return;
+    ui.noteDetailFontSize = nextValue;
+    syncNoteDetailFontSizeUI();
+    api.scheduleNoteEditorScrollMap(elements.noteContent);
+    api.scheduleNoteEditorScrollMap(elements.secondaryNoteContentEditor);
+    api.refreshSplitSelection();
+    if (!persist) return;
+    try {
+      if (nextValue === NOTE_DETAIL_FONT_SIZE_DEFAULT) {
+        window.localStorage.removeItem(NOTE_DETAIL_FONT_SIZE_STORAGE_KEY);
+      } else {
+        window.localStorage.setItem(NOTE_DETAIL_FONT_SIZE_STORAGE_KEY, String(nextValue));
+      }
+    } catch {
+      // The selected size still applies for this session if storage is blocked.
+    }
+  }
+
+  function handleNoteFontSizeClick(event) {
+    const button = event.target.closest("[data-note-font-size-action]");
+    if (!button || button.getAttribute("aria-disabled") === "true") return;
+    const action = button.dataset.noteFontSizeAction;
+    const nextValue = action === "reset"
+      ? NOTE_DETAIL_FONT_SIZE_DEFAULT
+      : ui.noteDetailFontSize + (action === "increase" ? 1 : -1);
+    if (nextValue === ui.noteDetailFontSize) return;
+    setNoteDetailFontSize(nextValue);
+    const limit = ui.noteDetailFontSize === NOTE_DETAIL_FONT_SIZE_MIN ? " Minimum size."
+      : ui.noteDetailFontSize === NOTE_DETAIL_FONT_SIZE_MAX ? " Maximum size." : "";
+    button.closest("[data-note-font-size-control]").querySelector("[data-note-font-size-status]")
+      .textContent = `Note text size: ${ui.noteDetailFontSize} pixels.${limit}`;
+  }
+
   Object.assign(api, {
     getNextTheme,
     prefersReducedMotion,
@@ -809,5 +906,10 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
     setViewMode,
     syncNotePreviewLinesUI,
     setNotePreviewLines,
+    syncNoteDetailFontSizeUI,
+    setNoteDetailFontSize,
+    handleNoteFontSizeClick,
+    positionNoteFontSizePopover,
+    closeNoteFontSizePopover,
   });
 });

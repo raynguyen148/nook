@@ -7,6 +7,8 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
   const {
     NOTE_PREVIEW_LINES_DEFAULT,
     NOTE_PREVIEW_LINES_STORAGE_KEY,
+    NOTE_DETAIL_FONT_SIZE_DEFAULT,
+    NOTE_DETAIL_FONT_SIZE_STORAGE_KEY,
     THEME_STORAGE_KEY,
     THEMES,
   } = constants;
@@ -41,6 +43,11 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
     setViewMode,
     syncNotePreviewLinesUI,
     setNotePreviewLines,
+    syncNoteDetailFontSizeUI,
+    setNoteDetailFontSize,
+    handleNoteFontSizeClick,
+    positionNoteFontSizePopover,
+    closeNoteFontSizePopover,
     cleanTagInput,
     activeModalDialog,
     setupLibrarySync,
@@ -213,6 +220,9 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
       }
       if (event.key === NOTE_PREVIEW_LINES_STORAGE_KEY) {
         setNotePreviewLines(event.newValue ?? NOTE_PREVIEW_LINES_DEFAULT, { persist: false });
+      }
+      if (event.key === NOTE_DETAIL_FONT_SIZE_STORAGE_KEY || event.key === null) {
+        setNoteDetailFontSize(event.newValue ?? NOTE_DETAIL_FONT_SIZE_DEFAULT, { persist: false });
       }
     });
     elements.themeToggle.addEventListener("click", () => setTheme(getNextTheme(ui.theme)));
@@ -442,6 +452,7 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
     elements.historyList?.addEventListener("keydown", handleHistoryListKeydown);
     elements.historyDialog?.addEventListener("close", finishNoteHistoryClose);
     window.addEventListener("resize", () => {
+      positionNoteFontSizePopover();
       scheduleQuickViewHeightSync();
       scheduleNoteEditorHeight();
       scheduleNoteEditorScrollMap(
@@ -539,6 +550,11 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
     });
     elements.deleteLibraryDialog.addEventListener("close", finishDeleteLibraryClose);
     elements.notePreviewLines.addEventListener("input", () => setNotePreviewLines(elements.notePreviewLines.value));
+    elements.noteFontSizeControls.forEach((control) => {
+      control.addEventListener("click", handleNoteFontSizeClick);
+    });
+    elements.noteFontSizePopover.addEventListener("beforetoggle", positionNoteFontSizePopover);
+    elements.noteFontSizePopover.addEventListener("toggle", positionNoteFontSizePopover);
     elements.addTypeToggle.addEventListener("click", () => {
       setManagementCreateMode(ui.managementCreateKind === "types" ? "" : "types");
     });
@@ -578,6 +594,12 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
     });
     document.addEventListener("keydown", (event) => {
       if (event.key === "Tab") document.documentElement.dataset.inputModality = "keyboard";
+      if (event.key === "Escape" && elements.noteFontSizePopover.matches(":popover-open")) {
+        event.preventDefault();
+        closeNoteFontSizePopover();
+        elements.noteFontSizeTrigger.focus({ preventScroll: true });
+        return;
+      }
       if (event.key === "Escape" && !activeModalDialog() && ui.dualPaneOpen && elements.secondarySurface?.contains(document.activeElement)) {
         event.preventDefault();
         void closeDualPane().then((closed) => {
@@ -864,6 +886,7 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
       syncThemeUI();
       syncSidebarUI();
       syncNotePreviewLinesUI();
+      syncNoteDetailFontSizeUI();
       syncSearchShortcutHint();
       syncNoteSaveShortcutHint();
       storeBackupHealth(getStoredBackupHealth());

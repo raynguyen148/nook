@@ -57,11 +57,12 @@ function fixture() {
     return nodes.get(key);
   };
   const elements = {};
-  for (const name of ["noteDialog", "noteForm", "sort", "regularFilterControls", "emptyTrash", "notesList", "historyDialog", "search", "themeToggle", "organizeDialog", "backupHealthMessage"]) elements[name] = node(name);
+  for (const name of ["noteDialog", "noteForm", "sort", "regularFilterControls", "emptyTrash", "notesList", "historyDialog", "search", "themeToggle", "organizeDialog", "backupHealthMessage", "noteFontSizePopover"]) elements[name] = node(name);
+  elements.noteFontSizePopover.setAttribute("popover", "auto");
   elements.noteDialog.querySelector = node;
   elements.sort.closest = node;
   elements.search.closest = node;
-  const moved = [elements.regularFilterControls, node(".sort-field"), elements.emptyTrash, node(".note-formatting-toolbar"), node(".dialog-footer__tools"), node(".search-field")];
+  const moved = [elements.regularFilterControls, node(".sort-field"), elements.emptyTrash, node(".note-formatting-toolbar"), node(".dialog-footer__tools"), node(".search-field"), elements.noteFontSizePopover];
   moved.forEach((el, index) => node(`original-${index}`).append(el));
   const originalParents = moved.map((el) => el.parentElement);
   const query = new EventTarget();
@@ -109,6 +110,7 @@ function fixture() {
     scheduleTopbarActionsPinning() {},
     scheduleTagFilterLayout() {},
     syncToastHost() {},
+    closeNoteFontSizePopover() { elements.noteFontSizePopover.open = false; },
     requestNoteEditorClose: async () => {},
   };
   const app = { api, elements, ui: { typeId: "all", tagIds: new Set(), noteEditorMode: "edit" }, library: { types: [], notes: [] } };
@@ -149,6 +151,25 @@ test("window resize restores desktop controls even when the media change and ret
   f.resizeWindow(false);
   assert.equal(f.moved[0].parentElement, f.originalParents[0]);
   f.moved.forEach((node, i) => assert.equal(node.parentElement, f.originalParents[i]));
+});
+
+test("one text-size control moves inline on mobile and returns closed to desktop with its value intact", () => {
+  const f = fixture();
+  const panel = f.app.elements.noteFontSizePopover;
+  panel.value = "18 px";
+  panel.open = true;
+  f.resize(true);
+  assert.equal(panel.open, false, "the desktop popover closes before becoming inline");
+  assert.equal(panel.getAttribute("popover"), undefined);
+  assert.equal(panel.parentElement, f.app.elements.mobileNoteActionsBody);
+  assert.equal(f.app.elements.mobileNoteActionsBody.children[0], panel, "text size is the first action");
+  f.app.elements.mobileNoteActionsDialog.open = true;
+  f.resizeWindow(false);
+  assert.equal(panel.parentElement, f.originalParents[6]);
+  assert.equal(panel.getAttribute("popover"), "auto");
+  assert.equal(panel.value, "18 px");
+  assert.equal(f.app.elements.mobileNoteActionsDialog.open, false);
+  assert.equal(f.app.elements.mobileNoteActionsBody.children.includes(panel), false, "no duplicate remains in the sheet");
 });
 
 test("mobile search opens the filter sheet and keeps the query when returning to desktop", () => {

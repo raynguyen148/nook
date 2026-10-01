@@ -15,6 +15,10 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
   const NOTE_PREVIEW_LINES_MIN = 3;
   const NOTE_PREVIEW_LINES_MAX = 10;
   const NOTE_PREVIEW_LINES_DEFAULT = 3;
+  const NOTE_DETAIL_FONT_SIZE_STORAGE_KEY = "nook:note-detail-font-size";
+  const NOTE_DETAIL_FONT_SIZE_MIN = 14;
+  const NOTE_DETAIL_FONT_SIZE_MAX = 18;
+  const NOTE_DETAIL_FONT_SIZE_DEFAULT = 16;
   const VIEW_MODE_ANIMATION_DURATION = 180;
   const VIEW_MODE_ANIMATION_EASING = "cubic-bezier(0.22, 1, 0.36, 1)";
   const MOTION = Object.freeze({
@@ -261,6 +265,9 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
     themePickerOptions: [...document.querySelectorAll("[data-theme-option]")],
     notePreviewLines: document.querySelector("#note-preview-lines"),
     notePreviewLinesValue: document.querySelector("#note-preview-lines-value"),
+    noteFontSizeControls: [...document.querySelectorAll("[data-note-font-size-control]")],
+    noteFontSizeTrigger: document.querySelector("#note-font-size-trigger"),
+    noteFontSizePopover: document.querySelector("#note-font-size-popover"),
     settingsShortcutModifiers: [...document.querySelectorAll(".settings-shortcut-modifier")],
     typesManagementSearch: document.querySelector("#types-management-search"),
     tagsManagementSearch: document.querySelector("#tags-management-search"),
@@ -301,6 +308,7 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
     sort: getStoredSort(),
     viewMode: getStoredViewMode(),
     notePreviewLines: getStoredNotePreviewLines(),
+    noteDetailFontSize: getStoredNoteDetailFontSize(),
     page: 1,
     pageSize: PAGE_SIZE,
     paginationColumns: 0,
@@ -426,6 +434,21 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
       return normalizeNotePreviewLines(window.localStorage.getItem(NOTE_PREVIEW_LINES_STORAGE_KEY));
     } catch {
       return NOTE_PREVIEW_LINES_DEFAULT;
+    }
+  }
+
+  function normalizeNoteDetailFontSize(value) {
+    if (value === null || String(value).trim() === "") return NOTE_DETAIL_FONT_SIZE_DEFAULT;
+    const parsed = Number(value);
+    if (!Number.isInteger(parsed)) return NOTE_DETAIL_FONT_SIZE_DEFAULT;
+    return Math.min(NOTE_DETAIL_FONT_SIZE_MAX, Math.max(NOTE_DETAIL_FONT_SIZE_MIN, parsed));
+  }
+
+  function getStoredNoteDetailFontSize() {
+    try {
+      return normalizeNoteDetailFontSize(window.localStorage.getItem(NOTE_DETAIL_FONT_SIZE_STORAGE_KEY));
+    } catch {
+      return NOTE_DETAIL_FONT_SIZE_DEFAULT;
     }
   }
 
@@ -1015,6 +1038,10 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
       NOTE_PREVIEW_LINES_MAX,
       NOTE_PREVIEW_LINES_MIN,
       NOTE_PREVIEW_LINES_STORAGE_KEY,
+      NOTE_DETAIL_FONT_SIZE_DEFAULT,
+      NOTE_DETAIL_FONT_SIZE_MAX,
+      NOTE_DETAIL_FONT_SIZE_MIN,
+      NOTE_DETAIL_FONT_SIZE_STORAGE_KEY,
       SORT_STORAGE_KEY,
       THEME_STORAGE_KEY,
       THEMES,
@@ -1030,6 +1057,8 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
     getStoredViewMode,
     getStoredNotePreviewLines,
     normalizeNotePreviewLines,
+    normalizeNoteDetailFontSize,
+    getStoredNoteDetailFontSize,
     getStoredSort,
     getStoredFilters,
     nowIso,
