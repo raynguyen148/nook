@@ -96,6 +96,7 @@ product decision.
 | `js/app/editor-session.js` | DOM-independent editor state machines, save sequencing, CAS inputs, conflict state, and per-session draft recovery |
 | `js/app/note-actions.js` | Pin, move-to-Trash with Undo, restore, permanent-delete, and empty-Trash mutations shared by cards and editor surfaces |
 | `js/app/library.js` | Library cards, pagination, Trash presentation, and sort controls |
+| `css/note-card-actions.css` | Persistent More/pin controls, shared action popovers, and tag/timestamp footers across library layouts and both note pickers |
 | `js/app/side-note.js` | Side note navigation, DOM/editor adapter, and autosave presentation |
 | `js/app/workspace-resize.js` | Measured single-note width, bounded Side note ratio, pointer/keyboard resize, and browser-local size preferences |
 | `js/app/note-switcher.js` | Shared note picker rendering, per-pane browsing state, cancellation, and guarded note switching |

@@ -1,0 +1,272 @@
+/* Hallmark · component: note-card menu · genre: modern-minimal · theme: Nook
+ * audience: existing Nook users · use: browse notes, then choose a deliberate action
+ * states: default · hover · focus · active · disabled · copy success
+ * loading/errors: existing operation guards and shared app feedback
+ * contrast: menu text and footer pass across all seven themes
+ * pre-emit critique: P5 H5 E5 S5 R5 V4
+ */
+.note-card {
+  --note-card-control-size: 2rem;
+  --note-card-top-slot: calc(2 * var(--note-card-control-size) + var(--space-1));
+  --note-card-menu-danger: color-mix(in srgb, var(--danger-text) 92%, var(--text-strong));
+  --note-card-date-ink: color-mix(in srgb, var(--text-muted) 65%, var(--text-default));
+  --note-card-menu-shadow: 0 var(--space-2) var(--space-4) color-mix(in srgb, var(--text-strong) 14%, transparent);
+}
+
+html:is([data-theme="retro"], [data-theme="eink"]) .note-card {
+  --note-card-menu-shadow: 0 var(--space-1) var(--space-2) color-mix(in srgb, var(--text-strong) 8%, transparent);
+}
+
+.note-card > .note-card__top-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  top: var(--space-2);
+  right: var(--space-2);
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+html .note-card .note-card__more,
+html .note-card .note-card__top-actions .note-card__pin-toggle {
+  position: static;
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: var(--note-card-control-size);
+  height: var(--note-card-control-size);
+  min-height: var(--note-card-control-size);
+  margin: 0;
+  padding: 0;
+  border-radius: var(--control-radius);
+  transform: none;
+}
+
+.note-card .note-card__more {
+  order: 1;
+  border: 1px solid transparent;
+  color: var(--text-muted);
+  background: transparent;
+}
+.note-card .note-card__more svg { width: 1rem; height: 1rem; }
+.note-card .note-card__more:is(:hover, :focus-visible, [aria-expanded="true"]) {
+  color: var(--text-strong);
+  background: var(--surface-muted);
+}
+.note-card .note-card__more:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+html .note-card .note-card__top-actions .note-card__pin-toggle {
+  order: 0;
+  opacity: 0;
+  visibility: visible;
+  pointer-events: none;
+}
+html .note-card:is(:hover, :focus-within, .note-card--pinned) .note-card__top-actions .note-card__pin-toggle {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.note-card.note-card--selectable {
+  --note-card-top-slot: calc(3 * var(--note-card-control-size) + 2 * var(--space-1));
+}
+.note-card .note-card__meta {
+  min-height: var(--note-card-control-size);
+  padding-right: calc(var(--note-card-top-slot) + var(--space-1));
+}
+html .note-card .note-card__meta .type-badge {
+  display: block;
+  min-width: 0;
+  max-width: min(12rem, 100%);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.note-card .note-card__footer {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0;
+  min-height: 1.5rem;
+}
+.note-card .note-card__tags { flex: 1 1 0; min-width: 0; }
+.note-card .note-card__tags > .more-tags {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  min-height: 1.3rem;
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--control-radius);
+  color: var(--text-muted);
+  background: var(--surface-muted);
+  line-height: 1;
+}
+html .note-card .note-card__footer .note-card__date {
+  flex: none;
+  max-width: 55%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--note-card-date-ink);
+  font-size: 0.6875rem;
+  font-weight: 400;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Native top-layer popovers escape picker/card clipping and light-dismiss.
+ * Their measured coordinates are set from the visible More button. */
+html .note-card .note-card__actions[popover] {
+  position: fixed;
+  inset: auto;
+  margin: 0;
+  width: max-content;
+  min-width: min(10.5rem, calc(100vw - var(--space-4)));
+  max-width: calc(100vw - var(--space-4));
+  max-height: calc(100dvh - var(--space-4));
+  overflow: auto;
+  /* Keep exit frames in the same layout while display/overlay transition. */
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+  padding: var(--space-1);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-card);
+  color: var(--text-default);
+  background: var(--surface-panel);
+  box-shadow: var(--note-card-menu-shadow);
+  opacity: 0;
+  transform: translateY(calc(-1 * var(--space-1)));
+  pointer-events: none;
+  transition: opacity var(--motion-duration-micro) linear,
+    transform var(--motion-duration-micro) var(--motion-ease-in),
+    display var(--motion-duration-micro) allow-discrete,
+    overlay var(--motion-duration-micro) allow-discrete;
+}
+html .note-card .note-card__actions[popover]:not(:popover-open) { display: none; }
+html .note-card .note-card__actions[popover]:popover-open {
+  display: flex;
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+  transition-duration: var(--motion-duration-short);
+  transition-timing-function: var(--motion-ease-out);
+}
+@starting-style {
+  html .note-card .note-card__actions[popover]:popover-open {
+    opacity: 0;
+    transform: translateY(calc(-1 * var(--space-1)));
+  }
+}
+
+html .note-card .note-card__actions[popover] > .note-card__action {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: var(--space-2);
+  width: auto;
+  height: auto;
+  min-height: 2rem;
+  padding: var(--space-1) var(--space-2);
+  margin: 0;
+  border: 1px solid transparent;
+  border-radius: var(--control-radius);
+  color: var(--text-default);
+  background: transparent;
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  font-weight: 400;
+  line-height: 1.25;
+  text-align: left;
+  white-space: nowrap;
+  transform: none;
+}
+.note-card__action-label { overflow: hidden; text-overflow: ellipsis; }
+html .note-card .note-card__actions[popover] > .note-card__action svg {
+  flex: none;
+  width: 0.9375rem;
+  height: 0.9375rem;
+}
+html .note-card .note-card__actions[popover] > .note-card__action:is(:hover, :focus-visible):not(:disabled) {
+  color: var(--text-strong);
+  background: var(--surface-muted);
+}
+html .note-card .note-card__actions[popover] > .note-card__action:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: -2px;
+}
+html .note-card .note-card__actions[popover] > .note-card__action--danger {
+  color: var(--note-card-menu-danger);
+}
+html .note-card .note-card__actions[popover] > .note-card__action--danger:is(:hover, :focus-visible):not(:disabled) {
+  color: var(--note-card-menu-danger);
+  background: var(--danger-surface);
+}
+html .note-card .note-card__actions[popover] > .note-card__action--separated {
+  margin-top: var(--space-2);
+}
+.note-card__action--separated::before {
+  content: "";
+  position: absolute;
+  top: calc(-1 * var(--space-1) - 1px);
+  left: var(--space-2);
+  right: var(--space-2);
+  height: 1px;
+  background: var(--border-subtle);
+  pointer-events: none;
+}
+html .note-card .note-card__actions[popover] > .note-card__action:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.note-card__actions[aria-busy="true"] { cursor: progress; }
+
+@media (max-width: 959px) {
+  html .note-card .note-card__actions[popover] > .note-card__action--side-note { display: none; }
+}
+
+@media (min-width: 821px) {
+  .notes-list--compact .note-card { --note-card-control-size: 1.75rem; }
+  .notes-list--compact .note-card > .note-card__top-actions {
+    position: static;
+    display: flex;
+    order: 7;
+    flex: none;
+  }
+  .notes-list--compact .note-card .note-card__meta,
+  .notes-list--compact .note-card .note-card__footer { display: contents; }
+  html .notes-list--compact .note-card .note-card__date { order: 5; margin-left: auto; }
+  .notes-list--compact .note-card .note-card__meta .type-badge { max-width: 8rem; }
+}
+
+@media (max-width: 820px), (pointer: coarse) {
+  .note-card { --note-card-control-size: 2.75rem; }
+  html .note-card .note-card__actions[popover] > .note-card__action { min-height: 2.75rem; }
+}
+@media (max-width: 820px) {
+  .notes-panel .note-card .note-card__title {
+    min-height: var(--note-card-control-size);
+    padding-right: calc(var(--note-card-top-slot) + var(--space-2));
+  }
+  .notes-panel .note-card .note-card__meta { min-height: 0; padding-right: 0; }
+}
+@media (min-width: 821px) and (pointer: coarse) {
+  .notes-list--compact .note-card { --note-card-control-size: 2.75rem; }
+  .notes-list--compact .note-card .note-card__date { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html .note-card .note-card__actions[popover] { transition: none; transform: none; }
+}
+@media (forced-colors: active) {
+  html .note-card .note-card__actions[popover] {
+    color: CanvasText; border-color: CanvasText; background: Canvas; box-shadow: none;
+  }
+  .note-card__action--separated::before { background: CanvasText; }
+}

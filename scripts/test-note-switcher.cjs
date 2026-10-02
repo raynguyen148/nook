@@ -290,14 +290,17 @@ async function main() {
 
     const pickerActions = await setup();
     await pickerActions.page.locator("#primary-switch-note-btn").click();
-    await pickerActions.page.locator("#primary-notes-list").getByRole("button", { name: "Move Gamma to Trash", exact: true }).click();
+    await pickerActions.page.locator("#primary-notes-list").getByRole("button", { name: "Actions for Gamma", exact: true }).click();
+    await pickerActions.page.locator("#primary-notes-list").getByRole("menuitem", { name: "Move Gamma to Trash", exact: true }).click();
     assert.equal(await pickerActions.page.locator("#note-secondary-surface").isVisible(), true);
     assert.equal(await pickerActions.page.locator("#secondary-note-title").innerText(), "Beta");
     await pickerActions.page.locator("#primary-picker-back-btn").click();
     await pickerActions.page.locator("#close-note-dialog-btn").click();
     await pickerActions.page.locator("#note-detail-workspace").waitFor({ state: "hidden" });
-    await pickerActions.page.getByRole("button", { name: "Open Alpha with Side Note", exact: true }).click();
-    await pickerActions.page.locator("#secondary-notes-list").getByRole("button", { name: "Move Beta to Trash", exact: true }).click();
+    await pickerActions.page.getByRole("button", { name: "Actions for Alpha", exact: true }).click();
+    await pickerActions.page.getByRole("menuitem", { name: "Open Alpha with Side Note", exact: true }).click();
+    await pickerActions.page.locator("#secondary-notes-list").getByRole("button", { name: "Actions for Beta", exact: true }).click();
+    await pickerActions.page.locator("#secondary-notes-list").getByRole("menuitem", { name: "Move Beta to Trash", exact: true }).click();
     assert.equal(await pickerActions.page.locator("#secondary-picker-view").isVisible(), true);
     assert.equal(await pickerActions.page.locator("#quick-view-title").innerText(), "Alpha");
     passed.push("Picker card actions preserve both panes, including a remembered but unopened side note");

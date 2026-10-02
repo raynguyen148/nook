@@ -43,6 +43,8 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
   const permanentlyDeleteNoteWithConfirmation = (...args) => api.permanentlyDeleteNoteWithConfirmation(...args);
   let secondarySortPicker = null;
   let primarySortPicker = null;
+  let cardMenuSequence = 0;
+  let openCardMenu = null;
   const makeTypeBadge = (...args) => api.makeTypeBadge(...args);
   const makeTagButton = (...args) => api.makeTagButton(...args);
   const observeNoteCardTagRows = (...args) => api.observeNoteCardTagRows(...args);
@@ -233,22 +235,108 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
     return svg;
   }
 
+  function closeNoteCardMenu({ focusTrigger = false } = {}) {
+    if (!openCardMenu) return false;
+    const { menu, trigger } = openCardMenu;
+    openCardMenu = null;
+    if (menu.matches(":popover-open")) menu.hidePopover();
+    trigger.setAttribute("aria-expanded", "false");
+    if (focusTrigger && trigger.isConnected) trigger.focus({ preventScroll: true });
+    return true;
+  }
+
+  function installNoteCardMenu(menu, trigger) {
+    // Register the native invoker so light-dismiss does not close the menu
+    // before a second More click can toggle it closed.
+    trigger.setAttribute("popovertarget", menu.id);
+    const enabledItems = () => [...menu.querySelectorAll("button:not(:disabled)")].filter((button) => button.getClientRects().length);
+    function open(last = false) {
+      closeNoteCardMenu();
+      menu.showPopover();
+      const rect = trigger.getBoundingClientRect();
+      const bounds = menu.getBoundingClientRect();
+      const viewport = window.visualViewport;
+      const left = viewport?.offsetLeft || 0;
+      const top = viewport?.offsetTop || 0;
+      const right = left + (viewport?.width || window.innerWidth);
+      const bottom = top + (viewport?.height || window.innerHeight);
+      menu.style.left = `${Math.max(left + 8, Math.min(rect.right - bounds.width, right - bounds.width - 8))}px`;
+      menu.style.top = `${Math.max(top + 8, rect.bottom + bounds.height + 8 <= bottom ? rect.bottom + 4 : rect.top - bounds.height - 4)}px`;
+      openCardMenu = { menu, trigger };
+      trigger.setAttribute("aria-expanded", "true");
+      const items = enabledItems();
+      (last ? items.at(-1) : items[0])?.focus({ preventScroll: true });
+    }
+    trigger.addEventListener("click", (event) => {
+      event.preventDefault();
+      if (menu.matches(":popover-open")) closeNoteCardMenu({ focusTrigger: true });
+      else open();
+    });
+    trigger.addEventListener("keydown", (event) => {
+      if (!["ArrowDown", "ArrowUp"].includes(event.key)) return;
+      event.preventDefault();
+      open(event.key === "ArrowUp");
+    });
+    menu.addEventListener("toggle", (event) => {
+      if (event.newState !== "closed") return;
+      trigger.setAttribute("aria-expanded", "false");
+      if (openCardMenu?.menu === menu) openCardMenu = null;
+    });
+    menu.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" || event.key === "Tab") {
+        if (event.key === "Escape") event.preventDefault();
+        event.stopPropagation();
+        closeNoteCardMenu({ focusTrigger: true });
+        return;
+      }
+      const items = enabledItems();
+      const index = items.indexOf(document.activeElement);
+      let next;
+      if (event.key === "ArrowDown") next = (index + 1) % items.length;
+      else if (event.key === "ArrowUp") next = (index - 1 + items.length) % items.length;
+      else if (event.key === "Home") next = 0;
+      else if (event.key === "End") next = items.length - 1;
+      else return;
+      event.preventDefault();
+      items[next]?.focus();
+    });
+    // Close before navigation/confirmation so the visible More button owns focus.
+    // Copy keeps the menu open to show its existing success feedback.
+    menu.addEventListener("click", (event) => {
+      if (event.target.closest("button:not(.note-card__action--copy)")) closeNoteCardMenu({ focusTrigger: true });
+    }, true);
+  }
+
+  function bindNoteCardEvents() {
+    window.addEventListener("resize", () => closeNoteCardMenu());
+    document.addEventListener("scroll", (event) => {
+      if (openCardMenu && !openCardMenu.menu.contains(event.target)) closeNoteCardMenu();
+    }, true);
+    function refreshDates() {
+      if (document.hidden) return;
+      document.querySelectorAll(".note-card__date[data-date-label]").forEach((time) => {
+        time.textContent = `${time.dataset.dateLabel} ${api.formatRelativeNoteDate(time.dateTime)}`;
+      });
+    }
+    window.setInterval(refreshDates, 60000);
+    document.addEventListener("visibilitychange", refreshDates);
+  }
+
   function createNoteCard(note, { secondary = false, onOpen = null } = {}) {
     const type = typeFor(note.typeId);
     const isDeleted = isDeletedNote(note);
     const card = createElement("article", {
-      className: `note-card${secondary ? " secondary-note-card" : note.isPinned ? " note-card--pinned" : ""}`,
+      className: `note-card${secondary ? " secondary-note-card" : ""}${note.isPinned ? " note-card--pinned" : ""}`,
     });
     const more = createElement("button", {
-      className: "icon-button mobile-only mobile-card-more", type: "button",
-      attributes: { "aria-label": `Actions for ${note.title}`, title: "More actions", "aria-haspopup": "dialog" },
+      className: "icon-button note-card__more", type: "button",
+      attributes: { "aria-label": `Actions for ${note.title}`, title: "More actions", "aria-haspopup": "menu", "aria-expanded": "false" },
     });
     more.append(createNoteCardActionIcon([
       ["circle", { cx: "5", cy: "12", r: "1" }],
       ["circle", { cx: "12", cy: "12", r: "1" }],
       ["circle", { cx: "19", cy: "12", r: "1" }],
     ]));
-    more.addEventListener("click", () => api.openMobileCardActions(card, more));
     const content = createElement("div", { className: "note-card__content" });
     const meta = createElement("div", { className: "note-card__meta" });
     meta.append(makeTypeBadge(type, { isFilter: !secondary && !ui.trashOnly }));
@@ -256,9 +344,9 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
     const dateElement = createElement("time", {
       className: "note-card__date",
       text: dateInfo.text,
+      dataset: { dateLabel: dateInfo.label },
       attributes: { datetime: dateInfo.datetime, title: dateInfo.title },
     });
-    meta.append(dateElement);
 
     const titleButton = createElement("button", {
       className: "note-card__title",
@@ -291,9 +379,12 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
     }
     if (!resolvedTags.length) tags.append(createElement("span", { className: "untagged", text: "No tags" }));
 
-    const actions = createElement("div", { className: "note-card__actions" });
+    const actions = createElement("div", {
+      className: "note-card__actions",
+      attributes: { id: `note-card-menu-${++cardMenuSequence}`, popover: "auto", role: "menu", "aria-label": `Actions for ${note.title}` },
+    });
     const copy = createElement("button", {
-      className: "note-card__action",
+      className: "note-card__action note-card__action--copy",
       type: "button",
       disabled: !note.content.trim(),
       attributes: { "aria-label": `Copy ${note.title}`, title: "Copy content" },
@@ -324,9 +415,13 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
         ["path", { d: "M4.5 19.5 6 14l9.6-9.6a1.65 1.65 0 0 1 2.35 0l1.65 1.65a1.65 1.65 0 0 1 0 2.35L10 18l-5.5 1.5Z" }],
       ]),
     );
-    edit.addEventListener("click", () => secondary ? openPickerNote("edit") : openNoteEditor(note, { invoker: edit }));
+    edit.addEventListener("click", () => secondary ? openPickerNote("edit") : openNoteEditor(note, {
+      invoker: more,
+    }));
+    if (!isDeleted) actions.append(edit);
+    actions.append(copy);
     const remove = createElement("button", {
-      className: `note-card__action ${isDeleted ? "note-card__action--restore" : "note-card__action--danger"}`,
+      className: `note-card__action note-card__action--separated ${isDeleted ? "note-card__action--restore" : "note-card__action--danger"}`,
       type: "button",
       attributes: {
         "aria-label": isDeleted ? `Restore ${note.title}` : `Move ${note.title} to Trash`,
@@ -351,7 +446,7 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
         type: "button",
         attributes: {
           "aria-label": `Open ${note.title} with Side Note`,
-          title: "Open with Side Note",
+          title: "Open Side Note",
         },
       });
       sideNote.append(createNoteCardActionIcon([
@@ -360,13 +455,11 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
       ]));
       sideNote.addEventListener("click", () => {
         if (!window.matchMedia("(min-width: 960px)").matches) return;
-        openQuickView(note, sideNote);
+        openQuickView(note, more);
         void openDualPane({ startWithPicker: true });
       });
       actions.append(sideNote);
     }
-    actions.append(copy);
-    if (!isDeleted) actions.append(edit);
     actions.append(remove);
     if (isDeleted) {
       const permanentRemove = createElement("button", {
@@ -389,9 +482,17 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
       permanentRemove.addEventListener("click", () => permanentlyDeleteNoteWithConfirmation(note));
       actions.append(permanentRemove);
     }
-    footer.append(tags, actions);
+    [...actions.children].forEach((button) => {
+      button.setAttribute("role", "menuitem");
+      button.tabIndex = -1;
+      const label = button === edit ? "Edit note" : button.title;
+      button.append(createElement("span", { className: "note-card__action-label", text: label }));
+    });
+    more.setAttribute("aria-controls", actions.id);
+    installNoteCardMenu(actions, more);
+    footer.append(tags, dateElement);
     const topActions = createElement("div", { className: "note-card__top-actions" });
-    if (!isDeleted && !secondary) {
+    if (!isDeleted) {
       const pin = createElement("button", {
         className: "note-card__pin-toggle",
         type: "button",
@@ -405,11 +506,11 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
       pin.addEventListener("click", () => toggleNotePinned(note));
       topActions.append(pin);
     }
-    card.append(content, footer);
+    topActions.append(more);
+    card.append(content, footer, actions);
     if (topActions.childElementCount) card.append(topActions);
-    if (!isDeleted && !secondary) card.append(more);
     if (secondary) card.addEventListener("click", (event) => {
-      if (!event.target.closest("button")) void openPickerNote("preview");
+      if (!event.target.closest("button, .note-card__actions")) void openPickerNote("preview");
     });
     if (!secondary) api.decorateSelectableNoteCard?.(card, note);
     return card;
@@ -691,6 +792,8 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
   function syncPrimarySortPicker() { primarySortPicker?.sync(); }
 
   Object.assign(api, {
+    bindNoteCardEvents,
+    closeNoteCardMenu,
     closeSortPicker,
     syncSortPicker,
     enhanceSortSelect,

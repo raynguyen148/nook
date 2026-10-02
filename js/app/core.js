@@ -346,57 +346,47 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
     return shortDateFormatter.format(date);
   }
 
-  function formatRelativeDeletedDate(value) {
-    const date = new Date(value);
-    if (Number.isNaN(date.getTime())) return "unknown date";
-
-    const today = new Date();
-    const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime();
-    const dateStart = new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
-    const dayDifference = Math.max(0, Math.round((todayStart - dateStart) / 86400000));
-
-    if (dayDifference === 0) return "today";
-    if (dayDifference === 1) return "yesterday";
-    if (dayDifference < 7) return `${dayDifference} days ago`;
-    if (dayDifference < 14) return "1 week ago";
-    if (dayDifference < 30) return `${Math.floor(dayDifference / 7)} weeks ago`;
-    if (dayDifference < 60) return "1 month ago";
-    if (dayDifference < 365) return `${Math.floor(dayDifference / 30)} months ago`;
-    if (dayDifference < 730) return "1 year ago";
-    return `${Math.floor(dayDifference / 365)} years ago`;
-  }
-
   function getNoteCardDateInfo(note) {
     const isEdited = Boolean(
       note?.updatedAt &&
       note?.createdAt &&
       new Date(note.updatedAt).getTime() > new Date(note.createdAt).getTime()
     );
-    const prefersUpdated = typeof ui.sort === "string" && ui.sort.startsWith("updated");
-
     if (note?.deletedAt) {
       return {
-        text: `Deleted ${formatRelativeDeletedDate(note.deletedAt)}`,
+        text: `Deleted ${formatRelativeNoteDate(note.deletedAt)}`,
+        label: "Deleted",
         datetime: note.deletedAt,
         title: `Deleted ${formatFullDate(note.deletedAt)} · Created ${formatFullDate(note.createdAt)}`,
       };
     }
 
-    if (prefersUpdated && isEdited) {
+    if (isEdited) {
       return {
-        text: `Updated ${formatShortDate(note.updatedAt)}`,
+        text: `Updated ${formatRelativeNoteDate(note.updatedAt)}`,
+        label: "Updated",
         datetime: note.updatedAt,
         title: `Updated ${formatFullDate(note.updatedAt)} · Created ${formatFullDate(note.createdAt)}`,
       };
     }
 
     return {
-      text: formatShortDate(note.createdAt),
+      text: `Created ${formatRelativeNoteDate(note.createdAt)}`,
+      label: "Created",
       datetime: note.createdAt,
-      title: isEdited
-        ? `Created ${formatFullDate(note.createdAt)} · Updated ${formatFullDate(note.updatedAt)}`
-        : `Created ${formatFullDate(note.createdAt)}`,
+      title: `Created ${formatFullDate(note.createdAt)}`,
     };
+  }
+
+  function formatRelativeNoteDate(value) {
+    const timestamp = new Date(value).getTime();
+    if (!Number.isFinite(timestamp)) return "unknown date";
+    const seconds = Math.max(0, Math.floor((Date.now() - timestamp) / 1000));
+    if (seconds < 60) return "just now";
+    for (const [unit, size] of [["y", 31536000], ["mo", 2592000], ["w", 604800], ["d", 86400], ["h", 3600], ["m", 60]]) {
+      if (seconds >= size) return `${Math.floor(seconds / size)}${unit} ago`;
+    }
+    return "just now";
   }
 
   function formatFullDate(value) {
@@ -455,6 +445,7 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
     pluralize,
     formatShortDate,
     getNoteCardDateInfo,
+    formatRelativeNoteDate,
     formatFullDate,
   });
 });

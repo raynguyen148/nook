@@ -514,8 +514,8 @@ dialog:not([open]),
   }
   .mobile-card-more svg { width: 18px; height: 18px; }
   .notes-panel.is-trash-view .mobile-card-more { display: none; }
-  .notes-panel:not(.is-trash-view) .note-card__actions { display: none !important; }
-  .notes-panel.is-trash-view .note-card__actions {
+  .notes-panel:not(.is-trash-view) .note-card__actions:not([popover]) { display: none !important; }
+  .notes-panel.is-trash-view .note-card__actions:not([popover]) {
     position: absolute;
     top: 0.55rem;
     right: 0.55rem;
@@ -524,7 +524,7 @@ dialog:not([open]),
     gap: 0.35rem;
     z-index: 2;
   }
-  .notes-panel.is-trash-view .note-card__action:not(.note-card__action--restore):not(.note-card__action--permanent) { display: none; }
+  .notes-panel.is-trash-view .note-card__actions:not([popover]) .note-card__action:not(.note-card__action--restore):not(.note-card__action--permanent) { display: none; }
   .notes-panel.is-trash-view .note-card__action--restore span.mobile-only {
     display: none !important;
   }

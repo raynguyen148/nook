@@ -87,6 +87,14 @@
     background: var(--text-muted);
   }
 
+  .note-detail-workspace:not(.is-side-by-side) > .note-window-resize::before {
+    opacity: 0;
+  }
+
+  .note-detail-workspace:not(.is-side-by-side) > .note-window-resize:is(:focus-visible, :active, .is-focus, .is-active, .is-hover)::before {
+    opacity: 1;
+  }
+
   .note-window-resize::after {
     top: 0;
     bottom: 0;
@@ -132,6 +140,7 @@
 }
 
 @media (min-width: 821px) and (hover: hover) {
+  .note-detail-workspace:not(.is-side-by-side) > .note-window-resize:not([aria-disabled="true"]):hover::before,
   .note-window-resize:not([aria-disabled="true"]):hover::after {
     opacity: 1;
   }

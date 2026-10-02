@@ -145,7 +145,8 @@ Opening a saved note's Preview action takes you to the detail workspace. Use
 without losing the note context. The back action returns to the library and
 restores the previous scroll position when possible.
 
-On desktop, drag either side edge of a single note to widen it. Its default
+On desktop, drag either side edge of a single note to widen it. Edge indicators
+appear only on hover, keyboard focus, or during a drag. Its default
 width is the minimum; its maximum fills the content area beside the sidebar,
 with a small outer gutter. With a Side note open, drag only the divider between
 the panes. Each pane keeps at least 400px where space permits (560px in Split)
@@ -207,6 +208,20 @@ Card titles show at most two lines (one in Compact view). In **Settings → Disp
 choose **Preview lines** from 2 to 10 for card content; the default is 3.
 
 ### Quick View and note actions
+
+Note cards keep a horizontal **More actions (⋯)** button visible at the top
+right. It opens a menu for Edit, Copy, Side Note, and the separated Trash action.
+The pin button sits to its left: unpinned notes reveal it on hover or keyboard
+focus, while pinned notes always show the highlighted pin. Compact rows keep
+these controls at the far right. The primary and Side Note switchers share the
+same menu, with actions appropriate to their pane. Touch controls are at least
+44px; Escape closes the menu and returns focus to More actions.
+
+Comfortable and Grid cards show tags on the left of the footer and the latest
+relative timestamp on the right: **Created 5m ago** for a new note, or
+**Updated 1d ago** after an edit. This timestamp is independent of sorting and
+refreshes while the app is visible. Tags that do not fit collapse into the
+existing **+N** badge; the full timestamp is available on hover.
 
 The detail workspace provides:
 
@@ -569,6 +584,7 @@ mutation occurs.
 | [`scripts/test-maintainability.cjs`](scripts/test-maintainability.cjs) | Optional Chromium checks for onboarding, theme aliases, sidebar restoration, settings menus, and mobile formatting |
 | [`scripts/test-note-switcher.cjs`](scripts/test-note-switcher.cjs) | Optional Chromium checks for both pane pickers, draft safety, cancellation, conflicts, and responsive layouts |
 | [`scripts/test-workspace-resize.cjs`](scripts/test-workspace-resize.cjs) | Optional Chromium checks for width bounds, drag/keyboard cancellation, preference persistence, mode-specific floors, themes, and mobile layout |
+| [`scripts/test-note-card-actions.cjs`](scripts/test-note-card-actions.cjs) | Optional Chromium checks for card More menus, pin visibility, tag/timestamp footers, both pickers, keyboard, and touch |
 | [`scripts/test-workflows.cjs`](scripts/test-workflows.cjs) | Optional Chromium storage/UI regression checks using isolated synthetic data |
 | [`scripts/update-service-worker-cache.cjs`](scripts/update-service-worker-cache.cjs) | Recomputes the cache fingerprint from all hosted app assets |
 | [`sw.js`](sw.js) | Versioned cache for local hosted app resources; never owns note data |

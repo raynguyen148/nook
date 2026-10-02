@@ -173,6 +173,7 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
   }
 
   function bindEvents() {
+    api.bindNoteCardEvents();
     api.bindNoteDetailResizeEvents();
     api.bindMobileEvents();
     api.bindSplitSelectionEvents();
@@ -567,6 +568,10 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
     });
     document.addEventListener("keydown", (event) => {
       if (event.key === "Tab") document.documentElement.dataset.inputModality = "keyboard";
+      if (event.key === "Escape" && api.closeNoteCardMenu({ focusTrigger: true })) {
+        event.preventDefault();
+        return;
+      }
       if (event.key === "Escape" && elements.noteFontSizePopover.matches(":popover-open")) {
         event.preventDefault();
         closeNoteFontSizePopover();
