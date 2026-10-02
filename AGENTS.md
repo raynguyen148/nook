@@ -1,5 +1,9 @@
 # Nook - repository instructions
 
+Read [docs/agent-guide.md](docs/agent-guide.md) for the project reading order,
+module ownership, implementation workflow, UI/CSS rules, and validation guidance
+before making changes. Use it alongside the instructions below.
+
 ## App overview
 
 Nook is a private personal note app. It runs entirely offline in the browser:
@@ -9,11 +13,13 @@ Nook is a private personal note app. It runs entirely offline in the browser:
 - Import/export: local JSON backup files; no server or external API.
 - Note content: stored as raw Markdown text and rendered in Quick View.
 - Organization: notes belong to one note type and can have multiple tags.
-- Current entry point: `index.html` loads the CSS manifest, then
-  `js/storage.js`, `js/markdown.js`, and the registered modules under `js/app/`.
+- Current entry point: `index.html` loads the CSS manifest, registry, and shared
+  theme catalogue in the head, then `js/storage.js`, `js/markdown.js`, and
+  registered feature modules in the body.
 
-There is currently no `package.json`, bundler, framework, test runner, or remote
-runtime dependency. Keep the app openable as a static local website.
+There is currently no `package.json`, bundler, framework, or remote runtime
+dependency. Regression tests use Node's built-in `node:test`; optional browser
+QA uses an already installed local Playwright. Keep the app openable as a static local website.
 
 ## Product boundaries
 
@@ -41,24 +47,40 @@ runtime dependency. Keep the app openable as a static local website.
 - `js/markdown.js`: dependency-free, safe Markdown-to-DOM renderer. It exposes
   the frozen `globalThis.NookMarkdown` API.
 - `js/app/runtime.js`: module registration and explicit installer dependency order.
-- `js/app/core.js`: shared constants, cached DOM references, application state,
-  filtering primitives, local draft/backup state, and pure UI helpers.
+- `js/app/theme-config.js`: theme metadata, aliases, and before-paint theme setup.
+- `js/app/elements.js`: cached DOM references.
+- `js/app/core.js`: shared constants, application state, preferences, and pure UI helpers.
+- `js/app/local-state.js`: legacy draft compatibility and backup health.
+- `js/app/search.js`: search/filter primitives, ordering, indexing, and query scheduling.
+- `js/app/pane-controller.js`: shared save/conflict/recovery lifecycle for pane adapters.
+- `js/app/contracts.d.ts` and `jsconfig.json`: strict development checks for the pane/theme boundary.
 - `js/app/preferences.js`: theme, layout, sidebar, responsive control state, and
   UI preference persistence.
 - `js/app/feedback.js`: toast behavior and confirmation-dialog focus management.
 - `js/app/note-actions.js`: shared pin, Trash/Undo, restore, and permanent-delete
   mutations used by cards and editor surfaces.
-- `js/app/library.js`: sidebar, note cards, pagination, Quick View, clipboard,
-  Side note, and Trash rendering.
-- `js/app/editor.js`: note editor, tag/type pickers, Markdown modes/formatting,
-  autosave, dirty-draft safety, and note save behavior.
+- `js/app/library-sidebar.js`: sidebar filters, metadata badges, and tag fitting.
+- `js/app/library.js`: note cards, pagination, sort controls, and Trash rendering.
+- `js/app/workspace.js`: primary preview, detail workspace, and transitions.
+- `js/app/clipboard.js`: raw-Markdown copy and copy feedback.
+- `js/app/side-note.js`: Side note navigation, DOM adapter, and autosave.
+- `js/app/note-pickers.js`: shared type/tag picker components and pane adapters.
+- `js/app/split-scroll.js`: Split preview rendering and scroll synchronization.
+- `js/app/formatting.js`: Markdown editing operations and formatting scroll cues.
+- `js/app/editor.js`: primary editor adapter, modes, validation, autosave, and draft safety.
 - `js/app/split-selection.js`: Split-mode selection mapping and highlight lifecycle.
 - `js/app/organize.js`: type/tag management, library refresh/render orchestration,
   import/export, and per-note downloads.
 - `js/app/sync.js`: same-origin tab notifications and guarded external refreshes.
 - `js/app/offline.js`: storage capability reporting and hosted update controls.
 - `js/app/mobile.js`: responsive control placement, mobile sheets, and Back guards.
+- `js/app/onboarding.js`: dismissible first-use explanation and explicit guide-note creation.
 - `js/app/events.js`: event registration, startup arrangement, and bootstrap.
+- `js/app/recovery.js`: all-tab Draft Recovery and safe recovery-source cleanup.
+- `js/app/data-import.js`: multi-file Markdown import and backup merge/replace inspection.
+- `js/app/productivity.js`: Quick actions, guarded navigation, templates, Daily notes, and workflow dialogs.
+- `js/app/bulk-actions.js`: note selection across pages/filters and atomic batch actions.
+- `css/workflows.css`: theme-aware workflow dialogs and bulk-selection surfaces.
 - `scripts/update-service-worker-cache.cjs`: refreshes the hosted asset cache
   fingerprint; its regression test rejects missing or stale assets.
 - `favicon.svg`: local app icon.
@@ -91,7 +113,8 @@ Do not silently reset the database, delete user data, or change backup format.
   existing `PersonalNotesStorage` and `NookMarkdown` namespaces.
 - Application modules register through the temporary
   `Symbol.for("nook.app.modules")` registry created by `runtime.js`. Keep cross-module
-  calls late-bound, preserve script order, and let `events.js` remove the registry
+  calls late-bound, keep each API export owned by one installer, preserve script order,
+  and let `events.js` remove the registry
   before bootstrap.
 - Prefer `const`/`let`, early returns, small named functions, and the existing
   `elements`, `library`, and `ui` state objects.
@@ -135,8 +158,8 @@ Do not silently reset the database, delete user data, or change backup format.
   behavior intact.
 - New note and Edit note share the same editor. Hide edit-only actions, such as
   View note and Delete note, for a new note.
-- Edit mode keeps raw Markdown visible. View mode is the separate Quick View
-  dialog.
+- Edit mode keeps raw Markdown visible. Preview/Quick View uses the same note
+  detail workspace; workflow overlays use native dialogs.
 - Closing, canceling, Escape, and switching from Edit to View must respect the
   unsaved-change confirmation. Never silently discard a dirty draft.
 - Existing formatting shortcuts are platform-aware:
@@ -173,8 +196,8 @@ Do not silently reset the database, delete user data, or change backup format.
 - Reuse `.button`, `.button-primary`, `.button-secondary`, `.button-danger`,
   `.icon-button`, and existing spacing/color conventions before creating a new
   component style.
-- Keep the light, restrained visual system: rounded cards/dialogs, neutral
-  borders, indigo primary actions, gray secondary actions, thin outline icons.
+- Keep the restrained visual system: rounded cards/dialogs, neutral borders,
+  theme-specific primary accents, secondary surfaces, and thin outline icons.
 - Preserve responsive breakpoints and the mobile full-screen dialog behavior.
 - Respect `prefers-reduced-motion` and `forced-colors` rules when adding motion
   or visual state.
@@ -186,6 +209,10 @@ Separate static checks from runtime checks and report them separately:
 - Static JavaScript syntax: `node --check js/storage.js`,
   `node --check js/markdown.js`, and `node --check` for every `js/app/*.js` file.
 - Patch whitespace: `git diff --check`.
+- Shared pane/theme contracts: `tsc -p jsconfig.json` when TypeScript is already available
+  as a development tool; this intentionally checks only the listed boundary files.
+- Optional isolated browser UI QA: `node scripts/test-maintainability.cjs` with
+  Node 20+ and an existing local Playwright installation.
 - Runtime: serve only on localhost when needed, open the app in a browser, and
   test the affected flow with no console errors.
 - For dialog changes, test new note, existing note, dirty draft, keyboard

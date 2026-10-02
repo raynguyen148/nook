@@ -57,12 +57,12 @@ function fixture() {
     return nodes.get(key);
   };
   const elements = {};
-  for (const name of ["noteDialog", "noteForm", "sort", "regularFilterControls", "emptyTrash", "notesList", "historyDialog", "search", "themeToggle", "organizeDialog", "backupHealthMessage", "noteFontSizePopover"]) elements[name] = node(name);
+  for (const name of ["noteDialog", "noteForm", "sort", "regularFilterControls", "emptyTrash", "notesList", "historyDialog", "search", "themeToggle", "organizeDialog", "backupHealthMessage", "noteFontSizePopover", "selectNotes"]) elements[name] = node(name);
   elements.noteFontSizePopover.setAttribute("popover", "auto");
   elements.noteDialog.querySelector = node;
   elements.sort.closest = node;
   elements.search.closest = node;
-  const moved = [elements.regularFilterControls, node(".sort-field"), elements.emptyTrash, node(".note-formatting-toolbar"), node(".dialog-footer__tools"), node(".search-field"), elements.noteFontSizePopover];
+  const moved = [elements.regularFilterControls, node(".sort-field"), elements.emptyTrash, node(".note-formatting-toolbar"), node(".dialog-footer__tools"), node(".search-field"), elements.noteFontSizePopover, elements.selectNotes];
   moved.forEach((el, index) => node(`original-${index}`).append(el));
   const originalParents = moved.map((el) => el.parentElement);
   const query = new EventTarget();
@@ -133,12 +133,15 @@ function fixture() {
 test("mobile layout returns the same controls and draft values to desktop on resize", () => {
   const f = fixture();
   f.moved[0].value = "existing selection";
+  f.app.elements.selectNotes.setAttribute("aria-pressed", "true");
   f.resize(true);
   f.moved.forEach((node, i) => assert.notEqual(node.parentElement, f.originalParents[i]));
+  assert.equal(f.app.elements.selectNotes.parentElement, f.app.elements.mobileSelectNotesSlot);
   f.app.elements.mobileFilterDialog.open = true;
   f.resize(false);
   f.moved.forEach((node, i) => assert.equal(node.parentElement, f.originalParents[i]));
   assert.equal(f.moved[0].value, "existing selection");
+  assert.equal(f.app.elements.selectNotes.getAttribute("aria-pressed"), "true");
   assert.equal(f.app.elements.mobileFilterDialog.open, false);
 });
 

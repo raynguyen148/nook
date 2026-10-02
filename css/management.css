@@ -249,25 +249,22 @@
 
 
 
-.color-picker__menu {
+.color-picker__menu,
+.note-type-picker__menu {
   position: absolute;
   z-index: 30;
-  display: flex;
-  flex-direction: column;
   top: calc(100% + 0.32rem);
   left: 0;
-  min-width: 100%;
-  max-width: min(16rem, calc(100vw - 1.5rem));
   max-height: min(18rem, calc(100dvh - 2rem));
   box-sizing: border-box;
   overflow-x: hidden;
   overflow-y: auto;
-  border: 1px solid #cbd2de;
+  border: 1px solid var(--picker-menu-border, #cbd2de);
   border-radius: calc(var(--control-radius) + 0.22rem);
   padding: 0.42rem;
-  gap: 0.18rem;
-  box-shadow: 0 0.75rem 1.75rem rgb(42 55 79 / 12%), 0 0.15rem 0.45rem rgb(42 55 79 / 6%);
-  background: #fff;
+  box-shadow: var(--picker-menu-shadow, 0 0.75rem 1.75rem rgb(42 55 79 / 12%), 0 0.15rem 0.45rem rgb(42 55 79 / 6%));
+  background: var(--picker-menu-surface, #fff);
+  color: var(--picker-menu-text, inherit);
   overscroll-behavior: contain;
   opacity: 1;
   transform: translateY(0) scale(1);
@@ -276,6 +273,14 @@
     opacity var(--motion-duration-short) var(--motion-ease-in),
     transform var(--motion-duration-short) var(--motion-ease-in),
     display var(--motion-duration-short) allow-discrete;
+}
+
+.color-picker__menu {
+  display: flex;
+  flex-direction: column;
+  min-width: 100%;
+  max-width: min(16rem, calc(100vw - 1.5rem));
+  gap: 0.18rem;
 }
 
 .color-picker__menu[hidden] {
@@ -588,33 +593,12 @@
 
 
 .note-type-picker__menu {
-  position: absolute;
-  z-index: 30;
-  top: calc(100% + 0.32rem);
-  left: 0;
   width: 100%;
   max-width: calc(100vw - 1.5rem);
-  max-height: min(18rem, calc(100dvh - 2rem));
-  box-sizing: border-box;
-  overflow-x: hidden;
-  overflow-y: auto;
-  border: 1px solid #cbd2de;
-  border-radius: calc(var(--control-radius) + 0.22rem);
-  padding: 0.42rem;
-  box-shadow: 0 0.75rem 1.75rem rgb(42 55 79 / 12%), 0 0.15rem 0.45rem rgb(42 55 79 / 6%);
-  background: #fff;
-  overscroll-behavior: contain;
   /* Keep the menu scrollable without exposing a platform-specific scrollbar. */
   scrollbar-gutter: auto;
   scrollbar-width: none;
   -ms-overflow-style: none;
-  opacity: 1;
-  transform: translateY(0) scale(1);
-  transform-origin: top left;
-  transition:
-    opacity var(--motion-duration-short) var(--motion-ease-in),
-    transform var(--motion-duration-short) var(--motion-ease-in),
-    display var(--motion-duration-short) allow-discrete;
 }
 
 .note-type-picker__menu::-webkit-scrollbar {
@@ -1001,3 +985,17 @@
     font-size: 0.76rem;
   }
 }
+
+/* Rare destructive actions are disclosed from the row's More menu. */
+.management-actions-menu { position: relative; }
+.management-actions-menu > summary { list-style: none; font-size: 1.2rem; cursor: pointer; }
+.management-actions-menu > summary::-webkit-details-marker { display: none; }
+.management-actions-menu__panel {
+  /* Fit within its row, including the last row of a scrollable catalogue. */
+  position: absolute; z-index: 5; top: 50%; right: calc(100% + 0.35rem);
+  min-width: 8rem; transform: translateY(-50%);
+  padding: 0.4rem; border: 1px solid var(--border-subtle); border-radius: var(--control-radius);
+  background: var(--surface-panel); box-shadow: 0 6px 18px rgb(0 0 0 / 12%);
+}
+.management-actions-menu__panel .button { width: 100%; justify-content: flex-start; }
+.management-row:has(.management-actions-menu[open]) { position: relative; z-index: 6; }

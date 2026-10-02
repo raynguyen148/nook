@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "checkJs": true,
+    "noEmit": true,
+    "strict": true,
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM"],
+    "types": []
+  },
+  "files": [
+    "js/app/contracts.d.ts",
+    "js/app/pane-controller.js",
+    "js/app/theme-config.js"
+  ]
+}

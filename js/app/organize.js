@@ -334,6 +334,40 @@ globalThis[Symbol.for("nook.app.modules")].register("organize", (app) => {
     return pickerState;
   }
 
+  function closeManagementMenus(except = null) {
+    elements.organizeDialog.querySelectorAll(".management-actions-menu[open]").forEach((menu) => {
+      if (menu !== except) menu.open = false;
+    });
+  }
+
+  function createManagementActionsMenu(remove, label) {
+    const menu = createElement("details", { className: "management-actions-menu" });
+    const trigger = createElement("summary", {
+      className: "icon-button icon-button--small", text: "…",
+      attributes: { "aria-label": `More actions for ${label}`, title: "More actions" },
+    });
+    const panel = createElement("div", { className: "management-actions-menu__panel" });
+    panel.append(remove);
+    menu.append(trigger, panel);
+    menu.addEventListener("toggle", () => { if (menu.open) closeManagementMenus(menu); });
+    // Close before opening the confirmation, so focus returns to its visible trigger.
+    remove.addEventListener("click", () => { menu.open = false; trigger.focus(); }, { capture: true });
+    return menu;
+  }
+
+  function bindManagementMenuEvents() {
+    document.addEventListener("pointerdown", (event) => {
+      if (!(event.target instanceof Element) || !event.target.closest(".management-actions-menu")) closeManagementMenus();
+    });
+    elements.organizeDialog.addEventListener("keydown", (event) => {
+      const menu = event.target instanceof Element && event.target.closest(".management-actions-menu[open]");
+      if (event.key === "Escape" && menu) {
+        event.preventDefault(); event.stopPropagation(); menu.open = false; menu.querySelector("summary").focus();
+      }
+    });
+    elements.organizeDialog.addEventListener("close", () => closeManagementMenus());
+  }
+
   function renderTypeManagement({ animate = false } = {}) {
     const totalUsageCounts = new Map();
     const activeUsageCounts = new Map();
@@ -414,7 +448,7 @@ globalThis[Symbol.for("nook.app.modules")].register("organize", (app) => {
             text: "Delete",
             attributes: { "aria-label": `Delete ${type.name}` },
           });
-          actions.append(remove);
+          actions.append(createManagementActionsMenu(remove, type.name));
           remove.addEventListener("click", async () => {
             const affected = totalUsageCounts.get(type.id) || 0;
             const fallbackType = typeFor(storage.FALLBACK_TYPE_ID);
@@ -519,7 +553,7 @@ globalThis[Symbol.for("nook.app.modules")].register("organize", (app) => {
           attributes: { "aria-label": `Delete ${label}` },
         });
         main.append(createElement("span", { className: "management-row__name", text: label }));
-        actions.append(edit, remove);
+        actions.append(edit, createManagementActionsMenu(remove, label));
         edit.addEventListener("click", () => startManagementEdit("tags", tag.id));
         remove.addEventListener("click", async () => {
           const affected = totalUsageCounts.get(tag.id) || 0;
@@ -562,6 +596,8 @@ globalThis[Symbol.for("nook.app.modules")].register("organize", (app) => {
     renderSidebar();
     renderActiveFilters();
     renderNotes({ motion });
+    api.syncDraftRecoveryIndicator?.();
+    api.syncOnboarding();
     if (elements.organizeDialog.open) renderManagement();
     if (isNoteEditorOpen()) {
       renderNoteTypeOptions(elements.noteType.value);
@@ -743,13 +779,13 @@ globalThis[Symbol.for("nook.app.modules")].register("organize", (app) => {
     }
   }
 
-  function downloadExport(data) {
+  function downloadExport(data, { selection = false } = {}) {
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     const date = new Date().toISOString().slice(0, 10);
     link.href = url;
-    link.download = `personal-notes-backup-${date}.json`;
+    link.download = `${selection ? "nook-selected-notes" : "personal-notes-backup"}-${date}.json`;
     document.body.append(link);
     link.click();
     link.remove();
@@ -766,43 +802,26 @@ globalThis[Symbol.for("nook.app.modules")].register("organize", (app) => {
     );
   }
 
-  function plainTextFromMarkdown(source) {
-    const container = document.createElement("div");
-    container.className = "quick-view-content";
-    container.style.position = "fixed";
-    container.style.left = "-10000px";
-    container.style.top = "0";
-    document.body.append(container);
-    globalThis.NookMarkdown.renderInto(container, source);
-    const text = (container.innerText || container.textContent || "")
-      .replace(/[ \t]+\n/g, "\n")
-      .replace(/\n{3,}/g, "\n\n")
-      .trim();
-    container.remove();
-    return text;
-  }
-
-  function downloadNoteFile(note, format) {
-    const isMarkdown = format === "md";
-    const content = isMarkdown ? note.content : plainTextFromMarkdown(note.content);
+  function downloadNoteFile(note) {
+    const content = note.content;
     const blob = new Blob([`${content}${content ? "\n" : ""}`], {
-      type: isMarkdown ? "text/markdown;charset=utf-8" : "text/plain;charset=utf-8",
+      type: "text/markdown;charset=utf-8",
     });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = `${safeNoteFileName(note.title)}.${format}`;
+    link.download = `${safeNoteFileName(note.title)}.md`;
     document.body.append(link);
     link.click();
     link.remove();
     window.setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
 
-  function exportCurrentNote(format) {
+  function exportCurrentNote() {
     const note = previewNoteFromEditor();
     try {
-      downloadNoteFile(note, format);
-      showToast(`Exported “${note.title}” as .${format}.`);
+      downloadNoteFile(note);
+      showToast(`Exported “${note.title}” as .md.`);
     } catch (error) {
       showError(error, "We could not export this note.");
     }
@@ -821,45 +840,6 @@ globalThis[Symbol.for("nook.app.modules")].register("organize", (app) => {
     }
   }
 
-  async function importLibrary() {
-    const file = elements.importInput.files?.[0];
-    if (!file) return;
-    try {
-      if (hasUnsavedNoteChanges() || api.hasUnsavedSecondaryChanges?.()) {
-        showToast("Save or close unfinished editor drafts before replacing the library.", "error");
-        return;
-      }
-      const value = JSON.parse(await file.text());
-      const preview = storage.inspectBackup(value);
-      const { notes, types, tags, noteVersions } = preview.counts;
-      const formatLabel = preview.format === "legacy"
-        ? "legacy backup"
-        : `Nook schema v${preview.schemaVersion}`;
-      const confirmed = await requestConfirmation({
-        title: "Replace library?",
-        description: `Validated ${formatLabel}: ${pluralize(notes, "note")}, ${pluralize(types, "type")}, ${pluralize(tags, "tag")}, and ${pluralize(noteVersions, "saved version")}. Import will atomically replace the current library; recovery drafts are not part of this file.`,
-        confirmLabel: "Import backup",
-        cancelLabel: "Keep library",
-      });
-      if (!confirmed) return;
-      await storage.importBackup(value);
-      resetToFirstPage();
-      ui.typeId = "all";
-      ui.tagIds.clear();
-      ui.todayOnly = false;
-      ui.updatedTodayOnly = false;
-      ui.trashOnly = false;
-      persistFilters();
-      ui.query = "";
-      elements.search.value = "";
-      await refreshLibrary({ broadcast: true });
-      showToast(preview.format === "legacy" ? "Legacy library imported and upgraded." : "Backup imported successfully.");
-    } catch (error) {
-      showError(error, "The selected file could not be imported.");
-    } finally {
-      elements.importInput.value = "";
-    }
-  }
 
   Object.assign(api, {
     setManagementTab,
@@ -875,6 +855,7 @@ globalThis[Symbol.for("nook.app.modules")].register("organize", (app) => {
     closeColorPicker,
     setColorPickerValue,
     enhanceColorSelect,
+    bindManagementMenuEvents,
     renderTypeManagement,
     renderTagManagement,
     renderManagement,
@@ -893,10 +874,8 @@ globalThis[Symbol.for("nook.app.modules")].register("organize", (app) => {
     addNewTag,
     downloadExport,
     safeNoteFileName,
-    plainTextFromMarkdown,
     downloadNoteFile,
     exportCurrentNote,
     exportLibrary,
-    importLibrary,
   });
 });

@@ -10,14 +10,16 @@ const root = path.resolve(__dirname, "..");
 test("the page loads only one active theme between the shared and mobile layers", () => {
   const index = fs.readFileSync(path.join(root, "index.html"), "utf8");
   const manifest = fs.readFileSync(path.join(root, "css/app.css"), "utf8");
+  const bootstrap = fs.readFileSync(path.join(root, "js/app/theme-config.js"), "utf8");
   assert.equal(/@import[^;]+themes\//.test(manifest), false);
   assert.equal(/@import[^;]+mobile\.css/.test(manifest), false);
 
   const sharedIndex = index.indexOf('href="css/app.css"');
-  const themeIndex = index.indexOf("document.head.append(themeStylesheet)");
+  const themeIndex = index.indexOf('src="js/app/theme-config.js"');
   const mobileIndex = index.indexOf('href="css/mobile.css"');
   assert.ok(sharedIndex >= 0 && themeIndex > sharedIndex && mobileIndex > themeIndex);
-  assert.equal((index.match(/id = "nook-theme-stylesheet"/g) || []).length, 1);
+  assert.equal((bootstrap.match(/id = "nook-theme-stylesheet"/g) || []).length, 1);
+  assert.equal((index.match(/src="js\/app\/theme-config.js"/g) || []).length, 1);
 });
 
 test("active CSS stays below the all-theme parse cost", () => {

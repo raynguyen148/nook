@@ -6,7 +6,7 @@ const fs = require("node:fs");
 const vm = require("node:vm");
 
 // Exercise the production functions without bootstrapping storage or UI.
-const sourceCode = fs.readFileSync(new URL("../js/app/editor.js", `file://${__filename}`), "utf8");
+const sourceCode = fs.readFileSync(new URL("../js/app/split-scroll.js", `file://${__filename}`), "utf8");
 function fixture() {
   const source = { scrollTop: 400, clientWidth: 400, clientHeight: 200, scrollHeight: 1200 };
   const preview = { scrollTop: 0, clientWidth: 400, clientHeight: 200, scrollHeight: 1000 };
@@ -24,8 +24,9 @@ function fixture() {
   };
   vm.createContext(context);
   for (const name of ["clampScrollPosition", "getNoteEditorMaximumScrollTop", "getSplitScrollSession", "isNoteEditorScrollMapCurrent", "interpolateNoteEditorScrollMap", "lockNoteEditorScrollLeader", "syncNoteEditorScroll", "scheduleNoteEditorScrollMap", "renderNoteEditorPreview"]) {
-    const start = sourceCode.indexOf(`  function ${name}(`);
-    const end = sourceCode.indexOf("\n  function ", start + 1);
+    const signature = new RegExp(`^([ ]*)function ${name}\\(`, "m").exec(sourceCode);
+    const start = signature?.index ?? -1;
+    const end = sourceCode.indexOf(`\n${signature?.[1]}function `, start + 1);
     assert.ok(start >= 0 && end > start);
     vm.runInContext(sourceCode.slice(start, end), context);
   }

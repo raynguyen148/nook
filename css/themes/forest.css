@@ -5,6 +5,15 @@
    ========================================================================== */
 
 html[data-theme="forest"] {
+  /* Shared metadata and menu roles; component geometry stays in its owner. */
+  --tag-chip-border: #cbdccc;
+  --tag-chip-text: #496252;
+  --tag-chip-surface: #f0f6ef;
+  --picker-menu-border: #cbdccc;
+  --picker-menu-surface: #f8fbf7;
+  --picker-menu-text: #1e2d24;
+  --picker-menu-shadow: 0 12px 36px rgb(37 76 49 / 13%);
+
   color-scheme: light;
   --theme-surface-page: #f3f7f1;
   --theme-danger-border: #e6bfc1;
@@ -111,13 +120,15 @@ html[data-theme="forest"] .sidebar {
   box-shadow: 0 4px 24px -2px rgb(37 76 49 / 7%);
 }
 
-html[data-theme="forest"] .sidebar-toggle-btn {
+html[data-theme="forest"] .sidebar-toggle-btn,
+html[data-theme="forest"] .quick-view-header-toggle {
   border-color: #cbdccc;
   color: #6d8575;
   background: #f3f7f1;
 }
 
-html[data-theme="forest"] .sidebar-toggle-btn:hover {
+html[data-theme="forest"] .sidebar-toggle-btn:hover,
+html[data-theme="forest"] .quick-view-header-toggle:hover {
   border-color: #a9c5ad;
   color: #1e2d24;
   background: #e0ece1;
@@ -385,14 +396,7 @@ html[data-theme="forest"] .note-card:hover .note-card__title {
   color: var(--primary-accent);
 }
 
-html[data-theme="forest"] .tag-chip,
-html[data-theme="forest"] .note-tag-chip,
-html[data-theme="forest"] .selected-tag,
-html[data-theme="forest"] .quick-view-tag {
-  border-color: #cbdccc;
-  color: #496252;
-  background: #f0f6ef;
-}
+
 
 /* Keep the footer visually continuous with both regular and pinned cards. */
 html[data-theme="forest"] .note-card__footer {
@@ -605,7 +609,6 @@ html[data-theme="forest"] .note-content-preview .markdown-task-item > input {
 }
 
 html[data-theme="forest"] .app-dialog,
-html[data-theme="forest"] .note-type-picker__menu,
 html[data-theme="forest"] .management-list {
   border-color: #cbdccc;
   color: #1e2d24;
@@ -665,7 +668,8 @@ html[data-theme="forest"] .note-detail-action-tooltip__content {
 }
 
 html[data-theme="forest"] .shortcut-tooltip kbd,
-html[data-theme="forest"] .note-save-shortcut kbd {
+html[data-theme="forest"] .note-save-shortcut kbd,
+html[data-theme="forest"] .command-dialog__help kbd {
   border-color: #bfd3c2;
   border-bottom-color: #a9c5ad;
   color: #294a36;

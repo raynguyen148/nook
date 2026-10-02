@@ -1,6 +1,6 @@
 "use strict";
 
-const CACHE_VERSION = "nook-app-2a206ad50fed";
+const CACHE_VERSION = "nook-app-0a4a1c43ca60";
 const APP_ASSETS = [
   "./",
   "./index.html",
@@ -20,6 +20,7 @@ const APP_ASSETS = [
   "./css/note-components.css",
   "./css/note-detail.css",
   "./css/note-typography.css",
+  "./css/workflows.css",
   "./css/organize.css",
   "./css/responsive.css",
   "./css/view-mode-icons.css",
@@ -39,6 +40,19 @@ const APP_ASSETS = [
   "./js/storage.js",
   "./js/markdown.js",
   "./js/app/runtime.js",
+  "./js/app/theme-config.js",
+  "./js/app/elements.js",
+  "./js/app/local-state.js",
+  "./js/app/search.js",
+  "./js/app/pane-controller.js",
+  "./js/app/library-sidebar.js",
+  "./js/app/workspace.js",
+  "./js/app/clipboard.js",
+  "./js/app/side-note.js",
+  "./js/app/note-pickers.js",
+  "./js/app/split-scroll.js",
+  "./js/app/formatting.js",
+  "./js/app/onboarding.js",
   "./js/app/core.js",
   "./js/app/preferences.js",
   "./js/app/feedback.js",
@@ -53,6 +67,10 @@ const APP_ASSETS = [
   "./js/app/offline.js",
   "./js/app/events.js",
   "./js/app/mobile.js",
+  "./js/app/recovery.js",
+  "./js/app/data-import.js",
+  "./js/app/productivity.js",
+  "./js/app/bulk-actions.js",
 ];
 
 self.addEventListener("install", (event) => {

@@ -44,11 +44,11 @@
 }
 
 /* Override the theme-specific icon rules while retaining the active palette. */
-html[data-theme-mode="auto"] .theme-toggle .theme-toggle__icon {
+html[data-theme-mode="auto"] :is(.theme-toggle, .mobile-theme-toggle) .theme-toggle__icon {
   display: none !important;
 }
 
-html[data-theme-mode="auto"] .theme-toggle .theme-toggle__icon--auto {
+html[data-theme-mode="auto"] :is(.theme-toggle, .mobile-theme-toggle) .theme-toggle__icon--auto {
   display: inline-flex !important;
 }
 
@@ -779,7 +779,9 @@ textarea:focus-visible {
 }
 
 
-.shortcut-tooltip kbd {
+.shortcut-tooltip kbd,
+.note-save-shortcut kbd,
+.command-dialog__help kbd {
   min-width: 1.3rem;
   border: 1px solid #d9dee7;
   border-bottom-color: #cbd2dc;
@@ -1346,7 +1348,7 @@ html:not([data-input-modality="keyboard"]) body .note-dialog .tag-picker:focus-w
 
 .view-mode-control__choices {
   border-color: var(--component-border);
-  border-radius: var(--radius-control);
+  border-radius: var(--radius-pill);
   background: var(--component-surface-muted);
 }
 

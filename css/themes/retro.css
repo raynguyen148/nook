@@ -187,7 +187,7 @@ html[data-theme="retro"] :where(.eyebrow, .subtitle, .brand small, .filter-headi
 /* Sidebar and filters */
 html[data-theme="retro"] .sidebar { border-color: var(--retro-border); background: var(--retro-sidebar); box-shadow: none; }
 html[data-theme="retro"] .brand-mark { filter: none; }
-html[data-theme="retro"] :where(.sidebar-toggle-btn, .storage-status) {
+html[data-theme="retro"] :where(.sidebar-toggle-btn, .quick-view-header-toggle, .storage-status) {
   border: var(--retro-border-width) solid var(--backup-health-border, var(--retro-border));
   border-radius: var(--retro-radius-control);
   color: var(--backup-health-text, var(--retro-ink));
@@ -203,6 +203,8 @@ html[data-theme="retro"][data-sidebar-collapsed="true"] .app-shell .sidebar-togg
   box-shadow: var(--retro-shadow-sm);
 }
 
+html[data-theme="retro"] .sidebar-toggle-btn:hover,
+html[data-theme="retro"] .quick-view-header-toggle:hover,
 html[data-theme="retro"] .app-shell.is-sidebar-collapsed .sidebar-toggle-btn:hover,
 html[data-theme="retro"][data-sidebar-collapsed="true"] .app-shell .sidebar-toggle-btn:hover {
   border-color: var(--retro-border-strong);
@@ -436,7 +438,7 @@ html[data-theme="retro"] .topbar-actions.is-pinned {
 }
 
 /* Inputs, menus, and segmented controls */
-html[data-theme="retro"] :where(input:not([type]), input[type="text"], input[type="search"], input[type="email"], input[type="url"], textarea, select, .color-picker__trigger) {
+html[data-theme="retro"] :where(input:not([type]), input[type="text"], input[type="search"]:not(#command-search), input[type="email"], input[type="url"], textarea, select, .color-picker__trigger) {
   border: var(--retro-border-width) solid var(--retro-border) !important;
   border-radius: var(--retro-radius-control) !important;
   color: var(--retro-ink) !important;
@@ -449,7 +451,7 @@ html[data-theme="retro"] .search-field input::placeholder {
   color: var(--retro-search-hint);
   opacity: 1;
 }
-html[data-theme="retro"] :where(input:not([type]), input[type="text"], input[type="search"], input[type="email"], input[type="url"], textarea, select, .color-picker__trigger):is(:focus, :focus-visible),
+html[data-theme="retro"] :where(input:not([type]), input[type="text"], input[type="search"]:not(#command-search), input[type="email"], input[type="url"], textarea, select, .color-picker__trigger):is(:focus, :focus-visible),
 html[data-theme="retro"] .tag-picker:focus-within {
   border-color: var(--retro-accent) !important;
   outline: 2px solid var(--retro-accent) !important;
@@ -502,7 +504,7 @@ html[data-theme="retro"] :where(.button-primary, .button-secondary, .button-dang
 
 html[data-theme="retro"] .button-primary { border-color: var(--retro-accent); color: var(--retro-accent-ink); background: var(--retro-accent); }
 html[data-theme="retro"] :where(.button-secondary, .icon-button, .mobile-filter-toggle) { background: var(--retro-paper); }
-html[data-theme="retro"] .topbar-actions .theme-toggle {
+html[data-theme="retro"] .topbar-actions .theme-toggle:not(.topbar-preferences__button) {
   border-radius: var(--retro-radius-control);
   padding-inline: 0.82rem;
 }

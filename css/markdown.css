@@ -81,11 +81,11 @@
   align-items: center;
   min-height: 1.48rem;
   max-width: 14rem;
-  border: 1px solid #e3e6ed;
+  border: 1px solid var(--tag-chip-border, #e3e6ed);
   border-radius: 999px;
   padding: 0.17rem 0.45rem;
-  color: #68748a;
-  background: #fafbfc;
+  color: var(--tag-chip-text, #68748a);
+  background: var(--tag-chip-surface, #fafbfc);
   font-size: 0.68rem;
   font-weight: 640;
   line-height: 1.2;
@@ -97,9 +97,9 @@
 
 
 .quick-view-no-tags {
-  border-color: transparent;
-  color: #a0a8b5;
-  background: transparent;
+  border-color: var(--empty-tag-border, transparent);
+  color: var(--empty-tag-text, #a0a8b5);
+  background: var(--empty-tag-surface, transparent);
 }
 
 

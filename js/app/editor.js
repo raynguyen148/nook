@@ -1,454 +1,37 @@
 globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
   "use strict";
 
-  // Note editor lifecycle, pickers, Markdown modes, autosave, and draft safety.
   const { api, storage, elements, library, ui, constants, shared } = app;
   const { NOTE_AUTO_SAVE_DELAY, MOTION } = constants;
-  const { openColorPickers } = shared;
-  const NOTE_EDITOR_SCROLL_MAP_MAX_ANCHORS = 320;
-  let noteTypePicker = shared.noteTypePicker;
-  let secondaryNoteTypePicker = shared.secondaryNoteTypePicker;
   let noteEditorModeAnimation = null;
-  const draftRecoveryStore = api.createDraftRecoveryStore();
   let primaryEditorSession = null;
-
-  const clearStoredNoteDraft = (...args) => api.clearStoredNoteDraft(...args);
-  const getStoredNoteDraft = (...args) => api.getStoredNoteDraft(...args);
+  const primaryController = api.createPaneController({
+    pane: "primary", readDraft: getNoteEditorDraftData, isActive: () => isNoteEditorOpen(),
+    setStatus: setNoteSaveStatus, invoker: noteSubmitButton,
+    onSession(session) { primaryEditorSession = session; shared.primaryEditorSession = session; },
+  });
   const createElement = (...args) => api.createElement(...args);
-  const typeFor = (...args) => api.typeFor(...args);
   const tagFor = (...args) => api.tagFor(...args);
   const tagLabel = (...args) => api.tagLabel(...args);
   const cleanTagInput = (...args) => api.cleanTagInput(...args);
-  const safeTypeColor = (...args) => api.safeTypeColor(...args);
-  const makeTypeBadge = (...args) => api.makeTypeBadge(...args);
   const formatFullDate = (...args) => api.formatFullDate(...args);
   const syncToastHost = (...args) => api.syncToastHost(...args);
   const showToast = (...args) => api.showToast(...args);
   const requestConfirmation = (...args) => api.requestConfirmation(...args);
-  const requestConflictResolution = (...args) => api.requestConflictResolution(...args);
   const showError = (...args) => api.showError(...args);
-  const createChipCloseIcon = (...args) => api.createChipCloseIcon(...args);
   const renderQuickView = (...args) => api.renderQuickView(...args);
   const syncNotePreviewActions = (...args) => api.syncNotePreviewActions(...args);
   const isNoteEditorOpen = (...args) => api.isNoteEditorOpen(...args);
   const openNoteDetail = (...args) => api.openNoteDetail(...args);
   const closeNoteDetail = (...args) => api.closeNoteDetail(...args);
   const resetCopyButtonFeedback = (...args) => api.resetCopyButtonFeedback(...args);
-  const closeColorPicker = (...args) => api.closeColorPicker(...args);
   const refreshLibrary = (...args) => api.refreshLibrary(...args);
-  const onSecondaryNoteInput = (...args) => api.onSecondaryNoteInput(...args);
-
-  function createCustomTypePicker(selectElement, { ariaDescribedBy = "note-type-error", onSelect = null } = {}) {
-    if (!selectElement) return null;
-
-    const picker = createElement("div", { className: "note-type-picker" });
-    const trigger = createElement("button", {
-      className: "note-type-picker__trigger type-badge",
-      type: "button",
-      attributes: {
-        "aria-label": "Note type",
-        "aria-describedby": ariaDescribedBy,
-        "aria-haspopup": "listbox",
-        "aria-expanded": "false",
-      },
-    });
-    const dot = createElement("span", { attributes: { "aria-hidden": "true" } });
-    const label = createElement("span", { className: "note-type-picker__label" });
-    trigger.append(dot, label);
-    const menu = createElement("div", { className: "note-type-picker__menu", attributes: { role: "listbox", "aria-label": "Note type options" } });
-    menu.hidden = true;
-
-    selectElement.classList.add("note-type-picker__native");
-    selectElement.tabIndex = -1;
-    selectElement.setAttribute("aria-hidden", "true");
-    selectElement.hidden = true;
-    selectElement.parentElement?.insertBefore(picker, selectElement);
-    picker.append(selectElement, trigger, menu);
-
-    const pickerInstance = {
-      select: selectElement,
-      root: picker,
-      trigger,
-      dot,
-      label,
-      menu,
-      options: [],
-      colorClass: "",
-      close() {
-        menu.hidden = true;
-        trigger.setAttribute("aria-expanded", "false");
-      },
-      setValue(typeId, { focusTrigger = false } = {}) {
-        const type = typeFor(typeId) || typeFor(storage.FALLBACK_TYPE_ID);
-        if (!type) return;
-
-        selectElement.value = type.id;
-        if (pickerInstance.colorClass) {
-          trigger.classList.remove(pickerInstance.colorClass);
-        }
-        pickerInstance.colorClass = `type-badge--${safeTypeColor(type)}`;
-        trigger.classList.add(pickerInstance.colorClass);
-        dot.className = `type-dot type-dot--${safeTypeColor(type)}`;
-        label.textContent = type.name;
-        pickerInstance.options.forEach((option) => {
-          const selected = option.dataset.typeId === type.id;
-          option.setAttribute("aria-selected", String(selected));
-          option.tabIndex = selected ? 0 : -1;
-        });
-        if (focusTrigger) trigger.focus();
-      },
-      renderOptions() {
-        const currentTypeId = selectElement.value || storage.FALLBACK_TYPE_ID;
-        const fragment = document.createDocumentFragment();
-        pickerInstance.options = library.types.map((type) => {
-          const option = createElement("button", {
-            className: "note-type-picker__option",
-            type: "button",
-            text: type.name,
-            dataset: { typeId: type.id },
-            attributes: { role: "option", "aria-selected": "false" },
-          });
-          option.prepend(createElement("span", { className: `type-dot type-dot--${safeTypeColor(type)}`, attributes: { "aria-hidden": "true" } }));
-          return option;
-        });
-        fragment.append(...pickerInstance.options);
-        menu.replaceChildren(fragment);
-        pickerInstance.setValue(currentTypeId);
-      },
-    };
-
-    trigger.addEventListener("click", () => {
-      if (menu.hidden) {
-        openColorPickers.forEach((openPicker) => closeColorPicker(openPicker));
-        if (noteTypePicker && noteTypePicker !== pickerInstance) noteTypePicker.close();
-        if (secondaryNoteTypePicker && secondaryNoteTypePicker !== pickerInstance) secondaryNoteTypePicker.close();
-        menu.hidden = false;
-        trigger.setAttribute("aria-expanded", "true");
-        pickerInstance.options.find((option) => option.dataset.typeId === selectElement.value)?.focus();
-      } else {
-        pickerInstance.close();
-      }
-    });
-
-    trigger.addEventListener("keydown", (event) => {
-      if (["ArrowDown", "ArrowUp", " ", "Enter"].includes(event.key)) {
-        event.preventDefault();
-        if (menu.hidden) trigger.click();
-      }
-    });
-
-    menu.addEventListener("click", (event) => {
-      const option = event.target.closest(".note-type-picker__option");
-      if (!option) return;
-      pickerInstance.setValue(option.dataset.typeId, { focusTrigger: true });
-      selectElement.dispatchEvent(new Event("change", { bubbles: true }));
-      pickerInstance.close();
-      if (typeof onSelect === "function") {
-        onSelect(option.dataset.typeId);
-      }
-    });
-
-    menu.addEventListener("keydown", (event) => {
-      const currentIndex = pickerInstance.options.indexOf(document.activeElement);
-      if (event.key === "Escape") {
-        event.preventDefault();
-        event.stopPropagation();
-        pickerInstance.close();
-        trigger.focus();
-        return;
-      }
-      if (event.key === "Tab") {
-        pickerInstance.close();
-        return;
-      }
-      let nextIndex = currentIndex;
-      if (event.key === "ArrowDown") nextIndex = (currentIndex + 1) % pickerInstance.options.length;
-      else if (event.key === "ArrowUp") nextIndex = (currentIndex - 1 + pickerInstance.options.length) % pickerInstance.options.length;
-      else if (event.key === "Home") nextIndex = 0;
-      else if (event.key === "End") nextIndex = pickerInstance.options.length - 1;
-      else return;
-      event.preventDefault();
-      pickerInstance.options[nextIndex].focus();
-    });
-
-    selectElement.addEventListener("change", () => pickerInstance.setValue(selectElement.value));
-    pickerInstance.renderOptions();
-    return pickerInstance;
-  }
-
-  function closeNoteTypePicker() {
-    noteTypePicker?.close();
-    secondaryNoteTypePicker?.close();
-  }
-
-  function setNoteTypePickerValue(typeId, options) {
-    noteTypePicker?.setValue(typeId, options);
-  }
-
-  function setSecondaryNoteTypePickerValue(typeId, options) {
-    secondaryNoteTypePicker?.setValue(typeId, options);
-  }
-
-  function renderNoteTypePickerOptions() {
-    noteTypePicker?.renderOptions();
-    secondaryNoteTypePicker?.renderOptions();
-  }
-
-  function populateTypeSelectOptions(selectElement, preferredTypeId) {
-    if (!selectElement) return;
-    const currentValue = preferredTypeId || storage.FALLBACK_TYPE_ID;
-    const fragment = document.createDocumentFragment();
-    library.types.forEach((type) => {
-      const option = createElement("option", { value: type.id, text: type.name });
-      option.selected = type.id === currentValue;
-      fragment.append(option);
-    });
-    selectElement.replaceChildren(fragment);
-    if (![...selectElement.options].some((option) => option.value === currentValue)) {
-      selectElement.value = storage.FALLBACK_TYPE_ID;
-    }
-  }
-
-  function renderNoteTypeOptions(preferredTypeId = elements.noteType?.value) {
-    populateTypeSelectOptions(elements.noteType, preferredTypeId);
-    noteTypePicker?.renderOptions();
-    if (elements.secondaryEditorTypeSelect) {
-      populateTypeSelectOptions(
-        elements.secondaryEditorTypeSelect,
-        ui.secondaryNoteTypeId || elements.secondaryEditorTypeSelect.value,
-      );
-      secondaryNoteTypePicker?.renderOptions();
-    }
-  }
-
-  function renderSecondaryNoteTypeOptions(preferredTypeId) {
-    if (!elements.secondaryEditorTypeSelect) return;
-    populateTypeSelectOptions(elements.secondaryEditorTypeSelect, preferredTypeId);
-    if (secondaryNoteTypePicker) {
-      secondaryNoteTypePicker.renderOptions();
-      secondaryNoteTypePicker.setValue(preferredTypeId);
-    }
-  }
-
-  function enhanceNoteTypeSelect() {
-    if (!noteTypePicker && elements.noteType) {
-      noteTypePicker = createCustomTypePicker(elements.noteType, {
-        ariaDescribedBy: "note-type-error",
-      });
-      shared.noteTypePicker = noteTypePicker;
-    }
-    if (!secondaryNoteTypePicker && elements.secondaryEditorTypeSelect) {
-      secondaryNoteTypePicker = createCustomTypePicker(elements.secondaryEditorTypeSelect, {
-        ariaDescribedBy: "secondary-note-type-error",
-        onSelect: (typeId) => {
-          ui.secondaryNoteTypeId = typeId;
-          if (elements.secondaryNoteType) {
-            elements.secondaryNoteType.replaceChildren(makeTypeBadge(typeFor(typeId)));
-          }
-          onSecondaryNoteInput();
-        },
-      });
-      shared.secondaryNoteTypePicker = secondaryNoteTypePicker;
-    }
-    return noteTypePicker;
-  }
-
-  function renderSelectedNoteTags() {
-    elements.selectedNoteTags.replaceChildren();
-    const selectedTags = [...ui.selectedNoteTagIds].map(tagFor).filter(Boolean);
-    selectedTags.forEach((tag) => {
-      const chip = createElement("span", {
-        className: "selected-tag",
-        attributes: { title: tagLabel(tag) },
-      });
-      chip.append(createElement("span", { text: tagLabel(tag) }));
-      const remove = createElement("button", {
-        type: "button",
-        disabled: ui.noteSaveInFlight,
-        attributes: { "aria-label": `Remove tag ${tagLabel(tag)}` },
-      });
-      remove.append(createChipCloseIcon());
-      remove.addEventListener("click", () => {
-        if (ui.noteSaveInFlight) return;
-        ui.selectedNoteTagIds.delete(tag.id);
-        renderSelectedNoteTags();
-        renderTagSuggestions();
-        scheduleNoteAutoSave();
-      });
-      chip.append(remove);
-      elements.selectedNoteTags.append(chip);
-    });
-  }
-
-  function renderTagSuggestions() {
-    if (!ui.tagInputExpanded) {
-      elements.tagSuggestions.replaceChildren();
-      return;
-    }
-    const queryText = cleanTagInput(elements.tagInput.value);
-    const query = queryText.toLocaleLowerCase();
-    const available = library.tags
-      .filter((tag) => !ui.selectedNoteTagIds.has(tag.id))
-      .filter((tag) => !query || tagLabel(tag).toLocaleLowerCase().includes(query))
-      .slice(0, 5);
-    const hasExactMatch = library.tags.some((tag) => tagLabel(tag).toLocaleLowerCase() === query);
-    elements.tagSuggestions.replaceChildren();
-    if (!query) return;
-    if (available.length) {
-      elements.tagSuggestions.append(createElement("span", { className: "tag-suggestions__label", text: "Suggested" }));
-    }
-    available.forEach((tag) => {
-      const button = createElement("button", {
-        className: "tag-suggestion",
-        type: "button",
-        text: tagLabel(tag),
-        disabled: ui.noteSaveInFlight,
-        attributes: { "aria-label": `Add tag ${tagLabel(tag)}` },
-      });
-      button.addEventListener("click", () => selectNoteTag(tag.id));
-      elements.tagSuggestions.append(button);
-    });
-    if (!hasExactMatch) {
-      const create = createElement("button", {
-        className: "tag-suggestion tag-suggestion--create",
-        type: "button",
-        text: `Create “${queryText}”`,
-        disabled: ui.noteSaveInFlight,
-      });
-      create.addEventListener("click", addTagFromEditor);
-      elements.tagSuggestions.append(create);
-    }
-  }
-
-  function normalizeTagEditorInput() {
-    const withoutPrefix = elements.tagInput.value.replace(/^\s*#+\s*/, "");
-    if (withoutPrefix !== elements.tagInput.value) elements.tagInput.value = withoutPrefix;
-    renderTagSuggestions();
-  }
-
-  function renderSecondarySelectedNoteTags() {
-    if (!elements.secondarySelectedNoteTags) return;
-    elements.secondarySelectedNoteTags.replaceChildren();
-    const selectedTags = [...(ui.secondarySelectedNoteTagIds || [])].map(tagFor).filter(Boolean);
-    selectedTags.forEach((tag) => {
-      const chip = createElement("span", {
-        className: "selected-tag",
-        attributes: { title: tagLabel(tag) },
-      });
-      chip.append(createElement("span", { text: tagLabel(tag) }));
-      const remove = createElement("button", {
-        type: "button",
-        attributes: { "aria-label": `Remove tag ${tagLabel(tag)}` },
-      });
-      remove.append(createChipCloseIcon());
-      remove.addEventListener("click", () => {
-        ui.secondarySelectedNoteTagIds.delete(tag.id);
-        renderSecondarySelectedNoteTags();
-        renderSecondaryTagSuggestions();
-        onSecondaryNoteInput();
-      });
-      chip.append(remove);
-      elements.secondarySelectedNoteTags.append(chip);
-    });
-  }
-
-  function renderSecondaryTagSuggestions() {
-    if (!elements.secondaryTagSuggestions || !elements.secondaryTagInput) return;
-    if (!ui.secondaryTagInputExpanded) {
-      elements.secondaryTagSuggestions.replaceChildren();
-      return;
-    }
-    const queryText = cleanTagInput(elements.secondaryTagInput.value);
-    const query = queryText.toLocaleLowerCase();
-    const available = library.tags
-      .filter((tag) => !ui.secondarySelectedNoteTagIds?.has(tag.id))
-      .filter((tag) => !query || tagLabel(tag).toLocaleLowerCase().includes(query))
-      .slice(0, 5);
-    const hasExactMatch = library.tags.some((tag) => tagLabel(tag).toLocaleLowerCase() === query);
-    elements.secondaryTagSuggestions.replaceChildren();
-    if (!query) return;
-    if (available.length) {
-      elements.secondaryTagSuggestions.append(createElement("span", { className: "tag-suggestions__label", text: "Suggested" }));
-    }
-    available.forEach((tag) => {
-      const button = createElement("button", {
-        className: "tag-suggestion",
-        type: "button",
-        text: tagLabel(tag),
-        attributes: { "aria-label": `Add tag ${tagLabel(tag)}` },
-      });
-      button.addEventListener("click", () => selectSecondaryNoteTag(tag.id));
-      elements.secondaryTagSuggestions.append(button);
-    });
-    if (!hasExactMatch) {
-      const create = createElement("button", {
-        className: "tag-suggestion tag-suggestion--create",
-        type: "button",
-        text: `Create “${queryText}”`,
-      });
-      create.addEventListener("click", addSecondaryTagFromEditor);
-      elements.secondaryTagSuggestions.append(create);
-    }
-  }
-
-  function normalizeSecondaryTagEditorInput() {
-    if (!elements.secondaryTagInput) return;
-    const withoutPrefix = elements.secondaryTagInput.value.replace(/^\s*#+\s*/, "");
-    if (withoutPrefix !== elements.secondaryTagInput.value) elements.secondaryTagInput.value = withoutPrefix;
-    renderSecondaryTagSuggestions();
-  }
-
-  function setSecondaryTagInputExpanded(expanded, { focus = false } = {}) {
-    if (!elements.secondaryTagInputRow || !elements.secondaryAddTag) return;
-    ui.secondaryTagInputExpanded = Boolean(expanded);
-    elements.secondaryTagInputRow.hidden = !ui.secondaryTagInputExpanded;
-    elements.secondaryAddTag.setAttribute("aria-expanded", String(ui.secondaryTagInputExpanded));
-    if (!ui.secondaryTagInputExpanded) {
-      if (elements.secondaryTagInput) elements.secondaryTagInput.value = "";
-      renderSecondaryTagSuggestions();
-    }
-    if (focus && elements.secondaryTagInput) {
-      window.requestAnimationFrame(() => {
-        if (ui.secondaryTagInputExpanded) elements.secondaryTagInput.focus();
-      });
-    }
-  }
-
-  function selectSecondaryNoteTag(tagId) {
-    if (!tagFor(tagId)) return;
-    if (!ui.secondarySelectedNoteTagIds) ui.secondarySelectedNoteTagIds = new Set();
-    ui.secondarySelectedNoteTagIds.add(tagId);
-    if (elements.secondaryTagInput) elements.secondaryTagInput.value = "";
-    renderSecondarySelectedNoteTags();
-    setSecondaryTagInputExpanded(false);
-    onSecondaryNoteInput();
-  }
-
-  async function addSecondaryTagFromEditor() {
-    if (!elements.secondaryTagInput) return;
-    const rawName = cleanTagInput(elements.secondaryTagInput.value);
-    if (!rawName) return;
-    const existing = library.tags.find(
-      (tag) => tagLabel(tag).toLocaleLowerCase() === rawName.toLocaleLowerCase(),
-    );
-    if (existing) {
-      selectSecondaryNoteTag(existing.id);
-      return;
-    }
-    try {
-      const tag = await storage.addTag({ name: rawName });
-      await refreshLibrary({ broadcast: true });
-      if (!ui.secondarySelectedNoteTagIds) ui.secondarySelectedNoteTagIds = new Set();
-      ui.secondarySelectedNoteTagIds.add(tag.id);
-      if (elements.secondaryTagInput) elements.secondaryTagInput.value = "";
-      renderSecondarySelectedNoteTags();
-      setSecondaryTagInputExpanded(false);
-      onSecondaryNoteInput();
-      showToast(`Tag “${tagLabel(tag)}” created.`);
-    } catch (error) {
-      showError(error);
-    }
-  }
+  const renderNoteTypeOptions = (...args) => api.renderNoteTypeOptions(...args);
+  const renderSelectedNoteTags = (...args) => api.renderSelectedNoteTags(...args);
+  const renderTagSuggestions = (...args) => api.renderTagSuggestions(...args);
+  const resetNoteEditorScrollSyncTarget = (...args) => api.resetNoteEditorScrollSyncTarget(...args);
+  const scheduleNoteEditorScrollMap = (...args) => api.scheduleNoteEditorScrollMap(...args);
+  const renderNoteEditorPreview = (...args) => api.renderNoteEditorPreview(...args);
 
   function renderNoteMetadata(note) {
     elements.noteMeta.replaceChildren();
@@ -461,440 +44,6 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
       createElement("span", { text: `Created ${formatFullDate(note.createdAt)}` }),
       createElement("span", { text: `Last updated ${formatFullDate(note.updatedAt)}` }),
     );
-  }
-
-  function clampScrollPosition(position, maximum) {
-    return Math.min(Math.max(0, position), Math.max(0, maximum));
-  }
-
-  function getNoteEditorMaximumScrollTop(element) {
-    return Math.max(0, element.scrollHeight - element.clientHeight);
-  }
-
-  function getNoteEditorLineStartOffsets(source) {
-    const offsets = [0];
-    for (let index = 0; index < source.length; index += 1) {
-      if (source.charCodeAt(index) === 10) offsets.push(index + 1);
-    }
-    return offsets;
-  }
-
-  function createNoteEditorSourceMirror(source, textarea = elements.noteContent) {
-    if (!textarea) return null;
-    const styles = window.getComputedStyle(textarea);
-    const mirror = document.createElement("div");
-    const horizontalPadding = Number.parseFloat(styles.paddingLeft) + Number.parseFloat(styles.paddingRight);
-    const textProperties = [
-      "fontFamily",
-      "fontSize",
-      "fontWeight",
-      "fontStyle",
-      "fontVariant",
-      "fontStretch",
-      "fontKerning",
-      "fontFeatureSettings",
-      "letterSpacing",
-      "wordSpacing",
-      "lineHeight",
-      "textTransform",
-      "textIndent",
-      "textAlign",
-      "direction",
-      "tabSize",
-    ];
-    mirror.setAttribute("aria-hidden", "true");
-    Object.assign(mirror.style, {
-      position: "fixed",
-      top: "0",
-      left: "-100000px",
-      visibility: "hidden",
-      pointerEvents: "none",
-      boxSizing: "content-box",
-      width: `${Math.max(1, textarea.clientWidth - horizontalPadding)}px`,
-      minHeight: "0",
-      margin: "0",
-      paddingTop: styles.paddingTop,
-      paddingRight: styles.paddingRight,
-      paddingBottom: styles.paddingBottom,
-      paddingLeft: styles.paddingLeft,
-      border: "0",
-      whiteSpace: "pre-wrap",
-      overflowWrap: "break-word",
-      wordBreak: styles.wordBreak === "normal" ? "break-word" : styles.wordBreak,
-      overflow: "visible",
-      contain: "layout style paint",
-    });
-    textProperties.forEach((property) => {
-      mirror.style[property] = styles[property];
-    });
-    const textNode = document.createTextNode(source || "\u200b");
-    mirror.append(textNode);
-    document.body.append(mirror);
-    return { mirror, textNode };
-  }
-
-  function getNoteEditorMirrorCaretTop(textNode, offset) {
-    const safeOffset = Math.min(Math.max(0, offset), textNode.length);
-    const range = document.createRange();
-    const getRangeTop = () => {
-      const rect = range.getBoundingClientRect();
-      return rect.height > 0 ? rect.top : null;
-    };
-    range.setStart(textNode, safeOffset);
-    range.collapse(true);
-    let top = getRangeTop();
-    if (top !== null) return top;
-    if (safeOffset < textNode.length) {
-      range.setEnd(textNode, safeOffset + 1);
-      top = getRangeTop();
-      if (top !== null) return top;
-    }
-    if (safeOffset > 0) {
-      range.setStart(textNode, safeOffset - 1);
-      range.setEnd(textNode, safeOffset);
-      top = getRangeTop();
-      if (top !== null) return top;
-    }
-    return 0;
-  }
-
-  function measureNoteEditorSourceLineOffsets(source, lineStarts, sourceLines, sourceMaximum, textarea = elements.noteContent) {
-    const mirrorResult = createNoteEditorSourceMirror(source, textarea);
-    if (!mirrorResult) return new Map();
-    const { mirror, textNode } = mirrorResult;
-    try {
-      const mirrorTop = mirror.getBoundingClientRect().top;
-      const origin = getNoteEditorMirrorCaretTop(textNode, 0) - mirrorTop;
-      const mirrorMaximum = Math.max(0, mirror.scrollHeight - textarea.clientHeight);
-      const scale = mirrorMaximum > 0 && sourceMaximum > 0 ? sourceMaximum / mirrorMaximum : 1;
-      const offsets = new Map();
-      sourceLines.forEach((line) => {
-        const characterOffset = lineStarts[line];
-        if (!Number.isInteger(characterOffset)) return;
-        const measuredOffset = getNoteEditorMirrorCaretTop(textNode, characterOffset) - mirrorTop - origin;
-        offsets.set(line, clampScrollPosition(measuredOffset * scale, sourceMaximum));
-      });
-      return offsets;
-    } finally {
-      mirror.remove();
-    }
-  }
-
-  function getPreviewContentOffset(element, maximum, previewTop, previewScrollTop) {
-    const elementBounds = element.getBoundingClientRect();
-    return clampScrollPosition(
-      elementBounds.top - previewTop + previewScrollTop,
-      maximum,
-    );
-  }
-
-  function createMonotonicScrollMap(points, fromKey, toKey, duplicateTarget = "min") {
-    const sorted = points
-      .map((point) => ({ from: point[fromKey], to: point[toKey] }))
-      .filter((point) => Number.isFinite(point.from) && Number.isFinite(point.to))
-      .sort((first, second) => first.from - second.from || first.to - second.to);
-    const map = [];
-    sorted.forEach((point) => {
-      const previous = map.at(-1);
-      if (!previous) {
-        map.push(point);
-        return;
-      }
-      if (point.from <= previous.from + 0.5) {
-        previous.to = duplicateTarget === "max"
-          ? Math.max(previous.to, point.to)
-          : Math.min(previous.to, point.to);
-        return;
-      }
-      map.push({ from: point.from, to: Math.max(previous.to, point.to) });
-    });
-    return map;
-  }
-
-  function sampleNoteEditorScrollAnchors(anchors) {
-    const uniqueAnchors = [];
-    const mappedSourceLines = new Set();
-    anchors.forEach((anchor) => {
-      if (mappedSourceLines.has(anchor.sourceLine)) return;
-      mappedSourceLines.add(anchor.sourceLine);
-      uniqueAnchors.push(anchor);
-    });
-    if (uniqueAnchors.length <= NOTE_EDITOR_SCROLL_MAP_MAX_ANCHORS) return uniqueAnchors;
-    return Array.from({ length: NOTE_EDITOR_SCROLL_MAP_MAX_ANCHORS }, (_, index) => {
-      const fraction = index / (NOTE_EDITOR_SCROLL_MAP_MAX_ANCHORS - 1);
-      return uniqueAnchors[Math.round((uniqueAnchors.length - 1) * fraction)];
-    });
-  }
-
-  function getSplitScrollSession(element) {
-    if (
-      (elements.secondaryNoteContentEditor && element === elements.secondaryNoteContentEditor) ||
-      (elements.secondarySplitPreview && element === elements.secondarySplitPreview)
-    ) {
-      return {
-        isSplit: ui.secondaryNoteMode === "split" && Boolean(ui.dualPaneOpen),
-        source: elements.secondaryNoteContentEditor,
-        preview: elements.secondarySplitPreview,
-        getScrollMap: () => ui.secondaryScrollMap,
-        setScrollMap: (map) => {
-          ui.secondaryScrollMap = map;
-        },
-        getSyncTarget: () => ui.secondaryScrollSyncTarget,
-        getSyncTargetTop: () => ui.secondaryScrollSyncTargetTop,
-        setSyncTarget: (target, top) => {
-          ui.secondaryScrollSyncTarget = target;
-          ui.secondaryScrollSyncTargetTop = top;
-        },
-        resetSyncTarget: () => {
-          ui.secondaryScrollSyncTarget = null;
-          ui.secondaryScrollSyncTargetTop = 0;
-          ui.secondaryScrollSyncResetFrame = 0;
-        },
-        cancelResetFrame: () => window.cancelAnimationFrame(ui.secondaryScrollSyncResetFrame),
-        getScrollLeader: () => ui.secondaryScrollLeader,
-        setScrollLeader: (source) => {
-          ui.secondaryScrollLeader = source;
-        },
-        clearScrollLeader: () => {
-          ui.secondaryScrollLeader = null;
-        },
-        getMapFrame: () => ui.secondaryScrollMapFrame,
-        setMapFrame: (frame) => {
-          ui.secondaryScrollMapFrame = frame;
-        },
-      };
-    }
-
-    return {
-      isSplit: ui.noteEditorMode === "split",
-      source: elements.noteContent,
-      preview: elements.noteContentPreview,
-      getScrollMap: () => ui.noteScrollMap,
-      setScrollMap: (map) => {
-        ui.noteScrollMap = map;
-      },
-      getSyncTarget: () => ui.noteScrollSyncTarget,
-      getSyncTargetTop: () => ui.noteScrollSyncTargetTop,
-      setSyncTarget: (target, top) => {
-        ui.noteScrollSyncTarget = target;
-        ui.noteScrollSyncTargetTop = top;
-      },
-      resetSyncTarget: () => {
-        ui.noteScrollSyncTarget = null;
-        ui.noteScrollSyncTargetTop = 0;
-        ui.noteScrollSyncResetFrame = 0;
-      },
-      cancelResetFrame: () => window.cancelAnimationFrame(ui.noteScrollSyncResetFrame),
-      getScrollLeader: () => ui.noteScrollLeader,
-      setScrollLeader: (source) => {
-        ui.noteScrollLeader = source;
-      },
-      clearScrollLeader: () => {
-        ui.noteScrollLeader = null;
-      },
-      getMapFrame: () => ui.noteScrollMapFrame,
-      setMapFrame: (frame) => {
-        ui.noteScrollMapFrame = frame;
-      },
-    };
-  }
-
-  function buildSplitScrollMap(session) {
-    if (!session || !session.isSplit) {
-      if (session) session.setScrollMap(null);
-      return null;
-    }
-    const { source, preview } = session;
-    if (
-      !source ||
-      !preview ||
-      preview.hidden ||
-      source.clientWidth <= 0 ||
-      preview.clientWidth <= 0
-    ) {
-      session.setScrollMap(null);
-      return null;
-    }
-
-    const sourceMaximum = getNoteEditorMaximumScrollTop(source);
-    const previewMaximum = getNoteEditorMaximumScrollTop(preview);
-    const lineStarts = getNoteEditorLineStartOffsets(source.value);
-    const renderedAnchors = [...preview.querySelectorAll("[data-markdown-source-start]")]
-      .filter((element) => !element.closest(".markdown-footnotes"))
-      .map((element) => ({
-        element,
-        sourceLine: Number.parseInt(element.dataset.markdownSourceStart, 10),
-      }))
-      .filter(({ sourceLine }) => Number.isInteger(sourceLine) && sourceLine >= 0 && sourceLine < lineStarts.length);
-    const anchors = sampleNoteEditorScrollAnchors(renderedAnchors);
-    const sourceLines = new Set(anchors.map(({ sourceLine }) => sourceLine));
-    const sourceOffsets = sourceLines.size
-      ? measureNoteEditorSourceLineOffsets(source.value, lineStarts, sourceLines, sourceMaximum, source)
-      : new Map();
-    const points = [{ source: 0, preview: 0 }];
-    const previewTop = preview.getBoundingClientRect().top;
-    const previewScrollTop = preview.scrollTop;
-    anchors.forEach(({ element, sourceLine }) => {
-      const sourceOffset = sourceOffsets.get(sourceLine);
-      if (!Number.isFinite(sourceOffset) || sourceOffset <= 0.5 || sourceOffset >= sourceMaximum - 0.5) return;
-      points.push({
-        source: sourceOffset,
-        preview: getPreviewContentOffset(element, previewMaximum, previewTop, previewScrollTop),
-      });
-    });
-    points.push({ source: sourceMaximum, preview: previewMaximum });
-
-    const sourceToPreview = createMonotonicScrollMap(points, "source", "preview");
-    const previewToSource = createMonotonicScrollMap(sourceToPreview, "to", "from", "max");
-    const scrollMap = {
-      sourceToPreview,
-      previewToSource,
-      sourceMaximum,
-      previewMaximum,
-      sourceClientWidth: source.clientWidth,
-      sourceClientHeight: source.clientHeight,
-      previewClientWidth: preview.clientWidth,
-      previewClientHeight: preview.clientHeight,
-    };
-    session.setScrollMap(scrollMap);
-    return scrollMap;
-  }
-
-  function isNoteEditorScrollMapCurrent(scrollMap, source = elements.noteContent, preview = elements.noteContentPreview) {
-    if (!scrollMap || !source || !preview) return false;
-    return (
-      scrollMap.sourceMaximum === getNoteEditorMaximumScrollTop(source) &&
-      scrollMap.previewMaximum === getNoteEditorMaximumScrollTop(preview) &&
-      scrollMap.sourceClientWidth === source.clientWidth &&
-      scrollMap.sourceClientHeight === source.clientHeight &&
-      scrollMap.previewClientWidth === preview.clientWidth &&
-      scrollMap.previewClientHeight === preview.clientHeight
-    );
-  }
-
-  function interpolateNoteEditorScrollMap(map, position) {
-    if (!map.length) return 0;
-    if (position <= map[0].from) return map[0].to;
-    const last = map.at(-1);
-    if (position >= last.from) return last.to;
-    let low = 0;
-    let high = map.length - 1;
-    while (low + 1 < high) {
-      const middle = Math.floor((low + high) / 2);
-      if (map[middle].from <= position) low = middle;
-      else high = middle;
-    }
-    const start = map[low];
-    const end = map[high];
-    const distance = end.from - start.from;
-    if (distance <= 0) return end.to;
-    return start.to + ((position - start.from) / distance) * (end.to - start.to);
-  }
-
-  function resetNoteEditorScrollSyncTarget() {
-    ui.noteScrollSyncTarget = null;
-    ui.noteScrollSyncTargetTop = 0;
-    ui.noteScrollSyncResetFrame = 0;
-  }
-
-  function lockNoteEditorScrollLeader(source = elements.noteContent) {
-    const session = getSplitScrollSession(source);
-    if (!session?.isSplit || source !== session.source) return;
-    // Re-rendering preview content can emit a scroll event before its new map
-    // exists. The textarea is the only user-edited surface, so it remains the
-    // leader until the scheduled map has synchronized the preview.
-    session.setScrollLeader(source);
-  }
-
-  function syncNoteEditorScroll(source, target) {
-    if (!source || !target) return;
-    const session = getSplitScrollSession(source);
-    if (!session || !session.isSplit) return;
-    if (session.getScrollLeader() && source !== session.getScrollLeader()) return;
-    if (source === session.getSyncTarget()) {
-      session.cancelResetFrame();
-      if (Math.abs(source.scrollTop - session.getSyncTargetTop()) < 1) {
-        session.resetSyncTarget();
-        return;
-      }
-      session.resetSyncTarget();
-    }
-    const currentMap = session.getScrollMap();
-    if (!isNoteEditorScrollMapCurrent(currentMap, session.source, session.preview)) {
-      // Mirror/Range measurements belong to the scheduled layout pass, never
-      // to a native scroll event. Keep the user's pane as the scroll leader.
-      scheduleNoteEditorScrollMap(source);
-      return;
-    }
-    const scrollMap = currentMap;
-    const map = source === session.source
-      ? scrollMap.sourceToPreview
-      : scrollMap.previewToSource;
-    const targetPosition = clampScrollPosition(
-      interpolateNoteEditorScrollMap(map, source.scrollTop),
-      source === session.source ? scrollMap.previewMaximum : scrollMap.sourceMaximum,
-    );
-    if (Math.abs(target.scrollTop - targetPosition) < 0.5) {
-      // A preview re-render can still deliver a scroll event even when the
-      // browser already landed on this exact position. Mark it as an echo so
-      // a plateau in the reverse map cannot move the active textarea.
-      session.setSyncTarget(target, target.scrollTop);
-      return;
-    }
-    target.scrollTop = targetPosition;
-    // Read back the browser-clamped position. Keep the echo guard until that
-    // scroll arrives, even if delivery happens after the next animation frame.
-    session.setSyncTarget(target, target.scrollTop);
-  }
-
-  function scheduleNoteEditorScrollMap(source = elements.noteContent) {
-    const session = getSplitScrollSession(source);
-    if (!session || !session.isSplit) return;
-    window.cancelAnimationFrame(session.getMapFrame());
-    session.setMapFrame(window.requestAnimationFrame(() => {
-      session.setMapFrame(0);
-      const liveSession = getSplitScrollSession(source);
-      if (!liveSession.isSplit) return;
-      const scrollLeader = liveSession.getScrollLeader();
-      const leadingSource = scrollLeader || source;
-      if (buildSplitScrollMap(liveSession)) {
-        const other = leadingSource === liveSession.source ? liveSession.preview : liveSession.source;
-        syncNoteEditorScroll(leadingSource, other);
-      }
-      if (liveSession.getScrollLeader() === leadingSource) liveSession.clearScrollLeader();
-    }));
-  }
-
-  function revealNoteEditorSelection(leader, target, top) {
-    const session = getSplitScrollSession(leader);
-    if (!session.isSplit || session.getScrollLeader()) return;
-    target.scrollTop = clampScrollPosition(top, getNoteEditorMaximumScrollTop(target));
-    // Revealing a counterpart is a programmatic scroll, not a new scroll leader.
-    session.setSyncTarget(target, target.scrollTop);
-  }
-
-  function renderNoteEditorPreview() {
-    if (ui.noteEditorMode !== "split") return;
-    lockNoteEditorScrollLeader(elements.noteContent);
-    globalThis.NookMarkdown.renderInto(
-      elements.noteContentPreview,
-      elements.noteContent.value,
-      "No content yet.",
-      { sourceMap: true },
-    );
-    ui.noteScrollMap = null;
-    scheduleNoteEditorScrollMap(elements.noteContent);
-  }
-
-  function scheduleNoteEditorPreview() {
-    if (ui.noteEditorMode !== "split") return;
-    lockNoteEditorScrollLeader(elements.noteContent);
-    ui.noteScrollMap = null;
-    window.cancelAnimationFrame(ui.noteEditorPreviewFrame);
-    ui.noteEditorPreviewFrame = window.requestAnimationFrame(() => {
-      ui.noteEditorPreviewFrame = 0;
-      renderNoteEditorPreview();
-    });
   }
 
   function syncNotePreviewHeader() {
@@ -988,7 +137,7 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
     }
     if (fieldName === "type") {
       return {
-        control: noteTypePicker?.trigger || elements.noteType,
+        control: shared.noteTypePicker?.trigger || elements.noteType,
         error: elements.noteTypeError,
       };
     }
@@ -1084,33 +233,11 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
     });
   }
 
-  function createPrimaryEditorSession(note = null, draft = getNoteEditorDraftData(), baseRevision = note?.revision || 0) {
-    primaryEditorSession?.dispose();
-    const committed = note ? {
-      id: note.id,
-      title: note.title,
-      typeId: note.typeId,
-      tagIds: note.tagIds,
-      content: note.content,
-    } : null;
-    primaryEditorSession = api.createEditorSession({
-      storage,
-      pane: "primary",
-      noteId: note?.id || draft.id || "",
-      baseRevision,
-      committed,
-      currentDraft: draft,
-      recoveryStore: draftRecoveryStore,
-    });
-    shared.primaryEditorSession = primaryEditorSession;
-    return primaryEditorSession;
+  function createPrimaryEditorSession(note = null, draft = getNoteEditorDraftData(), baseRevision = note?.revision || 0, recovery = null) {
+    return primaryController.open(note, draft, { baseRevision, recovery });
   }
 
-  function syncPrimaryEditorSessionDraft() {
-    if (!primaryEditorSession) return null;
-    primaryEditorSession.updateDraft(getNoteEditorDraftData());
-    return primaryEditorSession.getState();
-  }
+  function syncPrimaryEditorSessionDraft() { return primaryController.sync(); }
 
   function hasUnsavedNoteChanges() {
     if (primaryEditorSession) {
@@ -1140,7 +267,7 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
     elements.noteSaveStatus.title = statusTitles[state] || "";
     const icon = elements.noteSaveStatus.querySelector(".note-save-status__icon");
     if (state === "new") {
-      elements.noteSaveStatusLabel.textContent = customLabel || "Not saved yet";
+      elements.noteSaveStatusLabel.textContent = customLabel || "Unsaved note";
       if (icon) {
         icon.setAttribute("viewBox", "0 0 16 16");
         const path = icon.querySelector("path") || document.createElementNS("http://www.w3.org/2000/svg", "path");
@@ -1198,6 +325,10 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
     }
 
     setNoteSaveStatus("dirty");
+    if (primaryEditorSession?.conflict) {
+      setNoteSaveStatus("error", "Conflict · draft kept");
+      return;
+    }
 
     const rawTitle = elements.noteTitle.value.trim();
     if (!rawTitle) {
@@ -1212,179 +343,6 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
     }, NOTE_AUTO_SAVE_DELAY);
   }
 
-  function replaceNoteContentSelection(replacement, selectionStart, selectionEnd, nextSelectionStart, nextSelectionEnd, targetTextarea = elements.noteContent) {
-    const textarea = targetTextarea || elements.noteContent;
-    if (!textarea) return;
-    textarea.focus();
-    textarea.setRangeText(replacement, selectionStart, selectionEnd, "preserve");
-    textarea.setSelectionRange(nextSelectionStart, nextSelectionEnd);
-    textarea.dispatchEvent(new Event("input", { bubbles: true }));
-  }
-
-  function toggleNoteContentWrapper(marker, targetTextarea = elements.noteContent) {
-    const textarea = targetTextarea || elements.noteContent;
-    if (!textarea) return;
-    const value = textarea.value;
-    const selectionStart = textarea.selectionStart;
-    const selectionEnd = textarea.selectionEnd;
-    const selectedText = value.slice(selectionStart, selectionEnd);
-    const hasWrapper =
-      selectionStart >= marker.length &&
-      value.slice(selectionStart - marker.length, selectionStart) === marker &&
-      value.slice(selectionEnd, selectionEnd + marker.length) === marker;
-
-    if (hasWrapper) {
-      replaceNoteContentSelection(
-        selectedText,
-        selectionStart - marker.length,
-        selectionEnd + marker.length,
-        selectionStart - marker.length,
-        selectionEnd - marker.length,
-        textarea,
-      );
-      return;
-    }
-
-    replaceNoteContentSelection(
-      `${marker}${selectedText}${marker}`,
-      selectionStart,
-      selectionEnd,
-      selectionStart + marker.length,
-      selectionEnd + marker.length,
-      textarea,
-    );
-  }
-
-  function insertNoteLink(targetTextarea = elements.noteContent) {
-    const textarea = targetTextarea || elements.noteContent;
-    if (!textarea) return;
-    const value = textarea.value;
-    const selectionStart = textarea.selectionStart;
-    const selectionEnd = textarea.selectionEnd;
-    const selectedText = value.slice(selectionStart, selectionEnd) || "link text";
-    const urlPlaceholder = "https://";
-    const urlStart = selectionStart + selectedText.length + 3;
-    replaceNoteContentSelection(
-      `[${selectedText}](${urlPlaceholder})`,
-      selectionStart,
-      selectionEnd,
-      urlStart,
-      urlStart + urlPlaceholder.length,
-      textarea,
-    );
-  }
-
-  function applyNoteFormattingShortcut(formatting, targetTextarea = elements.noteContent) {
-    if (formatting === "link") return insertNoteLink(targetTextarea);
-    applyNoteFormatting(formatting, targetTextarea);
-  }
-
-  function selectedNoteContentLineRange(targetTextarea = elements.noteContent) {
-    const textarea = targetTextarea || elements.noteContent;
-    const value = textarea ? textarea.value : "";
-    const selectionStart = textarea ? textarea.selectionStart : 0;
-    const selectionEnd = textarea ? textarea.selectionEnd : 0;
-    const start = value.lastIndexOf("\n", Math.max(0, selectionStart - 1)) + 1;
-    const nextLineBreak = value.indexOf("\n", selectionEnd);
-    const end = nextLineBreak === -1 ? value.length : nextLineBreak;
-    return { start, end, text: value.slice(start, end) };
-  }
-
-  function toggleNoteContentLinePrefix(prefix, expression, targetTextarea = elements.noteContent) {
-    const textarea = targetTextarea || elements.noteContent;
-    const { start, end, text } = selectedNoteContentLineRange(textarea);
-    const lines = text.split("\n");
-    const removePrefix = lines.every((line) => expression.test(line));
-    const replacement = lines
-      .map((line) => removePrefix ? line.replace(expression, "") : `${prefix}${line}`)
-      .join("\n");
-    replaceNoteContentSelection(replacement, start, end, start, start + replacement.length, textarea);
-  }
-
-  function toggleNoteContentOrderedList(targetTextarea = elements.noteContent) {
-    const textarea = targetTextarea || elements.noteContent;
-    const { start, end, text } = selectedNoteContentLineRange(textarea);
-    const lines = text.split("\n");
-    const expression = /^\d+\.\s+/;
-    const removePrefix = lines.every((line) => expression.test(line));
-    const replacement = lines
-      .map((line, index) => removePrefix ? line.replace(expression, "") : `${index + 1}. ${line}`)
-      .join("\n");
-    replaceNoteContentSelection(replacement, start, end, start, start + replacement.length, textarea);
-  }
-
-  function insertNoteContentTemplate(template, selectionOffset, selectionLength = () => 0, targetTextarea = elements.noteContent) {
-    const textarea = targetTextarea || elements.noteContent;
-    if (!textarea) return;
-    const selectionStart = textarea.selectionStart;
-    const selectionEnd = textarea.selectionEnd;
-    const selectedText = textarea.value.slice(selectionStart, selectionEnd);
-    const replacement = template(selectedText);
-    const nextSelectionStart = selectionStart + selectionOffset(selectedText, replacement);
-    replaceNoteContentSelection(
-      replacement,
-      selectionStart,
-      selectionEnd,
-      nextSelectionStart,
-      nextSelectionStart + selectionLength(selectedText, replacement),
-      textarea,
-    );
-  }
-
-  function nextFootnoteNumber(targetTextarea = elements.noteContent) {
-    const textarea = targetTextarea || elements.noteContent;
-    if (!textarea) return 1;
-    const references = [...textarea.value.matchAll(/\[\^(\d+)\]/g)]
-      .map((match) => Number.parseInt(match[1], 10))
-      .filter(Number.isFinite);
-    return references.length ? Math.max(...references) + 1 : 1;
-  }
-
-  function applyNoteFormatting(formatting, targetTextarea = elements.noteContent) {
-    const textarea = targetTextarea || elements.noteContent;
-    if (formatting === "bold") return toggleNoteContentWrapper("**", textarea);
-    if (formatting === "italic") return toggleNoteContentWrapper("*", textarea);
-    if (formatting === "strikethrough") return toggleNoteContentWrapper("~~", textarea);
-    if (formatting === "inline-code") return toggleNoteContentWrapper("`", textarea);
-    if (formatting === "heading") return toggleNoteContentLinePrefix("## ", /^#{1,6}\s+/, textarea);
-    if (formatting === "bullet-list") return toggleNoteContentLinePrefix("- ", /^[-*+]\s+/, textarea);
-    if (formatting === "task-list") return toggleNoteContentLinePrefix("- [ ] ", /^-\s\[[ xX]\]\s+/, textarea);
-    if (formatting === "ordered-list") return toggleNoteContentOrderedList(textarea);
-    if (formatting === "code-block") {
-      return insertNoteContentTemplate(
-        (selectedText) => `\`\`\`\n${selectedText}\n\`\`\``,
-        () => 4,
-        (selectedText) => selectedText.length,
-        textarea,
-      );
-    }
-    if (formatting === "table") {
-      return insertNoteContentTemplate(
-        () => "| Column 1 | Column 2 |\n| --- | --- |\n| Cell 1 | Cell 2 |",
-        () => 2,
-        () => "Column 1".length,
-        textarea,
-      );
-    }
-    if (formatting === "alert") {
-      return insertNoteContentTemplate(
-        (selectedText) => `> [!NOTE]\n> ${selectedText || "Add a note"}`,
-        () => 12,
-        (selectedText) => (selectedText || "Add a note").length,
-        textarea,
-      );
-    }
-    if (formatting === "footnote") {
-      const number = nextFootnoteNumber(textarea);
-      return insertNoteContentTemplate(
-        (selectedText) => `${selectedText}[^${number}]\n\n[^${number}]: `,
-        (selectedText, replacement) => replacement.length,
-        () => 0,
-        textarea,
-      );
-    }
-  }
-
   function isCurrentNoteEditorSession(session) {
     return ui.noteEditorSession === session && isNoteEditorOpen();
   }
@@ -1393,7 +351,7 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
     const isCreatingTag = ui.pendingTagCreation?.session === ui.noteEditorSession;
     const disabled = ui.noteSaveInFlight;
     const keepTextInputsEnabled = ui.noteAutoSaveInFlight;
-    const noteTypeControls = noteTypePicker ? [noteTypePicker.trigger, ...noteTypePicker.options] : [];
+    const noteTypeControls = shared.noteTypePicker ? [shared.noteTypePicker.trigger, ...shared.noteTypePicker.options] : [];
     [
       elements.noteTitle,
       elements.noteType,
@@ -1416,7 +374,7 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
     const submitButton = noteSubmitButton();
     if (submitButton) {
       submitButton.disabled = disabled || isCreatingTag;
-      submitButton.textContent = disabled ? "Saving…" : "Done";
+      submitButton.textContent = disabled ? "Saving…" : "Save & return";
     }
     if (elements.mobileNoteDone) {
       elements.mobileNoteDone.disabled = disabled || isCreatingTag;
@@ -1474,8 +432,8 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
     }
   }
 
-  function restoreStoredNoteDraft(recovery) {
-    const note = recovery.draft.id ? library.notes.find(({ id }) => id === recovery.draft.id) : null;
+  function restoreStoredNoteDraft(recovery, { asNew = false } = {}) {
+    const note = !asNew && recovery.draft.id ? library.notes.find((item) => item.id === recovery.draft.id && !item.deletedAt) : null;
     openNoteEditor(note || null);
     const typeId = library.types.some(({ id }) => id === recovery.draft.typeId)
       ? recovery.draft.typeId
@@ -1489,47 +447,9 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
     renderNoteEditorPreview();
     scheduleNoteEditorHeight({ allowShrink: true });
     primaryEditorSession?.dispose();
-    draftRecoveryStore.remove(recovery.key);
-    createPrimaryEditorSession(note, getNoteEditorDraftData(), recovery.baseRevision || note?.revision || 0);
-    scheduleNoteAutoSave();
+    createPrimaryEditorSession(note, getNoteEditorDraftData(), note?.revision || 0, recovery);
+    setNoteSaveStatus(primaryEditorSession.conflict ? "error" : "dirty", primaryEditorSession.conflict ? "Conflict · draft kept" : "Recovered · save when ready");
     showToast("Unfinished draft restored. Save when you are ready.");
-  }
-
-  async function offerStoredNoteDraftRecovery() {
-    let recovery = draftRecoveryStore.enumerate()
-      .filter((record) => record.tabId === draftRecoveryStore.tabId && record.pane === "primary")
-      .sort((left, right) => right.savedAt.localeCompare(left.savedAt))[0];
-    let legacy = false;
-    if (!recovery) {
-      const legacyDraft = getStoredNoteDraft();
-      if (legacyDraft) {
-        legacy = true;
-        recovery = {
-          key: "",
-          pane: "primary",
-          savedAt: legacyDraft.savedAt,
-          baseRevision: library.notes.find((note) => note.id === legacyDraft.draft.id)?.revision || 0,
-          draft: legacyDraft.draft,
-        };
-      }
-    }
-    if (!recovery) return;
-    const recovered = await requestConfirmation({
-      title: "Recover unfinished note?",
-      description: "Nook found a local draft that was not saved yet. Recover it or discard it permanently.",
-      confirmLabel: "Recover draft",
-      cancelLabel: "Discard draft",
-      tone: "primary",
-      initialFocus: "confirm",
-    });
-    if (!recovered) {
-      if (legacy) clearStoredNoteDraft();
-      else draftRecoveryStore.remove(recovery.key);
-      showToast("Unfinished draft discarded.");
-      return;
-    }
-    if (legacy) clearStoredNoteDraft();
-    restoreStoredNoteDraft(recovery);
   }
 
   function syncEditorDraftRecovery() {
@@ -1587,13 +507,7 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
     ui.noteScrollMap = null;
     ui.noteScrollLeader = null;
     resetNoteEditorScrollSyncTarget();
-    const recoveryIdentity = primaryEditorSession
-      ? { pane: primaryEditorSession.pane, sessionId: primaryEditorSession.sessionId }
-      : null;
-    primaryEditorSession?.dispose();
-    if (discardStoredDraft && recoveryIdentity) draftRecoveryStore.remove(recoveryIdentity);
-    primaryEditorSession = null;
-    shared.primaryEditorSession = null;
+    primaryController.dispose({ discard: discardStoredDraft });
     ui.noteEditorSession += 1;
     ui.pendingTagCreation = null;
     ui.noteSaveInFlight = false;
@@ -1747,33 +661,10 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
     syncNoteEditorControls();
     let didSave = false;
     try {
-      let result = await editorSession.save();
+      const result = await primaryController.save();
       if (!isCurrentNoteEditorSession(session) || primaryEditorSession !== editorSession) return;
-
-      while (result.status === "conflict") {
-        setNoteSaveStatus("error", "Newer version found");
-        const choice = await requestConflictResolution({
-          localDraft: editorSession.currentDraft,
-          latestNote: result.latestNote || (result.deleted ? null : { ...result.latest, revision: result.latestRevision }),
-          deleted: result.deleted === true,
-          invoker: noteSubmitButton(),
-        });
-        if (!isCurrentNoteEditorSession(session) || primaryEditorSession !== editorSession) return;
-        if (choice === "keep-mine") {
-          setNoteSaveStatus("saving");
-          result = await editorSession.keepMine();
-          if (!isCurrentNoteEditorSession(session) || primaryEditorSession !== editorSession) return;
-        } else {
-          editorSession.keepEditing();
-          if (choice === "view-latest" && !result.deleted) {
-            api.openConflictLatestPreview?.(
-              result.latestNote || { ...result.latest, revision: result.latestRevision },
-              noteSubmitButton(),
-            );
-          }
-          setNoteSaveStatus("dirty", "Conflict · draft kept");
-          return;
-        }
+      if (result.status === "conflict-kept") {
+        return;
       }
 
       if (result.status === "error") throw result.error;
@@ -1834,32 +725,9 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
   }
 
   Object.assign(api, {
-    renderNoteTypeOptions,
-    renderSecondaryNoteTypeOptions,
-    closeNoteTypePicker,
-    setNoteTypePickerValue,
-    setSecondaryNoteTypePickerValue,
-    renderNoteTypePickerOptions,
-    enhanceNoteTypeSelect,
-    renderSelectedNoteTags,
-    renderSecondarySelectedNoteTags,
-    renderTagSuggestions,
-    renderSecondaryTagSuggestions,
-    normalizeTagEditorInput,
-    normalizeSecondaryTagEditorInput,
-    setSecondaryTagInputExpanded,
-    selectSecondaryNoteTag,
-    addSecondaryTagFromEditor,
     renderNoteMetadata,
-    syncNoteEditorScroll,
-    revealNoteEditorSelection,
-    createNoteEditorSourceMirror,
-    scheduleNoteEditorScrollMap,
-    lockNoteEditorScrollLeader,
-    renderNoteEditorPreview,
-    scheduleNoteEditorPreview,
-    setNoteEditorMode,
     toggleNotePreviewHeader,
+    setNoteEditorMode,
     syncNoteEditorHeight,
     scheduleNoteEditorHeight,
     noteSubmitButton,
@@ -1873,21 +741,10 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
     clearNoteAutoSave,
     setNoteSaveStatus,
     scheduleNoteAutoSave,
-    replaceNoteContentSelection,
-    toggleNoteContentWrapper,
-    insertNoteLink,
-    applyNoteFormattingShortcut,
-    selectedNoteContentLineRange,
-    toggleNoteContentLinePrefix,
-    toggleNoteContentOrderedList,
-    insertNoteContentTemplate,
-    nextFootnoteNumber,
-    applyNoteFormatting,
     isCurrentNoteEditorSession,
     syncNoteEditorControls,
     openNoteEditor,
     restoreStoredNoteDraft,
-    offerStoredNoteDraftRecovery,
     syncEditorDraftRecovery,
     reconcileEditorSessionsAfterLibraryRefresh,
     closeNoteEditor,

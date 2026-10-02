@@ -50,13 +50,11 @@ test("Service Worker asset manifest is complete and fingerprinted", () => {
     assert.ok(assetSet.has(cachedPath(icon.src)), `${icon.src} from the manifest must be cached`);
   }
 
-  const core = fs.readFileSync(path.join(root, "js/app/core.js"), "utf8");
-  const themeMatch = core.match(/const THEMES = (\[[^;]+\]);/);
-  assert.ok(themeMatch, "core theme list must be readable");
-  const themes = JSON.parse(themeMatch[1]).filter((theme) => theme !== "auto");
-  for (const theme of themes) {
-    const file = theme === "light" ? "classic" : theme;
-    assert.ok(assetSet.has(`./css/themes/${file}.css`), `${theme} theme must be cached`);
+  const catalogue = fs.readFileSync(path.join(root, "js/app/theme-config.js"), "utf8");
+  const themeFiles = new Set([...catalogue.matchAll(/file: "([^"\n]+)"/g)].map((match) => match[1]));
+  assert.ok(themeFiles.size > 0, "theme catalogue must expose its stylesheet files");
+  for (const file of themeFiles) {
+    assert.ok(assetSet.has(`./css/themes/${file}.css`), `${file} theme must be cached`);
   }
 
   for (const asset of assets.filter((value) => value.endsWith(".css"))) {

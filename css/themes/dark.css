@@ -18,6 +18,23 @@ html[data-theme="dark"] .note-content-preview .markdown-task-item > input {
 }
 
 html[data-theme="dark"] {
+  /* Shared metadata and menu roles; component geometry stays in its owner. */
+  --tag-chip-border: #27272a;
+  --tag-chip-text: #d4d4d8;
+  --tag-chip-surface: #09090b;
+  --tag-option-border: var(--tag-chip-border);
+  --tag-option-text: var(--tag-chip-text);
+  --tag-option-surface: var(--tag-chip-surface);
+  --empty-tag-border: var(--tag-chip-border);
+  --empty-tag-text: var(--tag-chip-text);
+  --empty-tag-surface: var(--tag-chip-surface);
+  --picker-menu-border: #27272a;
+  --picker-menu-surface: #18181b;
+  --picker-menu-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  --tag-menu-border: var(--picker-menu-border);
+  --tag-menu-surface: var(--picker-menu-surface);
+  --tag-menu-shadow: var(--picker-menu-shadow);
+
   color-scheme: dark;
   --theme-surface-page: #09090b;
   --theme-danger-border: rgb(239 68 68 / 38%);
@@ -121,14 +138,16 @@ html[data-theme="dark"] .sidebar {
   box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.35);
 }
 
-html[data-theme="dark"] .sidebar-toggle-btn {
+html[data-theme="dark"] .sidebar-toggle-btn,
+html[data-theme="dark"] .quick-view-header-toggle {
   border-color: #27272a;
   color: #a1a1aa;
   background: #18181b;
   transition: color var(--interaction-duration) var(--interaction-easing), background-color var(--interaction-duration) var(--interaction-easing), border-color var(--interaction-duration) var(--interaction-easing), opacity var(--interaction-duration) var(--interaction-easing);
 }
 
-html[data-theme="dark"] .sidebar-toggle-btn:hover {
+html[data-theme="dark"] .sidebar-toggle-btn:hover,
+html[data-theme="dark"] .quick-view-header-toggle:hover {
   color: #fafafa;
   background: #282828;
   border-color: #3f3f46;
@@ -575,9 +594,6 @@ html[data-theme="dark"] .quick-view-tag,
 html[data-theme="dark"] .quick-view-no-tags,
 html[data-theme="dark"] .note-dialog .selected-tag,
 html[data-theme="dark"] .note-detail-surface .quick-view-tag {
-  border-color: #27272a;
-  color: #d4d4d8;
-  background: #09090b;
   transition: color var(--interaction-duration) var(--interaction-easing), background-color var(--interaction-duration) var(--interaction-easing), border-color var(--interaction-duration) var(--interaction-easing);
 }
 
@@ -851,12 +867,7 @@ html[data-theme="dark"] .note-dialog .tag-picker:focus-within {
   box-shadow: none;
 }
 
-html[data-theme="dark"] .tag-suggestions,
-html[data-theme="dark"] .note-dialog .tag-suggestions {
-  border-color: #27272a;
-  background: #18181b;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-}
+
 
 html[data-theme="dark"] .tag-suggestions__label,
 html[data-theme="dark"] .field-help,
@@ -882,11 +893,7 @@ html[data-theme="dark"] .tag-add-button:hover:not(:disabled) {
   background: #27272a;
 }
 
-html[data-theme="dark"] .selected-tag {
-  border-color: #27272a;
-  color: #d4d4d8;
-  background: #18181b;
-}
+
 
 html[data-theme="dark"] .selected-tag button:hover,
 html[data-theme="dark"] .selected-tag button:focus-visible {
@@ -928,12 +935,7 @@ html[data-theme="dark"] .note-dialog .note-type-picker__trigger[aria-expanded="t
   background-color: var(--detail-type-chip-background, #27272a);
 }
 
-html[data-theme="dark"] .color-picker__menu,
-html[data-theme="dark"] .note-type-picker__menu {
-  border-color: #27272a;
-  background: #18181b;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-}
+
 
 html[data-theme="dark"] .color-picker__option,
 html[data-theme="dark"] .note-type-picker__option {
@@ -1393,7 +1395,8 @@ html[data-theme="dark"] .note-detail-action-tooltip__content {
 }
 
 html[data-theme="dark"] .shortcut-tooltip kbd,
-html[data-theme="dark"] .note-save-shortcut kbd {
+html[data-theme="dark"] .note-save-shortcut kbd,
+html[data-theme="dark"] .command-dialog__help kbd {
   border-color: #27272a;
   border-bottom-color: #3f3f46;
   color: #fafafa;

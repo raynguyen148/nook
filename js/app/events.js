@@ -140,7 +140,6 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
     renderSecondaryNotesList,
     copySecondaryNoteContent,
     exportSecondaryNoteMarkdown,
-    exportSecondaryNoteText,
     setSecondaryNoteMode,
     onSecondaryNoteInput,
     saveSecondaryNote,
@@ -178,6 +177,9 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
   function bindEvents() {
     api.bindMobileEvents();
     api.bindSplitSelectionEvents();
+    api.bindFormattingScrollCues();
+    api.bindManagementMenuEvents();
+    api.bindOnboardingEvents();
     const activateManagementTab = (tab) => {
       closeThemePicker();
       setManagementTab(tab);
@@ -237,7 +239,6 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
     window.addEventListener("pageshow", refreshAutoTheme);
     window.addEventListener("pagehide", clearAutoThemeTimer);
     elements.organize.addEventListener("click", () => openOrganize());
-    elements.export.addEventListener("click", () => exportLibrary());
     elements.import?.addEventListener("click", () => elements.importInput.click());
     elements.importInput.addEventListener("change", importLibrary);
     elements.newNote.addEventListener("click", () => openNoteEditor());
@@ -322,8 +323,7 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
       moveNoteToTrash(note);
     });
     elements.copyNoteContent.addEventListener("click", copyQuickViewContent);
-    elements.exportNoteMarkdown.addEventListener("click", () => exportCurrentNote("md"));
-    elements.exportNoteText.addEventListener("click", () => exportCurrentNote("txt"));
+    elements.exportNoteMarkdown.addEventListener("click", exportCurrentNote);
     elements.toggleDualPane?.addEventListener("click", toggleDualPane);
     elements.closeSecondaryPane?.addEventListener("click", closeDualPane);
     elements.secondaryReaderClose?.addEventListener("click", closeDualPane);
@@ -352,7 +352,6 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
     elements.secondaryBackToPicker?.addEventListener("click", showSecondaryPicker);
     elements.secondaryCopyContent?.addEventListener("click", copySecondaryNoteContent);
     elements.secondaryExportMd?.addEventListener("click", exportSecondaryNoteMarkdown);
-    elements.secondaryExportText?.addEventListener("click", exportSecondaryNoteText);
     elements.secondaryQuickViewHeaderToggle?.addEventListener("click", toggleSecondaryNotePreviewHeader);
     elements.secondaryNoteHistory?.addEventListener("click", () => {
       if (ui.secondaryNoteId) openNoteHistory(ui.secondaryNoteId, elements.secondaryNoteHistory);
@@ -469,7 +468,7 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
       }
       scheduleTopbarActionsPinning();
       scheduleTagFilterLayout();
-      syncSidebarUI();
+      api.syncSidePaneSidebar();
       positionSidebarToggleTooltip();
       if (window.innerWidth < 960 && (ui.dualPaneOpen || ui.secondaryClosing)) {
         closeDualPane({ immediate: true });
@@ -880,6 +879,10 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
       elements.newTypeColor.replaceChildren(createColorOptions(elements.newTypeColor.value));
       enhanceColorSelect(elements.newTypeColor);
       bindEvents();
+      api.bindProductivityEvents();
+      api.bindRecoveryEvents();
+      api.bindDataImportEvents();
+      api.bindBulkEvents();
       setupStorageAndOfflineCapabilities();
       observeTagFilterLayout();
       setupLibrarySync();

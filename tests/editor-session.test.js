@@ -79,6 +79,70 @@ class MemoryStorage {
   }
 }
 
+test("recovery retains conflict context after the latest revision is received", async () => {
+  const { createDraftRecoveryStore, createEditorSession } = loadApi();
+  const memory = new MemoryStorage();
+  const recovery = createDraftRecoveryStore({ storage: memory, tabId: "test-tab" });
+  const original = note("base", 1);
+  const session = createEditorSession({ storage: { saveNote: () => { throw new Error("must not auto-save"); } },
+    pane: "primary", sessionId: "original", committed: original, currentDraft: original, recoveryStore: recovery });
+  session.updateDraft(note("my draft", 1));
+  session.applyExternalSnapshot(note("someone else's edit", 2));
+  const record = recovery.read({ pane: "primary", sessionId: "original" });
+  assert.equal(record.conflicted, true);
+  assert.equal(record.baseRevision, 2);
+  assert.equal(record.committedSnapshot.content, "someone else's edit");
+  const recovered = createEditorSession({ storage: { saveNote: () => { throw new Error("must not auto-save"); } },
+    committed: record.committedSnapshot, currentDraft: record.draft, baseRevision: record.baseRevision,
+    initialConflict: { latest: record.committedSnapshot, expectedRevision: 1 } });
+  assert.equal((await recovered.save()).status, "conflict");
+  assert.equal(recovered.currentDraft.content, "my draft");
+});
+
+test("same-revision and older imported snapshots still refresh clean sessions or keep dirty drafts in conflict", () => {
+  const { createEditorSession } = loadApi();
+  const original = note("original", 3);
+  const clean = createEditorSession({ storage: () => {}, committed: original });
+  assert.equal(clean.applyExternalSnapshot(note("imported", 3)).applied, true);
+  assert.equal(clean.currentDraft.content, "imported");
+  clean.updateDraft(note("local edit", 3));
+  assert.equal(clean.applyExternalSnapshot(note("older backup", 1)).conflict, true);
+  assert.equal(clean.currentDraft.content, "local edit");
+});
+
+test("a recovered source remains until save, and a newer source from another tab is not removed", async () => {
+  const { createDraftRecoveryStore, createEditorSession } = loadApi();
+  const memory = new MemoryStorage();
+  const recovery = createDraftRecoveryStore({ storage: memory, tabId: "test-tab", now: () => 1000 });
+  const identity = { tabId: "old-tab", pane: "secondary", sessionId: "old" };
+  recovery.write(identity, note("unfinished", 1));
+  const source = recovery.read(identity);
+  const session = createEditorSession({ storage: { saveNote: (draft) => ({ ...draft, id: "new-note", revision: 1 }) },
+    currentDraft: { ...source.draft, id: "" }, recoveryStore: recovery,
+    recoverySources: [{ key: source.key, savedAt: source.savedAt }] });
+  assert.ok(recovery.read(identity));
+  recovery.write(identity, note("newer typing", 1));
+  assert.equal((await session.save()).status, "saved");
+  assert.equal(recovery.read(identity).draft.content, "newer typing");
+  const next = recovery.read(identity);
+  const another = createEditorSession({ storage: { saveNote: (draft) => ({ ...draft, id: "other-note", revision: 1 }) },
+    currentDraft: { ...next.draft, id: "" }, recoveryStore: recovery,
+    recoverySources: [{ key: next.key, savedAt: next.savedAt }] });
+  assert.equal((await another.save()).status, "saved");
+  assert.equal(recovery.read(identity), null);
+});
+
+test("save passes the captured original fields so equal-revision library replacement cannot bypass comparison", async () => {
+  const { createEditorSession } = loadApi();
+  let input;
+  const original = note("original", 1);
+  const session = createEditorSession({ storage: { saveNote: (draft) => { input = draft; return { ...draft, revision: 2 }; } }, committed: original });
+  session.updateDraft(note("my draft", 1));
+  await session.save();
+  assert.equal(input.expectedRevision, 1);
+  assert.equal(input.expectedSnapshot.content, "original");
+});
+
 test("default recovery stores share one stable tab identity", () => {
   const sessionStorage = new MemoryStorage();
   const localStorage = new MemoryStorage();

@@ -1222,9 +1222,7 @@ h2 {
 
 
 @media (min-width: 621px) and (max-width: 1366px) {
-  #theme-toggle,
-  #organize-btn,
-  #export-btn,
+  #quick-actions-btn,
   #import-btn {
     width: 2.35rem;
     min-width: 2.35rem;

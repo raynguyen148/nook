@@ -18,6 +18,23 @@ html[data-theme="midnight"] .note-content-preview .markdown-task-item > input {
 }
 
 html[data-theme="midnight"] {
+  /* Shared metadata and menu roles; component geometry stays in its owner. */
+  --tag-chip-border: #3d5a78;
+  --tag-chip-text: #c1d3e8;
+  --tag-chip-surface: #0f1b2d;
+  --tag-option-border: var(--tag-chip-border);
+  --tag-option-text: var(--tag-chip-text);
+  --tag-option-surface: var(--tag-chip-surface);
+  --empty-tag-border: var(--tag-chip-border);
+  --empty-tag-text: var(--tag-chip-text);
+  --empty-tag-surface: var(--tag-chip-surface);
+  --picker-menu-border: #3d5a78;
+  --picker-menu-surface: #14243a;
+  --picker-menu-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  --tag-menu-border: var(--picker-menu-border);
+  --tag-menu-surface: var(--picker-menu-surface);
+  --tag-menu-shadow: var(--picker-menu-shadow);
+
   color-scheme: dark;
   --theme-surface-page: #0f1b2d;
   --theme-danger-border: rgb(239 68 68 / 38%);
@@ -121,14 +138,16 @@ html[data-theme="midnight"] .sidebar {
   box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.25);
 }
 
-html[data-theme="midnight"] .sidebar-toggle-btn {
+html[data-theme="midnight"] .sidebar-toggle-btn,
+html[data-theme="midnight"] .quick-view-header-toggle {
   border-color: #29415f;
   color: #91abc4;
   background: #112038;
   transition: color var(--interaction-duration) var(--interaction-easing), background-color var(--interaction-duration) var(--interaction-easing), border-color var(--interaction-duration) var(--interaction-easing), opacity var(--interaction-duration) var(--interaction-easing);
 }
 
-html[data-theme="midnight"] .sidebar-toggle-btn:hover {
+html[data-theme="midnight"] .sidebar-toggle-btn:hover,
+html[data-theme="midnight"] .quick-view-header-toggle:hover {
   color: #dbeaff;
   background: #203a55;
   border-color: #466684;
@@ -575,9 +594,6 @@ html[data-theme="midnight"] .quick-view-tag,
 html[data-theme="midnight"] .quick-view-no-tags,
 html[data-theme="midnight"] .note-dialog .selected-tag,
 html[data-theme="midnight"] .note-detail-surface .quick-view-tag {
-  border-color: #3d5a78;
-  color: #c1d3e8;
-  background: #0f1b2d;
   transition: color var(--interaction-duration) var(--interaction-easing), background-color var(--interaction-duration) var(--interaction-easing), border-color var(--interaction-duration) var(--interaction-easing);
 }
 
@@ -851,12 +867,7 @@ html[data-theme="midnight"] .note-dialog .tag-picker:focus-within {
   box-shadow: none;
 }
 
-html[data-theme="midnight"] .tag-suggestions,
-html[data-theme="midnight"] .note-dialog .tag-suggestions {
-  border-color: #3d5a78;
-  background: #14243a;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-}
+
 
 html[data-theme="midnight"] .tag-suggestions__label,
 html[data-theme="midnight"] .field-help,
@@ -882,11 +893,7 @@ html[data-theme="midnight"] .tag-add-button:hover:not(:disabled) {
   background: #1b304a;
 }
 
-html[data-theme="midnight"] .selected-tag {
-  border-color: #3d5a78;
-  color: #c1d3e8;
-  background: #14243a;
-}
+
 
 html[data-theme="midnight"] .selected-tag button:hover,
 html[data-theme="midnight"] .selected-tag button:focus-visible {
@@ -928,12 +935,7 @@ html[data-theme="midnight"] .note-dialog .note-type-picker__trigger[aria-expande
   background-color: var(--detail-type-chip-background, #2d2d2d);
 }
 
-html[data-theme="midnight"] .color-picker__menu,
-html[data-theme="midnight"] .note-type-picker__menu {
-  border-color: #3d5a78;
-  background: #14243a;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-}
+
 
 html[data-theme="midnight"] .color-picker__option,
 html[data-theme="midnight"] .note-type-picker__option {
@@ -1393,7 +1395,8 @@ html[data-theme="midnight"] .note-detail-action-tooltip__content {
 }
 
 html[data-theme="midnight"] .shortcut-tooltip kbd,
-html[data-theme="midnight"] .note-save-shortcut kbd {
+html[data-theme="midnight"] .note-save-shortcut kbd,
+html[data-theme="midnight"] .command-dialog__help kbd {
   border-color: #3d5a78;
   border-bottom-color: #557895;
   color: #e5efff;

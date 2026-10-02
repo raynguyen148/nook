@@ -52,9 +52,7 @@
     display: none;
   }
 
-  #theme-toggle,
-  #organize-btn,
-  #export-btn,
+  #quick-actions-btn,
   #import-btn {
     width: var(--control-height);
     min-width: var(--control-height);

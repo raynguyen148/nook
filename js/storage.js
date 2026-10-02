@@ -388,7 +388,7 @@
 
   async function getSnapshot({ includeHistory = false } = {}) {
     const database = await openDatabase();
-    const storeNames = [STORE.notes, STORE.types, STORE.tags];
+    const storeNames = [STORE.notes, STORE.types, STORE.tags, STORE.meta];
     if (includeHistory) storeNames.push(STORE.noteVersions);
     const transaction = database.transaction(storeNames, "readonly");
     const notesRequest = transaction.objectStore(STORE.notes).getAll();
@@ -398,15 +398,17 @@
       requestResult(notesRequest),
       requestResult(typesRequest),
       requestResult(tagsRequest),
+      requestResult(transaction.objectStore(STORE.meta).get(MUTATION_META_KEY)),
     ];
     if (includeHistory) requests.push(requestResult(transaction.objectStore(STORE.noteVersions).getAll()));
-    const [notes, types, tags, noteVersions = []] = await Promise.all(requests);
+    const [notes, types, tags, mutation, noteVersions = []] = await Promise.all(requests);
     await transactionDone(transaction);
     return sortSnapshot({
       notes: notes.map(normalizeNoteRecord),
       types,
       tags,
       noteVersions: includeHistory ? noteVersions.map(normalizeHistoryRecord) : [],
+      mutationId: mutation?.value || "",
     });
   }
 
@@ -468,7 +470,7 @@
           const outcome = apply(records, stores) || {};
           callbackResult = outcome.result;
           if (outcome.changed !== false) {
-            stores.meta.put({ key: MUTATION_META_KEY, value: nowIso() });
+            stores.meta.put({ key: MUTATION_META_KEY, value: newId("mutation") });
           }
           applyCompleted = true;
         } catch (error) {
@@ -1074,7 +1076,8 @@
           if (expectedRevision != null) throw createNoteConflictError(null);
           throw new Error("This note no longer exists.");
         }
-        if (expectedRevision != null && existing.revision !== expectedRevision) {
+        if (expectedRevision != null && (existing.revision !== expectedRevision ||
+          (input.expectedSnapshot && !sameEditorFields(existing, input.expectedSnapshot)))) {
           throw createNoteConflictError(existing);
         }
         if (!records.type) throw new Error("Choose a valid note type.");
@@ -1288,9 +1291,11 @@
     }, { readStores: [STORE.notes, STORE.types, STORE.noteVersions] });
   }
 
-  async function addTag(input) {
+  async function addTag(input, { reuseExisting = false } = {}) {
     const name = requireTagName(input.name);
     return mutateLibrary((snapshot, stores) => {
+      const existing = snapshot.tags.find((tag) => tag.normalizedName === normalizedName(name));
+      if (reuseExisting && existing) return existing;
       assertNameIsAvailable(snapshot.tags, name, "Tag");
       const timestamp = nowIso();
       const tag = {
@@ -1344,8 +1349,14 @@
     }, { readStores: [STORE.notes, STORE.tags, STORE.noteVersions] });
   }
 
-  async function buildExport() {
+  async function buildExport({ noteIds = null } = {}) {
     const snapshot = await getSnapshot({ includeHistory: true });
+    if (noteIds !== null) {
+      const ids = new Set(noteIds.map((id) => requireId(id, "Note")));
+      snapshot.notes = snapshot.notes.filter((note) => ids.has(note.id));
+      if (snapshot.notes.length !== ids.size) throw new Error("Some selected notes no longer exist. Select them again.");
+      snapshot.noteVersions = snapshot.noteVersions.filter((version) => ids.has(version.noteId));
+    }
     return {
       format: "personal-notes-backup",
       schemaVersion: 3,
@@ -1368,6 +1379,228 @@
       tags: parsed.snapshot.tags.length,
       noteVersions: parsed.snapshot.noteVersions.length,
     } };
+  }
+
+  function assertImportCapacity(snapshot, additions) {
+    for (const name of ["notes", "types", "tags"]) {
+      if (snapshot[name].length + additions[name].length > MAX_RECORDS_PER_IMPORT) {
+        throw new Error(`This import would exceed ${MAX_RECORDS_PER_IMPORT} ${name}. Export or reduce the selection first.`);
+      }
+    }
+  }
+
+  // Merge only adds records. An ID collision is kept locally or imported under
+  // a new ID, so an open editor and its revision history are never replaced.
+  function planBackupMerge(current, incoming, conflictPolicy) {
+    if (!["copy", "skip"].includes(conflictPolicy)) throw new Error("Choose how to handle conflicting notes.");
+    const additions = { notes: [], types: [], tags: [], noteVersions: [] };
+    const typeMap = new Map();
+    const tagMap = new Map();
+    for (const [name, mapping, prefix] of [["types", typeMap, "type"], ["tags", tagMap, "tag"]]) {
+      const byName = new Map(current[name].map((item) => [item.normalizedName, item]));
+      const usedIds = new Set(current[name].map((item) => item.id));
+      incoming[name].forEach((item) => {
+        const match = name === "types" && item.id === FALLBACK_TYPE_ID
+          ? current.types.find((type) => type.id === FALLBACK_TYPE_ID)
+          : byName.get(item.normalizedName);
+        const id = match?.id || (usedIds.has(item.id) ? newId(prefix) : item.id);
+        mapping.set(item.id, id);
+        usedIds.add(id);
+        if (!match) additions[name].push({ ...item, id });
+      });
+    }
+    const existingNotes = new Map(current.notes.map((note) => [note.id, normalizeNoteRecord(note)]));
+    const usedNoteIds = new Set([...existingNotes.keys(), ...incoming.notes.map((note) => note.id)]);
+    const noteMap = new Map();
+    const rows = [];
+    const counts = { added: 0, copied: 0, skipped: 0, identical: 0 };
+    incoming.notes.forEach((note) => {
+      const mapped = { ...note, typeId: typeMap.get(note.typeId), tagIds: note.tagIds.map((id) => tagMap.get(id)) };
+      const existing = existingNotes.get(note.id);
+      let status = "add";
+      if (existing && sameEditorFields(existing, mapped) && existing.isPinned === mapped.isPinned && existing.deletedAt === mapped.deletedAt) {
+        status = "identical";
+        counts.identical += 1;
+      } else if (existing && conflictPolicy === "skip") {
+        status = "skip";
+        counts.skipped += 1;
+      } else {
+        if (existing) {
+          status = "copy";
+          do { mapped.id = newId("note"); } while (usedNoteIds.has(mapped.id));
+          counts.copied += 1;
+        } else counts.added += 1;
+        usedNoteIds.add(mapped.id);
+        noteMap.set(note.id, mapped.id);
+        additions.notes.push(mapped);
+      }
+      rows.push({ title: note.title, status });
+    });
+    const missingTypeMap = new Map();
+    const missingTagMap = new Map();
+    function mapHistoricalId(id, mapping, missing, prefix) {
+      if (mapping.has(id)) return mapping.get(id);
+      if (!missing.has(id)) missing.set(id, newId(prefix));
+      return missing.get(id);
+    }
+    incoming.noteVersions.forEach((version) => {
+      const noteId = noteMap.get(version.noteId);
+      if (!noteId) return;
+      additions.noteVersions.push({
+        ...version, noteId, id: versionId(noteId, version.revision),
+        typeId: mapHistoricalId(version.typeId, typeMap, missingTypeMap, "missing-type"),
+        tagIds: version.tagIds.map((id) => mapHistoricalId(id, tagMap, missingTagMap, "missing-tag")),
+      });
+    });
+    assertImportCapacity(current, additions);
+    return { additions, counts, rows };
+  }
+
+  async function inspectBackupMerge(value, { conflictPolicy = "copy" } = {}) {
+    const parsed = parseBackup(value);
+    const current = await getSnapshot();
+    const plan = planBackupMerge(current, parsed.snapshot, conflictPolicy);
+    return { counts: plan.counts, rows: plan.rows, mutationId: current.mutationId };
+  }
+
+  async function mergeBackup(value, { conflictPolicy = "copy", expectedMutationId } = {}) {
+    const parsed = parseBackup(value);
+    return mutateLibrary((current, stores) => {
+      const mutationId = current.meta.find((item) => item.key === MUTATION_META_KEY)?.value || "";
+      if (expectedMutationId !== undefined && mutationId !== expectedMutationId) {
+        throw new Error("The library changed after preview. Inspect the file again before importing.");
+      }
+      const plan = planBackupMerge(current, parsed.snapshot, conflictPolicy);
+      for (const name of ["types", "tags", "notes", "noteVersions"]) {
+        plan.additions[name].forEach((item) => stores[name].put(item));
+      }
+      return plan.counts;
+    });
+  }
+
+  function inspectMarkdownFiles(files) {
+    if (!Array.isArray(files) || !files.length || files.length > MAX_RECORDS_PER_IMPORT) {
+      throw new Error("Choose between 1 and 10,000 Markdown files.");
+    }
+    return files.map((file) => {
+      if (typeof file.name !== "string" || !/\.(?:md|markdown)$/i.test(file.name)) {
+        throw new Error("Choose .md or .markdown files only.");
+      }
+      return {
+        title: requireText(file.name.replace(/\.(?:md|markdown)$/i, ""), "Note title", MAX_TITLE_LENGTH),
+        content: normalizeContent(file.content),
+      };
+    });
+  }
+
+  async function importMarkdownFiles(files, { typeId = FALLBACK_TYPE_ID, tagIds = [] } = {}) {
+    const imported = inspectMarkdownFiles(files);
+    const selectedType = requireId(typeId, "Note type");
+    if (!Array.isArray(tagIds)) throw new Error("Choose valid tags.");
+    const selectedTags = [...new Set(tagIds.map((id) => requireId(id, "Tag")))];
+    return mutateLibrary((snapshot, stores) => {
+      if (!snapshot.types.some((type) => type.id === selectedType)) throw new Error("Choose a valid note type.");
+      if (selectedTags.some((id) => !snapshot.tags.some((tag) => tag.id === id))) throw new Error("A selected tag no longer exists.");
+      assertImportCapacity(snapshot, { notes: imported, types: [], tags: [] });
+      const timestamp = nowIso();
+      const notes = imported.map((note) => ({ ...note, id: newId("note"), typeId: selectedType,
+        tagIds: selectedTags, createdAt: timestamp, updatedAt: timestamp, revision: 1, deletedAt: null, isPinned: false }));
+      notes.forEach((note) => stores.notes.put(note));
+      return notes;
+    });
+  }
+
+  async function updateNotesBatch(selection, changes) {
+    if (!Array.isArray(selection) || !selection.length || selection.length > MAX_RECORDS_PER_IMPORT) throw new Error("Select notes first.");
+    const ids = selection.map((item) => requireId(item.id, "Note"));
+    uniqueIds(ids, "selected note");
+    selection.forEach((item) => {
+      if (item.expectedRevision == null) throw new Error("Selected notes need their expected revisions.");
+      requireRevision(item.expectedRevision);
+    });
+    if (!changes || !["type", "add-tag", "remove-tag", "trash", "restore"].includes(changes.action)) throw new Error("Choose a batch action.");
+    return runAtomicMutation({
+      read: (stores) => {
+        const entries = [
+          { key: "type", request: changes.action === "type" ? stores.types.get(requireId(changes.typeId, "Note type")) : null },
+          { key: "tag", request: changes.action.endsWith("tag") ? stores.tags.get(requireId(changes.tagId, "Tag")) : null },
+        ];
+        ids.forEach((id, index) => entries.push(
+          { key: `note-${index}`, request: stores.notes.get(id) },
+          { key: `history-${index}`, request: stores.noteVersions.index("by-note-id").getAll(id) },
+        ));
+        return entries;
+      },
+      apply: (records, stores) => {
+        if (changes.action === "type" && !records.type) throw new Error("This note type no longer exists.");
+        if (changes.action.endsWith("tag") && !records.tag) throw new Error("This tag no longer exists.");
+        const notes = ids.map((id, index) => {
+          const note = records[`note-${index}`];
+          if (!note || note.revision !== selection[index].expectedRevision ||
+            (selection[index].expectedSnapshot && !sameEditorFields(note, selection[index].expectedSnapshot))) {
+            throw new Error("A selected note changed elsewhere. Select the notes again; nothing was changed.");
+          }
+          if (changes.action !== "restore" && note.deletedAt) throw new Error("A selected note is in Trash. Select notes again.");
+          return normalizeNoteRecord(note);
+        });
+        let changed = 0;
+        notes.forEach((note, index) => {
+          let next;
+          if (changes.action === "type" && note.typeId !== changes.typeId) next = { typeId: changes.typeId };
+          if (changes.action === "add-tag" && !note.tagIds.includes(changes.tagId)) next = { tagIds: [...note.tagIds, changes.tagId] };
+          if (changes.action === "remove-tag" && note.tagIds.includes(changes.tagId)) next = { tagIds: note.tagIds.filter((id) => id !== changes.tagId) };
+          if (changes.action === "trash") next = { deletedAt: nowIso() };
+          if (changes.action === "restore" && note.deletedAt) next = { deletedAt: null };
+          if (!next) return;
+          commitNoteMutation(note, next, records[`history-${index}`] || [], stores);
+          changed += 1;
+        });
+        return { result: { changed }, changed: changed > 0 };
+      },
+    });
+  }
+
+  // Templates are ordinary, backup-compatible notes carrying the template tag.
+  async function createTemplateNote(input) {
+    const title = requireText(input.title, "Note title", MAX_TITLE_LENGTH);
+    const content = normalizeContent(input.content);
+    return mutateLibrary((snapshot, stores) => {
+      if (!snapshot.types.some((type) => type.id === input.typeId)) throw new Error("Choose a valid note type.");
+      let tag = snapshot.tags.find((item) => item.normalizedName === "template");
+      const timestamp = nowIso();
+      if (!tag) tag = { id: newId("tag"), name: "template", normalizedName: "template", createdAt: timestamp, updatedAt: timestamp };
+      const tags = [...new Set([...(input.tagIds || []).filter((id) => snapshot.tags.some((item) => item.id === id)), tag.id])];
+      const note = { id: newId("note"), title, content, typeId: input.typeId, tagIds: tags,
+        createdAt: timestamp, updatedAt: timestamp, revision: 1, deletedAt: null, isPinned: false };
+      assertImportCapacity(snapshot, { notes: [note], types: [], tags: snapshot.tags.some((item) => item.id === tag.id) ? [] : [tag] });
+      stores.tags.put(tag);
+      stores.notes.put(note);
+      return note;
+    });
+  }
+
+  async function getOrCreateDailyNote(date, { content = "## Focus\n\n- [ ] \n\n## Notes\n\n\n## Reflection\n\n" } = {}) {
+    if (typeof date !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(date) || new Date(`${date}T12:00:00Z`).toISOString().slice(0, 10) !== date) {
+      throw new Error("Choose a valid calendar date.");
+    }
+    content = normalizeContent(content);
+    return mutateLibrary((snapshot, stores) => {
+      let tag = snapshot.tags.find((item) => item.normalizedName === "daily-note");
+      const title = `Daily · ${date}`;
+      const dailyId = `note-daily-${date}`;
+      const existing = snapshot.notes.find((note) => note.id === dailyId) ||
+        (tag && snapshot.notes.find((note) => !note.deletedAt && note.title === title && note.tagIds.includes(tag.id)));
+      if (existing?.deletedAt) throw new Error("This Daily note is in Trash. Restore it before opening today's note.");
+      if (existing) return normalizeNoteRecord(existing);
+      const timestamp = nowIso();
+      if (!tag) tag = { id: newId("tag"), name: "daily-note", normalizedName: "daily-note", createdAt: timestamp, updatedAt: timestamp };
+      const note = { id: dailyId, title, content, typeId: FALLBACK_TYPE_ID, tagIds: [tag.id],
+        createdAt: timestamp, updatedAt: timestamp, revision: 1, deletedAt: null, isPinned: false };
+      assertImportCapacity(snapshot, { notes: [note], types: [], tags: snapshot.tags.some((item) => item.id === tag.id) ? [] : [tag] });
+      stores.tags.put(tag);
+      stores.notes.put(note);
+      return note;
+    });
   }
 
   async function resetLibrary() {
@@ -1414,6 +1647,8 @@
     TYPE_COLORS,
     HISTORY_RETENTION_LIMIT,
     HISTORY_MAX_CONTENT_BYTES,
+    MAX_CONTENT_LENGTH,
+    MAX_TITLE_LENGTH,
     initialize,
     getSnapshot,
     getNote,
@@ -1435,6 +1670,13 @@
     buildExport,
     inspectBackup,
     importBackup,
+    inspectBackupMerge,
+    mergeBackup,
+    inspectMarkdownFiles,
+    importMarkdownFiles,
+    updateNotesBatch,
+    createTemplateNote,
+    getOrCreateDailyNote,
     resetLibrary,
   });
 })();

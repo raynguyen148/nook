@@ -20,6 +20,7 @@ practice, and personal ideas in one calm, searchable local library.
 - [Quick start](#quick-start)
 - [Browser support](#browser-support)
 - [Using Nook](#using-nook)
+- [Productivity workflows](#productivity-workflows)
 - [Markdown support](#markdown-support)
 - [Local data and privacy](#local-data-and-privacy)
 - [Offline access and storage health](#offline-access-and-storage-health)
@@ -39,12 +40,15 @@ practice, and personal ideas in one calm, searchable local library.
 - Sort by created date, updated date, or title. Pinned notes stay above unpinned notes.
 - Move notes to Trash, restore them, undo a move, permanently delete one note, or empty Trash.
 - Keep up to 50 earlier saved versions per note, preview them, and restore one without losing the current version.
-- Copy the raw Markdown source or export the current note as `.md` or `.txt`.
+- Copy the raw Markdown source or export the current note as `.md`.
 - Export and import a complete JSON backup, including version history. The local backup-health indicator reminds you when an export is missing or old.
 - Keep the primary editor and Side note as independent sessions with per-pane draft recovery and stale-write conflict handling.
 - Manage note types and tags from Settings → Organize Notes.
 - Choose Light, Coffee, Forest, Midnight, Dark, Retro, E-Ink, or Auto theme, switch between Compact, Comfortable, and Grid layouts, or collapse the sidebar into an icon rail.
 - Recover an unfinished local editor draft after an interrupted session.
+- Review drafts from closed tabs in Draft Recovery, import several Markdown files, or merge a backup while keeping local notes.
+- Use Quick actions, reusable templates, and one Daily note per local calendar date.
+- Select notes across pages and filters to export a selection, move to Trash, or restore in bulk.
 - Keep multiple open tabs in sync when the browser supports `BroadcastChannel`.
 - Use `C` for quick capture plus platform-aware editor shortcuts for formatting, saving, and switching editor modes.
 
@@ -149,10 +153,11 @@ state; a late save result cannot overwrite a newer session or draft.
 
 Unfinished drafts are stored locally in separate, per-tab/per-pane recovery
 records. A tab keeps its recovery identity in `sessionStorage`, so reloading it
-does not make it claim or discard another open tab's draft. Drafts are offered
-for recovery after an interrupted session and expire after about 30 days.
+does not make it claim or discard another open tab's draft. Draft Recovery lists
+unfinished drafts from all tabs, including closed tabs, and records expire after about 30 days.
 Closing a dirty editor asks before discarding changes.
-Recovery records are not part of a JSON backup.
+Recovery records are not part of a JSON backup. Conflict context survives a
+reload; recovering a draft is not permission to overwrite another saved version.
 
 If another tab or pane saves the same note first, Nook reports a conflict and
 keeps the local draft. **Keep editing** leaves the draft untouched, **View
@@ -184,7 +189,6 @@ The detail workspace provides:
 
 - **Copy** — copies the raw Markdown source.
 - **Export `.md`** — downloads the original Markdown.
-- **Export `.txt`** — downloads a plain-text rendering.
 - **Edit**, **Split**, and **Preview** — switch the current detail surface.
 - **Close** — returns to the library.
 
@@ -243,6 +247,98 @@ focus. Plain keys are scoped away from editable fields so typing inside a note
 is unaffected. Version history is opened with its note action rather than a
 global keyboard shortcut.
 
+## Productivity workflows
+
+### Quick actions
+
+Select **Actions** in the library/editor to open Quick actions, or press **Cmd/Ctrl+Shift+P**.
+Search saved notes by title/content and open one, or run actions such as New
+note, Daily note, Templates, Draft Recovery, import, backup, and Settings.
+The search stays above separately labeled action and note groups; keyboard hints
+and the active library's note count stay in the footer while results scroll.
+Arrow keys choose a result and Enter opens it. Note results cover the whole
+active library independently of current filters; Trash notes are excluded.
+The first 30 matching notes are shown. Narrow the search for more results.
+Switching notes protects unfinished drafts in both panes. Save/template actions
+use the active pane when a Side note is open.
+
+### Draft Recovery
+
+Open **Draft Recovery** from Quick actions, Settings → Data, or the **Recover
+drafts** indicator in the library. Every retained primary/Side-note recovery
+record in this browser is available, including drafts from closed tabs.
+
+- **Recover draft** opens the draft in the primary editor. A missing or trashed
+  original becomes a new draft. A changed original requires explicit conflict
+  resolution before any overwrite; recovery does not automatically save.
+- **Save as new** saves a separate note. The original saved note stays intact.
+  Missing types fall back to General and missing tags are omitted.
+- **Export .md** requests a download of the raw draft and keeps it locally.
+- **Discard** requires confirmation and removes only that recovery draft.
+
+A source record stays until successful save or explicit discard. If it has
+changed in another tab, the newer record is kept. Drafts detected as still open
+can be copied/exported, but cannot be claimed or discarded from the center.
+Tab presence is best effort and may be delayed by browser background throttling.
+Keep important drafts in a saved note or downloaded file; recovery uses
+localStorage and is not a substitute for backup.
+
+### Markdown import
+
+Select **Import Markdown files** in Quick actions or **Choose files** under
+Settings → Data → Import Markdown. Choose up to 100 `.md`/`.markdown` files
+and 10 MB per batch. Preview the titles and source, choose one note type, then
+import. File names without extensions become titles; front matter and Markdown
+stay in the content rather than being interpreted as metadata. Each file is
+limited to 200 KB and the normal 50,000-character content limit. All files are
+validated before one atomic write; a rejected file leaves the library intact.
+
+### Templates and Daily notes
+
+Open **Templates** from Quick actions. Meeting, Learning, and Daily reflection
+are available as built-in starters. **New template** opens a draft tagged
+`template`; **Save current note as template** saves a separate copy. Edit or
+Trash custom templates like ordinary notes. They are included in JSON backups.
+Using a template copies its type, tags, and raw Markdown into a new draft,
+removes the `template` tag, and expands `{{date}}` (local YYYY-MM-DD) and
+`{{time}}` (local HH:mm). The source template is kept intact.
+
+**Open today's Daily note** creates or reopens one note per local calendar
+date. Its stable date ID survives title edits and JSON restore. It starts with
+Focus, Notes, and Reflection sections and the `daily-note` tag. If that Daily
+note is in Trash, restore it before reopening it; Nook does not silently create
+another copy.
+
+### Select multiple notes
+
+On desktop, choose **Select** in the layout control group and check the
+notes you want. **Select all (count)** adds all notes matching the current filters,
+including other pages. Once every result is selected, it becomes **Deselect all**
+and removes those results from the selection, keeping selections outside the
+current filters. Unchecking an individual result returns the button to **Select all**.
+The count includes notes selected under previous filters. Switching between
+All notes and Trash clears the selection.
+
+Selection is hidden on mobile (820px and below), including the toolbar,
+card checkboxes, and Actions entry. Narrowing a desktop window suspends the
+selection UI; returning to desktop restores the existing selection. Actions
+already in progress continue safely. Individual note actions remain available
+on mobile.
+
+The Select/layout group expands into the selection toolbar in the same header
+position while selection is active, without adding a row below the header.
+The count includes selections across pages and filters; hover it for that context.
+
+**Export** downloads
+only the selected notes and their history as JSON in the existing
+backup format, with the library's type/tag catalog; it does not reset the full
+library backup indicator. **Trash** and **Restore** require
+confirmation. Batch changes check every selected note's revision and original
+fields in one transaction. A changed note cancels the complete action; reselect
+the latest records before retrying. The toolbar's **Done selecting** close button
+clears the selection and returns the Select notes button. Change note types and
+tags in each note's editor; the selection toolbar does not edit note fields.
+
 ## Markdown support
 
 Nook includes a dependency-free, safe Markdown-to-DOM renderer. It supports a
@@ -300,8 +396,9 @@ Each note contains:
 | `deletedAt` | ISO timestamp when in Trash, otherwise `null` |
 | `revision` | Positive integer incremented by each committed mutation; used for stale-write detection |
 
-The storage layer owns normalization and validation. Note content is trimmed and
-line endings are normalized before saving; the Markdown syntax is preserved.
+The storage layer owns normalization and validation. Note content preserves
+leading/trailing whitespace and normalizes CRLF line endings before saving;
+the Markdown syntax is preserved.
 Editor saves compare an optional `expectedRevision` in the same IndexedDB
 transaction that writes the note. A mismatch raises `NOTE_CONFLICT` with the
 latest stored note; a semantic no-op does not create a revision or history row.
@@ -353,7 +450,8 @@ changing note data.
 
 ### Full library backup
 
-Select **Backup** to request a browser download named like
+Select **Export backup** in Settings → Data, or **Export library backup** in
+Quick actions, to request a browser download named like
 `personal-notes-backup-YYYY-MM-DD.json`. The current format is:
 
 ```json
@@ -376,12 +474,20 @@ appears before deleting local data. The backup contains notes, types, tags,
 Trash state, and retained version history. Unfinished editor recovery drafts
 are intentionally excluded.
 
-Select **Import** and choose a JSON file to inspect and validate before
-replacing the current library. Import is a full replacement, not a merge; the
-confirmation step shows notes, types, tags, and saved-version counts. After
-confirmation, the replacement of notes, types, tags, and history is one atomic
-IndexedDB transaction. The UI asks you to save or close dirty primary/Side note
-drafts before replacement.
+Select **Import backup** in Settings → Data or **Import or merge backup** in
+Quick actions to inspect a JSON file. **Add to library** is the default. Matching
+type/tag names reuse local records; new names are added with safe ID remapping.
+Identical notes with matching IDs are skipped. For differing notes with the
+same ID, choose **Keep both** (import a copy, including its history) or **Keep
+local** (skip the incoming note). Local notes are never overwritten by merge.
+If the library changes after preview, inspect the file again before importing.
+
+**Replace library** is still available after an explicit confirmation. It
+replaces notes, types, tags, and history in one atomic IndexedDB transaction.
+Save or close dirty primary/Side note drafts first. Both modes validate before
+writing, support older backups, and keep recovery drafts outside the backup.
+The file picker accepts JSON backups up to 50 MB. Merge is limited to 10,000
+notes, types, and tags in the resulting library, matching the backup parser.
 
 The [Nook demo library](docs/sample-data/nook-demo-library.json) is a reusable,
 fictional sample collection for reviewing the UI, practicing import/export, and
@@ -406,12 +512,36 @@ mutation occurs.
 | [`js/storage.js`](js/storage.js) | IndexedDB v3 setup, validation, migration, revisioned CRUD, history, Trash lifecycle, and backup import/export |
 | [`js/markdown.js`](js/markdown.js) | Safe dependency-free Markdown parser and DOM renderer |
 | [`js/app/runtime.js`](js/app/runtime.js) | Registers application modules and initializes them in an explicit dependency order |
+| [`js/app/elements.js`](js/app/elements.js) | Cached DOM references |
+| [`js/app/core.js`](js/app/core.js) | Shared application state, constants, stored preferences, and pure UI helpers |
+| [`js/app/local-state.js`](js/app/local-state.js) | Legacy recovery compatibility and backup health |
+| [`js/app/search.js`](js/app/search.js) | Search indexing/highlighting, filter primitives, ordering, and query scheduling |
+| [`js/app/library-sidebar.js`](js/app/library-sidebar.js) | Sidebar filters, metadata badges, and card tag fitting |
+| [`js/app/library.js`](js/app/library.js) | Note cards, pagination, Trash presentation, and sort controls |
+| [`js/app/workspace.js`](js/app/workspace.js) | Primary note preview, detail workspace, and workspace transitions |
+| [`js/app/clipboard.js`](js/app/clipboard.js) | Raw-Markdown copy and transient copy feedback |
+| [`js/app/side-note.js`](js/app/side-note.js) | Side note navigation and its DOM/editor adapter |
+| [`js/app/note-pickers.js`](js/app/note-pickers.js) | Shared type/tag picker components and both panes’ picker rendering |
+| [`js/app/formatting.js`](js/app/formatting.js) | Markdown editing operations and mobile formatting scroll cues |
+| [`js/app/split-scroll.js`](js/app/split-scroll.js) | Split preview rendering and scroll mapping/synchronization |
+| [`js/app/editor.js`](js/app/editor.js) | Primary DOM/editor adapter, autosave, validation, and mode controls |
+| [`js/app/theme-config.js`](js/app/theme-config.js) | One theme catalogue for startup, preferences, labels, assets, and legacy aliases |
+| [`js/app/pane-controller.js`](js/app/pane-controller.js) | Shared pane session, save, conflict, and recovery lifecycle |
+| [`js/app/onboarding.js`](js/app/onboarding.js) | Dismissible local-data introduction and explicit ordinary guide-note creation |
+| [`js/app/contracts.d.ts`](js/app/contracts.d.ts) / [`jsconfig.json`](jsconfig.json) | Checked controller/theme contracts, without changing runtime JavaScript |
 | [`js/app/editor-session.js`](js/app/editor-session.js) | DOM-independent primary/Side note session state, CAS saves, conflict state, and per-session draft recovery |
 | [`js/app/note-actions.js`](js/app/note-actions.js) | Shared pin, Trash, restore, permanent-delete, and undo mutations |
 | [`js/app/split-selection.js`](js/app/split-selection.js) | Split-mode source/preview selection highlighting |
 | [`js/app/history.js`](js/app/history.js) | Version-history preview and restore controller |
 | [`js/app/offline.js`](js/app/offline.js) | Optional storage-health, persistent-storage request, and hosted Service Worker update controls |
 | [`js/app/mobile.js`](js/app/mobile.js) | Responsive control placement, mobile sheets, and Back-button guards |
+| [`js/app/recovery.js`](js/app/recovery.js) | All-tab Draft Recovery, safe source cleanup, and best-effort tab presence |
+| [`js/app/data-import.js`](js/app/data-import.js) | Markdown multi-file import and backup merge/replacement inspection |
+| [`js/app/productivity.js`](js/app/productivity.js) | Quick actions, guarded navigation, templates, Daily notes, and shared workflow dialogs |
+| [`js/app/bulk-actions.js`](js/app/bulk-actions.js) | Selection across pages/filters, batch changes, and selection export |
+| [`css/workflows.css`](css/workflows.css) | Theme-aware workflow dialogs and bulk-selection surfaces |
+| [`scripts/test-maintainability.cjs`](scripts/test-maintainability.cjs) | Optional Chromium checks for onboarding, theme aliases, sidebar restoration, settings menus, and mobile formatting |
+| [`scripts/test-workflows.cjs`](scripts/test-workflows.cjs) | Optional Chromium storage/UI regression checks using isolated synthetic data |
 | [`scripts/update-service-worker-cache.cjs`](scripts/update-service-worker-cache.cjs) | Recomputes the cache fingerprint from all hosted app assets |
 | [`sw.js`](sw.js) | Versioned cache for local hosted app resources; never owns note data |
 | [`manifest.webmanifest`](manifest.webmanifest) | Local install metadata for hosted browsers |
@@ -422,22 +552,24 @@ mutation occurs.
 | [`docs/sample-data/nook-demo-library.json`](docs/sample-data/nook-demo-library.json) | Reusable fictional import/export fixture for demos and screenshot QA |
 | [`LICENSE`](LICENSE) | Unlicense / public-domain dedication |
 
-The storage and Markdown namespaces load first, followed by the classic-script
-application registry and feature registrations:
+The head loads the classic-script registry and the shared theme catalogue before
+first paint. The body loads storage, Markdown, and feature registrations:
 
 ```text
-js/storage.js → js/markdown.js → js/app/runtime.js → classic-script registrations
+head: runtime.js → theme-config.js
+body: storage.js → markdown.js → classic-script registrations
 ```
 
 `js/storage.js` exposes the frozen `PersonalNotesStorage` API and
 `js/markdown.js` exposes the frozen `NookMarkdown` API. The application modules
 register installers in any script-tag order. `runtime.js` initializes them as
-`core → preferences → feedback → editor-session → note-actions → library → editor → split-selection → history → organize → sync → offline → mobile → events`, reports missing or duplicate modules, and
+`theme-config → elements → core → local-state → search → preferences → feedback → editor-session → pane-controller → note-actions → library-sidebar → library → workspace → clipboard → side-note → note-pickers → split-scroll → formatting → editor → split-selection → history → organize → sync → offline → mobile → recovery → data-import → productivity → bulk-actions → onboarding → events`, reports missing or duplicate modules and conflicting API ownership, and
 `events.js` removes the temporary registry before bootstrap. This is a
 classic-script registry, not an ES Module graph. The UI continues to use the
 storage API instead of accessing IndexedDB directly.
 
-`index.html` loads `css/app.css`, one active theme stylesheet, then `css/mobile.css`.
+`index.html` loads `css/app.css`, one active theme stylesheet, then `css/mobile.css`,
+detail typography, and workflow styles.
 This keeps inactive theme rules out of the parsed cascade while preserving the
 existing order; selectors remain in their owning stylesheet. See
 [`docs/architecture.md`](docs/architecture.md) before adding a module, moving a
@@ -445,8 +577,15 @@ selector, or introducing a cross-layer override.
 
 ## Development and validation
 
+Agents and contributors should start with [AGENTS.md](AGENTS.md) and the
+[agent guide](docs/agent-guide.md) for the reading order, code ownership, coding
+conventions, UI/CSS rules, and change-validation workflow.
+
 There is no `package.json`, bundler, framework, or remote runtime dependency.
-The regression tests use Node's built-in `node:test` module. Useful checks are:
+The regression tests use Node's built-in `node:test` module. If TypeScript is
+already available as a development tool, `tsc -p jsconfig.json` checks the shared
+pane and theme boundaries. It emits no files and adds no browser dependency; it
+does not type-check every legacy module. Useful checks are:
 
 ```bash
 node --check js/storage.js
@@ -456,6 +595,23 @@ node --test tests/*.test.js
 node scripts/update-service-worker-cache.cjs
 git diff --check
 ```
+
+For the focused refactor/UI checks, run `node scripts/test-maintainability.cjs`
+under the same optional local Node 20+/Playwright setup. Set `NOOK_SCREENSHOT_DIR`
+to retain screenshots in a temporary directory. These checks cover first-use
+state, explicit guide creation, theme aliases, temporary sidebar collapse and
+manual preference changes, safe pane close/save, settings menus, and seven
+themes at mobile widths.
+
+For the productivity workflows, run `node scripts/test-workflows.cjs` with
+Node 20+ and Playwright already available locally. Alternatively set
+`NOOK_PLAYWRIGHT_MODULE` to a locally installed Playwright module path. No
+dependency is loaded into the app. The script starts its own localhost server,
+uses fresh Chromium contexts with synthetic data, and closes them afterward.
+It checks import atomicity, merge conflicts/history, stale batch rejection,
+templates, Daily note identity, draft recovery across tabs/reload, responsive
+layouts, themes, hosted offline reopen, and static file mode. It does not prove
+Safari, Firefox, device hardware, or storage-quota behavior.
 
 Run the cache update script after changing any hosted HTML, CSS, JavaScript,
 font, icon, manifest asset, or Service Worker behavior. The regression test

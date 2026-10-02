@@ -89,13 +89,15 @@ html[data-theme="light"] .sidebar {
   background: #fafafa;
 }
 
-html[data-theme="light"] .sidebar-toggle-btn {
+html[data-theme="light"] .sidebar-toggle-btn,
+html[data-theme="light"] .quick-view-header-toggle {
   border-color: #e4e4e7;
   color: #71717a;
   background: #ffffff;
 }
 
-html[data-theme="light"] .sidebar-toggle-btn:hover {
+html[data-theme="light"] .sidebar-toggle-btn:hover,
+html[data-theme="light"] .quick-view-header-toggle:hover {
   color: #18181b;
   background: #f4f4f5;
   border-color: #d4d4d8;

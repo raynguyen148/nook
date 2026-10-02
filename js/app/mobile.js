@@ -16,6 +16,7 @@ globalThis[Symbol.for("nook.app.modules")].register("mobile", (app) => {
     mobileTheme: document.querySelector("#mobile-theme-btn"),
     mobileChips: document.querySelector("#mobile-type-chips"),
     mobileTrashActions: document.querySelector("#mobile-trash-actions"),
+    mobileSelectNotesSlot: document.querySelector("#mobile-select-notes-slot"),
     mobileFilters: document.querySelector("#mobile-open-filters"),
     mobileFilterCount: document.querySelector("#mobile-active-filter-count"),
     mobileFilterDialog: document.querySelector("#mobile-filter-dialog"),
@@ -323,6 +324,11 @@ globalThis[Symbol.for("nook.app.modules")].register("mobile", (app) => {
 
   function bindMobileEvents() {
     navigationHome = elements.mobileNavigation.parentElement;
+    // Share the desktop drawings and theme selectors without cloning the control.
+    elements.mobileTheme.replaceChildren(...Array.from(
+      elements.themeToggle.querySelectorAll(".theme-toggle__icon"),
+      (icon) => icon.cloneNode(true),
+    ));
     elements.mobileNoteDone.textContent = "Edit note";
     elements.mobileNoteDone.setAttribute("aria-label", "Return to note editor");
     // This slot belongs only to the mobile sheet. Keeping it outside the
@@ -357,6 +363,7 @@ globalThis[Symbol.for("nook.app.modules")].register("mobile", (app) => {
       [elements.regularFilterControls, elements.mobileFilterBody],
       [elements.primarySortField, elements.mobileSortSlot],
       [elements.emptyTrash, elements.mobileTrashActions],
+      [elements.selectNotes, elements.mobileSelectNotesSlot],
       [elements.primaryFormatting, elements.noteForm],
       [elements.noteFontSizePopover, elements.mobileNoteActionsBody],
       [elements.primaryFooterTools, elements.mobileNoteActionsBody],

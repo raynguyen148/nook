@@ -255,8 +255,10 @@
       if (!identity || !timestampMs(value.savedAt)) return null;
       if (!isValidRevision(value.baseRevision)) return null;
       let draft;
+      let committedSnapshot = null;
       try {
         draft = cloneDraft(value.draft, "Recovery draft");
+        if (value.committedSnapshot) committedSnapshot = cloneDraft(value.committedSnapshot);
       } catch {
         return null;
       }
@@ -272,6 +274,11 @@
         savedAt: value.savedAt,
         baseRevision: value.baseRevision,
         draft,
+        committedSnapshot,
+        conflicted: value.conflicted === true,
+        sources: Array.isArray(value.sources) ? value.sources.filter((source) =>
+          typeof source?.key === "string" && source.key.startsWith(DRAFT_RECOVERY_PREFIX) && Number.isFinite(timestampMs(source.savedAt)),
+        ).map(({ key: sourceKey, savedAt }) => ({ key: sourceKey, savedAt })) : [],
       };
     }
 
@@ -307,7 +314,7 @@
       return record;
     }
 
-    function write(identity, draft, { baseRevision = 0, savedAt = "" } = {}) {
+    function write(identity, draft, { baseRevision = 0, savedAt = "", committedSnapshot = null, conflicted = false, sources = [] } = {}) {
       const normalizedIdentity = normalizeIdentity(identity);
       if (!normalizedIdentity || !storage?.setItem) return false;
       const key = keyFor(normalizedIdentity);
@@ -315,7 +322,10 @@
       try {
         normalizedDraft = cloneDraft(draft);
         assertRevision(baseRevision, "baseRevision");
-        if (!savedAt) savedAt = new Date(clockMs()).toISOString();
+        if (!savedAt) {
+          const previous = read(identity);
+          savedAt = new Date(Math.max(clockMs(), (timestampMs(previous?.savedAt) || 0) + 1)).toISOString();
+        }
         if (!timestampMs(savedAt)) throw new TypeError("savedAt must be an ISO timestamp.");
       } catch {
         return false;
@@ -328,6 +338,9 @@
         savedAt,
         baseRevision,
         draft: normalizedDraft,
+        committedSnapshot: committedSnapshot ? cloneDraft(committedSnapshot) : null,
+        conflicted,
+        sources,
       };
       try {
         storage.setItem(key, JSON.stringify(record));
@@ -342,6 +355,12 @@
         ? identityOrKey
         : keyFor(identityOrKey);
       return removeKey(key);
+    }
+
+    function removeUnchanged(source) {
+      const identity = identityFromKey(source?.key);
+      const record = identity && read(identity);
+      return record?.savedAt === source?.savedAt ? removeKey(source.key) : false;
     }
 
     function enumerate({ prune = true } = {}) {
@@ -402,6 +421,7 @@
       read,
       write,
       remove,
+      removeUnchanged,
       enumerate,
       prune,
     });
@@ -420,6 +440,8 @@
     recoveryStore = null,
     draftRecoveryStore = recoveryStore,
     recoveryIdentity = null,
+    recoverySources = [],
+    initialConflict = null,
   } = {}) {
     const saveNote = typeof storage === "function"
       ? storage
@@ -450,7 +472,17 @@
       phase = SESSION_PHASES.IDLE;
     }
     let lastError = null;
-    let conflict = null;
+    let conflict = initialConflict ? {
+      code: "NOTE_CONFLICT",
+      deleted: initialConflict.deleted === true,
+      latest: cloneDraft(initialConflict.latest || committedDraft || draftValue),
+      latestRevision: revision,
+      draft: cloneDraft(draftValue),
+      attemptedDraft: cloneDraft(draftValue),
+      expectedRevision: initialConflict.expectedRevision ?? revision,
+      saveSequence: 0,
+    } : null;
+    if (conflict) phase = SESSION_PHASES.CONFLICT;
     let activeIntent = null;
     let pendingIntent = null;
     let recovery = draftRecoveryStore;
@@ -476,10 +508,13 @@
 
     function recoverySync() {
       if (!recovery) return;
-      if (isDirty()) {
-        recovery.write(identity, draftValue, { baseRevision: revision });
+      const hasRecoveryContent = draftValue.id || draftValue.title.trim() || draftValue.content || draftValue.tagIds.length;
+      if ((isDirty() || conflict) && hasRecoveryContent) {
+        recovery.write(identity, draftValue, { baseRevision: revision, committedSnapshot: committedDraft,
+          conflicted: Boolean(conflict), sources: recoverySources });
       } else {
         recovery.remove(identity);
+        if (!isDirty() && !conflict) recoverySources.forEach((source) => recovery.removeUnchanged?.(source));
       }
     }
 
@@ -564,6 +599,7 @@
         draft: capturedDraft,
         draftVersion,
         baseRevision: revision,
+        committedDraft: committedDraft ? cloneDraft(committedDraft) : null,
         expectedRevision: isValidRevision(options.expectedRevision)
           ? options.expectedRevision
           : (capturedDraft.id ? revision : undefined),
@@ -575,6 +611,7 @@
         ...cloneDraft(intent.draft),
       };
       if (intent.expectedRevision !== undefined && input.id) input.expectedRevision = intent.expectedRevision;
+      if (intent.committedDraft && input.id) input.expectedSnapshot = cloneDraft(intent.committedDraft);
       return input;
     }
 
@@ -630,6 +667,7 @@
         intent.draftVersion = draftVersion;
         intent.baseRevision = revision;
         intent.expectedRevision = intent.draft.id ? revision : undefined;
+        intent.committedDraft = committedDraft ? cloneDraft(committedDraft) : null;
         intent.noteId = noteKey;
       }
 
@@ -827,7 +865,7 @@
       if (disposed) return { ignored: true, state: stateSnapshot() };
       const latest = draftFromNote(note, "External note");
       const latestRevision = revisionFromNote(note, revision);
-      if (latestRevision <= revision) return { ignored: true, state: stateSnapshot() };
+      if (latestRevision === revision && draftsEqual(latest, committedDraft)) return { ignored: true, state: stateSnapshot() };
       if (isDirty() || activeIntent) {
         const expectedRevision = revision;
         committedDraft = latest;
@@ -903,6 +941,10 @@
       viewLatest: () => resolveConflict("view-latest"),
       keepEditing: () => resolveConflict("keep-editing"),
       resolveConflict,
+      discardRecovery() {
+        recovery?.remove(identity);
+        recoverySources.forEach((source) => recovery?.removeUnchanged?.(source));
+      },
       applyExternalSnapshot,
       receiveExternalSnapshot: applyExternalSnapshot,
       dispose,

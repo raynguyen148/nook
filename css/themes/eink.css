@@ -20,7 +20,7 @@ html[data-theme="eink"] {
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
 
   /* Ultra-subtle, whisper-quiet paper grain (applied ONLY to large page background) */
-  --eink-paper-grain: url("data:image/png;base64,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");
+  --eink-paper-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Cfilter id='grain'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' opacity='.025' filter='url%28%23grain%29'/%3E%3C/svg%3E");
 
   /* Harmonious, close-value paper tones (calm, cohesive, no glare) */
   --eink-canvas: #efece4;        /* restful warm paper canvas */
@@ -225,14 +225,16 @@ html[data-theme="eink"] .sidebar {
   background-image: none;
 }
 
-html[data-theme="eink"] .sidebar-toggle-btn {
+html[data-theme="eink"] .sidebar-toggle-btn,
+html[data-theme="eink"] .quick-view-header-toggle {
   border-color: var(--eink-border);
   color: var(--eink-ink);
   background-color: var(--eink-paper);
   background-image: none;
 }
 
-html[data-theme="eink"] .sidebar-toggle-btn:hover {
+html[data-theme="eink"] .sidebar-toggle-btn:hover,
+html[data-theme="eink"] .quick-view-header-toggle:hover {
   border-color: #141414;
   color: #000000;
   background-color: var(--eink-paper-hover);
@@ -846,12 +848,11 @@ html[data-theme="eink"] :where(
   .theme-toggle,
   .topbar-actions .button,
   .dialog-footer .button
-),
-html[data-theme="eink"] .topbar-actions .button:not(#new-note-btn):not(.button-primary),
-html[data-theme="eink"] .topbar-actions .theme-toggle,
-html[data-theme="eink"] #theme-toggle,
-html[data-theme="eink"] #organize-btn,
-html[data-theme="eink"] #export-btn,
+):not(.topbar-preferences__button),
+html[data-theme="eink"] .topbar-actions .button:not(#new-note-btn):not(.button-primary):not(.topbar-preferences__button),
+html[data-theme="eink"] .topbar-actions .theme-toggle:not(.topbar-preferences__button),
+html[data-theme="eink"] #theme-toggle:not(.topbar-preferences__button),
+html[data-theme="eink"] #organize-btn:not(.topbar-preferences__button),
 html[data-theme="eink"] #import-btn,
 html[data-theme="eink"] #empty-trash-btn {
   border: 1px solid var(--eink-border) !important;
@@ -959,7 +960,7 @@ html[data-theme="eink"] .note-card__action--restore:is(:hover, :focus-visible) {
 html[data-theme="eink"] :where(
   input:not([type]),
   input[type="text"],
-  input[type="search"],
+  input[type="search"]:not(#command-search),
   input[type="email"],
   input[type="url"],
   textarea,
@@ -977,7 +978,7 @@ html[data-theme="eink"] :where(
 html[data-theme="eink"] :where(
   input:not([type]),
   input[type="text"],
-  input[type="search"],
+  input[type="search"]:not(#command-search),
   input[type="email"],
   input[type="url"],
   textarea,

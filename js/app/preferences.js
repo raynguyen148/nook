@@ -29,25 +29,8 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
   let sidebarExpandRevealTimer = 0;
   let sidebarExpandFinishTimer = 0;
   let themePickerCloseTimer = 0;
-  const THEME_LABELS = Object.freeze({
-    auto: "Auto",
-    light: "Light",
-    coffee: "Coffee",
-    forest: "Forest",
-    midnight: "Midnight",
-    dark: "Dark",
-    retro: "Retro",
-    eink: "E-Ink",
-  });
-  const THEME_STYLESHEET_FILES = Object.freeze({
-    light: "classic",
-    coffee: "coffee",
-    forest: "forest",
-    midnight: "midnight",
-    dark: "dark",
-    retro: "retro",
-    eink: "eink",
-  });
+  const THEME_LABELS = Object.fromEntries(THEMES.map(mode => [mode, app.theme.describe(mode).label]));
+  const THEME_STYLESHEET_FILES = Object.fromEntries(THEMES.map(mode => [mode, app.theme.describe(mode).file]));
 
   // These core utilities are resolved only when an interaction occurs, after
   // every installer has completed.
@@ -100,7 +83,7 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
   const systemThemeQuery = window.matchMedia("(prefers-color-scheme: dark)");
 
   function resolveAutoTheme() {
-    return systemThemeQuery.matches ? "dark" : "light";
+    return app.theme.resolve("auto");
   }
 
   function clearAutoThemeTimer() {
@@ -309,6 +292,11 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
       `Current theme: ${currentLabel}. Switch to ${nextLabel}`,
     );
     elements.themeToggle.removeAttribute("title");
+    if (elements.mobileTheme) {
+      const description = elements.themeToggle.getAttribute("aria-label");
+      elements.mobileTheme.setAttribute("aria-label", description);
+      elements.mobileTheme.title = description;
+    }
     elements.themeToggleLabel.textContent = label;
     if (elements.themeToggleTooltipText) {
       elements.themeToggleTooltipText.textContent = mode === "auto"
@@ -318,16 +306,7 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
 
     const themeColorMeta = document.querySelector('meta[name="theme-color"]');
     if (themeColorMeta) {
-      const themeColors = {
-        light: "#9e6b02",
-        coffee: "#a35616",
-        forest: "#2f6b4f",
-        "midnight": "#18263f",
-        dark: "#09090b",
-        retro: "#2f5b3e",
-        eink: "#efece4",
-      };
-      themeColorMeta.content = themeColors[theme] || themeColors.light;
+      themeColorMeta.content = app.theme.describe(theme).color;
     }
     scheduleTagFilterLayout();
   }
@@ -361,8 +340,24 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
     applyTheme();
   }
 
+  // The workspace may borrow sidebar space without changing the saved preference.
+  let sidebarWorkspaceCollapsed = false;
+  let sidePaneExpandedByUser = false;
+
+  function syncSidePaneSidebar() {
+    if (!ui.dualPaneOpen) sidePaneExpandedByUser = false;
+    const collapsed = ui.dualPaneOpen && !sidePaneExpandedByUser &&
+      window.matchMedia("(min-width: 960px) and (max-width: 1200px)").matches;
+    if (collapsed !== sidebarWorkspaceCollapsed) {
+      clearSidebarCollapseChoreography();
+      clearSidebarExpandChoreography();
+      sidebarWorkspaceCollapsed = collapsed;
+    }
+    syncSidebarUI();
+  }
+
   function syncSidebarUI() {
-    const isCollapsed = ui.sidebarCollapsed;
+    const isCollapsed = ui.sidebarCollapsed || sidebarWorkspaceCollapsed;
     const isMobileHeader = window.matchMedia("(max-width: 820px)").matches;
     document.documentElement.dataset.sidebarCollapsed = String(isCollapsed);
     elements.appShell.classList.toggle("is-sidebar-collapsed", isCollapsed);
@@ -386,7 +381,7 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
   }
 
   function positionSidebarToggleTooltip() {
-    if (!ui.sidebarCollapsed || !elements.sidebarToggle || !elements.sidebarToggleTooltip) return;
+    if (!(ui.sidebarCollapsed || sidebarWorkspaceCollapsed) || !elements.sidebarToggle || !elements.sidebarToggleTooltip) return;
     const toggleBounds = elements.sidebarToggle.getBoundingClientRect();
     elements.sidebarToggleTooltip.style.setProperty(
       "--sidebar-toggle-tooltip-left",
@@ -444,7 +439,11 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
     elements.appShell.classList.remove("is-sidebar-resizing");
   }
 
-  function toggleSidebar(collapsed = !ui.sidebarCollapsed) {
+  function toggleSidebar(collapsed = !(ui.sidebarCollapsed || sidebarWorkspaceCollapsed)) {
+    if (ui.dualPaneOpen) sidePaneExpandedByUser = !collapsed;
+    sidebarWorkspaceCollapsed = false;
+    // Persist explicit user intent even if workspace resizing interrupts animation.
+    persistSidebarCollapsedState(collapsed);
     const isCollapseInFlight = Boolean(
       sidebarCollapseStartTimer || sidebarCollapseRevealTimer || sidebarCollapseFinishTimer
     );
@@ -452,7 +451,7 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
       sidebarExpandStartTimer || sidebarExpandRevealTimer || sidebarExpandFinishTimer
     );
     const isTransitionInFlight = isCollapseInFlight || isExpandInFlight;
-    if (ui.sidebarCollapsed === collapsed && !isTransitionInFlight) return;
+    if (ui.sidebarCollapsed === collapsed && !isTransitionInFlight) { syncSidebarUI(); return; }
 
     const isDomCollapsed = elements.appShell.classList.contains("is-sidebar-collapsed");
     uiViewTransition?.skipTransition?.();
@@ -888,6 +887,7 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
     refreshAutoTheme,
     setTheme,
     syncSidebarUI,
+    syncSidePaneSidebar,
     positionSidebarToggleTooltip,
     toggleSidebar,
     measureTopbarActionsPinBounds,

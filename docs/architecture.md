@@ -17,8 +17,8 @@ The product boundary is intentionally local:
 
 ## Bootstrap and classic-script registry
 
-`index.html` loads the storage and Markdown namespaces first, then loads
-classic scripts. `js/app/runtime.js` creates the temporary registry at
+`index.html` loads the registry and theme catalogue in the head before first
+paint, then loads storage, Markdown, and classic feature scripts in the body. `js/app/runtime.js` creates the temporary registry at
 `Symbol.for("nook.app.modules")`. Each application file registers one named
 installer; the runtime initializes installers only after all required names are
 present.
@@ -26,12 +26,24 @@ present.
 The installer order is explicit and is the dependency contract:
 
 ```text
-core
+theme-config
+→ elements
+→ core
+→ local-state
+→ search
 → preferences
 → feedback
 → editor-session
+→ pane-controller
 → note-actions
+→ library-sidebar
 → library
+→ workspace
+→ clipboard
+→ side-note
+→ note-pickers
+→ split-scroll
+→ formatting
 → editor
 → split-selection
 → history
@@ -39,11 +51,17 @@ core
 → sync
 → offline
 → mobile
+→ recovery
+→ data-import
+→ productivity
+→ bulk-actions
+→ onboarding
 → events
 ```
 
 The order of feature `<script>` tags does not replace this contract. The
-runtime rejects unknown or duplicate registrations and reports missing modules
+runtime rejects unknown or duplicate registrations, conflicting API owners,
+and reports missing modules
 without touching IndexedDB. `events.js` freezes the assembled application API,
 removes the temporary registry, and runs bootstrap; bootstrap then initializes
 storage and refreshes the first library view before enabling the app.
@@ -59,24 +77,57 @@ product decision.
 | --- | --- |
 | `js/storage.js` | IndexedDB v3, validation, migrations, revisioned note CRUD, history, Trash lifecycle, and backup parsing/import/export |
 | `js/markdown.js` | Safe Markdown-to-DOM rendering and plain-text conversion; no external parser or network asset loading |
-| `js/app/core.js` | Cached DOM references, shared state, constants, filters, search helpers, and pure UI helpers |
+| `js/app/elements.js` | Cached DOM references |
+| `js/app/core.js` | Shared application state, constants, stored preferences, and pure UI helpers |
+| `js/app/local-state.js` | Legacy recovery compatibility and backup health |
+| `js/app/search.js` | Search indexing/highlighting, filter primitives, ordering, and query scheduling |
+| `js/app/library-sidebar.js` | Sidebar filters, metadata badges, and card tag fitting |
+| `js/app/workspace.js` | Primary note preview, detail workspace, and workspace transitions |
+| `js/app/clipboard.js` | Raw-Markdown copy and transient copy feedback |
+| `js/app/note-pickers.js` | Shared type/tag picker components and both panes’ picker rendering |
+| `js/app/formatting.js` | Markdown editing operations and mobile formatting scroll cues |
+| `js/app/split-scroll.js` | Split preview rendering and scroll mapping/synchronization |
+| `js/app/theme-config.js` | One theme catalogue for startup, preferences, labels, assets, and legacy aliases |
+| `js/app/pane-controller.js` | Shared pane session, save, conflict, and recovery lifecycle |
+| `js/app/onboarding.js` | Dismissible local-data introduction and explicit ordinary guide-note creation |
 | `js/app/preferences.js` | Theme, layout, sidebar, responsive controls, and preference persistence |
 | `js/app/feedback.js` | Toasts, confirmation dialogs, and focus restoration |
 | `js/app/editor-session.js` | DOM-independent editor state machines, save sequencing, CAS inputs, conflict state, and per-session draft recovery |
 | `js/app/note-actions.js` | Pin, move-to-Trash with Undo, restore, permanent-delete, and empty-Trash mutations shared by cards and editor surfaces |
-| `js/app/library.js` | Library/sidebar rendering, note detail workspace, Side note pane, pagination, Quick View, clipboard, and session reconciliation |
-| `js/app/editor.js` | Primary editor controls, Markdown modes, tag/type pickers, autosave, recovery prompts, and primary conflict handling |
+| `js/app/library.js` | Library cards, pagination, Trash presentation, and sort controls |
+| `js/app/side-note.js` | Side note navigation, DOM/editor adapter, and autosave presentation |
+| `js/app/editor.js` | Primary DOM/editor adapter, validation, modes, autosave, and safe draft hydration |
 | `js/app/split-selection.js` | Split-mode source/preview selection mapping and highlight lifecycle |
 | `js/app/history.js` | Version-history list, safe preview, restore confirmation, and history-dialog focus behavior |
-| `js/app/organize.js` | Type/tag management, import/export UI, delete-all flow, and library refresh orchestration |
+| `js/app/organize.js` | Type/tag management, export UI, delete-all flow, and library refresh orchestration |
 | `js/app/sync.js` | Optional same-origin `BroadcastChannel` notifications and guarded external refreshes |
 | `js/app/offline.js` | Optional quota/persistence reporting and explicit hosted Service Worker update flow |
 | `js/app/mobile.js` | Responsive control placement, mobile dialogs/navigation, viewport geometry, and Back-button guards |
+| `js/app/recovery.js` | All-tab draft enumeration, preview/copy/export/recover/discard, source cleanup, and best-effort tab presence |
+| `js/app/data-import.js` | File reading limits, Markdown batches, merge preview, and explicit backup replacement |
+| `js/app/productivity.js` | Quick actions, async navigation guards, template/Daily-note UI, and shared workflow dialogs |
+| `js/app/bulk-actions.js` | Selection across pages/filters, atomic batch UI, and selection export |
 | `js/app/events.js` | Event binding, startup sequencing, and startup error handling |
 | `sw.js` | Versioned cache of local app assets only; never reads or writes note records |
 
 Cross-module calls are late-bound through the runtime API where necessary for
-cycles. UI state stays separate from persisted records; after a storage
+cycles. A module cannot replace an API export owned by another installer. Keep
+private functions local, declare direct dependencies at the installer boundary,
+and use a late-bound call only when a later installer owns the function.
+
+`pane-controller.js` owns session replacement, draft synchronization, save
+serialization, conflict choices, stale completion guards, and recovery context.
+Primary and Side note adapters read their DOM and present status; they still
+own validation, autosave timing, and rendering after a commit. `editor-session.js`
+remains the DOM-independent state machine and storage comparison boundary.
+
+`contracts.d.ts` defines these interfaces. `jsconfig.json` enables strict
+development checking for the controller and theme catalogue only; it emits no
+JavaScript and introduces no runtime tooling. Grow this checked boundary as
+individual modules are changed, rather than treating the rest of the app as
+already type-checked.
+
+UI state stays separate from persisted records; after a storage
 mutation, the library is refreshed instead of guessing derived counts.
 
 ## IndexedDB and stored-data contract
@@ -116,7 +167,7 @@ comparison happen in the same IndexedDB read-write transaction as the note and
 history writes:
 
 1. Read the current note, selected type/tags, and that note's history.
-2. Compare `expectedRevision` when supplied.
+2. Compare `expectedRevision` and optional `expectedSnapshot` editor fields when supplied.
 3. Return `NOTE_CONFLICT` with `latestNote` on a mismatch; write nothing.
 4. Return the current note unchanged for a semantic no-op.
 5. For an actual mutation, archive the current snapshot, trim history, and
@@ -156,18 +207,32 @@ keyed by tab, pane, and session under the
 `nook:editor-draft:v2:` localStorage prefix. One per-tab identity is kept in
 sessionStorage so the primary and Side note share the tab boundary across a
 reload without claiming another open tab's records. Records contain the
-pane/session identity, draft fields, `baseRevision`, and a saved timestamp;
+pane/session identity, draft fields, `baseRevision`, committed snapshot,
+conflict flag, recovery-source references, and a saved timestamp;
 malformed or older-than-30-day records are pruned.
 Recovery is best effort when localStorage is unavailable. Disposing a session
 preserves a dirty draft for recovery; explicit discard removes only that
-session's record.
+session's record. The optional fields extend the existing v2 recovery record;
+older records still parse, but a recovered existing note without a known base
+snapshot requires explicit conflict resolution. Source timestamps advance
+monotonically. Source cleanup compares the captured timestamp so a newer draft
+in another tab is never removed by completing an older recovery.
+
+The Recovery Center enumerates all tabs/panes, hides only unchanged source
+records represented by a recovered copy, and uses local presence heartbeats
+as a best-effort indication of sessions still open. Recovery opens in the
+primary editor without scheduling an immediate autosave. Missing/trashed
+originals become new drafts. Export retains the draft; save/explicit discard
+clears only unchanged source records. Empty new editors with no title, content,
+or tags do not create recovery records.
 
 When a newer note revision arrives from another tab or a CAS save returns
 `NOTE_CONFLICT`, the session keeps the local draft and exposes three explicit
 paths: keep editing, view the latest committed note, or keep mine by rebasing
 against the latest revision and retrying. If the saved note was deleted, the
 latest view is unavailable and keeping the draft saves it as a new note.
-External refreshes never replace a dirty draft. Import and delete-all flows require active dirty drafts to be
+External refreshes compare both revision and fields, including equal/lower
+revisions after an import, and never replace a dirty draft. Backup replacement and delete-all flows require active dirty drafts to be
 saved or closed first; recovery drafts are not included in backups.
 
 In the detail workspace, pointer/focus determines the active pane. Mode,
@@ -201,7 +266,7 @@ fields in older backups normalize to revision `1`; older backups begin with no
 history. v3 history is normalized, bounded, and checked against current notes
 before import.
 
-Import has two boundaries:
+Replacement has two boundaries:
 
 1. `inspectBackup()` parses and validates the complete candidate and returns
    counts, including saved history versions. It does not change the library.
@@ -209,11 +274,49 @@ Import has two boundaries:
    IndexedDB transaction after validation completes. A validation or transaction
    failure leaves the previous library intact.
 
+`inspectBackupMerge()` computes additions and per-note statuses without writes.
+`mergeBackup()` performs that plan inside one transaction, optionally rejecting
+a stale preview using the unique library mutation ID in `meta`. Type/tag names
+are matched after normalization; colliding IDs for different names are remapped.
+Existing note IDs with identical fields are skipped; differing records are
+either skipped or copied with a new ID and remapped history. Merge never changes
+an existing note. Historical references to deleted catalogs remain missing
+rather than accidentally binding to a different local record.
+
+`inspectMarkdownFiles()` validates file names and source against the existing
+title/content limits; `importMarkdownFiles()` validates all inputs and catalog
+references before adding a complete batch atomically. UI file limits are
+50 MB per JSON backup, or 100 Markdown files/10 MB per batch/200 KB per file.
+New imports enforce the parser's 10,000-record limit on the combined library.
+`buildExport({ noteIds })` filters notes/history for selection downloads while
+retaining the catalog and the unchanged schema v3 envelope.
+
 The UI confirmation describes the replacement and explicitly says recovery
 drafts are not in the file. Export creates a Blob and requests a browser
 download; that request is not proof that a file was written, so the user must
 confirm the download before deleting local data. JSON backups are plain text and
 are not encrypted.
+
+## Templates, Daily notes, and batch changes
+
+Custom templates are ordinary notes tagged `template`, created through
+`createTemplateNote()` atomically with their tag. Template use expands local
+date/time placeholders into a new draft and removes only that marker tag.
+`getOrCreateDailyNote()` uses `note-daily-YYYY-MM-DD` as its stable note ID;
+concurrent calls return the same note and renaming it does not change its date
+identity. An existing trashed Daily note requires an explicit restore. No
+IndexedDB version or backup schema changes are needed.
+
+`updateNotesBatch()` reads every selected note/history and selected catalog in
+the shared read-write transaction. It validates all captured revisions/fields
+before queuing mutations, then archives changed records through the existing
+history path. A stale/missing note or catalog aborts the complete batch. The UI
+keeps a map of captured snapshots across filters/pages and clears selection
+when changing collection. The selection UI offers JSON export, Trash, and
+Restore on desktop only. At 820px and below, selection controls and its command
+entry are hidden; captured selections survive resize and reappear on desktop.
+Type/tag changes use the individual note editor. Selection export
+does not claim a full backup.
 
 ## Markdown safety
 
@@ -279,10 +382,42 @@ inactive theme selectors are not parsed or added to the live cascade.
 - `accessibility.css`: focus, reduced-motion, and forced-colors behavior.
 - `themes/*.css`: one active theme's tokens and intentional structural overrides.
 - `mobile.css`: responsive geometry loaded after the active theme.
+- `note-typography.css` and `workflows.css`: focused detail typography and
+  theme-aware productivity surfaces, loaded after mobile geometry.
 
 Keep selectors in their owning layer, reuse existing semantic tokens, and
-preserve the manifest order when moving rules. Do not mix storage, editor
+preserve the manifest order when moving rules. Tag resting colors use
+`--tag-chip-border/text/surface`; menu roles use `--picker-menu-border/surface/shadow`
+and `--tag-menu-border/surface/shadow`. Default fallbacks stay in the component
+owner. Coffee, Forest, Dark, and Midnight supply palette values rather than
+repeating the same color selectors. `management.css` owns common type/color
+menu geometry; the component rules retain only their differences. Retro and
+E-Ink keep their intentional typography, shapes, and state overrides. This is
+a focused consolidation, not a claim that every historic theme override has
+been removed.
+
+Do not mix storage, editor
 session, or Service Worker behavior into CSS changes.
+
+## Workspace and first-use UI state
+
+Side note temporarily collapses the sidebar at 960–1200px. The automatic state
+is never persisted. Closing the pane or widening the viewport restores the
+saved preference; an explicit sidebar toggle while the pane is open remains
+user intent. Dirty close continues through the existing guarded save flow.
+The primary footer says **Save & return** and both panes use Saved, Saving,
+Unsaved changes, and Save failed status wording.
+
+On mobile, the formatting track scrolls separately from its visible More/back
+controls. Overflow cues update after layout changes and disappear at either
+end. Settings row Delete actions are disclosed in a More menu and keep the
+existing confirmation and storage behavior.
+
+The first-use card explains browser-local persistence and JSON portability.
+Its dismissal is a localStorage preference. Existing libraries are marked as
+seen; merely opening Nook creates no note. **Add a guide note** is an explicit
+storage action that creates an ordinary note through PersonalNotesStorage.
+It can be edited, trashed, and backed up normally.
 
 ## Validation and evidence boundaries
 
@@ -309,6 +444,17 @@ storage harness does not prove rendered application startup, two-tab behavior,
 Service Worker reopen/update behavior, quota grants, or
 responsive/accessibility QA. Report those as unverified until their actual
 browser paths have run.
+
+`scripts/test-workflows.cjs` is optional end-to-end QA using an existing local
+Playwright installation and Node 20+. It serves the repository on localhost,
+uses isolated synthetic browser contexts, and exercises the new storage APIs
+through real IndexedDB plus rendered productivity flows. Set
+`NOOK_PLAYWRIGHT_MODULE` for a locally installed module outside the repository.
+Browser checks remain separate from the dependency-free `node:test` suite.
+`node scripts/test-maintainability.cjs` uses the same optional tooling for
+onboarding, aliases, sidebar restoration/manual overrides, guarded pane closes,
+settings menus, metadata/pickers, and mobile formatting on all seven themes.
+Optional `NOOK_SCREENSHOT_DIR` keeps local screenshots.
 
 When changing stored data, inspect the current migration and parser first,
 preserve old backups, and keep the change behind

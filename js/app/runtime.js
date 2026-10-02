@@ -6,12 +6,24 @@
   // feature-script order in index.html part of the runtime contract.
   const APP_MODULES_KEY = Symbol.for("nook.app.modules");
   const MODULE_ORDER = Object.freeze([
+    "theme-config",
+    "elements",
     "core",
+    "local-state",
+    "search",
     "preferences",
     "feedback",
     "editor-session",
+    "pane-controller",
     "note-actions",
+    "library-sidebar",
     "library",
+    "workspace",
+    "clipboard",
+    "side-note",
+    "note-pickers",
+    "split-scroll",
+    "formatting",
     "editor",
     "split-selection",
     "history",
@@ -19,9 +31,15 @@
     "sync",
     "offline",
     "mobile",
+    "recovery",
+    "data-import",
+    "productivity",
+    "bulk-actions",
+    "onboarding",
     "events",
   ]);
   const installers = new Map();
+  const apiOwners = new Map();
   const app = {
     api: Object.create(null),
     shared: {
@@ -51,7 +69,16 @@
     if (state !== "collecting" || missingModuleNames().length) return;
     state = "starting";
     try {
-      MODULE_ORDER.forEach((name) => installers.get(name)(app));
+      MODULE_ORDER.forEach((name) => {
+        const existing = new Map(Object.entries(app.api));
+        installers.get(name)(app);
+        for (const [key, value] of Object.entries(app.api)) {
+          if (existing.has(key) && existing.get(key) !== value) {
+            throw new Error(`The “${name}” module replaced “${key}”, owned by “${apiOwners.get(key)}”.`);
+          }
+          if (!existing.has(key)) apiOwners.set(key, name);
+        }
+      });
       state = "started";
     } catch (error) {
       state = "failed";

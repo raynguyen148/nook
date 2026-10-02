@@ -13,53 +13,23 @@
     <link rel="apple-touch-icon" href="icons/nook-192-v2.png" />
     <link rel="manifest" href="manifest.webmanifest" />
     <link rel="stylesheet" href="css/app.css" />
+    <script src="js/app/runtime.js"></script>
+    <script src="js/app/theme-config.js"></script>
     <script>
       (() => {
-        let mode = "light";
-        let theme = "light";
         try {
-          const stored = window.localStorage.getItem("nook:theme");
-          // Preserve the renamed preferences for existing local installs.
-          const storedTheme = stored === "warm" ? "coffee" : stored === "midnight-blue" ? "midnight" : stored;
-          mode = ["light", "coffee", "forest", "midnight", "dark", "retro", "eink", "auto"].includes(storedTheme) ? storedTheme : "light";
-          // Keep Auto aligned with resolveAutoTheme() in js/app/preferences.js.
-          theme = mode === "auto"
-            ? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")
-            : mode;
           if (window.localStorage.getItem("nook:sidebar-collapsed") === "true") {
             document.documentElement.dataset.sidebarCollapsed = "true";
           }
           const storedPreviewLines = Number(window.localStorage.getItem("nook:note-preview-lines"));
-          const previewLines = Number.isInteger(storedPreviewLines)
-            ? Math.min(10, Math.max(3, storedPreviewLines))
-            : 3;
+          const previewLines = Number.isInteger(storedPreviewLines) ? Math.min(10, Math.max(3, storedPreviewLines)) : 3;
           document.documentElement.style.setProperty("--note-card-preview-lines", String(previewLines));
-        } catch {
-          // Keep default UI preferences when browser privacy settings block localStorage.
-        }
-        document.documentElement.dataset.theme = theme;
-        document.documentElement.dataset.themeMode = mode;
-        const themeFiles = { light: "classic", coffee: "coffee", forest: "forest", midnight: "midnight", dark: "dark", retro: "retro", eink: "eink" };
-        const themeStylesheet = document.createElement("link");
-        themeStylesheet.id = "nook-theme-stylesheet";
-        themeStylesheet.rel = "stylesheet";
-        themeStylesheet.href = `css/themes/${themeFiles[theme] || themeFiles.light}.css`;
-        themeStylesheet.dataset.themeStylesheet = theme;
-        document.head.append(themeStylesheet);
-        const themeColors = {
-          light: "#9e6b02",
-          coffee: "#a35616",
-          forest: "#2f6b4f",
-          midnight: "#18263f",
-          dark: "#09090b",
-          retro: "#2f5b3e",
-          eink: "#efece4",
-        };
-        document.querySelector('meta[name="theme-color"]').content = themeColors[theme] || themeColors.light;
+        } catch { /* Use defaults when preference storage is unavailable. */ }
       })();
     </script>
     <link rel="stylesheet" href="css/mobile.css" />
     <link rel="stylesheet" href="css/note-typography.css" />
+    <link rel="stylesheet" href="css/workflows.css" />
   </head>
   <body>
     <main class="app-shell" aria-label="Nook" aria-busy="true" inert>
@@ -275,99 +245,102 @@
             </div>
           </div>
           <div class="topbar-actions">
-            <div id="theme-toggle-shortcut" class="shortcut-button">
-              <button
-                id="theme-toggle"
-                class="button button-secondary theme-toggle"
-                type="button"
-                aria-label="Current theme: Light. Switch to Coffee theme"
-                aria-describedby="theme-toggle-shortcut-tooltip"
-                aria-keyshortcuts="T"
-              >
-                <span class="theme-toggle__icon theme-toggle__icon--sun" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round">
-                    <circle cx="12" cy="12" r="3.4" />
-                    <path d="M12 2.8v2M12 19.2v2M21.2 12h-2M4.8 12h-2M18.5 5.5l-1.4 1.4M6.9 17.1l-1.4 1.4M18.5 18.5l-1.4-1.4M6.9 6.9 5.5 5.5" />
-                  </svg>
-                </span>
-                <span class="theme-toggle__icon theme-toggle__icon--coffee" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M17 8h1a4 4 0 1 1 0 8h-1" />
-                    <path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z" />
-                    <line x1="6" y1="2" x2="6" y2="4" />
-                    <line x1="10" y1="2" x2="10" y2="4" />
-                    <line x1="14" y1="2" x2="14" y2="4" />
-                  </svg>
-                </span>
-                <span class="theme-toggle__icon theme-toggle__icon--forest" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M19.5 4.5C12.7 4.5 6 8.1 6 15.2c0 2.2 1.2 4.3 3.4 4.3 6.1 0 9.1-6.8 10.1-15Z" />
-                    <path d="M4.5 20c3.4-4.1 7.4-6.7 12-8.2" />
-                  </svg>
-                </span>
-                <span class="theme-toggle__icon theme-toggle__icon--midnight" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M19.8 15.2A8.7 8.7 0 0 1 8.8 4.2 8.7 8.7 0 1 0 19.8 15.2Z" />
-                    <path d="m17.8 4.1.4.8.8.4-.8.4-.4.8-.4-.8-.8-.4.8-.4Z" />
-                  </svg>
-                </span>
-                <span class="theme-toggle__icon theme-toggle__icon--moon" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M20.4 15.1A8.7 8.7 0 0 1 8.9 3.6 8.7 8.7 0 1 0 20.4 15.1Z" />
-                  </svg>
-                </span>
-                <span class="theme-toggle__icon theme-toggle__icon--auto" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="3.2" y="3.7" width="17.6" height="12.8" rx="2.2" />
-                    <path d="M8.2 20.3h7.6M12 16.5v3.8" />
-                    <circle cx="12" cy="10.1" r="3.2" />
-                    <path d="M12 6.9a3.2 3.2 0 0 1 0 6.4Z" fill="currentColor" stroke="none" />
-                  </svg>
-                </span>
-                <span class="theme-toggle__icon theme-toggle__icon--retro" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="3.5" y="3.5" width="15" height="15" rx="2.5" />
-                    <path d="M7 18.5v2h13.5v-14h-2" />
-                    <circle cx="8" cy="8" r="0.9" fill="currentColor" stroke="none" />
-                    <circle cx="12" cy="8" r="0.9" fill="currentColor" stroke="none" />
-                    <circle cx="8" cy="12" r="0.9" fill="currentColor" stroke="none" />
-                    <circle cx="12" cy="12" r="0.9" fill="currentColor" stroke="none" />
-                    <path d="M7 15h8" />
-                  </svg>
-                </span>
-                <span class="theme-toggle__icon theme-toggle__icon--eink" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="4" y="2.5" width="16" height="19" rx="2.5" />
-                    <path d="M7.5 7h9M7.5 10.5h9M7.5 14h5.5" />
-                    <circle cx="12" cy="18" r="0.8" fill="currentColor" stroke="none" />
-                  </svg>
-                </span>
-                <span id="theme-toggle-label" class="button-label">Light</span>
+            <div class="shortcut-button">
+              <button id="quick-actions-btn" class="button button-secondary" type="button" data-open-commands aria-label="Actions" aria-haspopup="dialog" aria-controls="command-dialog" aria-describedby="quick-actions-tooltip">
+                <svg class="button-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m13 3-8 10h7l-1 8 8-11h-7l1-7Z" /></svg>
+                <span class="button-label">Actions</span>
               </button>
-              <span id="theme-toggle-shortcut-tooltip" class="shortcut-tooltip" role="tooltip">
-                <span id="theme-toggle-tooltip-text">Theme: Light (switch to Coffee)</span>
-                <kbd>T</kbd>
-              </span>
+              <span id="quick-actions-tooltip" class="shortcut-tooltip" role="tooltip"><span>Actions</span><kbd data-command-shortcut>Cmd/Ctrl+Shift+P</kbd></span>
             </div>
-            <div id="organize-shortcut" class="shortcut-button">
-              <button id="organize-btn" class="button button-secondary" type="button" aria-label="Settings" aria-describedby="organize-shortcut-tooltip" aria-keyshortcuts="S">
-                <svg class="button-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
-                  <circle cx="12" cy="12" r="3" />
-                </svg>
-                <span class="button-label">Settings</span>
-              </button>
-              <span id="organize-shortcut-tooltip" class="shortcut-tooltip" role="tooltip">
-                <span>Settings</span>
-                <kbd>S</kbd>
-              </span>
+            <div class="topbar-preferences" role="group" aria-label="Theme and settings">
+              <div id="theme-toggle-shortcut" class="shortcut-button">
+                <button
+                  id="theme-toggle"
+                  class="button button-secondary theme-toggle topbar-preferences__button"
+                  type="button"
+                  aria-label="Current theme: Light. Switch to Coffee theme"
+                  aria-describedby="theme-toggle-shortcut-tooltip"
+                  aria-keyshortcuts="T"
+                >
+                  <span class="theme-toggle__icon theme-toggle__icon--sun" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round">
+                      <circle cx="12" cy="12" r="3.4" />
+                      <path d="M12 2.8v2M12 19.2v2M21.2 12h-2M4.8 12h-2M18.5 5.5l-1.4 1.4M6.9 17.1l-1.4 1.4M18.5 18.5l-1.4-1.4M6.9 6.9 5.5 5.5" />
+                    </svg>
+                  </span>
+                  <span class="theme-toggle__icon theme-toggle__icon--coffee" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M17 8h1a4 4 0 1 1 0 8h-1" />
+                      <path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z" />
+                      <line x1="6" y1="2" x2="6" y2="4" />
+                      <line x1="10" y1="2" x2="10" y2="4" />
+                      <line x1="14" y1="2" x2="14" y2="4" />
+                    </svg>
+                  </span>
+                  <span class="theme-toggle__icon theme-toggle__icon--forest" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M19.5 4.5C12.7 4.5 6 8.1 6 15.2c0 2.2 1.2 4.3 3.4 4.3 6.1 0 9.1-6.8 10.1-15Z" />
+                      <path d="M4.5 20c3.4-4.1 7.4-6.7 12-8.2" />
+                    </svg>
+                  </span>
+                  <span class="theme-toggle__icon theme-toggle__icon--midnight" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M19.8 15.2A8.7 8.7 0 0 1 8.8 4.2 8.7 8.7 0 1 0 19.8 15.2Z" />
+                      <path d="m17.8 4.1.4.8.8.4-.8.4-.4.8-.4-.8-.8-.4.8-.4Z" />
+                    </svg>
+                  </span>
+                  <span class="theme-toggle__icon theme-toggle__icon--moon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M20.4 15.1A8.7 8.7 0 0 1 8.9 3.6 8.7 8.7 0 1 0 20.4 15.1Z" />
+                    </svg>
+                  </span>
+                  <span class="theme-toggle__icon theme-toggle__icon--auto" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="3.2" y="3.7" width="17.6" height="12.8" rx="2.2" />
+                      <path d="M8.2 20.3h7.6M12 16.5v3.8" />
+                      <circle cx="12" cy="10.1" r="3.2" />
+                      <path d="M12 6.9a3.2 3.2 0 0 1 0 6.4Z" fill="currentColor" stroke="none" />
+                    </svg>
+                  </span>
+                  <span class="theme-toggle__icon theme-toggle__icon--retro" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="3.5" y="3.5" width="15" height="15" rx="2.5" />
+                      <path d="M7 18.5v2h13.5v-14h-2" />
+                      <circle cx="8" cy="8" r="0.9" fill="currentColor" stroke="none" />
+                      <circle cx="12" cy="8" r="0.9" fill="currentColor" stroke="none" />
+                      <circle cx="8" cy="12" r="0.9" fill="currentColor" stroke="none" />
+                      <circle cx="12" cy="12" r="0.9" fill="currentColor" stroke="none" />
+                      <path d="M7 15h8" />
+                    </svg>
+                  </span>
+                  <span class="theme-toggle__icon theme-toggle__icon--eink" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="4" y="2.5" width="16" height="19" rx="2.5" />
+                      <path d="M7.5 7h9M7.5 10.5h9M7.5 14h5.5" />
+                      <circle cx="12" cy="18" r="0.8" fill="currentColor" stroke="none" />
+                    </svg>
+                  </span>
+                  <span id="theme-toggle-label" class="button-label">Light</span>
+                </button>
+                <span id="theme-toggle-shortcut-tooltip" class="shortcut-tooltip" role="tooltip">
+                  <span id="theme-toggle-tooltip-text">Theme: Light (switch to Coffee)</span>
+                  <kbd>T</kbd>
+                </span>
+              </div>
+              <div id="organize-shortcut" class="shortcut-button">
+                <button id="organize-btn" class="button button-secondary topbar-preferences__button" type="button" aria-label="Settings" aria-describedby="organize-shortcut-tooltip" aria-keyshortcuts="S">
+                  <svg class="button-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
+                    <circle cx="12" cy="12" r="3" />
+                  </svg>
+                  <span class="button-label">Settings</span>
+                </button>
+                <span id="organize-shortcut-tooltip" class="shortcut-tooltip" role="tooltip">
+                  <span>Settings</span>
+                  <kbd>S</kbd>
+                </span>
+              </div>
             </div>
-            <button id="export-btn" class="button button-secondary" type="button" aria-label="Export backup" title="Export backup">
-              <svg class="button-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M12 3v12M7.5 10.5 12 15l4.5-4.5M4.5 19.5h15" />
-              </svg>
-              <span class="button-label">Backup</span>
-            </button>
             <button id="empty-trash-btn" class="button button-danger button-compact topbar-empty-trash is-hidden" type="button" aria-label="Permanently delete all notes in Trash" title="Permanently delete all notes in Trash">
               <svg class="button-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="M4.5 7.5h15M9.5 4.5h5M6.5 7.5l.8 12h9.4l.8-12" />
@@ -400,8 +373,14 @@
             </div>
             <div class="notes-panel__summary">
               <!-- Hallmark · component: layout-view icon set · Finder-inspired, Nook-drawn -->
-              <div class="view-mode-control" role="group" aria-label="Note layout">
+              <div class="view-mode-control" role="group" aria-label="Note selection and layout">
                 <div class="view-mode-control__choices">
+                  <div class="view-mode-choice view-mode-choice--selection">
+                    <button id="select-notes-btn" class="view-mode-button select-notes" type="button" aria-pressed="false" aria-label="Select notes" aria-controls="bulk-actions-bar" title="Select notes">
+                      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="m8.5 12 2.5 2.5 4.5-5"/></svg>
+                      <span id="select-notes-label" class="select-notes__label">Select</span>
+                    </button>
+                  </div>
                   <div class="view-mode-choice">
                     <button
                       id="compact-view-btn"
@@ -465,6 +444,29 @@
                   </div>
                 </div>
               </div>
+              <div id="bulk-actions-bar" class="bulk-actions is-hidden" role="group" aria-label="Selected note actions" aria-busy="false">
+                <div class="bulk-actions__selection">
+                  <span id="bulk-selection-count" class="bulk-actions__count" role="status">0 selected</span>
+                  <button id="bulk-select-results-btn" class="button button-secondary button-compact bulk-actions__select-all" type="button" aria-pressed="false" title="Select all notes matching the current filters, across pages">
+                    <svg class="button-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 6 1.5 1.5L7 5M10 6h11M3 12h4m3 0h11M3 18h4m3 0h11"/></svg>
+                    <span id="bulk-select-results-label">Select all</span>
+                  </button>
+                </div>
+                <div class="bulk-actions__tools">
+                  <button id="bulk-export-btn" class="button button-secondary button-compact" type="button" aria-label="Export selected notes as JSON" title="Export selected notes as JSON">
+                    <svg class="button-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M4 20h16"/></svg>
+                    <span>Export</span>
+                  </button>
+                  <button id="bulk-trash-btn" class="button button-danger button-compact" type="button" aria-label="Move selected notes to Trash" title="Move selected notes to Trash">
+                    <svg id="bulk-trash-icon" class="button-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 7.5h15M9.5 4.5h5M6.5 7.5l.8 12h9.4l.8-12M10 11v5m4-5v5"/></svg>
+                    <svg id="bulk-restore-icon" class="button-icon-svg is-hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 4v7h7M3 11a9 9 0 1 1 2.6 6.4"/></svg>
+                    <span id="bulk-trash-label">Trash</span>
+                  </button>
+                </div>
+                <button id="bulk-clear-btn" class="button button-secondary button-compact bulk-actions__close" type="button" aria-label="Done selecting" title="Done selecting">
+                  <svg class="button-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="m6 6 12 12M6 18 18 6"/></svg>
+                </button>
+              </div>
             </div>
           </header>
 
@@ -487,19 +489,35 @@
               </button>
             </h1>
             <div class="mobile-library-header__actions">
-              <button id="mobile-theme-btn" class="icon-button" type="button" aria-label="Change theme" title="Change theme">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></svg>
-              </button>
+              <button class="icon-button" type="button" data-open-commands aria-label="Actions" title="Actions"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m13 3-8 10h7l-1 8 8-11h-7l1-7Z"/></svg></button>
+              <button id="mobile-theme-btn" class="icon-button mobile-theme-toggle" type="button" aria-label="Change theme" title="Change theme"></button>
               <button id="mobile-open-filters" class="icon-button" type="button" aria-label="Filters and sort" aria-haspopup="dialog" aria-controls="mobile-filter-dialog">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M7 12h10m-7 5h4"/></svg>
                 <span id="mobile-active-filter-count" class="mobile-filter-count is-hidden"></span>
               </button>
             </div>
           </header>
-          <div id="mobile-type-chips" class="mobile-type-chips mobile-only" role="group" aria-label="Quick filter by note type"></div>
-          <div id="mobile-trash-actions" class="mobile-trash-actions mobile-only"></div>
+          <div class="mobile-library-controls mobile-only">
+            <div id="mobile-type-chips" class="mobile-type-chips" role="group" aria-label="Quick filter by note type"></div>
+            <div id="mobile-trash-actions" class="mobile-trash-actions"></div>
+            <div id="mobile-select-notes-slot" class="mobile-select-notes-slot"></div>
+          </div>
+
+          <section id="welcome-card" class="welcome-card is-hidden" aria-labelledby="welcome-title">
+            <div><h2 id="welcome-title">Your own quiet corner.</h2>
+              <p>Nook keeps notes in this browser and works offline. There is no account or cloud sync.</p>
+              <p>To move notes to another browser, export a JSON backup in Settings → Data, then import it there. Keep a backup outside this browser.</p></div>
+            <div class="welcome-card__actions">
+              <button id="welcome-guide" class="button button-secondary button-compact" type="button">Add a guide note</button>
+              <button id="welcome-dismiss" class="text-button" type="button">Got it</button>
+            </div>
+          </section>
 
           <div id="active-filters" class="active-filters" aria-live="polite"></div>
+
+          <div class="selection-heading">
+            <button id="recovery-indicator" class="text-button is-hidden" type="button" data-open-recovery>Recover drafts</button>
+          </div>
 
           <div id="notes-list" class="notes-list" tabindex="-1" aria-busy="true"></div>
           <footer class="notes-panel__footer">
@@ -514,17 +532,24 @@
         <div class="dialog-header detail-commandbar note-editor-commandbar">
           <button id="close-note-dialog-btn" class="button button-secondary detail-back-button" type="button" aria-label="Return to all notes" title="All notes"><span>All notes</span></button>
           <div class="mobile-editor-actions mobile-only">
+            <button class="icon-button" type="button" data-open-commands aria-label="Actions" title="Actions"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m13 3-8 10h7l-1 8 8-11h-7l1-7Z"/></svg></button>
             <button id="mobile-note-actions-btn" class="icon-button" type="button" aria-label="Note actions" aria-haspopup="dialog" aria-controls="mobile-note-actions-dialog">
               <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="19" cy="12" r="1.7"/></svg>
             </button>
-            <button id="mobile-note-done" class="button button-primary" type="button">Done</button>
+            <button id="mobile-note-done" class="button button-primary" type="button">Edit note</button>
           </div>
           <div class="detail-commandbar__info">
             <p id="note-dialog-title" class="detail-commandbar__state">New note</p>
             <span id="note-save-status" class="note-save-status is-new" role="status" aria-atomic="true" title="This note has not been saved yet">
               <svg class="note-save-status__icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 5a3 3 0 1 0 0 6 3 3 0 0 0 0-6" fill="currentColor"/></svg>
-              <span id="note-save-status-label" class="note-save-status__label">Not saved yet</span>
+              <span id="note-save-status-label" class="note-save-status__label">Unsaved note</span>
             </span>
+          </div>
+          <div class="shortcut-button workflow-desktop-trigger">
+            <button id="note-quick-actions-btn" class="icon-button quick-actions-trigger" type="button" data-open-commands aria-label="Actions" aria-haspopup="dialog" aria-controls="command-dialog" aria-describedby="note-quick-actions-tooltip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m13 3-8 10h7l-1 8 8-11h-7l1-7Z" /></svg>
+            </button>
+            <span id="note-quick-actions-tooltip" class="shortcut-tooltip" role="tooltip"><span>Actions</span><kbd data-command-shortcut>Cmd/Ctrl+Shift+P</kbd></span>
           </div>
           <div id="note-editor-command-actions" class="note-editor-commandbar__actions" aria-label="Note editing actions">
             <div class="note-editor-modes" role="group" aria-label="Content display mode">
@@ -822,21 +847,6 @@
                     </button>
                     <span id="export-note-markdown-tooltip" class="note-detail-action-tooltip__content" role="tooltip">Export .md</span>
                   </span>
-                  <span class="note-detail-action-tooltip">
-                    <button
-                      id="export-note-text-btn"
-                      class="icon-button quick-view-export-button"
-                      type="button"
-                      aria-label="Export note as plain text"
-                      aria-describedby="export-note-text-tooltip"
-                    >
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <path d="M6.5 3.75h7.2l4.3 4.3v12.2H6.5a2 2 0 0 1-2-2v-12.5a2 2 0 0 1 2-2Z"></path>
-                        <path d="M13.5 3.95v4.4h4.3M8 12h7.5M8 15h7.5"></path>
-                      </svg>
-                    </button>
-                    <span id="export-note-text-tooltip" class="note-detail-action-tooltip__content" role="tooltip">Export .txt</span>
-                  </span>
                 </div>
               </div>
             </div>
@@ -973,7 +983,7 @@
           </div>
 
           <div class="dialog-footer__actions">
-            <button id="cancel-note-btn" class="button button-secondary" type="button">Close</button>
+            <button id="cancel-note-btn" class="button button-secondary" type="button" title="Return to notes; pending changes save first">Return</button>
             <button
               id="quick-save-note-btn"
               class="button button-secondary quick-save-note-button is-hidden"
@@ -983,7 +993,7 @@
             >
               Save changes
             </button>
-            <button class="button button-primary" type="submit">Done</button>
+            <button class="button button-primary" type="submit">Save & return</button>
           </div>
         </div>
       </form>
@@ -1325,23 +1335,14 @@
                           </button>
                           <span id="secondary-export-md-tooltip" class="note-detail-action-tooltip__content" role="tooltip">Export .md</span>
                         </span>
-                        <span class="note-detail-action-tooltip">
-                          <button id="secondary-export-text-btn" class="icon-button quick-view-export-button" type="button" aria-label="Export note as plain text" aria-describedby="secondary-export-text-tooltip">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                              <path d="M6.5 3.75h7.2l4.3 4.3v12.2H6.5a2 2 0 0 1-2-2v-12.5a2 2 0 0 1 2-2Z"></path>
-                              <path d="M13.5 3.95v4.4h4.3M8 12h7.5M8 15h7.5"></path>
-                            </svg>
-                          </button>
-                          <span id="secondary-export-text-tooltip" class="note-detail-action-tooltip__content" role="tooltip">Export .txt</span>
-                        </span>
                       </div>
                     </div>
                   </div>
                 </div>
                 <div class="dialog-footer__actions">
                   <button id="secondary-save-changes-btn" class="button button-secondary quick-save-note-button is-hidden" type="button" aria-label="Save changes" title="Save changes">Save changes</button>
-                  <button id="secondary-footer-close-btn" class="button button-secondary" type="button">Close</button>
-                  <button id="secondary-footer-done-btn" class="button button-primary is-hidden" type="button">Done</button>
+                  <button id="secondary-footer-close-btn" class="button button-secondary" type="button" title="Pending changes save before closing">Close Side note</button>
+                  <button id="secondary-footer-done-btn" class="button button-primary is-hidden" type="button">Save & close</button>
                 </div>
               </div>
             </div>
@@ -1709,11 +1710,19 @@
           <section class="management-row data-setting" aria-labelledby="data-restore-title">
             <div class="data-setting__copy">
               <h3 id="data-restore-title" class="management-row__name">Restore backup</h3>
-              <p class="dialog-description">Inspect and validate a Nook backup before replacing the library. Older backups remain supported.</p>
+              <p class="dialog-description">Inspect a backup, then add its notes or replace the library. Older backups remain supported.</p>
             </div>
             <div class="data-setting__actions">
               <button id="data-import-btn" class="button button-secondary" type="button">Import backup</button>
             </div>
+          </section>
+          <section class="management-row data-setting">
+            <div class="data-setting__copy"><h3 class="management-row__name">Import Markdown</h3><p class="dialog-description">Add several .md files without replacing your notes. File names become note titles.</p></div>
+            <div class="data-setting__actions"><button class="button button-secondary" type="button" data-import-markdown>Choose files</button></div>
+          </section>
+          <section class="management-row data-setting">
+            <div class="data-setting__copy"><h3 class="management-row__name">Draft Recovery</h3><p class="dialog-description">Find unfinished drafts from all Nook tabs. Preview, recover, save a copy, or download Markdown.</p></div>
+            <div class="data-setting__actions"><button class="button button-secondary" type="button" data-open-recovery>Review drafts</button></div>
           </section>
           <section class="management-row data-setting" aria-labelledby="storage-health-title">
             <div class="data-setting__copy">
@@ -1905,7 +1914,91 @@
       <header class="mobile-sheet__header"><h2 id="mobile-note-actions-title">Note actions</h2><button id="mobile-close-note-actions" class="icon-button" type="button" aria-label="Close note actions">×</button></header>
       <div id="mobile-note-actions-body" class="mobile-sheet__body"></div>
     </dialog>
+    <dialog id="command-dialog" class="workflow-dialog command-dialog" aria-labelledby="command-title">
+      <div class="dialog-header command-dialog__search">
+        <h2 id="command-title" class="sr-only">Quick actions</h2>
+        <svg class="command-dialog__search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><circle cx="10.75" cy="10.75" r="6.75"/><path d="m16 16 4.5 4.5"/></svg>
+        <label class="command-dialog__field" for="command-search">
+          <span class="sr-only">Find a note or action</span>
+          <input id="command-search" type="search" autocomplete="off" placeholder="Type a command or search notes…" />
+        </label>
+        <button class="button button-secondary command-dialog__close" type="button" data-close-workflow="commandDialog" aria-label="Close quick actions"><kbd>Esc</kbd></button>
+      </div>
+      <div class="dialog-body">
+        <div id="command-results" class="workflow-list" role="listbox" aria-label="Notes and actions"></div>
+        <p id="command-status" class="field-help" role="status"></p>
+      </div>
+      <footer class="dialog-footer command-dialog__footer">
+        <p id="command-shortcut-help" class="command-dialog__help"><span><kbd>↑</kbd><kbd>↓</kbd> Navigate</span><span><kbd>↵</kbd> Open</span><span><kbd>Esc</kbd> Close</span></p>
+        <span id="command-notes-count" class="command-dialog__total"></span>
+      </footer>
+    </dialog>
+
+    <dialog id="recovery-dialog" class="workflow-dialog" aria-labelledby="recovery-title">
+      <div class="dialog-header">
+        <h2 id="recovery-title">Draft Recovery</h2>
+        <button class="icon-button" type="button" data-close-workflow="recoveryDialog" aria-label="Close draft recovery">×</button>
+      </div>
+      <div class="dialog-body">
+        <p class="dialog-description">Unfinished drafts stay in this browser for up to 30 days. They are not included in library backups. Drafts still open in another tab can be copied or exported safely.</p>
+        <div id="recovery-list" class="workflow-list"></div>
+        <p id="recovery-status" class="field-help" role="status"></p>
+      </div>
+    </dialog>
+
+    <dialog id="import-dialog" class="workflow-dialog" aria-labelledby="import-title">
+      <div class="dialog-header">
+        <h2 id="import-title">Inspect import</h2>
+        <button class="icon-button" type="button" data-close-workflow="importDialog" aria-label="Cancel import">×</button>
+      </div>
+      <div class="dialog-body">
+        <p id="import-summary" class="dialog-description"></p>
+        <div id="import-backup-options" class="workflow-options">
+          <label class="field" for="import-mode">
+            <span>Import mode</span>
+            <select id="import-mode">
+              <option value="merge">Add to library</option>
+              <option value="replace">Replace library</option>
+            </select>
+          </label>
+          <label id="import-conflict-field" class="field" for="import-conflicts">
+            <span>When a note ID already exists with different content</span>
+            <select id="import-conflicts">
+              <option value="copy">Keep both (import a copy)</option>
+              <option value="skip">Keep local (skip imported note)</option>
+            </select>
+          </label>
+        </div>
+        <label id="import-markdown-options" class="field is-hidden" for="import-markdown-type">
+          <span>Note type for imported files</span>
+          <select id="import-markdown-type"></select>
+        </label>
+        <p id="import-result-summary" class="field-help" role="status"></p>
+        <div id="import-preview-list" class="workflow-list"></div>
+      </div>
+      <div class="dialog-footer">
+        <button class="button button-secondary" type="button" data-close-workflow="importDialog">Cancel</button>
+        <button id="confirm-import-btn" class="button button-primary" type="button">Add to library</button>
+      </div>
+    </dialog>
+
+    <dialog id="template-dialog" class="workflow-dialog" aria-labelledby="template-title">
+      <div class="dialog-header">
+        <h2 id="template-title">Templates</h2>
+        <button class="icon-button" type="button" data-close-workflow="templateDialog" aria-label="Close templates">×</button>
+      </div>
+      <div class="dialog-body">
+        <p class="dialog-description">Start with a built-in template or your own. Custom templates are ordinary notes tagged “template”, so they travel with your backups. Use {{date}} and {{time}} for the current local date and time.</p>
+        <div id="template-list" class="workflow-list"></div>
+      </div>
+      <div class="dialog-footer">
+        <button id="new-template-btn" class="button button-secondary" type="button">New template</button>
+        <button id="save-template-btn" class="button button-primary" type="button">Save current note as template</button>
+      </div>
+    </dialog>
+
     <input id="import-input" type="file" accept="application/json,.json" hidden />
+    <input id="markdown-import-input" type="file" accept=".md,.markdown,text/markdown" multiple hidden />
     <div id="toast" class="toast" popover="manual" role="status" aria-live="polite" aria-atomic="true">
       <span class="toast__indicator" aria-hidden="true">
         <svg class="toast__indicator-icon toast__indicator-icon--success" viewBox="0 0 24 24" aria-hidden="true">
@@ -1933,13 +2026,24 @@
     <script src="js/storage.js"></script>
     <script src="js/markdown.js"></script>
     <!-- Feature scripts register installers; runtime owns their initialization order. -->
-    <script src="js/app/runtime.js"></script>
+    <script src="js/app/elements.js"></script>
     <script src="js/app/core.js"></script>
+    <script src="js/app/local-state.js"></script>
+    <script src="js/app/search.js"></script>
+    <script src="js/app/pane-controller.js"></script>
+    <script src="js/app/library-sidebar.js"></script>
+    <script src="js/app/workspace.js"></script>
+    <script src="js/app/clipboard.js"></script>
+    <script src="js/app/side-note.js"></script>
+    <script src="js/app/note-pickers.js"></script>
+    <script src="js/app/split-scroll.js"></script>
+    <script src="js/app/formatting.js"></script>
     <script src="js/app/editor-session.js"></script>
     <script src="js/app/note-actions.js"></script>
     <script src="js/app/editor.js"></script>
     <script src="js/app/split-selection.js"></script>
     <script src="js/app/history.js"></script>
+    <script src="js/app/onboarding.js"></script>
     <script src="js/app/events.js"></script>
     <script src="js/app/feedback.js"></script>
     <script src="js/app/library.js"></script>
@@ -1948,5 +2052,9 @@
     <script src="js/app/sync.js"></script>
     <script src="js/app/offline.js"></script>
     <script src="js/app/mobile.js"></script>
+    <script src="js/app/recovery.js"></script>
+    <script src="js/app/data-import.js"></script>
+    <script src="js/app/productivity.js"></script>
+    <script src="js/app/bulk-actions.js"></script>
   </body>
 </html>

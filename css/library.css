@@ -92,6 +92,41 @@
   border-radius: var(--control-radius);
 }
 
+.topbar-preferences {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  padding: 0.16rem;
+  gap: var(--space-1);
+  border: 1px solid var(--component-border);
+  border-radius: var(--control-radius);
+  background: var(--component-surface-muted);
+}
+.topbar-actions .topbar-preferences .button {
+  flex: none;
+  width: calc(var(--control-height) - 0.32rem - 2px);
+  min-width: 0;
+  height: calc(var(--control-height) - 0.32rem - 2px);
+  min-height: 0;
+  padding: 0;
+  border-color: transparent;
+  border-radius: var(--control-radius);
+  background: transparent;
+  box-shadow: none;
+}
+.topbar-preferences .button-label { display: none; }
+@media (hover: hover) {
+  .topbar-actions .topbar-preferences .button:hover:not(:disabled) {
+    border-color: transparent;
+    background: var(--selected-surface);
+    color: var(--selected-text);
+    box-shadow: none;
+  }
+}
+@media (pointer: coarse) {
+  .topbar-actions .topbar-preferences .button { width: 44px; height: 44px; }
+}
+
 
 
 .notes-panel {
@@ -433,9 +468,6 @@
     width: 100%;
   }
 
-  #theme-toggle,
-  #organize-btn,
-  #export-btn,
   #import-btn {
     width: 2.25rem;
     min-width: 2.25rem;
@@ -652,9 +684,6 @@
 
 
 @media (min-width: 621px) and (max-width: 1450px) {
-  .topbar-actions.is-pinned #theme-toggle,
-  .topbar-actions.is-pinned #organize-btn,
-  .topbar-actions.is-pinned #export-btn,
   .topbar-actions.is-pinned #import-btn,
   .topbar-actions.is-pinned #empty-trash-btn,
   .topbar-actions.is-pinned #new-note-btn {
@@ -674,3 +703,14 @@
     right: calc(var(--pinned-controls-right, clamp(1rem, 3.5vw, 3.5rem)) + var(--pinned-actions-width) + 0.75rem);
   }
 }
+
+/* First-use explanation stays in the library rather than interrupting startup. */
+.welcome-card {
+  display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-4);
+  margin-block: var(--space-3); padding: var(--space-4); border: 1px solid var(--border-subtle);
+  border-radius: var(--surface-radius); color: var(--text-default); background: var(--surface-panel);
+}
+.welcome-card > div:first-child { flex: 1 1 24rem; min-width: 0; }
+.welcome-card h2 { margin: 0 0 0.4rem; color: var(--text-strong); font-size: 1rem; }
+.welcome-card p { margin: 0.3rem 0; max-width: 65ch; font-size: 0.8rem; line-height: 1.6; }
+.welcome-card__actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); }

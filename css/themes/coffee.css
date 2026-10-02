@@ -11,6 +11,17 @@
 
 html[data-theme="coffee"],
 html:not([data-theme]) {
+  /* Shared metadata and menu roles; component geometry stays in its owner. */
+  --tag-chip-border: #e5dacb;
+  --tag-chip-text: #5e4d41;
+  --tag-chip-surface: #f0e6d6;
+  --picker-menu-border: #d8ccbd;
+  --picker-menu-surface: #fdfbf7;
+  --picker-menu-shadow: 0 8px 24px rgba(65, 45, 25, 0.12);
+  --tag-menu-border: var(--picker-menu-border);
+  --tag-menu-surface: var(--picker-menu-surface);
+  --tag-menu-shadow: var(--picker-menu-shadow);
+
   --theme-surface-page: #f5efe6;
   --theme-danger-border: #e1b9b2;
   --backup-good-accent: #2f7a4b;
@@ -112,14 +123,18 @@ html:not([data-theme]) .sidebar {
 }
 
 html[data-theme="coffee"] .sidebar-toggle-btn,
-html:not([data-theme]) .sidebar-toggle-btn {
+html:not([data-theme]) .sidebar-toggle-btn,
+html[data-theme="coffee"] .quick-view-header-toggle,
+html:not([data-theme]) .quick-view-header-toggle {
   border-color: #e5dacb;
   color: #9e8d7d;
   background: #f5efe6;
 }
 
 html[data-theme="coffee"] .sidebar-toggle-btn:hover,
-html:not([data-theme]) .sidebar-toggle-btn:hover {
+html:not([data-theme]) .sidebar-toggle-btn:hover,
+html[data-theme="coffee"] .quick-view-header-toggle:hover,
+html:not([data-theme]) .quick-view-header-toggle:hover {
   color: #261e18;
   background: #ebe1d2;
   border-color: #d6c8b4;
@@ -543,9 +558,6 @@ html[data-theme="coffee"] .selected-tag,
 html:not([data-theme]) .tag-chip,
 html:not([data-theme]) .note-tag-chip,
 html:not([data-theme]) .selected-tag {
-  background: #f0e6d6;
-  border-color: #e5dacb;
-  color: #5e4d41;
   border-radius: 5px;
 }
 
@@ -1168,12 +1180,7 @@ html:not([data-theme]) .tag-add-button:hover:not(:disabled) {
   transform: scale(1.05);
 }
 
-html[data-theme="coffee"] .tag-suggestions,
-html:not([data-theme]) .tag-suggestions {
-  background: #fdfbf7;
-  border-color: #d8ccbd;
-  box-shadow: 0 8px 24px rgba(65, 45, 25, 0.12);
-}
+
 
 html[data-theme="coffee"] .tag-suggestion:hover,
 html[data-theme="coffee"] .tag-suggestion.is-selected,
@@ -1276,12 +1283,7 @@ html:not([data-theme]) .management-create-row {
   background: #faf5ee;
 }
 
-html[data-theme="coffee"] .note-type-picker__menu,
-html:not([data-theme]) .note-type-picker__menu {
-  background: #fdfbf7;
-  border-color: #d8ccbd;
-  box-shadow: 0 8px 24px rgba(65, 45, 25, 0.12);
-}
+
 
 html[data-theme="coffee"] .note-type-picker__option:hover,
 html[data-theme="coffee"] .note-type-picker__option[aria-selected="true"],
