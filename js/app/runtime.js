@@ -25,6 +25,7 @@
     "split-scroll",
     "formatting",
     "editor",
+    "note-switcher",
     "split-selection",
     "history",
     "organize",

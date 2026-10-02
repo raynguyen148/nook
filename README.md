@@ -145,6 +145,14 @@ Opening a saved note's Preview action takes you to the detail workspace. Use
 without losing the note context. The back action returns to the library and
 restores the previous scroll position when possible.
 
+Use **Switch** in either pane to browse the same searchable card picker
+inside that pane. The other pane stays open. Opening the picker pauses that
+pane's pending autosave without saving or replacing its draft. **Back to note**
+or Escape restores the same note, mode, and scroll position. Choosing another
+note saves pending changes first; a failed save or unresolved conflict returns
+to the original draft. **All notes** returns to the library and closes the
+detail workspace. Notes already open in either pane are excluded from the picker.
+
 Existing titled notes autosave after about 1.5 seconds of inactivity. A new
 untitled draft is not persisted until its first explicit save. Nook keeps the
 primary editor and Side note in separate editor sessions. Each session tracks
@@ -521,6 +529,7 @@ mutation occurs.
 | [`js/app/workspace.js`](js/app/workspace.js) | Primary note preview, detail workspace, and workspace transitions |
 | [`js/app/clipboard.js`](js/app/clipboard.js) | Raw-Markdown copy and transient copy feedback |
 | [`js/app/side-note.js`](js/app/side-note.js) | Side note navigation and its DOM/editor adapter |
+| [`js/app/note-switcher.js`](js/app/note-switcher.js) | Shared in-pane note picker, cancellation, and guarded switching for both panes |
 | [`js/app/note-pickers.js`](js/app/note-pickers.js) | Shared type/tag picker components and both panes’ picker rendering |
 | [`js/app/formatting.js`](js/app/formatting.js) | Markdown editing operations and mobile formatting scroll cues |
 | [`js/app/split-scroll.js`](js/app/split-scroll.js) | Split preview rendering and scroll mapping/synchronization |
@@ -541,6 +550,7 @@ mutation occurs.
 | [`js/app/bulk-actions.js`](js/app/bulk-actions.js) | Selection across pages/filters, batch changes, and selection export |
 | [`css/workflows.css`](css/workflows.css) | Theme-aware workflow dialogs and bulk-selection surfaces |
 | [`scripts/test-maintainability.cjs`](scripts/test-maintainability.cjs) | Optional Chromium checks for onboarding, theme aliases, sidebar restoration, settings menus, and mobile formatting |
+| [`scripts/test-note-switcher.cjs`](scripts/test-note-switcher.cjs) | Optional Chromium checks for both pane pickers, draft safety, cancellation, conflicts, and responsive layouts |
 | [`scripts/test-workflows.cjs`](scripts/test-workflows.cjs) | Optional Chromium storage/UI regression checks using isolated synthetic data |
 | [`scripts/update-service-worker-cache.cjs`](scripts/update-service-worker-cache.cjs) | Recomputes the cache fingerprint from all hosted app assets |
 | [`sw.js`](sw.js) | Versioned cache for local hosted app resources; never owns note data |
@@ -563,7 +573,7 @@ body: storage.js → markdown.js → classic-script registrations
 `js/storage.js` exposes the frozen `PersonalNotesStorage` API and
 `js/markdown.js` exposes the frozen `NookMarkdown` API. The application modules
 register installers in any script-tag order. `runtime.js` initializes them as
-`theme-config → elements → core → local-state → search → preferences → feedback → editor-session → pane-controller → note-actions → library-sidebar → library → workspace → clipboard → side-note → note-pickers → split-scroll → formatting → editor → split-selection → history → organize → sync → offline → mobile → recovery → data-import → productivity → bulk-actions → onboarding → events`, reports missing or duplicate modules and conflicting API ownership, and
+`theme-config → elements → core → local-state → search → preferences → feedback → editor-session → pane-controller → note-actions → library-sidebar → library → workspace → clipboard → side-note → note-pickers → split-scroll → formatting → editor → note-switcher → split-selection → history → organize → sync → offline → mobile → recovery → data-import → productivity → bulk-actions → onboarding → events`, reports missing or duplicate modules and conflicting API ownership, and
 `events.js` removes the temporary registry before bootstrap. This is a
 classic-script registry, not an ES Module graph. The UI continues to use the
 storage API instead of accessing IndexedDB directly.
@@ -602,6 +612,12 @@ to retain screenshots in a temporary directory. These checks cover first-use
 state, explicit guide creation, theme aliases, temporary sidebar collapse and
 manual preference changes, safe pane close/save, settings menus, and seven
 themes at mobile widths.
+
+Run `node scripts/test-note-switcher.cjs` with the same local setup for both
+pane pickers, unsaved drafts, cancellation during a slow save, failed saves,
+second-tab conflicts, scroll restoration, and theme/responsive checks. Set
+`NOOK_BROWSER_CHANNEL=chrome` to use an already installed Chrome instead of
+Playwright's bundled Chromium.
 
 For the productivity workflows, run `node scripts/test-workflows.cjs` with
 Node 20+ and Playwright already available locally. Alternatively set

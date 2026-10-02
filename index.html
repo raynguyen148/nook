@@ -530,7 +530,10 @@
           <section id="note-dialog" class="note-detail-surface note-dialog is-hidden" tabindex="-1" aria-labelledby="note-dialog-title">
       <form id="note-form" novalidate>
         <div class="dialog-header detail-commandbar note-editor-commandbar">
-          <button id="close-note-dialog-btn" class="button button-secondary detail-back-button" type="button" aria-label="Return to all notes" title="All notes"><span>All notes</span></button>
+          <div class="note-navigation" role="group" aria-label="Note navigation">
+            <button id="close-note-dialog-btn" class="button note-navigation__back" type="button" aria-label="Return to all notes" title="All notes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 5-7 7 7 7M5 12h14"/></svg><span>All notes</span></button>
+            <button id="primary-switch-note-btn" class="button note-switch-button is-hidden" type="button" aria-label="Switch note" title="Switch note" aria-controls="primary-picker-view" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16m-4-4 4 4-4 4M20 17H4m4-4-4 4 4 4"/></svg><span>Switch</span></button>
+          </div>
           <div class="mobile-editor-actions mobile-only">
             <button class="icon-button" type="button" data-open-commands aria-label="Actions" title="Actions"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m13 3-8 10h7l-1 8 8-11h-7l1-7Z"/></svg></button>
             <button id="mobile-note-actions-btn" class="icon-button" type="button" aria-label="Note actions" aria-haspopup="dialog" aria-controls="mobile-note-actions-dialog">
@@ -997,14 +1000,62 @@
           </div>
         </div>
       </form>
+            <div id="primary-picker-view" class="secondary-surface-view note-switcher is-hidden" aria-label="Choose a note for the primary pane">
+              <div class="dialog-header detail-commandbar secondary-commandbar note-switcher__header">
+                <div class="note-switcher__navigation">
+                  <button id="primary-picker-back-btn" class="button button-secondary note-switcher__back" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 5-7 7 7 7M5 12h14"/></svg><span>Back to note</span></button>
+                  <span class="note-switcher__separator" aria-hidden="true">/</span>
+                  <h2 class="note-switcher__title">Choose a note to switch</h2>
+                </div>
+                <button id="primary-picker-library-btn" class="button button-secondary" type="button" title="Return to the library and close the detail workspace">All notes</button>
+              </div>
+              <div class="dialog-body secondary-picker-body">
+                <div class="toolbar-slot secondary-toolbar-slot">
+                  <div class="toolbar secondary-toolbar">
+                    <div class="search-field secondary-search-field">
+                      <label class="sr-only" for="primary-note-search">Search notes</label>
+                      <span class="search-icon" aria-hidden="true">⌕</span>
+                      <input id="primary-note-search" type="search" autocomplete="off" placeholder="Search title or content…" aria-label="Search title or content" />
+                      <button id="primary-clear-search-btn" class="clear-search is-hidden" type="button" aria-label="Clear search"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4.75 4.75 6.5 6.5M11.25 4.75l-6.5 6.5" /></svg></button>
+                    </div>
+                    <div class="sort-field secondary-sort-field">
+                      <span id="primary-sort-select-label" class="sr-only">Sort notes by</span>
+                      <select id="primary-sort-select" aria-label="Sort notes by">
+                        <option value="created-desc">Newest created</option>
+                        <option value="created-asc">Oldest created</option>
+                        <option value="updated-desc">Newest updated</option>
+                        <option value="updated-asc">Oldest updated</option>
+                        <option value="title-asc">Title A–Z</option>
+                        <option value="title-desc">Title Z–A</option>
+                      </select>
+                    </div>
+                    <div class="secondary-layout-control view-mode-control" role="group" aria-label="Note picker layout">
+                      <div class="view-mode-control__choices">
+                        <div class="view-mode-choice">
+                          <button id="primary-focus-view-btn" class="view-mode-button" type="button" aria-pressed="true" aria-label="Focus view: one column" aria-keyshortcuts="1" aria-describedby="primary-focus-tooltip"><svg class="view-mode-icon view-mode-icon--focus" viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 6.75h15M4.5 12h15M4.5 17.25h15" /></svg></button>
+                          <span id="primary-focus-tooltip" class="shortcut-tooltip" role="tooltip"><span>Focus view</span><kbd>1</kbd></span>
+                        </div>
+                        <div class="view-mode-choice">
+                          <button id="primary-comfortable-view-btn" class="view-mode-button" type="button" aria-pressed="false" aria-label="Comfortable view: two columns when space allows" aria-keyshortcuts="2" aria-describedby="primary-comfortable-tooltip"><svg class="view-mode-icon view-mode-icon--comfortable" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.75" y="4" width="7" height="16" rx="1.6" /><rect x="13.25" y="4" width="7" height="16" rx="1.6" /></svg></button>
+                          <span id="primary-comfortable-tooltip" class="shortcut-tooltip" role="tooltip"><span>Comfortable view</span><kbd>2</kbd></span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div id="primary-notes-list" class="secondary-notes-list notes-list" role="region" aria-label="Notes to open in the primary pane"></div>
+              </div>
+            </div>
           </section>
 
           <aside id="note-secondary-surface" class="note-detail-surface note-secondary-surface is-hidden" tabindex="-1" aria-label="Side note">
             <!-- Picker View -->
-            <div id="secondary-picker-view" class="secondary-surface-view">
-              <div class="dialog-header detail-commandbar secondary-commandbar">
-                <div class="detail-commandbar__info">
-                  <p class="detail-commandbar__state">Choose a side note</p>
+            <div id="secondary-picker-view" class="secondary-surface-view note-switcher" aria-label="Choose a note for the side pane">
+              <div class="dialog-header detail-commandbar secondary-commandbar note-switcher__header">
+                <div class="note-switcher__navigation">
+                  <button id="secondary-picker-back-btn" class="button button-secondary note-switcher__back is-hidden" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 5-7 7 7 7M5 12h14"/></svg><span>Back to note</span></button>
+                  <span class="note-switcher__separator" aria-hidden="true">/</span>
+                  <h2 class="note-switcher__title"><span class="note-switcher__initial-title">Choose a note</span><span class="note-switcher__switch-title">Choose a note to switch</span></h2>
                 </div>
                 <div class="note-editor-commandbar__actions">
                   <button id="close-secondary-pane-btn" class="icon-button secondary-close-btn" type="button" aria-label="Close side note" title="Close side note">
@@ -1071,7 +1122,7 @@
             <!-- Reader View -->
             <div id="secondary-reader-view" class="secondary-surface-view is-hidden">
               <div class="dialog-header detail-commandbar">
-                <button id="secondary-back-to-picker-btn" class="button button-secondary detail-back-button" type="button" aria-label="Return to all notes" title="All notes"><span>All notes</span></button>
+                <button id="secondary-back-to-picker-btn" class="button note-switch-button" type="button" aria-label="Switch note" title="Switch note" aria-controls="secondary-picker-view" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16m-4-4 4 4-4 4M20 17H4m4-4-4 4 4 4"/></svg><span>Switch</span></button>
                 <div class="detail-commandbar__info">
                   <p id="secondary-commandbar-title" class="detail-commandbar__state">Side note</p>
                   <span id="secondary-note-save-status" class="note-save-status is-saved" role="status" aria-atomic="true" title="This note is saved">
@@ -2041,6 +2092,7 @@
     <script src="js/app/editor-session.js"></script>
     <script src="js/app/note-actions.js"></script>
     <script src="js/app/editor.js"></script>
+    <script src="js/app/note-switcher.js"></script>
     <script src="js/app/split-selection.js"></script>
     <script src="js/app/history.js"></script>
     <script src="js/app/onboarding.js"></script>

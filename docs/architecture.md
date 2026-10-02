@@ -45,6 +45,7 @@ theme-config
 → split-scroll
 → formatting
 → editor
+→ note-switcher
 → split-selection
 → history
 → organize
@@ -96,6 +97,7 @@ product decision.
 | `js/app/note-actions.js` | Pin, move-to-Trash with Undo, restore, permanent-delete, and empty-Trash mutations shared by cards and editor surfaces |
 | `js/app/library.js` | Library cards, pagination, Trash presentation, and sort controls |
 | `js/app/side-note.js` | Side note navigation, DOM/editor adapter, and autosave presentation |
+| `js/app/note-switcher.js` | Shared note picker rendering, per-pane browsing state, cancellation, and guarded note switching |
 | `js/app/editor.js` | Primary DOM/editor adapter, validation, modes, autosave, and safe draft hydration |
 | `js/app/split-selection.js` | Split-mode source/preview selection mapping and highlight lifecycle |
 | `js/app/history.js` | Version-history list, safe preview, restore confirmation, and history-dialog focus behavior |
@@ -241,6 +243,15 @@ their own autosave timer, conflict path, recovery record, and version-history
 action. The history controller blocks restore while either relevant draft is
 dirty, previews committed Markdown through `NookMarkdown`, and archives the
 current note before confirming restore.
+
+The shared note switcher hides a pane's reader without disposing its session.
+It pauses pending autosave, keeps independent search/sort/layout/scroll state
+for each picker, and excludes notes already open in either pane. Cancellation
+restores the existing DOM and scroll positions, resuming a previously scheduled
+autosave. Selection waits for that pane's adapter to finish a protected save
+before replacing its session. Sequence and session checks prevent a canceled or
+closed picker from navigating after a late save; save failures and unresolved
+conflicts return to the retained draft. The other pane's session is untouched.
 
 ## Backup contract
 

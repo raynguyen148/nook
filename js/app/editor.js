@@ -5,6 +5,7 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
   const { NOTE_AUTO_SAVE_DELAY, MOTION } = constants;
   let noteEditorModeAnimation = null;
   let primaryEditorSession = null;
+  let primarySaveOperation = null;
   const primaryController = api.createPaneController({
     pane: "primary", readDraft: getNoteEditorDraftData, isActive: () => isNoteEditorOpen(),
     setStatus: setNoteSaveStatus, invoker: noteSubmitButton,
@@ -334,6 +335,10 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
     if (!rawTitle) {
       return;
     }
+    if (api.isPaneNotePickerOpen?.("primary")) {
+      api.deferPaneNoteAutoSave("primary");
+      return;
+    }
 
     const session = ui.noteEditorSession;
     ui.noteAutoSaveTimer = window.setTimeout(() => {
@@ -394,6 +399,8 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
     initialMode = "edit",
     focusTitle = true,
   } = {}) {
+    api.resetPaneNotePicker?.("primary");
+    primarySaveOperation = null;
     resetCopyButtonFeedback(elements.copyNoteContent);
     clearNoteAutoSave();
     ui.noteEditorSession += 1;
@@ -413,6 +420,7 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
     elements.noteContentEditor.style.removeProperty("height");
     elements.noteDialogTitle.textContent = note ? "Edit note" : "New note";
     elements.deleteNote.classList.toggle("is-hidden", !note);
+    elements.primarySwitchNote.classList.toggle("is-hidden", !note || Boolean(note.deletedAt));
     renderNoteTypeOptions(note?.typeId || storage.FALLBACK_TYPE_ID);
     renderSelectedNoteTags();
     renderTagSuggestions();
@@ -495,9 +503,14 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
       }
     }
     api.reconcileSecondaryEditorAfterLibraryRefresh?.({ external });
+    for (const pane of ["primary", "secondary"]) {
+      if (api.isPaneNotePickerOpen?.(pane)) api.renderPaneNotePicker(pane);
+    }
   }
 
   function closeNoteEditor({ discardStoredDraft = false } = {}) {
+    api.resetPaneNotePicker?.("primary");
+    primarySaveOperation = null;
     clearNoteAutoSave();
     window.cancelAnimationFrame(ui.noteEditorPreviewFrame);
     window.cancelAnimationFrame(ui.noteScrollMapFrame);
@@ -537,6 +550,7 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
   }
 
   async function requestNoteEditorClose({ afterClose = null } = {}) {
+    api.resetPaneNotePicker?.("primary");
     if (ui.noteSaveInFlight) {
       ui.noteCloseAfterSaveRequested = true;
       return;
@@ -633,7 +647,33 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
     return operation;
   }
 
-  async function saveNote(event, { closeAfterSave = true, isAutoSave = false } = {}) {
+  function saveNote(event, options = {}) {
+    event?.preventDefault?.();
+    if (primarySaveOperation) {
+      if (options.closeAfterSave !== false) ui.noteCloseAfterSaveRequested = true;
+      return primarySaveOperation;
+    }
+    const operation = performNoteSave(event, options);
+    primarySaveOperation = operation;
+    void operation.finally(() => {
+      if (primarySaveOperation === operation) primarySaveOperation = null;
+    });
+    return operation;
+  }
+
+  async function preparePrimaryNoteSwitch() {
+    const session = primaryEditorSession;
+    const editorSequence = ui.noteEditorSession;
+    const isCurrent = () => session === primaryEditorSession && isCurrentNoteEditorSession(editorSequence);
+    if (ui.pendingTagCreation?.session === editorSequence) await ui.pendingTagCreation.promise;
+    if (!isCurrent()) return false;
+    if (primarySaveOperation) await primarySaveOperation;
+    if (!isCurrent()) return false;
+    if (hasUnsavedNoteChanges()) await saveNote(null, { closeAfterSave: false });
+    return isCurrent() && !ui.noteSaveInFlight && !hasUnsavedNoteChanges();
+  }
+
+  async function performNoteSave(event, { closeAfterSave = true, isAutoSave = false } = {}) {
     event?.preventDefault?.();
     clearNoteAutoSave();
     if (ui.noteSaveInFlight) {
@@ -687,6 +727,7 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
         renderSelectedNoteTags();
       }
       ui.editingNoteId = savedNote.id;
+      elements.primarySwitchNote.classList.remove("is-hidden");
       elements.noteDialogTitle.textContent = "Edit note";
       elements.deleteNote.classList.remove("is-hidden");
       elements.noteHistory?.classList.remove("is-hidden");
@@ -718,6 +759,7 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
         if (didSave && hasUnsavedNoteChanges()) scheduleNoteAutoSave();
         if (ui.noteCloseAfterSaveRequested) {
           ui.noteCloseAfterSaveRequested = false;
+          primarySaveOperation = null;
           void requestNoteEditorClose();
         }
       }
@@ -753,5 +795,6 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
     selectNoteTag,
     addTagFromEditor,
     saveNote,
+    preparePrimaryNoteSwitch,
   });
 });

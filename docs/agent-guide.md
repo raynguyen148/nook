@@ -107,6 +107,7 @@ Choose an owner by responsibility:
 | Primary preview/detail workspace and transitions | [workspace.js](../js/app/workspace.js) |
 | Shared pane save, conflict, disposal, recovery lifecycle | [pane-controller.js](../js/app/pane-controller.js), [editor-session.js](../js/app/editor-session.js) |
 | Primary or Side note DOM, validation, autosave timing | [editor.js](../js/app/editor.js), [side-note.js](../js/app/side-note.js) |
+| Shared in-pane note picker, cancellation, and switching | [note-switcher.js](../js/app/note-switcher.js) |
 | Type/tag pickers, Markdown formatting, raw copy | [note-pickers.js](../js/app/note-pickers.js), [formatting.js](../js/app/formatting.js), [clipboard.js](../js/app/clipboard.js) |
 | Split rendering/scrolling or selection mapping | [split-scroll.js](../js/app/split-scroll.js), [split-selection.js](../js/app/split-selection.js) |
 | History dialog and restore workflow | [history.js](../js/app/history.js) |
@@ -402,6 +403,9 @@ Available browser evidence sources:
   storage/productivity/offline/file-mode checks.
 - [test-maintainability.cjs](../scripts/test-maintainability.cjs): optional
   Chromium onboarding/theme/sidebar/menu/mobile checks.
+- [test-note-switcher.cjs](../scripts/test-note-switcher.cjs): optional Chromium
+  checks for both pane pickers, cancellation, save failures, conflicts, and
+  responsive layouts.
 
 The optional scripts require Node 20+ and an existing local Playwright;
 `NOOK_PLAYWRIGHT_MODULE` can select its module path. `NOOK_SCREENSHOT_DIR`

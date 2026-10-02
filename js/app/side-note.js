@@ -10,12 +10,12 @@
     let secondarySurfaceTransitionSequence = 0;
     let dualPaneOperationSequence = 0;
     let secondaryEditorSession = null;
+    let secondarySaveOperation = null;
     const secondaryController = api.createPaneController({
       pane: "secondary", readDraft: getSecondaryEditorDraft, isActive: () => ui.dualPaneOpen,
       setStatus: setSecondarySaveStatus, invoker: () => elements.secondarySaveChanges,
       onSession(session) { secondaryEditorSession = session; shared.secondaryEditorSession = session; },
     });
-    const SECONDARY_RESULT_LIMIT = 50;
     const createElement = (...args) => api.createElement(...args);
     const typeFor = (...args) => api.typeFor(...args);
     const tagFor = (...args) => api.tagFor(...args);
@@ -31,15 +31,12 @@
     const downloadNoteFile = (...args) => api.downloadNoteFile(...args);
     const scheduleNoteEditorScrollMap = (...args) => api.scheduleNoteEditorScrollMap(...args);
     const lockNoteEditorScrollLeader = (...args) => api.lockNoteEditorScrollLeader(...args);
-    const noteCollator = new Intl.Collator(undefined, { numeric: true, sensitivity: "base" });
     let secondarySplitPreviewFrame = 0;
     const makeTypeBadge = (...args) => api.makeTypeBadge(...args);
-    const observeNoteCardTagRows = (...args) => api.observeNoteCardTagRows(...args);
     const isDetailWorkspaceOpen = (...args) => api.isDetailWorkspaceOpen(...args);
     const writeClipboardText = (...args) => api.writeClipboardText(...args);
     const markButtonCopied = (...args) => api.markButtonCopied(...args);
     const resetCopyButtonFeedback = (...args) => api.resetCopyButtonFeedback(...args);
-    const createNoteCard = (...args) => api.createNoteCard(...args);
 
     function cancelSecondarySurfaceAnimation() {
       secondarySurfaceTransitionSequence += 1;
@@ -129,12 +126,14 @@
     }
 
     function disposeSecondaryEditorSession({ discardDraft = false } = {}) {
+      secondarySaveOperation = null;
       secondaryController.dispose({ discard: discardDraft });
       ui.secondaryNoteDirty = false;
     }
 
     async function closeDualPane(options = {}) {
       dualPaneOperationSequence += 1;
+      api.resetPaneNotePicker?.("secondary");
       const immediate = Boolean(options && typeof options === "object" && options.immediate);
       const restoreToggleFocus = !immediate && Boolean(elements.secondarySurface?.contains(document.activeElement));
 
@@ -260,120 +259,41 @@
       }
     }
 
-    async function showSecondaryPicker({ isCurrent = () => true, resetSearch = false } = {}) {
-      if (secondaryEditorSession?.hasUnsavedChanges()) {
-        const saved = await saveSecondaryNote();
-        if (!saved) return false;
-      }
-      if (!isCurrent()) return false;
-      if (resetSearch) {
-        ui.secondarySearchQuery = "";
-        ui.secondaryListScrollTop = 0;
-      }
+    function showSecondaryPicker(options = {}) {
+      return api.showPaneNotePicker("secondary", options);
+    }
+
+    function clearSecondaryNoteAutoSave() {
       clearTimeout(ui.secondaryAutoSaveTimer);
       ui.secondaryAutoSaveTimer = 0;
-      ui.secondaryNotePreviewHeaderCollapsed = false;
-      syncSecondaryNotePreviewHeader();
-      elements.secondaryReaderView?.classList.add("is-hidden");
-      elements.secondaryPickerView?.classList.remove("is-hidden");
-      renderSecondaryNotesList();
-      animateSecondaryViewSwitch(elements.secondaryPickerView);
-      window.requestAnimationFrame(() => {
-        if (isCurrent() && ui.dualPaneOpen && !ui.secondaryClosing && !elements.secondaryPickerView?.classList.contains("is-hidden")) {
-          elements.secondaryNoteSearch?.focus();
-        }
-      });
-      return true;
     }
 
-    function setSecondaryViewMode(mode) {
-      if (!["focus", "comfortable"].includes(mode)) return;
-      ui.secondaryViewMode = mode;
-      syncSecondaryViewMode();
-      try {
-        window.localStorage.setItem("nook:secondary-view-mode", mode);
-      } catch {
-        // Layout remains usable when preference storage is unavailable.
-      }
-    }
-
-    function syncSecondaryViewMode() {
-      elements.secondaryNotesList?.classList.toggle("secondary-notes-list--comfortable", ui.secondaryViewMode === "comfortable");
-      [["focus", elements.secondaryFocusView], ["comfortable", elements.secondaryComfortableView]].forEach(([mode, button]) => {
-        button?.classList.toggle("is-active", mode === ui.secondaryViewMode);
-        button?.setAttribute("aria-pressed", String(mode === ui.secondaryViewMode));
-      });
-    }
-
-    function renderSecondaryNotesList() {
-      if (!elements.secondaryNotesList) return;
-      syncSecondaryViewMode();
-      const scrollTop = ui.secondaryListScrollTop;
-      const query = (ui.secondarySearchQuery || "").trim().toLowerCase();
-      const currentNoteId = ui.editingNoteId;
-
-      if (elements.secondaryNoteSearch && elements.secondaryNoteSearch.value !== (ui.secondarySearchQuery || "")) {
-        elements.secondaryNoteSearch.value = ui.secondarySearchQuery || "";
-      }
-      elements.secondaryClearSearch?.classList.toggle("is-hidden", !query);
-      if (elements.secondarySort) {
-        elements.secondarySort.value = ui.secondarySort || "updated-desc";
-        api.syncSecondarySortPicker();
-      }
-
-      const allAvailableNotes = library.notes.filter((note) => {
-        if (isDeletedNote(note)) return false;
-        if (note.id === currentNoteId) return false;
-        if (!query) return true;
-        return (library.searchIndex.get(note.id) || `${note.title}\n${note.content}`.toLocaleLowerCase()).includes(query);
-      });
-
-      const sortMode = ui.secondarySort || "updated-desc";
-      allAvailableNotes.sort((left, right) => {
-        if (sortMode === "title-asc" || sortMode === "title-desc") {
-          const direction = sortMode === "title-asc" ? 1 : -1;
-          const titleComparison = noteCollator.compare(left.title || "", right.title || "");
-          if (titleComparison) return titleComparison * direction;
-        } else if (sortMode === "created-desc" || sortMode === "created-asc") {
-          const direction = sortMode === "created-asc" ? 1 : -1;
-          const leftCreated = new Date(left.createdAt || 0).getTime();
-          const rightCreated = new Date(right.createdAt || 0).getTime();
-          const dateComparison = leftCreated - rightCreated;
-          if (!Number.isNaN(dateComparison) && dateComparison) return dateComparison * direction;
-        } else {
-          const direction = sortMode === "updated-asc" ? 1 : -1;
-          const leftUpdated = new Date(left.updatedAt || left.createdAt || 0).getTime();
-          const rightUpdated = new Date(right.updatedAt || right.createdAt || 0).getTime();
-          const updatedComparison = leftUpdated - rightUpdated;
-          if (!Number.isNaN(updatedComparison) && updatedComparison) return updatedComparison * direction;
-        }
-        return noteCollator.compare(left.id, right.id);
-      });
-
-      elements.secondaryNotesList.replaceChildren();
-
-      if (!allAvailableNotes.length) {
-        const empty = createElement("div", {
-          className: "secondary-notes-empty",
-          text: query ? `No notes matching “${query}”.` : "No other notes available to open as side note.",
-        });
-        elements.secondaryNotesList.append(empty);
+    function scheduleSecondaryNoteAutoSave() {
+      clearSecondaryNoteAutoSave();
+      if (!secondaryEditorSession?.hasUnsavedChanges() || secondaryEditorSession.conflict ||
+          !ui.dualPaneOpen) return;
+      if (api.isPaneNotePickerOpen("secondary")) {
+        api.deferPaneNoteAutoSave("secondary");
         return;
       }
+      ui.secondaryAutoSaveTimer = setTimeout(() => {
+        ui.secondaryAutoSaveTimer = 0;
+        void saveSecondaryNote();
+      }, 1200);
+    }
 
-      const fragment = document.createDocumentFragment();
-      const availableNotes = allAvailableNotes.slice(0, SECONDARY_RESULT_LIMIT);
-      availableNotes.forEach((note) => fragment.append(createNoteCard(note, { secondary: true })));
-
-      elements.secondaryNotesList.append(fragment);
-      observeNoteCardTagRows();
-      elements.secondaryNotesList.scrollTop = scrollTop;
-      if (allAvailableNotes.length > availableNotes.length) {
-        elements.secondaryNotesList.append(createElement("p", {
-          className: "secondary-notes-limit dialog-description",
-          text: `Showing the first ${SECONDARY_RESULT_LIMIT} of ${allAvailableNotes.length} notes. Refine your search to narrow the list.`,
-        }));
+    async function prepareSecondaryNoteSwitch() {
+      const session = secondaryEditorSession;
+      if (!session) return ui.dualPaneOpen;
+      if (ui.pendingSecondaryTagCreation?.session === session) await ui.pendingSecondaryTagCreation.promise;
+      if (session !== secondaryEditorSession || !ui.dualPaneOpen) return false;
+      if (secondarySaveOperation) await secondarySaveOperation;
+      if (session !== secondaryEditorSession || !ui.dualPaneOpen) return false;
+      syncSecondaryEditorDraft();
+      if (session.saving || session.hasUnsavedChanges()) {
+        if (!await saveSecondaryNote()) return false;
       }
+      return session === secondaryEditorSession && !hasUnsavedSecondaryChanges();
     }
 
     function setSecondarySaveStatus(status, customLabel = "") {
@@ -553,14 +473,21 @@
 
       syncSecondaryFooterActions();
 
-      clearTimeout(ui.secondaryAutoSaveTimer);
-      if (secondaryEditorSession?.conflict) return;
-      ui.secondaryAutoSaveTimer = setTimeout(() => {
-        void saveSecondaryNote();
-      }, 1200);
+      scheduleSecondaryNoteAutoSave();
     }
 
-    async function saveSecondaryNote() {
+    function saveSecondaryNote() {
+      if (secondarySaveOperation) return secondarySaveOperation;
+      const operation = performSecondaryNoteSave();
+      secondarySaveOperation = operation;
+      void operation.finally(() => {
+        if (secondarySaveOperation === operation) secondarySaveOperation = null;
+      });
+      return operation;
+    }
+
+    async function performSecondaryNoteSave() {
+      clearSecondaryNoteAutoSave();
       if (!ui.secondaryNoteId || !secondaryEditorSession) return true;
       const session = secondaryEditorSession;
       syncSecondaryEditorDraft();
@@ -611,8 +538,7 @@
         renderSecondaryTimestamps(saved.createdAt, saved.updatedAt);
 
         if (ui.secondaryNoteDirty) {
-          clearTimeout(ui.secondaryAutoSaveTimer);
-          ui.secondaryAutoSaveTimer = setTimeout(() => void saveSecondaryNote(), 1200);
+          scheduleSecondaryNoteAutoSave();
         }
         return !ui.secondaryNoteDirty;
       } catch (error) {
@@ -626,12 +552,8 @@
 
     function reconcileSecondaryEditorAfterLibraryRefresh({ external = false } = {}) {
       if (!secondaryEditorSession || !ui.secondaryNoteId) {
-        if (ui.dualPaneOpen && !elements.secondaryPickerView?.classList.contains("is-hidden")) {
-          renderSecondaryNotesList();
-        }
         return;
       }
-      if (ui.dualPaneOpen && !elements.secondaryPickerView?.classList.contains("is-hidden")) renderSecondaryNotesList();
       const session = secondaryEditorSession;
       const latest = library.notes.find((note) => note.id === session.noteId && !isDeletedNote(note));
       if (!latest) {
@@ -697,23 +619,20 @@
       elements.secondaryEditorDates?.replaceChildren(makeSpans());
     }
 
-    async function selectSecondaryNote(noteId, mode = "preview") {
-      if (secondaryEditorSession && ui.secondaryNoteId !== noteId && secondaryEditorSession.hasUnsavedChanges()) {
-        const saved = await saveSecondaryNote();
-        if (!saved) return false;
-      }
-      const note = library.notes.find((n) => n.id === noteId);
-      if (!note) return false;
-      ui.secondaryListScrollTop = elements.secondaryNotesList.scrollTop;
-      ui.secondaryNoteId = noteId;
+    function selectSecondaryNote(noteId, mode = "preview") {
+      return api.selectPaneNote("secondary", noteId, mode);
+    }
+
+    function openSecondaryNote(note, mode = "preview") {
+      secondarySaveOperation = null;
+      ui.secondaryNoteId = note.id;
       ui.secondaryNotePreviewHeaderCollapsed = false;
       showSecondaryReader(note);
       setSecondaryNoteMode(mode);
-      return true;
     }
 
     function showSecondaryReader(note) {
-      elements.secondaryPickerView?.classList.add("is-hidden");
+      api.resetPaneNotePicker("secondary");
       elements.secondaryReaderView?.classList.remove("is-hidden");
       renderSecondaryReader(note);
       animateSecondaryViewSwitch(elements.secondaryReaderView);
@@ -830,8 +749,10 @@
       openDualPane,
       toggleDualPane,
       showSecondaryPicker,
-      setSecondaryViewMode,
-      renderSecondaryNotesList,
+      clearSecondaryNoteAutoSave,
+      scheduleSecondaryNoteAutoSave,
+      prepareSecondaryNoteSwitch,
+      openSecondaryNote,
       syncSecondaryFooterActions,
       syncSecondaryNotePreviewHeader,
       toggleSecondaryNotePreviewHeader,

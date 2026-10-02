@@ -26,7 +26,8 @@ globalThis[Symbol.for("nook.app.modules")].register("note-actions", (app) => {
     }
 
     const keepPicker = preserveSidePicker && note.id !== ui.editingNoteId &&
-      elements.secondaryPickerView && !elements.secondaryPickerView.classList.contains("is-hidden");
+      (api.isPaneNotePickerOpen?.("primary") ||
+        (elements.secondaryPickerView && !elements.secondaryPickerView.classList.contains("is-hidden")));
     if (ui.dualPaneOpen && !keepPicker) {
       const sideClosed = await api.closeDualPane?.();
       if (!sideClosed || ui.dualPaneOpen) return false;

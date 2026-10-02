@@ -413,6 +413,9 @@
 
     async function addSecondaryTagFromEditor() {
       if (!elements.secondaryTagInput) return;
+      const session = shared.secondaryEditorSession;
+      if (!session) return;
+      if (ui.pendingSecondaryTagCreation?.session === session) return ui.pendingSecondaryTagCreation.promise;
       const rawName = cleanTagInput(elements.secondaryTagInput.value);
       if (!rawName) return;
       const existing = library.tags.find(
@@ -422,19 +425,28 @@
         selectSecondaryNoteTag(existing.id);
         return;
       }
-      try {
-        const tag = await storage.addTag({ name: rawName });
-        await refreshLibrary({ broadcast: true });
-        if (!ui.secondarySelectedNoteTagIds) ui.secondarySelectedNoteTagIds = new Set();
-        ui.secondarySelectedNoteTagIds.add(tag.id);
-        if (elements.secondaryTagInput) elements.secondaryTagInput.value = "";
-        renderSecondarySelectedNoteTags();
-        setSecondaryTagInputExpanded(false);
-        onSecondaryNoteInput();
-        showToast(`Tag “${tagLabel(tag)}” created.`);
-      } catch (error) {
-        showError(error);
-      }
+      const pending = { session, promise: null };
+      ui.pendingSecondaryTagCreation = pending;
+      const operation = (async () => {
+        try {
+          const tag = await storage.addTag({ name: rawName });
+          await refreshLibrary({ broadcast: true });
+          if (shared.secondaryEditorSession !== session || !ui.dualPaneOpen) return;
+          if (!ui.secondarySelectedNoteTagIds) ui.secondarySelectedNoteTagIds = new Set();
+          ui.secondarySelectedNoteTagIds.add(tag.id);
+          if (elements.secondaryTagInput) elements.secondaryTagInput.value = "";
+          renderSecondarySelectedNoteTags();
+          setSecondaryTagInputExpanded(false);
+          onSecondaryNoteInput();
+          showToast(`Tag “${tagLabel(tag)}” created.`);
+        } catch (error) {
+          if (shared.secondaryEditorSession === session) showError(error);
+        } finally {
+          if (ui.pendingSecondaryTagCreation === pending) ui.pendingSecondaryTagCreation = null;
+        }
+      })();
+      pending.promise = operation;
+      return operation;
     }
 
     Object.assign(api, {

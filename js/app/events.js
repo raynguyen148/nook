@@ -136,8 +136,6 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
     importLibrary,
     toggleDualPane,
     closeDualPane,
-    showSecondaryPicker,
-    renderSecondaryNotesList,
     copySecondaryNoteContent,
     exportSecondaryNoteMarkdown,
     setSecondaryNoteMode,
@@ -325,6 +323,7 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
     elements.copyNoteContent.addEventListener("click", copyQuickViewContent);
     elements.exportNoteMarkdown.addEventListener("click", exportCurrentNote);
     elements.toggleDualPane?.addEventListener("click", toggleDualPane);
+    api.bindPaneNotePickers();
     elements.closeSecondaryPane?.addEventListener("click", closeDualPane);
     elements.secondaryReaderClose?.addEventListener("click", closeDualPane);
     elements.secondaryFooterClose?.addEventListener("click", closeDualPane);
@@ -344,12 +343,6 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
     elements.noteDialog?.addEventListener("focusin", () => {
       ui.activePane = "primary";
     });
-    elements.secondaryFocusView?.addEventListener("click", () => api.setSecondaryViewMode("focus"));
-    elements.secondaryComfortableView?.addEventListener("click", () => api.setSecondaryViewMode("comfortable"));
-    elements.secondaryNotesList?.addEventListener("scroll", () => {
-      if (!elements.secondaryPickerView.classList.contains("is-hidden")) ui.secondaryListScrollTop = elements.secondaryNotesList.scrollTop;
-    });
-    elements.secondaryBackToPicker?.addEventListener("click", showSecondaryPicker);
     elements.secondaryCopyContent?.addEventListener("click", copySecondaryNoteContent);
     elements.secondaryExportMd?.addEventListener("click", exportSecondaryNoteMarkdown);
     elements.secondaryQuickViewHeaderToggle?.addEventListener("click", toggleSecondaryNotePreviewHeader);
@@ -415,26 +408,6 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
     });
     elements.secondarySaveChanges?.addEventListener("click", () => {
       void saveSecondaryNote({ isAutoSave: false });
-    });
-    elements.secondaryNoteSearch?.addEventListener("input", (event) => {
-      ui.secondarySearchQuery = event.target.value;
-      ui.secondaryListScrollTop = 0;
-      elements.secondaryNotesList.scrollTop = 0;
-      renderSecondaryNotesList();
-    });
-    elements.secondaryClearSearch?.addEventListener("click", () => {
-      ui.secondarySearchQuery = "";
-      ui.secondaryListScrollTop = 0;
-      elements.secondaryNotesList.scrollTop = 0;
-      if (elements.secondaryNoteSearch) elements.secondaryNoteSearch.value = "";
-      renderSecondaryNotesList();
-      elements.secondaryNoteSearch?.focus();
-    });
-    elements.secondarySort?.addEventListener("change", (event) => {
-      ui.secondarySort = event.target.value;
-      ui.secondaryListScrollTop = 0;
-      elements.secondaryNotesList.scrollTop = 0;
-      renderSecondaryNotesList();
     });
     elements.closeConfirmation.addEventListener("click", () => closeConfirmation());
     elements.cancelConfirmation.addEventListener("click", () => closeConfirmation());
@@ -599,6 +572,12 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
         elements.noteFontSizeTrigger.focus({ preventScroll: true });
         return;
       }
+      const pickerPane = api.activePaneNotePicker(event.target) || api.activePaneNotePicker();
+      if (event.key === "Escape" && !event.defaultPrevented && !activeModalDialog() && pickerPane) {
+        event.preventDefault();
+        api.cancelPaneNotePicker(pickerPane);
+        return;
+      }
       if (event.key === "Escape" && !activeModalDialog() && ui.dualPaneOpen && elements.secondarySurface?.contains(document.activeElement)) {
         event.preventDefault();
         void closeDualPane().then((closed) => {
@@ -660,6 +639,7 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
 
       if (matchesQuickSaveNoteShortcut && (isNoteEditorOpen() || secondaryEditorActive)) {
         event.preventDefault();
+        if (pickerPane) return;
         if (!event.repeat && !event.isComposing) {
           if (secondaryEditorActive) void saveSecondaryNote({ isAutoSave: false });
           else if (!ui.noteSaveInFlight) saveNote({ preventDefault() {} }, { closeAfterSave: false });
@@ -675,6 +655,7 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
 
       if (matchesSaveNoteShortcut && (isNoteEditorOpen() || secondaryEditorActive)) {
         event.preventDefault();
+        if (pickerPane) return;
         if (!event.repeat && !event.isComposing) {
           if (secondaryEditorActive) void saveSecondaryNote({ isAutoSave: false });
           else elements.noteForm.requestSubmit();
@@ -724,11 +705,10 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
         !event.defaultPrevented &&
         !editingText;
 
-      if (isModeKey && matchesModifierFree && ui.dualPaneOpen &&
-          !elements.secondaryPickerView?.classList.contains("is-hidden") && ui.activePane === "secondary") {
+      if (isModeKey && matchesModifierFree && pickerPane) {
         if (!activeModalDialog() && !window.getSelection()?.toString() && formattingKey !== "3") {
           event.preventDefault();
-          api.setSecondaryViewMode(formattingKey === "1" ? "focus" : "comfortable");
+          api.setPaneNotePickerLayout(pickerPane, formattingKey === "1" ? "focus" : "comfortable");
         }
         return;
       }

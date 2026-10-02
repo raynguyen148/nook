@@ -1391,6 +1391,19 @@ dialog:not([open]),
     margin-left: 3px;
   }
   #note-dialog .detail-back-button span, #note-dialog .detail-commandbar__state { display: none; }
+  #note-dialog .note-navigation .button {
+    min-height: 44px;
+  }
+  #note-dialog .note-switcher__back {
+    min-height: 44px;
+  }
+  #note-dialog .note-navigation__back {
+    width: 44px;
+    padding-inline: 0;
+  }
+  #note-dialog .note-navigation__back span {
+    display: none;
+  }
   #note-dialog .note-editor-commandbar__actions {
     display: flex;
     align-items: center;

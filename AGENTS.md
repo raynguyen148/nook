@@ -64,6 +64,7 @@ QA uses an already installed local Playwright. Keep the app openable as a static
 - `js/app/workspace.js`: primary preview, detail workspace, and transitions.
 - `js/app/clipboard.js`: raw-Markdown copy and copy feedback.
 - `js/app/side-note.js`: Side note navigation, DOM adapter, and autosave.
+- `js/app/note-switcher.js`: shared in-pane note picker, cancellation, and guarded switching.
 - `js/app/note-pickers.js`: shared type/tag picker components and pane adapters.
 - `js/app/split-scroll.js`: Split preview rendering and scroll synchronization.
 - `js/app/formatting.js`: Markdown editing operations and formatting scroll cues.

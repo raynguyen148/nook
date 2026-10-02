@@ -42,6 +42,7 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
   const restoreNoteWithFeedback = (...args) => api.restoreNoteWithFeedback(...args);
   const permanentlyDeleteNoteWithConfirmation = (...args) => api.permanentlyDeleteNoteWithConfirmation(...args);
   let secondarySortPicker = null;
+  let primarySortPicker = null;
   const makeTypeBadge = (...args) => api.makeTypeBadge(...args);
   const makeTagButton = (...args) => api.makeTagButton(...args);
   const observeNoteCardTagRows = (...args) => api.observeNoteCardTagRows(...args);
@@ -195,6 +196,9 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
     if (!secondarySortPicker && elements.secondarySort) {
       secondarySortPicker = createCustomSortPicker(elements.secondarySort, { idPrefix: "secondary-sort", fallbackValue: "updated-desc" });
     }
+    if (!primarySortPicker && elements.primarySort) {
+      primarySortPicker = createCustomSortPicker(elements.primarySort, { idPrefix: "primary-sort", fallbackValue: "updated-desc" });
+    }
     return sortPicker;
   }
 
@@ -229,7 +233,7 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
     return svg;
   }
 
-  function createNoteCard(note, { secondary = false } = {}) {
+  function createNoteCard(note, { secondary = false, onOpen = null } = {}) {
     const type = typeFor(note.typeId);
     const isDeleted = isDeletedNote(note);
     const card = createElement("article", {
@@ -262,7 +266,8 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
       attributes: { "aria-label": `Open note: ${note.title}` },
     });
     appendHighlightedText(titleButton, note.title);
-    titleButton.addEventListener("click", () => secondary ? selectSecondaryNote(note.id) : openQuickView(note, titleButton));
+    const openPickerNote = (mode) => onOpen ? onOpen(note.id, mode) : selectSecondaryNote(note.id, mode);
+    titleButton.addEventListener("click", () => secondary ? openPickerNote("preview") : openQuickView(note, titleButton));
     const preview = createElement("p", { className: "note-card__preview" });
     appendHighlightedText(preview, previewForSearch(note.content));
     content.append(meta, titleButton, preview);
@@ -319,7 +324,7 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
         ["path", { d: "M4.5 19.5 6 14l9.6-9.6a1.65 1.65 0 0 1 2.35 0l1.65 1.65a1.65 1.65 0 0 1 0 2.35L10 18l-5.5 1.5Z" }],
       ]),
     );
-    edit.addEventListener("click", () => secondary ? selectSecondaryNote(note.id, "edit") : openNoteEditor(note, { invoker: edit }));
+    edit.addEventListener("click", () => secondary ? openPickerNote("edit") : openNoteEditor(note, { invoker: edit }));
     const remove = createElement("button", {
       className: `note-card__action ${isDeleted ? "note-card__action--restore" : "note-card__action--danger"}`,
       type: "button",
@@ -404,7 +409,7 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
     if (topActions.childElementCount) card.append(topActions);
     if (!isDeleted && !secondary) card.append(more);
     if (secondary) card.addEventListener("click", (event) => {
-      if (!event.target.closest("button")) void selectSecondaryNote(note.id);
+      if (!event.target.closest("button")) void openPickerNote("preview");
     });
     if (!secondary) api.decorateSelectableNoteCard?.(card, note);
     return card;
@@ -683,6 +688,7 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
   }
 
   function syncSecondarySortPicker() { secondarySortPicker?.sync(); }
+  function syncPrimarySortPicker() { primarySortPicker?.sync(); }
 
   Object.assign(api, {
     closeSortPicker,
@@ -701,5 +707,6 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
     observeResponsivePagination,
     renderNotes,
     syncSecondarySortPicker,
+    syncPrimarySortPicker,
   });
 });
