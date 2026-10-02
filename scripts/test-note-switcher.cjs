@@ -327,9 +327,14 @@ async function main() {
           const [back, change] = group.querySelectorAll("button");
           const left = back.getBoundingClientRect();
           const right = change.getBoundingClientRect();
-          return { gap: right.left - left.right, aligned: left.top === right.top && left.height === right.height };
+          const backStyle = getComputedStyle(back);
+          const switchStyle = getComputedStyle(change);
+          return { gap: right.left - left.right, aligned: left.top === right.top && left.height === right.height,
+            innerCorners: [backStyle.borderStartEndRadius, backStyle.borderEndEndRadius,
+              switchStyle.borderStartStartRadius, switchStyle.borderEndStartRadius] };
         });
         assert.ok(navigation.gap >= -1.1 && navigation.gap <= 0 && navigation.aligned, "Navigation segments must stay joined and aligned");
+        assert.deepEqual(navigation.innerCorners, ["0px", "0px", "0px", "0px"], `${theme}: joined buttons must have square inner corners`);
         for (const pane of ["primary", "secondary"]) {
           const s = selectors[pane];
           await assertFits(matrix.page, s.trigger);

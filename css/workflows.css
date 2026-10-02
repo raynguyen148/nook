@@ -37,29 +37,43 @@
   width: min(calc(100% - 2rem), 40rem);
   max-height: min(80dvh, 42rem);
 }
-/* Native dialog transitions keep close/focus behavior synchronous. */
-@supports (transition-behavior: allow-discrete) {
+/* Dim instead of blurring the page: only opacity/transform move each frame. */
+html .workflow-dialog.command-dialog::backdrop {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+/* Native close and focus restoration remain synchronous, including interruptions. */
+@supports (transition-behavior: allow-discrete) and (overlay: auto) {
   @media (prefers-reduced-motion: no-preference) {
     .command-dialog {
       opacity: 0;
-      transform: translateY(var(--space-2));
+      transform: translateY(var(--space-2)) scale(0.98);
+      transform-origin: 50% 40%;
       transition:
-        opacity var(--motion-duration-short) var(--motion-ease-in-out),
-        transform var(--motion-duration-short) var(--motion-ease-out),
-        display var(--motion-duration-short) allow-discrete,
-        overlay var(--motion-duration-short) allow-discrete;
+        opacity var(--motion-duration-micro) var(--motion-ease-in),
+        transform var(--motion-duration-micro) var(--motion-ease-in),
+        display var(--motion-duration-micro) allow-discrete,
+        overlay var(--motion-duration-micro) allow-discrete;
     }
-    .command-dialog[open] { opacity: 1; transform: translateY(0); }
+    .command-dialog[open] {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      transition-duration: var(--motion-duration-short);
+      transition-timing-function: var(--motion-ease-out);
+    }
     .command-dialog::backdrop {
       opacity: 0;
       transition:
-        opacity var(--motion-duration-short) var(--motion-ease-in-out),
-        display var(--motion-duration-short) allow-discrete,
-        overlay var(--motion-duration-short) allow-discrete;
+        opacity var(--motion-duration-micro) linear,
+        display var(--motion-duration-micro) allow-discrete,
+        overlay var(--motion-duration-micro) allow-discrete;
     }
-    .command-dialog[open]::backdrop { opacity: 1; }
+    .command-dialog[open]::backdrop {
+      opacity: 1;
+      transition-duration: var(--motion-duration-short);
+    }
     @starting-style {
-      .command-dialog[open] { opacity: 0; transform: translateY(var(--space-2)); }
+      .command-dialog[open] { opacity: 0; transform: translateY(var(--space-2)) scale(0.98); }
       .command-dialog[open]::backdrop { opacity: 0; }
     }
   }

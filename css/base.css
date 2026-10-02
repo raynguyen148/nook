@@ -1222,7 +1222,6 @@ h2 {
 
 
 @media (min-width: 621px) and (max-width: 1366px) {
-  #quick-actions-btn,
   #import-btn {
     width: 2.35rem;
     min-width: 2.35rem;

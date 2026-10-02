@@ -191,6 +191,9 @@ types and tags. Every note has one type. The built-in **General** type cannot be
 deleted; notes from a deleted custom type move to General. Tags are optional and
 can be shared by many notes.
 
+Card titles show at most two lines (one in Compact view). In **Settings → Display**,
+choose **Preview lines** from 2 to 10 for card content; the default is 3.
+
 ### Quick View and note actions
 
 The detail workspace provides:
@@ -260,6 +263,7 @@ global keyboard shortcut.
 ### Quick actions
 
 Select **Actions** in the library/editor to open Quick actions, or press **Cmd/Ctrl+Shift+P**.
+The library header groups Actions, the theme toggle, and Settings in one control strip.
 Search saved notes by title/content and open one, or run actions such as New
 note, Daily note, Templates, Draft Recovery, import, backup, and Settings.
 The search stays above separately labeled action and note groups; keyboard hints

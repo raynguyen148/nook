@@ -10,7 +10,7 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
   const SIDEBAR_COLLAPSED_STORAGE_KEY = "nook:sidebar-collapsed";
   const VIEW_MODE_STORAGE_KEY = "nook:notes-view-mode";
   const NOTE_PREVIEW_LINES_STORAGE_KEY = "nook:note-preview-lines";
-  const NOTE_PREVIEW_LINES_MIN = 3;
+  const NOTE_PREVIEW_LINES_MIN = 2;
   const NOTE_PREVIEW_LINES_MAX = 10;
   const NOTE_PREVIEW_LINES_DEFAULT = 3;
   const NOTE_DETAIL_FONT_SIZE_STORAGE_KEY = "nook:note-detail-font-size";
@@ -166,6 +166,7 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
   }
 
   function normalizeNotePreviewLines(value) {
+    if (value == null || String(value).trim() === "") return NOTE_PREVIEW_LINES_DEFAULT;
     const parsed = Number(value);
     if (!Number.isInteger(parsed)) return NOTE_PREVIEW_LINES_DEFAULT;
     return Math.min(NOTE_PREVIEW_LINES_MAX, Math.max(NOTE_PREVIEW_LINES_MIN, parsed));

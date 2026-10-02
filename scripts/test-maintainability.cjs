@@ -144,12 +144,12 @@ async function main() {
           height: button.getBoundingClientRect().height, icon: !!button.querySelector("svg"),
           name: button.getAttribute("aria-label") };
       });
-      assert.equal(geometry.label === "none", width <= 1366);
+      assert.notEqual(geometry.label, "none");
       assert.equal(geometry.icon, true);
       assert.equal(geometry.name, "Actions");
-      if (width <= 1366) assert.ok(Math.abs(geometry.width - geometry.height) <= 1);
+      assert.ok(geometry.width > geometry.height);
     }
-    passed.push("Quick actions collapses to a square icon control at 821–1366px");
+    passed.push("Quick actions keeps its visible label within the shared header group at 821–1440px");
     await commands.setViewportSize({ width: 1280, height: 800 });
     await commands.locator("#quick-actions-btn").click();
     const commandIcons = await commands.locator(".command-result").evaluateAll((buttons) => buttons.map((button) => ({
@@ -196,7 +196,7 @@ async function main() {
         assert.equal(await trigger.evaluate((button) => document.activeElement === button), true);
       }
     }
-    await commands.locator("#close-note-dialog-btn").focus();
+    await commands.locator("#primary-switch-note-btn").focus();
     await commands.keyboard.press("Tab");
     await commands.waitForFunction(() => getComputedStyle(document.querySelector("#note-quick-actions-tooltip")).opacity === "1");
     const tooltipVisible = await commands.locator("#note-quick-actions-btn").evaluate((button) => {

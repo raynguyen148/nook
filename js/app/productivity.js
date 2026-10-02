@@ -314,7 +314,7 @@ globalThis[Symbol.for("nook.app.modules")].register("productivity", (app) => {
     document.querySelectorAll("[data-command-shortcut]").forEach((hint) => { hint.textContent = shortcut; });
     elements.commandShortcutHelp.title = `Open Quick actions: ${shortcut}`;
     document.querySelectorAll("[data-open-commands]").forEach((button) => {
-      button.title = `Actions (${shortcut})`;
+      button.title = `Quick actions (${shortcut})`;
       button.setAttribute("aria-keyshortcuts", api.usesMacKeyboardShortcuts() ? "Meta+Shift+P" : "Control+Shift+P");
       button.addEventListener("click", openCommands);
     });

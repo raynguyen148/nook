@@ -780,6 +780,7 @@ select::-ms-expand {
 
   /* 2. Title: primary note identifier - fixed column width for clear visual columnar scanning */
   .notes-list--compact .note-card__title {
+    display: block;
     order: 2;
     flex: 0 1 var(--compact-title-width, 15.5rem);
     max-width: var(--compact-title-width, 15.5rem);
@@ -1244,6 +1245,12 @@ select::-ms-expand {
 
 
 .note-card__title {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+  overflow-wrap: anywhere;
   max-width: 100%;
   border: 0;
   padding: 0;

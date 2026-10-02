@@ -21,8 +21,11 @@
           if (window.localStorage.getItem("nook:sidebar-collapsed") === "true") {
             document.documentElement.dataset.sidebarCollapsed = "true";
           }
-          const storedPreviewLines = Number(window.localStorage.getItem("nook:note-preview-lines"));
-          const previewLines = Number.isInteger(storedPreviewLines) ? Math.min(10, Math.max(3, storedPreviewLines)) : 3;
+          const storedPreviewLines = window.localStorage.getItem("nook:note-preview-lines");
+          const parsedPreviewLines = Number(storedPreviewLines);
+          const previewLines = storedPreviewLines !== null && storedPreviewLines.trim() !== "" && Number.isInteger(parsedPreviewLines)
+            ? Math.min(10, Math.max(2, parsedPreviewLines))
+            : 3;
           document.documentElement.style.setProperty("--note-card-preview-lines", String(previewLines));
         } catch { /* Use defaults when preference storage is unavailable. */ }
       })();
@@ -245,14 +248,14 @@
             </div>
           </div>
           <div class="topbar-actions">
-            <div class="shortcut-button">
-              <button id="quick-actions-btn" class="button button-secondary" type="button" data-open-commands aria-label="Actions" aria-haspopup="dialog" aria-controls="command-dialog" aria-describedby="quick-actions-tooltip">
-                <svg class="button-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m13 3-8 10h7l-1 8 8-11h-7l1-7Z" /></svg>
-                <span class="button-label">Actions</span>
-              </button>
-              <span id="quick-actions-tooltip" class="shortcut-tooltip" role="tooltip"><span>Actions</span><kbd data-command-shortcut>Cmd/Ctrl+Shift+P</kbd></span>
-            </div>
-            <div class="topbar-preferences" role="group" aria-label="Theme and settings">
+            <div class="topbar-preferences" role="group" aria-label="Actions, theme and settings">
+              <div class="shortcut-button">
+                <button id="quick-actions-btn" class="button button-secondary topbar-preferences__button topbar-preferences__actions" type="button" data-open-commands aria-label="Actions" aria-haspopup="dialog" aria-controls="command-dialog" aria-describedby="quick-actions-tooltip">
+                  <svg class="button-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m13 3-8 10h7l-1 8 8-11h-7l1-7Z" /></svg>
+                  <span class="button-label">Actions</span>
+                </button>
+                <span id="quick-actions-tooltip" class="shortcut-tooltip" role="tooltip"><span>Quick actions</span><kbd data-command-shortcut>Cmd/Ctrl+Shift+P</kbd></span>
+              </div>
               <div id="theme-toggle-shortcut" class="shortcut-button">
                 <button
                   id="theme-toggle"
@@ -552,7 +555,7 @@
             <button id="note-quick-actions-btn" class="icon-button quick-actions-trigger" type="button" data-open-commands aria-label="Actions" aria-haspopup="dialog" aria-controls="command-dialog" aria-describedby="note-quick-actions-tooltip">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m13 3-8 10h7l-1 8 8-11h-7l1-7Z" /></svg>
             </button>
-            <span id="note-quick-actions-tooltip" class="shortcut-tooltip" role="tooltip"><span>Actions</span><kbd data-command-shortcut>Cmd/Ctrl+Shift+P</kbd></span>
+            <span id="note-quick-actions-tooltip" class="shortcut-tooltip" role="tooltip"><span>Quick actions</span><kbd data-command-shortcut>Cmd/Ctrl+Shift+P</kbd></span>
           </div>
           <div id="note-editor-command-actions" class="note-editor-commandbar__actions" aria-label="Note editing actions">
             <div class="note-editor-modes" role="group" aria-label="Content display mode">
@@ -1722,9 +1725,9 @@
                 <label class="management-row__name" for="note-preview-lines">Preview lines</label>
                 <output id="note-preview-lines-value" class="usage-count preview-lines-control__value" for="note-preview-lines">3 lines</output>
               </div>
-              <input id="note-preview-lines" type="range" min="3" max="10" step="1" value="3" aria-describedby="note-preview-lines-help" />
+              <input id="note-preview-lines" type="range" min="2" max="10" step="1" value="3" aria-describedby="note-preview-lines-help" />
               <div class="dialog-description preview-lines-control__limits" aria-hidden="true">
-                <span>3</span>
+                <span>2</span>
                 <span>10</span>
               </div>
             </div>

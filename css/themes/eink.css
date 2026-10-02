@@ -856,7 +856,6 @@ html[data-theme="eink"] #organize-btn:not(.topbar-preferences__button),
 html[data-theme="eink"] #import-btn,
 html[data-theme="eink"] #empty-trash-btn {
   border: 1px solid var(--eink-border) !important;
-  border-radius: var(--eink-radius-control) !important;
   color: var(--eink-ink);
   box-shadow: none !important;
   font-weight: 600;
@@ -864,6 +863,24 @@ html[data-theme="eink"] #empty-trash-btn {
     color var(--interaction-duration) var(--interaction-easing),
     background-color var(--interaction-duration) var(--interaction-easing),
     border-color var(--interaction-duration) var(--interaction-easing);
+}
+
+/* Joined navigation owns its inner corners; standalone controls stay rounded. */
+html[data-theme="eink"] :where(
+  .button,
+  .button-primary,
+  .button-secondary,
+  .button-danger,
+  .button-compact,
+  .icon-button,
+  .mobile-filter-toggle,
+  .theme-toggle,
+  #theme-toggle,
+  #organize-btn,
+  #import-btn,
+  #empty-trash-btn
+):not(.topbar-preferences__button):not(.note-navigation .button) {
+  border-radius: var(--eink-radius-control) !important;
 }
 
 html[data-theme="eink"] #new-note-btn,
