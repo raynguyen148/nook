@@ -145,6 +145,18 @@ Opening a saved note's Preview action takes you to the detail workspace. Use
 without losing the note context. The back action returns to the library and
 restores the previous scroll position when possible.
 
+On desktop, drag either side edge of a single note to widen it. Its default
+width is the minimum; its maximum fills the content area beside the sidebar,
+with a small outer gutter. With a Side note open, drag only the divider between
+the panes. Each pane keeps at least 400px where space permits (560px in Split)
+and at least 30% of the usable width. If the workspace cannot fit both pane
+minimums, they stay equally sized and resizing is disabled. Mobile keeps the
+full-width note layout.
+Focus a resize edge and use Left/Right (Shift for larger steps), Home/End for
+the limits, or Enter to reset. Double-click also resets; Escape cancels a drag.
+Single-note expansion and the two-pane ratio are remembered separately in
+this browser, with a session-only fallback if preference storage is blocked.
+
 Use **Switch** in either pane to browse the same searchable card picker
 inside that pane. The other pane stays open. Opening the picker pauses that
 pane's pending autosave without saving or replacing its draft. **Back to note**
@@ -242,6 +254,7 @@ The modifier is `Command` on macOS and `Control` on Windows/Linux.
 | App, outside form controls | `T` | Cycle to the next theme |
 | Library / Settings | `S` | Open or close Settings |
 | Active note editor pane | `1` / `2` / `3` | Switch to Markdown / Split / Preview mode |
+| Desktop note detail, outside form fields with no text selection | `4` | Toggle Side Note |
 | Active note editor pane | `⌘/Ctrl + B` | Toggle bold around selected editor text |
 | Active note editor pane | `⌘/Ctrl + I` | Toggle italic around selected editor text |
 | Active note editor pane | `⌘/Ctrl + K` | Insert a link around selected editor text |
@@ -555,6 +568,7 @@ mutation occurs.
 | [`css/workflows.css`](css/workflows.css) | Theme-aware workflow dialogs and bulk-selection surfaces |
 | [`scripts/test-maintainability.cjs`](scripts/test-maintainability.cjs) | Optional Chromium checks for onboarding, theme aliases, sidebar restoration, settings menus, and mobile formatting |
 | [`scripts/test-note-switcher.cjs`](scripts/test-note-switcher.cjs) | Optional Chromium checks for both pane pickers, draft safety, cancellation, conflicts, and responsive layouts |
+| [`scripts/test-workspace-resize.cjs`](scripts/test-workspace-resize.cjs) | Optional Chromium checks for width bounds, drag/keyboard cancellation, preference persistence, mode-specific floors, themes, and mobile layout |
 | [`scripts/test-workflows.cjs`](scripts/test-workflows.cjs) | Optional Chromium storage/UI regression checks using isolated synthetic data |
 | [`scripts/update-service-worker-cache.cjs`](scripts/update-service-worker-cache.cjs) | Recomputes the cache fingerprint from all hosted app assets |
 | [`sw.js`](sw.js) | Versioned cache for local hosted app resources; never owns note data |

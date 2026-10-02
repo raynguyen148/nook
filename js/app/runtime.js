@@ -19,6 +19,7 @@
     "library-sidebar",
     "library",
     "workspace",
+    "workspace-resize",
     "clipboard",
     "side-note",
     "note-pickers",

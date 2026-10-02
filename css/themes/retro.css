@@ -521,7 +521,7 @@ html[data-theme="retro"] :where(.button-primary, .button-secondary, .button-dang
 html[data-theme="retro"] :where(.pagination-button, .note-card__action, .note-formatting-tool__button) { border: var(--retro-border-width) solid transparent; border-radius: var(--retro-radius-control); color: var(--retro-ink); background: transparent; }
 html[data-theme="retro"] .pagination-button.is-active { border-color: var(--retro-accent); color: var(--retro-accent-ink); background: var(--retro-accent); box-shadow: none; }
 html[data-theme="retro"] :where(.pagination-button:disabled, .pagination-ellipsis) { color: var(--retro-disabled-ink); }
-html[data-theme="retro"] :where(.note-card__action--danger, .note-card__action--permanent):is(:hover, :focus-visible) { border-color: var(--retro-red); color: var(--retro-error); background: var(--retro-red-soft); }
+html[data-theme="retro"] :is(.note-card__action--danger, .note-card__action--permanent):is(:hover, :focus-visible):not(:disabled) { border-color: var(--retro-red); color: var(--retro-error); background: var(--retro-red-soft); }
 html[data-theme="retro"] .note-card__action--restore:is(:hover, :focus-visible) { border-color: var(--retro-accent); color: var(--retro-accent); background: var(--retro-accent-soft); }
 
 /* Note Detail footer utilities follow the sidebar's quieter icon language:

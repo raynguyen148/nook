@@ -33,6 +33,7 @@
     <link rel="stylesheet" href="css/mobile.css" />
     <link rel="stylesheet" href="css/note-typography.css" />
     <link rel="stylesheet" href="css/workflows.css" />
+    <link rel="stylesheet" href="css/workspace-resize.css" />
   </head>
   <body>
     <main class="app-shell" aria-label="Nook" aria-busy="true" inert>
@@ -530,6 +531,9 @@
         </section>
 
         <section id="note-detail-workspace" class="note-detail-workspace is-hidden" aria-label="Note detail">
+          <div id="note-detail-width-guide" class="note-detail-width-guide" aria-hidden="true"></div>
+          <p id="note-resize-help" class="sr-only">Drag horizontally or use the arrow keys to resize. Hold Shift for larger steps. Home and End set the limits. Enter or double-click resets the size. Escape cancels a drag.</p>
+          <div id="note-resize-start" class="note-window-resize note-window-resize--start is-hidden" role="separator" aria-orientation="vertical" aria-label="Note width" aria-controls="note-dialog" aria-describedby="note-resize-help" aria-disabled="true" tabindex="-1"></div>
           <section id="note-dialog" class="note-detail-surface note-dialog is-hidden" tabindex="-1" aria-labelledby="note-dialog-title">
       <form id="note-form" novalidate>
         <div class="dialog-header detail-commandbar note-editor-commandbar">
@@ -630,6 +634,7 @@
                   aria-pressed="false"
                   aria-label="Open side note"
                   aria-describedby="note-editor-mode-side-note-tooltip"
+                  aria-keyshortcuts="4"
                 >
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <rect x="3" y="3" width="18" height="18" rx="3.5" />
@@ -639,6 +644,7 @@
                 </button>
                 <span id="note-editor-mode-side-note-tooltip" class="shortcut-tooltip" role="tooltip">
                   <span>Open side note</span>
+                  <kbd>4</kbd>
                 </span>
               </div>
             </div>
@@ -878,7 +884,7 @@
                   <path d="M5 6h.01M9 6h.01M13 6h.01M17 6h.01M5 10h.01M9 10h.01M13 10h.01M17 10h.01M7.5 13h9"></path>
                 </svg>
               </button>
-              <span id="note-save-shortcut-help" class="sr-only">Press 1 for the Markdown editor, 2 for split preview, and 3 for Preview. Press T to cycle the theme when focus is outside text fields and editable controls. Formatting shortcuts support bold, italic, links, inline code, numbered lists, and bullet lists. Quick save keeps this note open. Save note closes it.</span>
+              <span id="note-save-shortcut-help" class="sr-only">Press 1 for the Markdown editor, 2 for split preview, and 3 for Preview. Press 4 to toggle Side Note on desktop when focus is outside form fields and no text is selected. Press T to cycle the theme when focus is outside text fields and editable controls. Formatting shortcuts support bold, italic, links, inline code, numbered lists, and bullet lists. Quick save keeps this note open. Save note closes it.</span>
               <div class="note-save-shortcut__tooltip" role="tooltip">
                 <p>Note shortcuts</p>
                 <div class="note-save-shortcut__row">
@@ -892,6 +898,10 @@
                 <div class="note-save-shortcut__row">
                   <span>Preview</span>
                   <span class="note-save-shortcut__keys"><kbd>3</kbd></span>
+                </div>
+                <div class="note-save-shortcut__row">
+                  <span>Side Note (desktop)</span>
+                  <span class="note-save-shortcut__keys"><kbd>4</kbd></span>
                 </div>
                 <div class="note-save-shortcut__row">
                   <span>Cycle theme</span>
@@ -1051,6 +1061,7 @@
             </div>
           </section>
 
+          <div id="note-resize-end" class="note-window-resize note-window-resize--end is-hidden" role="separator" aria-orientation="vertical" aria-label="Note width" aria-controls="note-dialog" aria-describedby="note-resize-help" aria-disabled="true" tabindex="-1"></div>
           <aside id="note-secondary-surface" class="note-detail-surface note-secondary-surface is-hidden" tabindex="-1" aria-label="Side note">
             <!-- Picker View -->
             <div id="secondary-picker-view" class="secondary-surface-view note-switcher" aria-label="Choose a note for the side pane">
@@ -1878,6 +1889,10 @@
                 </dd>
               </div>
               <div class="management-row shortcut-row">
+                <dt class="shortcut-row__label">Toggle Side Note (desktop)</dt>
+                <dd class="shortcut-keys"><kbd>4</kbd></dd>
+              </div>
+              <div class="management-row shortcut-row">
                 <dt class="shortcut-row__label">Bold selected text</dt>
                 <dd class="shortcut-keys"><span class="shortcut-key-combo"><kbd class="settings-shortcut-modifier">⌘</kbd><span>+</span><kbd>B</kbd></span></dd>
               </div>
@@ -2087,6 +2102,7 @@
     <script src="js/app/pane-controller.js"></script>
     <script src="js/app/library-sidebar.js"></script>
     <script src="js/app/workspace.js"></script>
+    <script src="js/app/workspace-resize.js"></script>
     <script src="js/app/clipboard.js"></script>
     <script src="js/app/side-note.js"></script>
     <script src="js/app/note-pickers.js"></script>

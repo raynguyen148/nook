@@ -173,6 +173,7 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
   }
 
   function bindEvents() {
+    api.bindNoteDetailResizeEvents();
     api.bindMobileEvents();
     api.bindSplitSelectionEvents();
     api.bindFormattingScrollCues();
@@ -695,6 +696,8 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
         target instanceof HTMLSelectElement ||
         (target instanceof HTMLElement && target.isContentEditable);
       const isModeKey = ["1", "2", "3"].includes(formattingKey);
+      const selection = window.getSelection();
+      const hasTextSelection = Boolean(selection && !selection.isCollapsed);
       const matchesModifierFree =
         !event.metaKey &&
         !event.ctrlKey &&
@@ -704,6 +707,18 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
         !event.isComposing &&
         !event.defaultPrevented &&
         !editingText;
+
+      if (
+        formattingKey === "4" && matchesModifierFree && isNoteEditorOpen() &&
+        !ui.noteSaveInFlight && !ui.detailClosing && !ui.secondaryClosing &&
+        !hasTextSelection &&
+        !(target instanceof HTMLElement && target.closest('[role="textbox"], [role="combobox"], [role="listbox"]')) &&
+        elements.toggleDualPane?.getClientRects().length && !elements.toggleDualPane.disabled
+      ) {
+        event.preventDefault();
+        elements.toggleDualPane.click();
+        return;
+      }
 
       if (isModeKey && matchesModifierFree && pickerPane) {
         if (!activeModalDialog() && !window.getSelection()?.toString() && formattingKey !== "3") {
@@ -739,8 +754,6 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
         }
       }
 
-      const selection = window.getSelection();
-      const hasTextSelection = Boolean(selection && !selection.isCollapsed);
       const hoveredNotePreviewButton = document.querySelector(".note-card:hover .note-card__title");
       const matchesHoveredNotePreviewShortcut =
         formattingKey === "v" &&

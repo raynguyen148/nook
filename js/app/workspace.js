@@ -136,6 +136,7 @@
         window.scrollTo(0, 0);
       }
       surface.classList.remove("is-hidden");
+      api.syncNoteDetailSize();
       api.rememberMobileDetail?.();
       if (opensWorkspace) animateNoteDetailIn();
       window.requestAnimationFrame(() => {
@@ -152,6 +153,7 @@
     }
 
     function closeNoteDetail({ restoreFocus = true, invoker = ui.viewInvoker } = {}) {
+      api.cancelNoteDetailResize();
       api.closeNoteFontSizePopover();
       resetCopyButtonFeedback(elements.copyNoteContent);
       const transitionSequence = ++noteDetailTransitionSequence;
@@ -169,6 +171,7 @@
         elements.noteDialog.classList.add("is-hidden");
         elements.noteDetailWorkspace.classList.add("is-hidden");
         elements.workspace.classList.remove("is-note-detail-open");
+        api.syncNoteDetailSize();
         api.releaseMobileDetail?.();
         closeDualPane({ immediate: true });
         ui.detailSourceCard?.classList.remove("is-detail-source");

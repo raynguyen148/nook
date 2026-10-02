@@ -99,6 +99,7 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
     else renderNoteEditorPreview();
     scheduleNoteEditorHeight();
     if (previousMode !== mode && isNoteEditorOpen()) {
+      api.syncNoteDetailSize();
       noteEditorModeAnimation?.cancel();
       const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       const animation = elements.noteDialog.querySelector(".dialog-body")?.animate(

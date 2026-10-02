@@ -183,7 +183,10 @@ html .workflow-dialog.command-dialog::backdrop {
   background: var(--surface-panel);
 }
 .notes-panel__summary:has(> .bulk-actions:not(.is-hidden)) > .view-mode-control { display: none; }
-html:is([data-theme="retro"], [data-theme="eink"]) .bulk-actions { --bulk-actions-radius: var(--control-radius); }
+html:is([data-theme="retro"], [data-theme="eink"]) .bulk-actions {
+  --bulk-actions-radius: var(--control-radius);
+  border-color: var(--border-subtle);
+}
 .bulk-actions__selection { display: flex; align-items: center; align-self: stretch; gap: var(--space-1); min-width: 0; }
 .bulk-actions__count { display: flex; align-items: center; align-self: stretch; flex: none; padding-inline: var(--space-2); border-radius: var(--bulk-actions-radius); color: var(--selected-text); background: var(--selected-surface); font-size: 0.75rem; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .bulk-actions__tools { display: flex; align-items: center; gap: var(--space-1); padding-left: var(--space-1); border-left: 1px solid var(--border-subtle); }

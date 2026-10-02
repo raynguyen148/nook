@@ -152,6 +152,7 @@
       }
 
       ui.dualPaneOpen = false;
+      api.cancelNoteDetailResize();
       api.syncSidePaneSidebar();
       ui.activePane = "primary";
       elements.toggleDualPane?.setAttribute("aria-pressed", "false");
@@ -174,6 +175,7 @@
         elements.secondarySurface?.classList.add("is-hidden");
         elements.noteDetailWorkspace?.classList.remove("is-side-by-side");
         elements.workspace?.classList.remove("is-side-by-side-open");
+        api.syncNoteDetailSize();
         disposeSecondaryEditorSession({ discardDraft: !ui.secondaryNoteDirty });
         if (restoreToggleFocus && elements.toggleDualPane?.isConnected) {
           window.requestAnimationFrame(() => elements.toggleDualPane.focus({ preventScroll: true }));
@@ -232,6 +234,7 @@
       elements.noteDetailWorkspace?.classList.add("is-side-by-side");
       elements.workspace?.classList.add("is-side-by-side-open");
       elements.secondarySurface?.classList.remove("is-hidden");
+      api.syncNoteDetailSize();
       elements.toggleDualPane?.setAttribute("aria-pressed", "true");
       elements.toggleDualPane?.classList.add("is-active");
 
@@ -388,6 +391,7 @@
       ui.secondaryScrollSyncResetFrame = 0;
       ui.secondaryScrollLeader = null;
       ui.secondaryNoteMode = mode;
+      api.scheduleNoteDetailSize();
       ui.activePane = "secondary";
 
       elements.secondaryModeButtons?.forEach((button) => {

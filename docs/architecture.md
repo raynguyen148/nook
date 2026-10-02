@@ -97,6 +97,7 @@ product decision.
 | `js/app/note-actions.js` | Pin, move-to-Trash with Undo, restore, permanent-delete, and empty-Trash mutations shared by cards and editor surfaces |
 | `js/app/library.js` | Library cards, pagination, Trash presentation, and sort controls |
 | `js/app/side-note.js` | Side note navigation, DOM/editor adapter, and autosave presentation |
+| `js/app/workspace-resize.js` | Measured single-note width, bounded Side note ratio, pointer/keyboard resize, and browser-local size preferences |
 | `js/app/note-switcher.js` | Shared note picker rendering, per-pane browsing state, cancellation, and guarded note switching |
 | `js/app/editor.js` | Primary DOM/editor adapter, validation, modes, autosave, and safe draft hydration |
 | `js/app/split-selection.js` | Split-mode source/preview selection mapping and highlight lifecycle |
@@ -412,6 +413,22 @@ session, or Service Worker behavior into CSS changes.
 
 ## Workspace and first-use UI state
 
+`workspace-resize.js` measures the actual content track, excluding the sidebar
+and outer gutters. An invisible CSS sizing guide preserves the former single
+note width (including its normal/collapsed-sidebar cap and responsive insets).
+Single-note expansion is a fraction of the room between this minimum and the
+full track; Side note uses a separate ratio clamped to 30–70% and a 400px pane
+floor (560px in Split). When the usable width is below the sum of both pane
+floors, each gets half the track and resizing is disabled. Mode changes update
+these bounds immediately. CSS owns the layout; measured custom
+properties are its only runtime geometry input. A ResizeObserver tracks shell
+and sizing-guide changes, including sidebar transitions. Pane changes, blur,
+pointer cancellation, and Escape cancel active drags. Width changes refresh
+editor heights, formatting overflow cues, and both Split scroll maps without
+saving or replacing drafts. `css/workspace-resize.css` loads after mobile and
+the focused styles. Preferences use `nook:note-detail-expansion` and
+`nook:note-detail-ratio` in localStorage; no data schema or backup changes.
+
 Side note temporarily collapses the sidebar at 960–1200px. The automatic state
 is never persisted. Closing the pane or widening the viewport restores the
 saved preference; an explicit sidebar toggle while the pane is open remains
@@ -466,6 +483,11 @@ Browser checks remain separate from the dependency-free `node:test` suite.
 onboarding, aliases, sidebar restoration/manual overrides, guarded pane closes,
 settings menus, metadata/pickers, and mobile formatting on all seven themes.
 Optional `NOOK_SCREENSHOT_DIR` keeps local screenshots.
+
+`node scripts/test-workspace-resize.cjs` uses isolated synthetic browser data
+to check both single-note edges, divider bounds, keyboard controls, reset,
+cancellation, mode-specific floors, size preferences, all seven themes, and
+mobile fallback. `NOOK_BROWSER_CHANNEL` can select an already installed browser.
 
 When changing stored data, inspect the current migration and parser first,
 preserve old backups, and keep the change behind

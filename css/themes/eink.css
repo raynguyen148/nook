@@ -1,5 +1,5 @@
 /* Hallmark · genre: editorial · macrostructure: preserved Nook workspace
- * theme: eink (source: e-reader paper display, warm matte paper, whisper-quiet micro-grain, pure monochrome ink)
+ * theme: eink (source: e-reader paper display, warm matte paper, whisper-quiet micro-grain, monochrome ink with muted danger red)
  * tone: literary e-paper · anchor: carbon ink #141414
  * design: large-canvas gentle grain only, clean smooth component surfaces, zero visual noise
  */
@@ -9,7 +9,7 @@
    - Surfaces: Smooth Book Paper (#f7f5ef) — clean, glare-free, no sandpaper noise
    - Sidebar: Muted Paper Pulp (#e8e5dc) — cohesive with canvas
    - Inks: Deep Carbon Ink (#141414), Reading Charcoal (#383838), Muted (#666666)
-   - Accent: Carbon Black (#141414) — 100% Monochrome / Grayscale
+   - Accent: Carbon Black (#141414), muted brick red for destructive note actions
    - Typography: Editorial Serif Display (Headings) + High-Legibility Body
    ========================================================================== */
 
@@ -40,6 +40,8 @@ html[data-theme="eink"] {
   --eink-border-strong: #141414; /* emphasized / active border */
   --eink-disabled-surface: #e8e5dc;
   --eink-disabled-ink: #9a9486;
+  --eink-danger: #973f36;
+  --eink-danger-soft: #f4e5df;
 
   /* Anchor: Carbon Black (Monochrome) */
   --eink-accent: #141414;
@@ -95,9 +97,9 @@ html[data-theme="eink"] {
   --note-card-actions-surface: var(--eink-paper);
   --note-card-action: var(--eink-ink-muted);
   --note-card-action-hover: var(--eink-ink);
-  --note-card-action-hover-surface: var(--eink-paper-hover);
-  --note-card-action-danger: var(--eink-ink);
-  --note-card-action-danger-surface: var(--eink-paper-hover);
+  --note-card-action-hover-surface: var(--eink-accent-soft-hover);
+  --note-card-action-danger: var(--eink-danger);
+  --note-card-action-danger-surface: var(--eink-danger-soft);
   --note-card-action-disabled: var(--eink-disabled-ink);
 
   --focus-color: #141414;
@@ -959,10 +961,16 @@ html[data-theme="eink"] .pagination-button:hover:not(:disabled):not(.is-active) 
   background: var(--eink-paper-hover);
 }
 
-html[data-theme="eink"] :where(.note-card__action--danger, .note-card__action--permanent):is(:hover, :focus-visible) {
-  border-color: #141414;
-  color: #efece4;
-  background: #141414;
+html[data-theme="eink"] .note-card__action:not(.note-card__action--danger):not(.note-card__action--restore):is(:hover, :focus-visible):not(:disabled) {
+  border-color: var(--eink-border);
+  color: var(--eink-ink);
+  background: var(--eink-accent-soft-hover);
+}
+
+html[data-theme="eink"] :is(.note-card__action--danger, .note-card__action--permanent):is(:hover, :focus-visible):not(:disabled) {
+  border-color: var(--eink-danger);
+  color: var(--eink-danger);
+  background: var(--eink-danger-soft);
 }
 
 html[data-theme="eink"] .note-card__action--restore:is(:hover, :focus-visible) {

@@ -1,0 +1,175 @@
+/* Hallmark · component: note-window resize · genre: modern-minimal · theme: Nook
+ * audience: existing Nook users · use: reading and writing with a reference · tone: utilitarian
+ * states: default · hover · focus · active · disabled · loading · error · success
+ * contrast: pass (40–41) · component universal checks: pass
+ */
+/* Hallmark · pre-emit critique: P5 H4 E5 S5 R5 V4 */
+
+.note-window-resize,
+.note-detail-width-guide {
+  display: none;
+}
+
+@media (min-width: 821px) {
+  .workspace.is-note-detail-open,
+  .app-shell.is-sidebar-collapsed .workspace.is-note-detail-open,
+  html[data-sidebar-collapsed="true"] .app-shell .workspace.is-note-detail-open {
+    --note-detail-resize-gutter: 1.25rem;
+    --note-detail-default-shell: 1540px;
+    --note-detail-default-inset: clamp(1.25rem, 3.5vw, 3.5rem);
+    --note-detail-default-width: calc(min(100% + 2 * var(--note-detail-resize-gutter), var(--note-detail-default-shell)) - 2 * var(--note-detail-default-inset));
+    width: 100%;
+    max-width: none;
+    padding-inline: var(--note-detail-resize-gutter);
+  }
+
+  .app-shell.is-sidebar-collapsed .workspace.is-note-detail-open,
+  html[data-sidebar-collapsed="true"] .app-shell .workspace.is-note-detail-open {
+    --note-detail-default-shell: 1720px;
+  }
+
+  .note-detail-workspace {
+    position: relative;
+  }
+
+  .note-detail-width-guide {
+    display: block;
+    position: absolute;
+    width: var(--note-detail-default-width);
+    height: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  .note-detail-workspace:not(.is-side-by-side) > .note-dialog {
+    width: var(--note-detail-single-width, var(--note-detail-default-width));
+    max-width: 100%;
+    margin-inline: auto;
+  }
+
+  .note-window-resize {
+    --note-window-hit-width: 1rem;
+    display: block;
+    position: absolute;
+    z-index: 1;
+    top: 1rem;
+    bottom: 1rem;
+    width: var(--note-window-hit-width);
+    padding: 0;
+    border: 0;
+    cursor: col-resize;
+    touch-action: none;
+    user-select: none;
+  }
+
+  .note-window-resize--start {
+    left: calc((100% - var(--note-detail-single-width, var(--note-detail-default-width)) - var(--note-window-hit-width)) / 2);
+  }
+
+  .note-window-resize--end {
+    right: calc((100% - var(--note-detail-single-width, var(--note-detail-default-width)) - var(--note-window-hit-width)) / 2);
+  }
+
+  .note-window-resize::before,
+  .note-window-resize::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    width: 2px;
+    border-radius: var(--control-radius);
+    transform: translateX(-50%);
+    pointer-events: none;
+  }
+
+  .note-window-resize::before {
+    top: calc(50% - 1.25rem);
+    height: 2.5rem;
+    background: var(--text-muted);
+  }
+
+  .note-window-resize::after {
+    top: 0;
+    bottom: 0;
+    background: var(--focus-ring);
+    opacity: 0;
+    transition: opacity var(--motion-duration-micro) var(--motion-ease-out);
+  }
+
+  .note-window-resize:focus-visible,
+  .note-window-resize.is-focus {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: -2px;
+    border-radius: var(--control-radius);
+  }
+
+  .note-window-resize:is(:focus-visible, :active, .is-focus, .is-active, .is-hover)::after {
+    opacity: 1;
+  }
+
+  .note-window-resize[aria-disabled="true"] {
+    cursor: not-allowed;
+    opacity: 0.35;
+  }
+
+  .note-window-resize.is-loading {
+    cursor: wait;
+    opacity: 0.55;
+  }
+
+  .note-window-resize.is-error::before {
+    outline: 2px dashed var(--danger-text);
+  }
+
+  .note-window-resize.is-success::before {
+    background: var(--selected-text);
+  }
+
+  .app-shell.is-note-resizing,
+  .app-shell.is-note-resizing * {
+    cursor: col-resize;
+    user-select: none;
+  }
+}
+
+@media (min-width: 821px) and (hover: hover) {
+  .note-window-resize:not([aria-disabled="true"]):hover::after {
+    opacity: 1;
+  }
+}
+
+@media (min-width: 821px) and (pointer: coarse) {
+  .note-window-resize {
+    --note-window-hit-width: 2.75rem;
+  }
+}
+
+@media (min-width: 960px) {
+  .note-detail-workspace.is-side-by-side {
+    grid-template-columns: minmax(0, var(--note-detail-primary-width, 1fr)) minmax(0, 1fr);
+  }
+
+  .note-detail-workspace.is-side-by-side > .note-window-resize--end {
+    right: auto;
+    left: calc(var(--note-detail-divider-position, 50%) - var(--note-window-hit-width) / 2);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .note-window-resize::after {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .note-window-resize::before {
+    background: CanvasText;
+  }
+
+  .note-window-resize::after {
+    background: Highlight;
+  }
+
+  .note-window-resize:focus-visible {
+    outline-color: Highlight;
+  }
+}
