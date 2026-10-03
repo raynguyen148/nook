@@ -35,7 +35,7 @@ html[data-theme="eink"] {
   --eink-ink: #141414;           /* deep stark carbon ink */
   --eink-ink-secondary: #383838; /* clean reading body */
   --eink-ink-muted: #666666;     /* timestamps, counts, secondary info */
-  --eink-ink-subtle: #8c8c8c;    /* placeholders, hints */
+  --eink-ink-subtle: #666666;    /* placeholders, hints */
   --eink-border: #d5cfc2;        /* subtle, elegant paper hairline */
   --eink-border-strong: #141414; /* emphasized / active border */
   --eink-disabled-surface: #e8e5dc;
@@ -1091,6 +1091,20 @@ html[data-theme="eink"] #secondary-reader-view #secondary-split-preview {
   background: transparent !important;
   background-color: transparent !important;
   color: var(--eink-ink) !important;
+}
+
+/* The paper reset preserves the active target for keyboard navigation. */
+html[data-theme="eink"][data-input-modality="keyboard"] #secondary-reader-view :is(
+  #secondary-note-content-editor,
+  #secondary-split-preview
+):focus-visible,
+html[data-theme="eink"][data-input-modality="keyboard"] :is(
+  #note-content,
+  #note-content-preview,
+  .quick-view-content
+):focus-visible {
+  outline: 2px solid var(--focus-ring) !important;
+  outline-offset: -2px !important;
 }
 
 html[data-theme="eink"] .note-formatting-toolbar {

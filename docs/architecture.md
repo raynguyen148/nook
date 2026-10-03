@@ -92,7 +92,7 @@ product decision.
 | `js/app/pane-controller.js` | Shared pane session, save, conflict, and recovery lifecycle |
 | `js/app/onboarding.js` | Dismissible local-data introduction and explicit ordinary guide-note creation |
 | `js/app/preferences.js` | Theme, layout, sidebar, responsive controls, and preference persistence |
-| `js/app/feedback.js` | Toasts, confirmation dialogs, and focus restoration |
+| `js/app/feedback.js` | Toasts, confirmation dialogs, focus restoration, and shared pane save-status presentation |
 | `js/app/editor-session.js` | DOM-independent editor state machines, save sequencing, CAS inputs, conflict state, and per-session draft recovery |
 | `js/app/note-actions.js` | Pin, move-to-Trash with Undo, restore, permanent-delete, and empty-Trash mutations shared by cards and editor surfaces |
 | `js/app/library.js` | Library cards, pagination, Trash presentation, and sort controls |
@@ -436,6 +436,17 @@ saved preference; an explicit sidebar toggle while the pane is open remains
 user intent. Dirty close continues through the existing guarded save flow.
 The primary footer says **Save & return** and both panes use Saved, Saving,
 Unsaved changes, and Save failed status wording.
+`feedback.renderNoteSaveStatus()` owns their labels, descriptions, icons, and
+state classes. Each pane retains its own save policy and lifecycle. Side note
+keeps an empty title in the draft, pauses autosave while required fields are
+invalid, and focuses an inline error on explicit save. After a save refresh,
+it rechecks session dirtiness before normalizing controls so newer typing
+remains available for the next autosave.
+
+Catalog forms expose `aria-busy` and disable their controls during a mutation.
+Edit operations use a kind/id key across search-driven form replacement, and
+pending callbacks clear only the captured edit. Transient management drafts
+remain in UI state across refreshes; they do not change the storage contract.
 
 On mobile, the formatting track scrolls separately from its visible More/back
 controls. Overflow cues update after layout changes and disappear at either

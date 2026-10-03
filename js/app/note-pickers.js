@@ -77,6 +77,7 @@
           trigger.classList.add(pickerInstance.colorClass);
           dot.className = `type-dot type-dot--${safeTypeColor(type)}`;
           label.textContent = type.name;
+          trigger.setAttribute("aria-label", `Note type: ${type.name}`);
           pickerInstance.options.forEach((option) => {
             const selected = option.dataset.typeId === type.id;
             option.setAttribute("aria-selected", String(selected));
@@ -250,6 +251,7 @@
         });
         chip.append(createElement("span", { text: tagLabel(tag) }));
         const remove = createElement("button", {
+          className: "selected-tag__remove",
           type: "button",
           disabled: ui.noteSaveInFlight,
           attributes: { "aria-label": `Remove tag ${tagLabel(tag)}` },
@@ -324,6 +326,7 @@
         });
         chip.append(createElement("span", { text: tagLabel(tag) }));
         const remove = createElement("button", {
+          className: "selected-tag__remove",
           type: "button",
           attributes: { "aria-label": `Remove tag ${tagLabel(tag)}` },
         });

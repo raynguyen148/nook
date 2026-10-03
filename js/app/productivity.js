@@ -246,7 +246,7 @@ globalThis[Symbol.for("nook.app.modules")].register("productivity", (app) => {
     const noteGroup = notes.length ? resultGroup("Matching notes", query ? `${Math.min(notes.length, 30)} of ${notes.length}` : "Showing recent") : null;
     commandItems.forEach((item, index) => {
       const button = create("button", { type: "button", className: `command-result${index === 0 ? " is-active" : ""}`,
-        attributes: { role: "option", "aria-selected": String(index === 0) }, dataset: { commandIndex: String(index) } });
+        attributes: { id: `command-option-${index}`, role: "option", tabindex: "-1", "aria-selected": String(index === 0) }, dataset: { commandIndex: String(index) } });
       const copy = create("span", { className: "command-result__copy" });
       copy.append(create("span", { className: "command-result__title", text: item.title }),
         create("span", { className: "command-result__hint", text: item.hint }));
@@ -256,6 +256,7 @@ globalThis[Symbol.for("nook.app.modules")].register("productivity", (app) => {
       (index < actions.length ? actionGroup : noteGroup).append(button);
     });
     elements.commandResults.replaceChildren(fragment);
+    syncActiveCommand();
     const total = library.notes.filter((note) => !note.deletedAt).length;
     elements.commandNotesCount.textContent = `${total} ${total === 1 ? "note" : "notes"} total`;
     elements.commandResults.scrollTop = 0;
@@ -267,7 +268,20 @@ globalThis[Symbol.for("nook.app.modules")].register("productivity", (app) => {
     elements.commandSearch.value = "";
     renderCommandResults();
     openWorkflowDialog(elements.commandDialog);
+    elements.commandSearch.setAttribute("aria-expanded", "true");
     elements.commandSearch.focus();
+  }
+
+  function syncActiveCommand() {
+    const buttons = [...elements.commandResults.querySelectorAll(".command-result")];
+    buttons.forEach((button, index) => {
+      button.classList.toggle("is-active", index === activeCommand);
+      button.setAttribute("aria-selected", String(index === activeCommand));
+    });
+    const selected = buttons[activeCommand];
+    if (selected) elements.commandSearch.setAttribute("aria-activedescendant", selected.id);
+    else elements.commandSearch.removeAttribute("aria-activedescendant");
+    return selected;
   }
 
   async function executeCommand(index) {
@@ -278,16 +292,11 @@ globalThis[Symbol.for("nook.app.modules")].register("productivity", (app) => {
   }
 
   function handleCommandKeydown(event) {
-    if (event.isComposing || event.altKey || event.metaKey || event.ctrlKey) return;
+    if (event.target !== elements.commandSearch || event.isComposing || event.altKey || event.metaKey || event.ctrlKey) return;
     if (["ArrowDown", "ArrowUp"].includes(event.key) && commandItems.length) {
       event.preventDefault();
       activeCommand = (activeCommand + (event.key === "ArrowDown" ? 1 : -1) + commandItems.length) % commandItems.length;
-      const buttons = [...elements.commandResults.querySelectorAll(".command-result")];
-      buttons.forEach((button, index) => {
-        button.classList.toggle("is-active", index === activeCommand);
-        button.setAttribute("aria-selected", String(index === activeCommand));
-      });
-      buttons[activeCommand].scrollIntoView({ block: "nearest" });
+      syncActiveCommand()?.scrollIntoView({ block: "nearest" });
     } else if (event.key === "Enter" && event.target === elements.commandSearch) {
       event.preventDefault();
       if (!event.repeat) void executeCommand(activeCommand);
@@ -304,6 +313,10 @@ globalThis[Symbol.for("nook.app.modules")].register("productivity", (app) => {
         if (dialog.getAttribute("aria-busy") === "true") event.preventDefault();
       });
       dialog.addEventListener("close", () => {
+        if (dialog === elements.commandDialog) {
+          elements.commandSearch.setAttribute("aria-expanded", "false");
+          elements.commandSearch.removeAttribute("aria-activedescendant");
+        }
         const invoker = dialogInvokers.get(dialog);
         if (!api.activeModalDialog() && invoker instanceof HTMLElement && invoker.isConnected && invoker.getClientRects().length) invoker.focus({ preventScroll: true });
         api.syncToastHost();

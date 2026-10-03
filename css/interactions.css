@@ -133,7 +133,7 @@ textarea:focus-visible {
 
 
 .text-button {
-  color: var(--primary-accent);
+  color: var(--selected-text);
 }
 
 
@@ -686,7 +686,7 @@ textarea:focus-visible {
   border: 0;
   border-radius: 9999px;
   padding: 0 0.6rem;
-  color: #64748b;
+  color: var(--text-muted);
   background: transparent;
   font-size: 0.76rem;
   font-weight: 700;
@@ -1030,7 +1030,7 @@ textarea:focus-visible {
 
 .note-editor-pane__label {
   display: none;
-  color: #94a3b8;
+  color: var(--text-muted);
   font-size: 0.68rem;
   font-weight: 700;
   letter-spacing: 0.08em;

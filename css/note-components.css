@@ -23,7 +23,7 @@
   min-width: 0;
   min-height: min(62rem, calc(100dvh - 2.5rem));
   border: 1px solid #dfe3ec;
-  border-radius: 1.5rem;
+  border-radius: var(--radius-dialog);
   color: #263143;
   background: #fff;
   box-shadow: 0 14px 42px rgb(23 30 56 / 12%);
@@ -103,11 +103,17 @@
   position: absolute;
   top: 50%;
   left: 0.84rem;
-  color: #64748b;
+  color: var(--text-muted);
   font-size: 1.35rem;
   line-height: 1;
   transform: translateY(-50%);
   pointer-events: none;
+}
+
+.search-icon svg {
+  display: block;
+  width: 1rem;
+  height: 1rem;
 }
 
 
@@ -258,10 +264,14 @@ select::-ms-expand {
 
 
 .search-field input::placeholder,
+.management-search input::placeholder,
+.create-row input::placeholder,
+.management-row input::placeholder,
 .tag-picker__input-row input::placeholder,
 .field input::placeholder,
 .field textarea::placeholder {
-  color: #a1a9b7;
+  color: var(--text-muted);
+  opacity: 1;
 }
 
 
@@ -278,7 +288,7 @@ select::-ms-expand {
   border-radius: 50%;
   padding: 0;
   color: #6f7a8e;
-  background: #f1f3f7;
+  background: var(--surface-muted);
   opacity: 1;
   transform: translateY(-50%);
   transition:
@@ -550,7 +560,7 @@ select::-ms-expand {
   border: 0;
   border-radius: var(--radius-pill);
   padding: 0;
-  color: #64748b;
+  color: var(--text-muted);
   background: transparent;
   cursor: pointer;
   transform-origin: center center;
@@ -1377,7 +1387,7 @@ select::-ms-expand {
 
 .more-tags,
 .untagged {
-  color: #64748b;
+  color: var(--text-muted);
   font-size: 0.68rem;
   font-weight: 500;
 }
@@ -1463,7 +1473,7 @@ select::-ms-expand {
   border: 1px solid transparent;
   border-radius: 0.5rem;
   padding: 0;
-  color: #64748b;
+  color: var(--text-muted);
   background: transparent;
   opacity: 0;
   pointer-events: none;
@@ -1642,7 +1652,7 @@ html .note-card.note-card--pinned[data-state="success"] {
   place-items: center;
   border: 0;
   border-radius: 50%;
-  color: #738096;
+  color: var(--text-muted);
   background: transparent;
   font-size: 1.45rem;
   line-height: 1;
@@ -1667,6 +1677,10 @@ html .note-card.note-card--pinned[data-state="success"] {
   width: 1.15rem;
   height: 1.15rem;
   pointer-events: none;
+}
+
+.icon-button:disabled {
+  opacity: 0.5;
 }
 
 
@@ -1695,9 +1709,9 @@ html .note-card.note-card--pinned[data-state="success"] {
 
 
 
-.icon-button:hover {
-  color: #3e4a61;
-  background: #f1f3f7;
+.icon-button:hover:not(:disabled) {
+  color: var(--text-strong);
+  background: var(--surface-muted);
 }
 
 
@@ -1725,7 +1739,7 @@ html .note-card.note-card--pinned[data-state="success"] {
   border: 1px dashed #d8dde7;
   border-radius: 0.85rem;
   padding: 3.2rem 1.2rem;
-  color: #6f7a8f;
+  color: var(--text-muted);
   text-align: center;
 }
 
@@ -1854,7 +1868,7 @@ html .note-card.note-card--pinned[data-state="success"] {
   max-height: min(850px, calc(100dvh - 2rem));
   margin: auto;
   border: 1px solid #dfe3ec;
-  border-radius: 1.5rem;
+  border-radius: var(--radius-dialog);
   padding: 0;
   color: #263143;
   background: #fff;
@@ -2185,7 +2199,7 @@ html .note-card.note-card--pinned[data-state="success"] {
   border: 1px solid #e2e8f0;
   border-radius: 999px;
   padding: 0 0.42rem;
-  color: #64748b;
+  color: var(--text-muted);
   background: #ffffff;
   font-size: 0.95rem;
   font-weight: 500;
@@ -2271,6 +2285,6 @@ html .note-card.note-card--pinned[data-state="success"] {
   display: flex;
   flex-wrap: wrap;
   gap: 0.28rem 0.75rem;
-  color: #64748b;
+  color: var(--text-muted);
   font-size: 0.72rem;
 }

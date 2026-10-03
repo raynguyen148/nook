@@ -57,7 +57,7 @@ html:not([data-theme]) {
   --note-card-title: #261e18;
   --note-card-title-letter-spacing: -0.015em;
   --note-card-preview: #5e4d41;
-  --note-card-muted: #8c7766;
+  --note-card-muted: #6f5d4e;
   --note-card-action: #8c7766;
   --note-card-action-hover: #261e18;
   --note-card-action-hover-surface: #f0e6d6;
@@ -127,7 +127,7 @@ html:not([data-theme]) .sidebar-toggle-btn,
 html[data-theme="coffee"] .quick-view-header-toggle,
 html:not([data-theme]) .quick-view-header-toggle {
   border-color: #e5dacb;
-  color: #9e8d7d;
+  color: var(--text-muted);
   background: #f5efe6;
 }
 
@@ -149,7 +149,7 @@ html:not([data-theme]) .brand strong {
 
 html[data-theme="coffee"] .brand small,
 html:not([data-theme]) .brand small {
-  color: #8c7766;
+  color: var(--text-muted);
   font-weight: 600;
   letter-spacing: 0.01em;
 }
@@ -158,7 +158,7 @@ html[data-theme="coffee"] .filter-heading,
 html[data-theme="coffee"] .filter-section-title h2,
 html:not([data-theme]) .filter-heading,
 html:not([data-theme]) .filter-section-title h2 {
-  color: #8c7766;
+  color: var(--text-muted);
   font-weight: 700;
   letter-spacing: 0.06em;
 }
@@ -273,7 +273,7 @@ html:not([data-theme]) .tag-filter-option {
 
 html[data-theme="coffee"] .tag-filter-option .filter-count,
 html:not([data-theme]) .tag-filter-option .filter-count {
-  color: #8c7766;
+  color: var(--text-muted);
 }
 
 html[data-theme="coffee"] .tag-filter-option:hover,
@@ -389,7 +389,7 @@ html:not([data-theme]) .search-field input {
 
 html[data-theme="coffee"] .search-field input::placeholder,
 html:not([data-theme]) .search-field input::placeholder {
-  color: #9e8d7d;
+  color: var(--text-muted);
 }
 
 /* Search shortcut ⌘ F without cold blue borders */
@@ -429,7 +429,7 @@ html[data-theme="coffee"] .view-mode-button,
 html[data-theme="coffee"] .note-editor-mode__button,
 html:not([data-theme]) .view-mode-button,
 html:not([data-theme]) .note-editor-mode__button {
-  color: #8c7766;
+  color: var(--text-muted);
   background: transparent;
   transition:
     color var(--interaction-duration) var(--interaction-easing),
@@ -464,7 +464,7 @@ html:not([data-theme]) .note-editor-mode__button[aria-pressed="true"] {
 
 html[data-theme="coffee"] .results-meta,
 html:not([data-theme]) .results-meta {
-  color: #8c7766;
+  color: var(--text-muted);
 }
 
 /* Active Filters */
@@ -599,7 +599,7 @@ html:not([data-theme]) .pagination-button:disabled {
 
 html[data-theme="coffee"] .pagination-ellipsis,
 html:not([data-theme]) .pagination-ellipsis {
-  color: #9e8d7d;
+  color: var(--text-muted);
 }
 
 /* --------------------------------------------------------------------------
@@ -680,7 +680,7 @@ html:not([data-theme]) .detail-commandbar__info .note-save-status.is-saved {
 
 html[data-theme="coffee"] .detail-commandbar__info .note-save-status.is-new,
 html:not([data-theme]) .detail-commandbar__info .note-save-status.is-new {
-  color: #8c7766;
+  color: var(--text-muted);
 }
 
 html[data-theme="coffee"] .detail-commandbar__info .note-save-status.is-saving,
@@ -721,7 +721,7 @@ html[data-theme="coffee"] input::placeholder,
 html[data-theme="coffee"] textarea::placeholder,
 html:not([data-theme]) input::placeholder,
 html:not([data-theme]) textarea::placeholder {
-  color: #9e8d7d;
+  color: var(--text-muted);
 }
 
 html[data-theme="coffee"] .field--title input,

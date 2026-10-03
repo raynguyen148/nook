@@ -113,7 +113,6 @@ globalThis[Symbol.for("nook.app.modules")].register("feedback", (app) => {
       return Promise.resolve("keep-editing");
     }
     const focusReturn = invoker || (document.activeElement instanceof HTMLElement ? document.activeElement : null);
-    elements.conflictDialog.querySelector(".eyebrow").textContent = deleted ? "SAVED NOTE DELETED" : "NEWER VERSION FOUND";
     elements.conflictDialog.querySelector("h2").textContent = deleted
       ? "This note was deleted elsewhere"
       : "This note changed elsewhere";
@@ -162,6 +161,31 @@ globalThis[Symbol.for("nook.app.modules")].register("feedback", (app) => {
     showToast(message, "error");
   }
 
+  function renderNoteSaveStatus(container, label, state, customLabel = "") {
+    if (!container || !label) return;
+    const states = {
+      new: ["Unsaved note", "This note has not been saved yet", "M8 5a3 3 0 1 0 0 6 3 3 0 0 0 0-6", true],
+      saved: ["Saved", "All changes are saved locally", "m3.5 8.5 3 3 6-6"],
+      saving: ["Saving…", "Saving changes locally", "M8 2a6 6 0 1 0 6 6"],
+      dirty: ["Unsaved changes", "Changes will save automatically", "M8 4a4 4 0 1 0 0.01 0", true],
+      error: ["Save failed", "Save failed. Keep this note open and try saving again.", "M8 3.5v5M8 12h.01"],
+    };
+    const presentation = states[state];
+    if (!presentation) return;
+    container.classList.remove(...Object.keys(states).map(value => `is-${value}`));
+    container.classList.add(`is-${state}`);
+    container.title = presentation[1];
+    label.textContent = customLabel || presentation[0];
+    const icon = container.querySelector(".note-save-status__icon");
+    if (!icon) return;
+    icon.setAttribute("viewBox", "0 0 16 16");
+    const path = icon.querySelector("path") || document.createElementNS("http://www.w3.org/2000/svg", "path");
+    path.setAttribute("d", presentation[2]);
+    if (presentation[3]) path.setAttribute("fill", "currentColor");
+    else path.removeAttribute("fill");
+    if (!path.parentElement) icon.append(path);
+  }
+
   Object.assign(api, {
     activeModalDialog,
     syncToastHost,
@@ -174,5 +198,6 @@ globalThis[Symbol.for("nook.app.modules")].register("feedback", (app) => {
     closeConflictResolution,
     finishConflictResolution,
     showError,
+    renderNoteSaveStatus,
   });
 });

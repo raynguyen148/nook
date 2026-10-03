@@ -25,14 +25,14 @@
 .app-dialog > .dialog-header {
   align-items: center;
   padding-block: 1.15rem 1rem;
-  border-bottom-color: #e5e7eb;
+  border-bottom-color: var(--border-subtle);
   background: inherit;
 }
 
 
 
 .app-dialog > .dialog-header h2 {
-  font-size: 1.1rem;
+  font-size: var(--font-size-dialog-title);
   font-weight: 650;
   letter-spacing: -0.015em;
 }
@@ -41,7 +41,7 @@
 
 .app-dialog > .dialog-footer {
   padding-block: 0.85rem 1rem;
-  border-top-color: #e5e7eb;
+  border-top-color: var(--border-subtle);
   background: inherit;
 }
 
@@ -58,7 +58,7 @@
 
 .confirmation-dialog__body p {
   margin: 0;
-  color: #556176;
+  color: var(--text-default);
   font-size: 0.88rem;
   font-weight: 450;
   line-height: 1.58;
@@ -197,6 +197,11 @@
 .history-list__meta {
   color: var(--component-text-muted, #64748b);
   font-size: 0.76rem;
+}
+
+.history-list__option:hover .history-list__meta,
+.history-list__option[aria-selected="true"] .history-list__meta {
+  color: var(--selected-text);
 }
 
 
@@ -474,7 +479,7 @@
   border: 1px solid #dfe3ea;
   border-radius: var(--control-radius);
   padding: 0.56rem 0.68rem;
-  color: #556176;
+  color: var(--text-default);
   background: #fff;
   box-shadow: 0 0.75rem 1.75rem rgb(36 46 66 / 12%), 0 0.15rem 0.45rem rgb(36 46 66 / 6%);
   font-size: 0.72rem;
@@ -592,7 +597,7 @@
   border: 1px solid #dfe3ea;
   border-radius: var(--control-radius);
   padding: 0.56rem 0.68rem;
-  color: #556176;
+  color: var(--text-default);
   background: #fff;
   box-shadow: 0 0.75rem 1.75rem rgb(36 46 66 / 12%), 0 0.15rem 0.45rem rgb(36 46 66 / 6%);
   font-size: 0.72rem;

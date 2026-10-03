@@ -99,7 +99,7 @@
     function getSecondaryEditorDraft(note = null) {
       return {
         id: ui.secondaryNoteId || note?.id || "",
-        title: elements.secondaryNoteTitleInput?.value || note?.title || "Untitled note",
+        title: elements.secondaryNoteTitleInput?.value ?? note?.title ?? "",
         typeId: elements.secondaryEditorTypeSelect?.value || ui.secondaryNoteTypeId || note?.typeId || storage.FALLBACK_TYPE_ID,
         tagIds: Array.from(ui.secondarySelectedNoteTagIds || note?.tagIds || []),
         content: elements.secondaryNoteContentEditor?.value ?? note?.content ?? "",
@@ -275,13 +275,15 @@
       clearSecondaryNoteAutoSave();
       if (!secondaryEditorSession?.hasUnsavedChanges() || secondaryEditorSession.conflict ||
           !ui.dualPaneOpen) return;
+      if (!elements.secondaryNoteTitleInput.value.trim() ||
+          !library.types.some(type => type.id === elements.secondaryEditorTypeSelect.value)) return;
       if (api.isPaneNotePickerOpen("secondary")) {
         api.deferPaneNoteAutoSave("secondary");
         return;
       }
       ui.secondaryAutoSaveTimer = setTimeout(() => {
         ui.secondaryAutoSaveTimer = 0;
-        void saveSecondaryNote();
+        void saveSecondaryNote({ isAutoSave: true });
       }, 1200);
     }
 
@@ -300,26 +302,7 @@
     }
 
     function setSecondarySaveStatus(status, customLabel = "") {
-      if (!elements.secondarySaveStatus) return;
-      elements.secondarySaveStatus.classList.remove("is-saved", "is-dirty", "is-saving", "is-error");
-      if (status === "saved") {
-        elements.secondarySaveStatus.classList.add("is-saved");
-        if (elements.secondarySaveStatusLabel) elements.secondarySaveStatusLabel.textContent = "Saved";
-        elements.secondarySaveStatus.title = "All changes are saved locally";
-      } else if (status === "dirty") {
-        elements.secondarySaveStatus.classList.add("is-dirty");
-        if (elements.secondarySaveStatusLabel) elements.secondarySaveStatusLabel.textContent = "Unsaved changes";
-        elements.secondarySaveStatus.title = "Changes will save automatically";
-      } else if (status === "saving") {
-        elements.secondarySaveStatus.classList.add("is-saving");
-        if (elements.secondarySaveStatusLabel) elements.secondarySaveStatusLabel.textContent = "Saving…";
-        elements.secondarySaveStatus.title = "Saving changes locally";
-      } else if (status === "error") {
-        elements.secondarySaveStatus.classList.add("is-error");
-        if (elements.secondarySaveStatusLabel) elements.secondarySaveStatusLabel.textContent = "Save failed";
-        elements.secondarySaveStatus.title = "Save failed. Keep this note open and try saving again.";
-      }
-      if (customLabel && elements.secondarySaveStatusLabel) elements.secondarySaveStatusLabel.textContent = customLabel;
+      api.renderNoteSaveStatus(elements.secondarySaveStatus, elements.secondarySaveStatusLabel, status, customLabel);
     }
 
     function syncSecondaryFooterActions() {
@@ -464,6 +447,7 @@
     }
 
     function onSecondaryNoteInput() {
+      validateSecondaryNote({ onlyVisible: true, focusFirst: false });
       syncSecondaryEditorDraft();
       ui.secondaryNoteDirty = secondaryEditorSession?.hasUnsavedChanges() || false;
       setSecondarySaveStatus("dirty");
@@ -480,9 +464,33 @@
       scheduleSecondaryNoteAutoSave();
     }
 
-    function saveSecondaryNote() {
+    function validateSecondaryNote({ onlyVisible = false, focusFirst = true } = {}) {
+      const fields = [
+        { control: elements.secondaryNoteTitleInput, error: elements.secondaryNoteTitleError,
+          message: elements.secondaryNoteTitleInput.value.trim() ? "" : "Enter a title." },
+        { control: shared.secondaryNoteTypePicker?.trigger || elements.secondaryEditorTypeSelect,
+          error: elements.secondaryNoteTypeError,
+          message: library.types.some(type => type.id === elements.secondaryEditorTypeSelect.value) ? "" : "Choose a note type." },
+      ];
+      let firstInvalid = null;
+      fields.forEach(({ control, error, message }) => {
+        if (onlyVisible && !error.classList.contains("is-visible")) return;
+        error.textContent = message;
+        error.classList.toggle("is-visible", Boolean(message));
+        if (message) control.setAttribute("aria-invalid", "true");
+        else control.removeAttribute("aria-invalid");
+        if (message && !firstInvalid) firstInvalid = control;
+      });
+      if (firstInvalid && focusFirst) {
+        if (ui.secondaryNoteMode === "preview") setSecondaryNoteMode("edit");
+        firstInvalid.focus();
+      }
+      return !firstInvalid;
+    }
+
+    function saveSecondaryNote({ isAutoSave = false } = {}) {
       if (secondarySaveOperation) return secondarySaveOperation;
-      const operation = performSecondaryNoteSave();
+      const operation = performSecondaryNoteSave({ isAutoSave });
       secondarySaveOperation = operation;
       void operation.finally(() => {
         if (secondarySaveOperation === operation) secondarySaveOperation = null;
@@ -490,11 +498,16 @@
       return operation;
     }
 
-    async function performSecondaryNoteSave() {
+    async function performSecondaryNoteSave({ isAutoSave = false } = {}) {
       clearSecondaryNoteAutoSave();
       if (!ui.secondaryNoteId || !secondaryEditorSession) return true;
       const session = secondaryEditorSession;
       syncSecondaryEditorDraft();
+      if (!validateSecondaryNote({ focusFirst: !isAutoSave })) {
+        setSecondarySaveStatus("dirty", "Needs attention");
+        elements.secondarySaveStatus.title = "Enter a title and choose a note type before saving.";
+        return false;
+      }
 
       setSecondarySaveStatus("saving");
       try {
@@ -524,7 +537,7 @@
         setSecondarySaveStatus(ui.secondaryNoteDirty ? "dirty" : "saved");
         syncSecondaryFooterActions();
 
-        if (result.currentMatchesCapture) {
+        if (result.currentMatchesCapture && !session.hasUnsavedChanges()) {
           if (elements.secondaryNoteTitleInput && elements.secondaryNoteTitleInput.value !== saved.title) {
             elements.secondaryNoteTitleInput.value = saved.title;
           }
@@ -675,6 +688,7 @@
         elements.secondaryNoteTitleInput.value = note.title || "";
       }
       renderSecondaryNoteTypeOptions(ui.secondaryNoteTypeId);
+      validateSecondaryNote({ focusFirst: false });
       renderSecondarySelectedNoteTags();
       setSecondaryTagInputExpanded(false);
 

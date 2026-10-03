@@ -217,7 +217,7 @@
             <div class="toolbar">
               <div class="search-field">
                 <label class="sr-only" for="search-input">Search notes</label>
-                <span class="search-icon" aria-hidden="true">⌕</span>
+                <span class="search-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="10.75" cy="10.75" r="6.75"/><path d="m16 16 4.5 4.5"/></svg></span>
                 <input
                   id="search-input"
                   type="search"
@@ -1028,7 +1028,7 @@
                   <div class="toolbar secondary-toolbar">
                     <div class="search-field secondary-search-field">
                       <label class="sr-only" for="primary-note-search">Search notes</label>
-                      <span class="search-icon" aria-hidden="true">⌕</span>
+                      <span class="search-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="10.75" cy="10.75" r="6.75"/><path d="m16 16 4.5 4.5"/></svg></span>
                       <input id="primary-note-search" type="search" autocomplete="off" placeholder="Search title or content…" aria-label="Search title or content" />
                       <button id="primary-clear-search-btn" class="clear-search is-hidden" type="button" aria-label="Clear search"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4.75 4.75 6.5 6.5M11.25 4.75l-6.5 6.5" /></svg></button>
                     </div>
@@ -1086,7 +1086,7 @@
                   <div class="toolbar secondary-toolbar">
                     <div class="search-field secondary-search-field">
                       <label class="sr-only" for="secondary-note-search">Search notes</label>
-                      <span class="search-icon" aria-hidden="true">⌕</span>
+                      <span class="search-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="10.75" cy="10.75" r="6.75"/><path d="m16 16 4.5 4.5"/></svg></span>
                       <input
                         id="secondary-note-search"
                         type="search"
@@ -1223,7 +1223,8 @@
                 <div id="secondary-editor-container" class="secondary-editor-container note-dialog is-hidden">
                   <label class="field field--title" for="secondary-note-title-input">
                     <span class="sr-only">Title</span>
-                    <input id="secondary-note-title-input" type="text" maxlength="160" placeholder="Give this note a clear title" />
+                    <input id="secondary-note-title-input" type="text" maxlength="160" required placeholder="Give this note a clear title" aria-describedby="secondary-note-title-error" />
+                    <span id="secondary-note-title-error" class="field-error" aria-live="polite" aria-atomic="true"></span>
                   </label>
                   <div class="editor-grid">
                     <label class="field" for="secondary-note-type-select">
@@ -1420,7 +1421,6 @@
     <dialog id="confirmation-dialog" class="app-dialog confirmation-dialog" aria-labelledby="confirmation-dialog-title" aria-describedby="confirmation-dialog-description">
       <div class="dialog-header confirmation-dialog__header">
         <div>
-          <p class="eyebrow">Confirm action</p>
           <h2 id="confirmation-dialog-title">Are you sure?</h2>
         </div>
         <button id="close-confirmation-dialog-btn" class="icon-button" type="button" aria-label="Cancel confirmation" title="Cancel">
@@ -1445,7 +1445,6 @@
     <dialog id="conflict-dialog" class="app-dialog confirmation-dialog conflict-dialog" aria-labelledby="conflict-dialog-title" aria-describedby="conflict-dialog-description">
       <div class="dialog-header confirmation-dialog__header">
         <div>
-          <p class="eyebrow">NEWER VERSION FOUND</p>
           <h2 id="conflict-dialog-title">This note changed elsewhere</h2>
         </div>
         <button id="close-conflict-dialog-btn" class="icon-button" type="button" aria-label="Keep editing this draft" title="Keep editing">
@@ -1473,7 +1472,6 @@
     <dialog id="history-dialog" class="app-dialog history-dialog" aria-labelledby="history-dialog-title" aria-describedby="history-dialog-description">
       <div class="dialog-header">
         <div>
-          <p class="eyebrow">VERSION HISTORY</p>
           <h2 id="history-dialog-title">Earlier versions</h2>
           <p id="history-dialog-description" class="dialog-description">Preview an earlier saved version before restoring it.</p>
         </div>
@@ -1512,7 +1510,6 @@
     >
       <div class="dialog-header confirmation-dialog__header">
         <div>
-          <p class="eyebrow">DANGER ZONE</p>
           <h2 id="delete-library-dialog-title">Delete library data?</h2>
         </div>
         <button id="close-delete-library-dialog-btn" class="icon-button" type="button" aria-label="Cancel deletion" title="Cancel">
@@ -1556,7 +1553,6 @@
     <dialog id="organize-dialog" class="app-dialog organize-dialog" aria-labelledby="organize-dialog-title">
       <div class="dialog-header">
         <div>
-          <p class="eyebrow">LIBRARY SETTINGS</p>
           <h2 id="organize-dialog-title">Settings</h2>
         </div>
         <button id="close-organize-dialog-btn" class="icon-button" type="button" aria-label="Close settings" title="Close settings">
@@ -1953,12 +1949,12 @@
       </button>
     </nav>
     <dialog id="mobile-filter-dialog" class="mobile-sheet" aria-labelledby="mobile-filter-title">
-      <header class="mobile-sheet__header"><h2 id="mobile-filter-title">Search & filters</h2><button id="mobile-close-filters" class="icon-button" type="button" aria-label="Close search and filters">×</button></header>
+      <header class="mobile-sheet__header"><h2 id="mobile-filter-title">Search & filters</h2><button id="mobile-close-filters" class="icon-button" type="button" aria-label="Close search and filters"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12" /></svg></button></header>
       <div id="mobile-filter-body" class="mobile-sheet__body"><div id="mobile-search-slot"></div><div id="mobile-sort-slot"><h3>Sort notes</h3></div></div>
       <footer class="mobile-sheet__footer"><div><span id="mobile-filter-results" role="status"></span><button id="mobile-reset-filters" class="text-button" type="button">Reset all</button></div><button id="mobile-filters-done" class="button button-primary" type="button">Show notes</button></footer>
     </dialog>
     <dialog id="mobile-space-dialog" class="mobile-sheet" aria-labelledby="mobile-space-title">
-      <header class="mobile-sheet__header"><h2 id="mobile-space-title">Your library</h2><button class="icon-button" type="button" data-mobile-close aria-label="Close library menu">×</button></header>
+      <header class="mobile-sheet__header"><h2 id="mobile-space-title">Your library</h2><button class="icon-button" type="button" data-mobile-close aria-label="Close library menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12" /></svg></button></header>
       <div class="mobile-sheet__body mobile-space-menu">
         <button id="mobile-space-notes" class="mobile-space-option" type="button">
           <span class="mobile-space-option__icon" aria-hidden="true">
@@ -1977,11 +1973,11 @@
       </div>
     </dialog>
     <dialog id="mobile-card-dialog" class="mobile-sheet" aria-labelledby="mobile-card-title">
-      <header class="mobile-sheet__header"><h2 id="mobile-card-title">Note actions</h2><button class="icon-button" type="button" data-mobile-close aria-label="Close card actions">×</button></header>
+      <header class="mobile-sheet__header"><h2 id="mobile-card-title">Note actions</h2><button class="icon-button" type="button" data-mobile-close aria-label="Close card actions"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12" /></svg></button></header>
       <div id="mobile-card-actions" class="mobile-sheet__body mobile-menu-list"></div>
     </dialog>
     <dialog id="mobile-note-actions-dialog" class="mobile-sheet" aria-labelledby="mobile-note-actions-title">
-      <header class="mobile-sheet__header"><h2 id="mobile-note-actions-title">Note actions</h2><button id="mobile-close-note-actions" class="icon-button" type="button" aria-label="Close note actions">×</button></header>
+      <header class="mobile-sheet__header"><h2 id="mobile-note-actions-title">Note actions</h2><button id="mobile-close-note-actions" class="icon-button" type="button" aria-label="Close note actions"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12" /></svg></button></header>
       <div id="mobile-note-actions-body" class="mobile-sheet__body"></div>
     </dialog>
     <dialog id="command-dialog" class="workflow-dialog command-dialog" aria-labelledby="command-title">
@@ -1990,7 +1986,7 @@
         <svg class="command-dialog__search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><circle cx="10.75" cy="10.75" r="6.75"/><path d="m16 16 4.5 4.5"/></svg>
         <label class="command-dialog__field" for="command-search">
           <span class="sr-only">Find a note or action</span>
-          <input id="command-search" type="search" autocomplete="off" placeholder="Type a command or search notes…" />
+          <input id="command-search" type="search" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="command-results" autocomplete="off" placeholder="Type a command or search notes…" />
         </label>
         <button class="button button-secondary command-dialog__close" type="button" data-close-workflow="commandDialog" aria-label="Close quick actions"><kbd>Esc</kbd></button>
       </div>
@@ -2007,7 +2003,7 @@
     <dialog id="recovery-dialog" class="workflow-dialog" aria-labelledby="recovery-title">
       <div class="dialog-header">
         <h2 id="recovery-title">Draft Recovery</h2>
-        <button class="icon-button" type="button" data-close-workflow="recoveryDialog" aria-label="Close draft recovery">×</button>
+        <button class="icon-button" type="button" data-close-workflow="recoveryDialog" aria-label="Close draft recovery"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12" /></svg></button>
       </div>
       <div class="dialog-body">
         <p class="dialog-description">Unfinished drafts stay in this browser for up to 30 days. They are not included in library backups. Drafts still open in another tab can be copied or exported safely.</p>
@@ -2019,7 +2015,7 @@
     <dialog id="import-dialog" class="workflow-dialog" aria-labelledby="import-title">
       <div class="dialog-header">
         <h2 id="import-title">Inspect import</h2>
-        <button class="icon-button" type="button" data-close-workflow="importDialog" aria-label="Cancel import">×</button>
+        <button class="icon-button" type="button" data-close-workflow="importDialog" aria-label="Cancel import"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12" /></svg></button>
       </div>
       <div class="dialog-body">
         <p id="import-summary" class="dialog-description"></p>
@@ -2055,7 +2051,7 @@
     <dialog id="template-dialog" class="workflow-dialog" aria-labelledby="template-title">
       <div class="dialog-header">
         <h2 id="template-title">Templates</h2>
-        <button class="icon-button" type="button" data-close-workflow="templateDialog" aria-label="Close templates">×</button>
+        <button class="icon-button" type="button" data-close-workflow="templateDialog" aria-label="Close templates"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12" /></svg></button>
       </div>
       <div class="dialog-body">
         <p class="dialog-description">Start with a built-in template or your own. Custom templates are ordinary notes tagged “template”, so they travel with your backups. Use {{date}} and {{time}} for the current local date and time.</p>

@@ -256,64 +256,7 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
   }
 
   function setNoteSaveStatus(state, customLabel = "") {
-    if (!elements.noteSaveStatus || !elements.noteSaveStatusLabel) return;
-    elements.noteSaveStatus.classList.remove("is-new", "is-saved", "is-saving", "is-dirty", "is-error");
-    elements.noteSaveStatus.classList.add(`is-${state}`);
-    const statusTitles = {
-      new: "This note has not been saved yet",
-      saved: "All changes are saved locally",
-      saving: "Saving changes locally",
-      dirty: "Changes will save automatically",
-      error: "Save failed. Keep this note open and try saving again.",
-    };
-    elements.noteSaveStatus.title = statusTitles[state] || "";
-    const icon = elements.noteSaveStatus.querySelector(".note-save-status__icon");
-    if (state === "new") {
-      elements.noteSaveStatusLabel.textContent = customLabel || "Unsaved note";
-      if (icon) {
-        icon.setAttribute("viewBox", "0 0 16 16");
-        const path = icon.querySelector("path") || document.createElementNS("http://www.w3.org/2000/svg", "path");
-        path.setAttribute("d", "M8 5a3 3 0 1 0 0 6 3 3 0 0 0 0-6");
-        path.setAttribute("fill", "currentColor");
-        if (!path.parentElement) icon.append(path);
-      }
-    } else if (state === "saved") {
-      elements.noteSaveStatusLabel.textContent = customLabel || "Saved";
-      if (icon) {
-        icon.setAttribute("viewBox", "0 0 16 16");
-        const path = icon.querySelector("path") || document.createElementNS("http://www.w3.org/2000/svg", "path");
-        path.setAttribute("d", "m3.5 8.5 3 3 6-6");
-        path.removeAttribute("fill");
-        if (!path.parentElement) icon.append(path);
-      }
-    } else if (state === "saving") {
-      elements.noteSaveStatusLabel.textContent = customLabel || "Saving…";
-      if (icon) {
-        icon.setAttribute("viewBox", "0 0 16 16");
-        const path = icon.querySelector("path") || document.createElementNS("http://www.w3.org/2000/svg", "path");
-        path.setAttribute("d", "M8 2a6 6 0 1 0 6 6");
-        path.removeAttribute("fill");
-        if (!path.parentElement) icon.append(path);
-      }
-    } else if (state === "dirty") {
-      elements.noteSaveStatusLabel.textContent = customLabel || "Unsaved changes";
-      if (icon) {
-        icon.setAttribute("viewBox", "0 0 16 16");
-        const path = icon.querySelector("path") || document.createElementNS("http://www.w3.org/2000/svg", "path");
-        path.setAttribute("d", "M8 4a4 4 0 1 0 0.01 0");
-        path.setAttribute("fill", "currentColor");
-        if (!path.parentElement) icon.append(path);
-      }
-    } else if (state === "error") {
-      elements.noteSaveStatusLabel.textContent = customLabel || "Save failed";
-      if (icon) {
-        icon.setAttribute("viewBox", "0 0 16 16");
-        const path = icon.querySelector("path") || document.createElementNS("http://www.w3.org/2000/svg", "path");
-        path.setAttribute("d", "M8 3.5v5M8 12h.01");
-        path.removeAttribute("fill");
-        if (!path.parentElement) icon.append(path);
-      }
-    }
+    api.renderNoteSaveStatus(elements.noteSaveStatus, elements.noteSaveStatusLabel, state, customLabel);
   }
 
   function scheduleNoteAutoSave() {

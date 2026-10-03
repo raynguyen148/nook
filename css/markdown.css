@@ -304,7 +304,7 @@
 
 .quick-view-content .markdown-code-lang,
 .note-content-preview .markdown-code-lang {
-  color: #64748b;
+  color: var(--text-default);
   font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace);
   font-size: 0.68rem;
   font-weight: 700;

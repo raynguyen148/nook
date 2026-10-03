@@ -56,7 +56,7 @@ html[data-theme="forest"] {
   --note-card-title: #1e2d24;
   --note-card-title-letter-spacing: -0.015em;
   --note-card-preview: #40594b;
-  --note-card-muted: #708478;
+  --note-card-muted: #4e6655;
   --note-card-actions-border: #d6e2d8;
   --note-card-actions-surface: #f3f7f1;
   --note-card-action: #5a7062;
@@ -148,7 +148,7 @@ html[data-theme="forest"] .filter-heading,
 html[data-theme="forest"] .filter-section-title h2,
 html[data-theme="forest"] .subtitle,
 html[data-theme="forest"] .results-meta {
-  color: #617669;
+  color: var(--text-muted);
 }
 
 html[data-theme="forest"] .eyebrow {
@@ -194,7 +194,7 @@ html[data-theme="forest"] .sidebar-filter.is-active {
 html[data-theme="forest"] .space-link.is-active .filter-count,
 html[data-theme="forest"] .sidebar-filter.is-active .filter-count,
 html[data-theme="forest"] .filter-count {
-  color: #688070;
+  color: var(--text-muted);
 }
 
 /* Type filters retain a subdued, type-aware surface so their selected state
@@ -252,7 +252,7 @@ html[data-theme="forest"] .tag-filter-option.is-active {
 }
 
 html[data-theme="forest"] .tag-filter-option .filter-count {
-  color: #789080;
+  color: var(--text-muted);
 }
 
 /* --------------------------------------------------------------------------
@@ -299,7 +299,7 @@ html[data-theme="forest"] .sort-field select {
 html[data-theme="forest"] input::placeholder,
 html[data-theme="forest"] textarea::placeholder,
 html[data-theme="forest"] .search-field input::placeholder {
-  color: #809488;
+  color: var(--text-muted);
 }
 
 html[data-theme="forest"] input:focus,
@@ -329,7 +329,7 @@ html[data-theme="forest"] .search-shortcut kbd {
 
 html[data-theme="forest"] .view-mode-button,
 html[data-theme="forest"] .note-editor-mode__button {
-  color: #688070;
+  color: var(--text-muted);
   background: transparent;
 }
 
@@ -419,7 +419,7 @@ html[data-theme="forest"] .note-card--pinned .note-card__pin-toggle {
 
 html[data-theme="forest"] .pagination-button {
   border-color: #cbdccc;
-  color: #5d7566;
+  color: var(--text-muted);
   background: transparent;
 }
 
@@ -633,7 +633,7 @@ html[data-theme="forest"] .empty-state h3 {
 }
 
 html[data-theme="forest"] .organize-tab {
-  color: #607669;
+  color: var(--text-muted);
 }
 
 html[data-theme="forest"] .organize-tab.is-active {
@@ -653,7 +653,7 @@ html[data-theme="forest"] .management-row__default,
 html[data-theme="forest"] .empty-state,
 html[data-theme="forest"] .mobile-filter-toggle {
   border-color: #cbdccc;
-  color: #5d7566;
+  color: var(--text-muted);
   background: #edf5ed;
 }
 

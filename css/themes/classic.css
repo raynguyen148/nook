@@ -41,7 +41,7 @@ html[data-theme="light"] {
   --note-card-action: #71717a;
   --note-card-action-hover: var(--primary-accent-text);
   --note-card-action-hover-surface: var(--primary-accent-soft);
-  --note-card-action-danger: #dc2626;
+  --note-card-action-danger: #b91c1c;
   --note-card-action-danger-surface: #fef2f2;
   --note-card-action-disabled: #d4d4d8;
   --primary-button-text: #ffffff;
@@ -135,7 +135,7 @@ html[data-theme="light"] :where(.space-link, .sidebar-filter).is-active {
 }
 
 html[data-theme="light"] :where(.space-link, .sidebar-filter).is-active .filter-count {
-  color: var(--primary-accent);
+  color: var(--selected-text);
 }
 
 html[data-theme="light"] .sidebar-filter--type.is-active {

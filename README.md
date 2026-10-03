@@ -586,6 +586,7 @@ mutation occurs.
 | [`scripts/test-workspace-resize.cjs`](scripts/test-workspace-resize.cjs) | Optional Chromium checks for width bounds, drag/keyboard cancellation, preference persistence, mode-specific floors, themes, and mobile layout |
 | [`scripts/test-note-card-actions.cjs`](scripts/test-note-card-actions.cjs) | Optional Chromium checks for card More menus, pin visibility, tag/timestamp footers, both pickers, keyboard, and touch |
 | [`scripts/test-workflows.cjs`](scripts/test-workflows.cjs) | Optional Chromium storage/UI regression checks using isolated synthetic data |
+| [`scripts/test-ui-standardization.cjs`](scripts/test-ui-standardization.cjs) | Optional UI screenshots, overflow/contrast diagnostics, keyboard focus, validation, and delayed-save regression checks |
 | [`scripts/update-service-worker-cache.cjs`](scripts/update-service-worker-cache.cjs) | Recomputes the cache fingerprint from all hosted app assets |
 | [`sw.js`](sw.js) | Versioned cache for local hosted app resources; never owns note data |
 | [`manifest.webmanifest`](manifest.webmanifest) | Local install metadata for hosted browsers |
@@ -662,6 +663,17 @@ It checks import atomicity, merge conflicts/history, stale batch rejection,
 templates, Daily note identity, draft recovery across tabs/reload, responsive
 layouts, themes, hosted offline reopen, and static file mode. It does not prove
 Safari, Firefox, device hardware, or storage-quota behavior.
+
+For the UI surface audit, run `NOOK_SCREENSHOT_DIR=/tmp/nook-ui-review node
+scripts/test-ui-standardization.cjs` with the same existing local Playwright
+setup. It captures all seven palettes, library layouts, settings panels,
+workflows, and widths from 320 to 1440 px in a fresh synthetic library. It also
+checks Quick actions focus, Side note validation and continued typing during
+refresh, catalog retries and search-driven re-rendering, and E-Ink/forced-colors
+focus. Contrast and target-size diagnostics support manual review; they are
+not a complete accessibility certification. `NOOK_UI_THEMES` can narrow the
+palette captures. The [UI audit record](docs/ui-standardization-audit.md)
+contains coverage, before/after evidence, and remaining verification limits.
 
 Run the cache update script after changing any hosted HTML, CSS, JavaScript,
 font, icon, manifest asset, or Service Worker behavior. The regression test

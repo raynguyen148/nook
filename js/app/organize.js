@@ -7,8 +7,41 @@ globalThis[Symbol.for("nook.app.modules")].register("organize", (app) => {
   const { openColorPickers } = shared;
   const colorPickerInstances = new WeakMap();
   const managementAnimations = new WeakMap();
+  const managementSaves = new Map();
+  const managementDisabledControls = new WeakMap();
   let refreshSequence = 0;
   let appliedRefreshSequence = 0;
+
+  function disableManagementForm(form) {
+    if (managementDisabledControls.has(form)) return;
+    form.setAttribute("aria-busy", "true");
+    const controls = [...form.querySelectorAll("button, input, select")]
+      .map(control => ({ control, disabled: control.disabled }));
+    managementDisabledControls.set(form, controls);
+    controls.forEach(({ control }) => { control.disabled = true; });
+  }
+
+  function restoreManagementForm(form) {
+    const controls = managementDisabledControls.get(form);
+    if (!controls) return;
+    managementDisabledControls.delete(form);
+    form.removeAttribute("aria-busy");
+    controls.forEach(({ control, disabled }) => { control.disabled = disabled; });
+  }
+
+  function beginManagementSave(form, key = form, draft = null) {
+    if (managementSaves.has(key)) return null;
+    managementSaves.set(key, draft);
+    disableManagementForm(form);
+    return () => {
+      managementSaves.delete(key);
+      restoreManagementForm(form);
+      // Search and tab changes can replace an edit form while its save is pending.
+      elements.organizeDialog.querySelectorAll("[data-management-save-key]").forEach(row => {
+        if (row.dataset.managementSaveKey === key) restoreManagementForm(row);
+      });
+    };
+  }
 
   const persistFilters = (...args) => api.persistFilters(...args);
   const resetRegularFilters = (...args) => api.resetRegularFilters(...args);
@@ -236,6 +269,7 @@ globalThis[Symbol.for("nook.app.modules")].register("organize", (app) => {
 
     picker.dot.className = `type-dot type-dot--${nextColor}`;
     picker.label.textContent = colorLabel(nextColor);
+    picker.trigger.setAttribute("aria-label", `${select.getAttribute("aria-label") || "Color"}: ${colorLabel(nextColor)}`);
     picker.options.forEach((option) => {
       const selected = option.dataset.color === nextColor;
       option.setAttribute("aria-selected", String(selected));
@@ -398,16 +432,20 @@ globalThis[Symbol.for("nook.app.modules")].register("organize", (app) => {
       main.append(createElement("span", { className: `type-dot type-dot--${safeTypeColor(type)}`, attributes: { "aria-hidden": "true" } }));
 
       if (isEditing) {
+        const saveKey = `types:${type.id}`;
+        row.dataset.managementSaveKey = saveKey;
+        const editingState = ui.managementEditing;
+        const pendingDraft = managementSaves.get(saveKey) || editingState.draft;
         const nameInput = createElement("input", {
           type: "text",
-          value: type.name,
+          value: pendingDraft?.name ?? type.name,
           attributes: { "aria-label": `Name for ${type.name}`, maxlength: "48", required: "" },
         });
         const color = createElement("select", {
           className: "color-select",
           attributes: { "aria-label": `Color for ${type.name}` },
         });
-        color.append(createColorOptions(safeTypeColor(type)));
+        color.append(createColorOptions(pendingDraft?.color ?? safeTypeColor(type)));
         const colorPicker = enhanceColorSelect(color);
         const controls = createElement("div", { className: "management-row__controls management-row__controls--editing" });
         const cancel = createElement("button", { className: "button button-secondary button-compact", type: "button", text: "Cancel" });
@@ -415,18 +453,30 @@ globalThis[Symbol.for("nook.app.modules")].register("organize", (app) => {
         main.append(nameInput);
         controls.append(colorPicker.root, cancel, save);
         row.append(main, controls);
+        const rememberDraft = () => {
+          if (ui.managementEditing === editingState) editingState.draft = { name: nameInput.value, color: color.value };
+        };
+        row.addEventListener("input", rememberDraft);
+        row.addEventListener("change", rememberDraft);
         cancel.addEventListener("click", cancelManagementEdit);
         row.addEventListener("submit", async (event) => {
           event.preventDefault();
+          const editing = ui.managementEditing;
+          const draft = { name: nameInput.value, color: color.value };
+          const finish = beginManagementSave(row, saveKey, draft);
+          if (!finish) return;
           try {
-            await storage.updateType(type.id, { name: nameInput.value, color: color.value });
-            ui.managementEditing = null;
+            await storage.updateType(type.id, draft);
+            if (ui.managementEditing === editing) ui.managementEditing = null;
             await refreshLibrary({ broadcast: true });
             showToast("Note type updated.");
           } catch (error) {
             showError(error);
+          } finally {
+            finish();
           }
         });
+        if (managementSaves.has(saveKey)) disableManagementForm(row);
       } else {
         const actions = createElement("div", { className: "management-row__actions" });
         const metadata = createManagementUsageMetadata(totalUsage, activeUsage);
@@ -514,9 +564,13 @@ globalThis[Symbol.for("nook.app.modules")].register("organize", (app) => {
       main.append(createElement("span", { className: "tag-marker", attributes: { "aria-hidden": "true" } }));
 
       if (isEditing) {
+        const saveKey = `tags:${tag.id}`;
+        row.dataset.managementSaveKey = saveKey;
+        const editingState = ui.managementEditing;
+        const pendingDraft = managementSaves.get(saveKey) || editingState.draft;
         const nameInput = createElement("input", {
           type: "text",
-          value: label,
+          value: pendingDraft?.name ?? label,
           attributes: { "aria-label": `Name for ${label}`, maxlength: "48", required: "" },
         });
         const controls = createElement("div", { className: "management-row__controls management-row__controls--editing" });
@@ -525,18 +579,28 @@ globalThis[Symbol.for("nook.app.modules")].register("organize", (app) => {
         main.append(nameInput);
         controls.append(cancel, save);
         row.append(main, controls);
+        row.addEventListener("input", () => {
+          if (ui.managementEditing === editingState) editingState.draft = { name: nameInput.value };
+        });
         cancel.addEventListener("click", cancelManagementEdit);
         row.addEventListener("submit", async (event) => {
           event.preventDefault();
+          const editing = ui.managementEditing;
+          const draft = { name: nameInput.value };
+          const finish = beginManagementSave(row, saveKey, draft);
+          if (!finish) return;
           try {
-            await storage.updateTag(tag.id, { name: nameInput.value });
-            ui.managementEditing = null;
+            await storage.updateTag(tag.id, draft);
+            if (ui.managementEditing === editing) ui.managementEditing = null;
             await refreshLibrary({ broadcast: true });
             showToast("Tag updated.");
           } catch (error) {
             showError(error);
+          } finally {
+            finish();
           }
         });
+        if (managementSaves.has(saveKey)) disableManagementForm(row);
       } else {
         const actions = createElement("div", { className: "management-row__actions" });
         const metadata = createManagementUsageMetadata(totalUsage, activeUsage);
@@ -751,6 +815,8 @@ globalThis[Symbol.for("nook.app.modules")].register("organize", (app) => {
 
   async function addNewType(event) {
     event.preventDefault();
+    const finish = beginManagementSave(elements.newTypeForm);
+    if (!finish) return;
     try {
       const type = await storage.addType({
         name: elements.newTypeName.value,
@@ -763,11 +829,15 @@ globalThis[Symbol.for("nook.app.modules")].register("organize", (app) => {
       showToast(`Note type “${type.name}” added.`);
     } catch (error) {
       showError(error);
+    } finally {
+      finish();
     }
   }
 
   async function addNewTag(event) {
     event.preventDefault();
+    const finish = beginManagementSave(elements.newTagForm);
+    if (!finish) return;
     try {
       const tag = await storage.addTag({ name: elements.newTagName.value });
       elements.newTagForm.reset();
@@ -776,6 +846,8 @@ globalThis[Symbol.for("nook.app.modules")].register("organize", (app) => {
       showToast(`Tag “${tagLabel(tag)}” added.`);
     } catch (error) {
       showError(error);
+    } finally {
+      finish();
     }
   }
 

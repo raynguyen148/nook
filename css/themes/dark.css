@@ -38,9 +38,9 @@ html[data-theme="dark"] {
   color-scheme: dark;
   --theme-surface-page: #09090b;
   --theme-danger-border: rgb(239 68 68 / 38%);
-  --backup-good-accent: #10b981;
-  --backup-warning-accent: #f59e0b;
-  --backup-never-accent: #ef4444;
+  --backup-good-accent: #6ee7b7;
+  --backup-warning-accent: #fcd34d;
+  --backup-never-accent: #fca5a5;
   background: #09090b;
   color: #fafafa;
   --management-search-resting-border: #27272a;
@@ -216,7 +216,7 @@ html[data-theme="dark"] .space-link.is-active .filter-count {
 
 html[data-theme="dark"] .filter-help,
 html[data-theme="dark"] .sidebar-empty {
-  color: #71717a;
+  color: var(--text-muted);
 }
 
 html[data-theme="dark"] .space-navigation,
@@ -241,7 +241,7 @@ html[data-theme="dark"] .tag-filter-option:hover {
 }
 
 html[data-theme="dark"] .tag-filter-option .filter-count {
-  color: #707070;
+  color: var(--text-muted);
 }
 
 html[data-theme="dark"] .tag-filter-option:hover .filter-count {
@@ -441,7 +441,7 @@ html[data-theme="dark"] .tag-picker__input-row input::placeholder,
 html[data-theme="dark"] .field input::placeholder,
 html[data-theme="dark"] .field textarea::placeholder,
 html[data-theme="dark"] .management-search input::placeholder {
-  color: #71717a;
+  color: var(--text-muted);
 }
 
 html[data-theme="dark"] .search-shortcut {
@@ -1208,7 +1208,7 @@ html[data-theme="dark"] .note-content-preview .markdown-image-alt {
 }
 
 html[data-theme="dark"] .quick-view-content .markdown-empty {
-  color: #71717a;
+  color: var(--text-muted);
 }
 
 /* Markdown Tables, Details & Math */
@@ -1373,7 +1373,7 @@ html[data-theme="dark"] .management-create-row {
 }
 
 html[data-theme="dark"] .management-empty {
-  color: #71717a;
+  color: var(--text-muted);
 }
 
 html[data-theme="dark"] .color-select,

@@ -94,6 +94,8 @@
       secondaryEditorContainer: document.querySelector("#secondary-editor-container"),
       secondaryPreviewPanel: document.querySelector("#secondary-preview-panel"),
       secondaryNoteTitleInput: document.querySelector("#secondary-note-title-input"),
+      secondaryNoteTitleError: document.querySelector("#secondary-note-title-error"),
+      secondaryNoteTypeError: document.querySelector("#secondary-note-type-error"),
       secondaryEditorTypeSelect: document.querySelector("#secondary-note-type-select"),
       secondarySelectedNoteTags: document.querySelector("#secondary-selected-note-tags"),
       secondaryTagInputRow: document.querySelector("#secondary-tag-input-row"),
