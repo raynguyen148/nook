@@ -86,6 +86,9 @@
           if (focusTrigger) trigger.focus();
         },
         renderOptions() {
+          const focusedTypeId = !menu.hidden && menu.contains(document.activeElement)
+            ? document.activeElement.dataset.typeId
+            : "";
           const currentTypeId = selectElement.value || storage.FALLBACK_TYPE_ID;
           const fragment = document.createDocumentFragment();
           pickerInstance.options = library.types.map((type) => {
@@ -102,6 +105,11 @@
           fragment.append(...pickerInstance.options);
           menu.replaceChildren(fragment);
           pickerInstance.setValue(currentTypeId);
+          if (focusedTypeId) {
+            const focusedOption = pickerInstance.options.find(option => option.dataset.typeId === focusedTypeId)
+              || pickerInstance.options.find(option => option.dataset.typeId === selectElement.value);
+            (focusedOption || trigger).focus({ preventScroll: true });
+          }
         },
       };
 
@@ -241,7 +249,22 @@
       return noteTypePicker;
     }
 
+    function captureSelectedTagFocus(container) {
+      const controls = [...container.querySelectorAll("button")];
+      const index = controls.indexOf(document.activeElement);
+      return index < 0 ? null : { tagId: controls[index].dataset.tagId, index };
+    }
+
+    function restoreSelectedTagFocus(container, focus, fallback) {
+      if (!focus) return;
+      const controls = [...container.querySelectorAll("button")].filter(button => !button.disabled);
+      const target = controls.find(button => button.dataset.tagId === focus.tagId)
+        || controls[Math.min(focus.index, controls.length - 1)] || fallback;
+      if (target && !target.disabled) target.focus({ preventScroll: true });
+    }
+
     function renderSelectedNoteTags() {
+      const focus = captureSelectedTagFocus(elements.selectedNoteTags);
       elements.selectedNoteTags.replaceChildren();
       const selectedTags = [...ui.selectedNoteTagIds].map(tagFor).filter(Boolean);
       selectedTags.forEach((tag) => {
@@ -254,6 +277,7 @@
           className: "selected-tag__remove",
           type: "button",
           disabled: ui.noteSaveInFlight,
+          dataset: { tagId: tag.id },
           attributes: { "aria-label": `Remove tag ${tagLabel(tag)}` },
         });
         remove.append(createChipCloseIcon());
@@ -267,6 +291,7 @@
         chip.append(remove);
         elements.selectedNoteTags.append(chip);
       });
+      restoreSelectedTagFocus(elements.selectedNoteTags, focus, elements.addTag);
     }
 
     function renderTagSuggestions() {
@@ -317,6 +342,7 @@
 
     function renderSecondarySelectedNoteTags() {
       if (!elements.secondarySelectedNoteTags) return;
+      const focus = captureSelectedTagFocus(elements.secondarySelectedNoteTags);
       elements.secondarySelectedNoteTags.replaceChildren();
       const selectedTags = [...(ui.secondarySelectedNoteTagIds || [])].map(tagFor).filter(Boolean);
       selectedTags.forEach((tag) => {
@@ -328,6 +354,7 @@
         const remove = createElement("button", {
           className: "selected-tag__remove",
           type: "button",
+          dataset: { tagId: tag.id },
           attributes: { "aria-label": `Remove tag ${tagLabel(tag)}` },
         });
         remove.append(createChipCloseIcon());
@@ -340,6 +367,7 @@
         chip.append(remove);
         elements.secondarySelectedNoteTags.append(chip);
       });
+      restoreSelectedTagFocus(elements.secondarySelectedNoteTags, focus, elements.secondaryAddTag);
     }
 
     function renderSecondaryTagSuggestions() {
@@ -390,12 +418,15 @@
 
     function setSecondaryTagInputExpanded(expanded, { focus = false } = {}) {
       if (!elements.secondaryTagInputRow || !elements.secondaryAddTag) return;
+      const returnFocus = elements.secondaryTagInputRow.contains(document.activeElement)
+        || elements.secondaryTagSuggestions?.contains(document.activeElement);
       ui.secondaryTagInputExpanded = Boolean(expanded);
       elements.secondaryTagInputRow.hidden = !ui.secondaryTagInputExpanded;
       elements.secondaryAddTag.setAttribute("aria-expanded", String(ui.secondaryTagInputExpanded));
       if (!ui.secondaryTagInputExpanded) {
         if (elements.secondaryTagInput) elements.secondaryTagInput.value = "";
         renderSecondaryTagSuggestions();
+        if (returnFocus && ui.dualPaneOpen) elements.secondaryAddTag.focus({ preventScroll: true });
       }
       if (focus && elements.secondaryTagInput) {
         window.requestAnimationFrame(() => {

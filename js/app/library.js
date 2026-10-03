@@ -626,15 +626,22 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
   }
 
   function renderPagination(totalPages) {
+    const focusAction = elements.pagination.contains(document.activeElement)
+      ? document.activeElement.dataset.paginationAction
+      : "";
     elements.pagination.replaceChildren();
     elements.pagination.classList.toggle("is-hidden", totalPages <= 1);
-    if (totalPages <= 1) return;
+    if (totalPages <= 1) {
+      if (focusAction) elements.notesList.focus({ preventScroll: true });
+      return;
+    }
 
     const previous = createElement("button", {
       className: "pagination-button pagination-button--direction",
       type: "button",
       text: "Previous",
       disabled: ui.page === 1,
+      dataset: { paginationAction: "previous" },
     });
     previous.addEventListener("click", () => {
       ui.page -= 1;
@@ -652,6 +659,7 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
         className: `pagination-button${page === ui.page ? " is-active" : ""}`,
         type: "button",
         text: page,
+        dataset: { paginationAction: `page-${page}` },
         attributes: page === ui.page ? { "aria-current": "page" } : {},
       });
       button.addEventListener("click", () => {
@@ -667,12 +675,18 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
       type: "button",
       text: "Next",
       disabled: ui.page === totalPages,
+      dataset: { paginationAction: "next" },
     });
     next.addEventListener("click", () => {
       ui.page += 1;
       renderNotes({ motion: "page-next" });
     });
     elements.pagination.append(next);
+    if (focusAction) {
+      const matching = [...elements.pagination.querySelectorAll("button")]
+        .find(button => button.dataset.paginationAction === focusAction && !button.disabled);
+      (matching || elements.pagination.querySelector('[aria-current="page"]'))?.focus({ preventScroll: true });
+    }
   }
 
   function effectiveNotesColumnCount() {

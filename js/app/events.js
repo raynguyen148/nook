@@ -372,6 +372,7 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
     });
     elements.secondaryTagInput?.addEventListener("input", normalizeSecondaryTagEditorInput);
     elements.secondaryTagInput?.addEventListener("keydown", (event) => {
+      if (event.isComposing) return;
       if (event.key === "Enter") {
         event.preventDefault();
         addSecondaryTagFromEditor();
@@ -454,6 +455,7 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
     window.addEventListener("pagehide", () => api.syncEditorDraftRecovery?.());
     elements.tagInput.addEventListener("input", normalizeTagEditorInput);
     elements.tagInput.addEventListener("keydown", (event) => {
+      if (event.isComposing) return;
       if (event.key === "Enter") {
         event.preventDefault();
         addTagFromEditor();
@@ -567,6 +569,7 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
       }
     });
     document.addEventListener("keydown", (event) => {
+      if (event.isComposing) return;
       if (event.key === "Tab") document.documentElement.dataset.inputModality = "keyboard";
       if (event.key === "Escape" && api.closeNoteCardMenu({ focusTrigger: true })) {
         event.preventDefault();

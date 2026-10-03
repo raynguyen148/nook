@@ -316,7 +316,8 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
       ...elements.tagSuggestions.querySelectorAll("button"),
     ].forEach((control) => {
       const isTextInput = control === elements.noteTitle || control === elements.noteContent;
-      control.disabled = disabled && !(keepTextInputsEnabled && isTextInput);
+      const isTypeInput = control === elements.noteType || noteTypeControls.includes(control);
+      control.disabled = disabled && !(keepTextInputsEnabled && (isTextInput || isTypeInput));
     });
     elements.tagInput.disabled = disabled || isCreatingTag;
     elements.addTag.disabled = disabled || isCreatingTag;
@@ -526,6 +527,8 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
   }
 
   function setTagInputExpanded(expanded, { focus = false } = {}) {
+    const returnFocus = elements.tagInputRow.contains(document.activeElement)
+      || elements.tagSuggestions.contains(document.activeElement);
     ui.tagInputExpanded = Boolean(expanded);
     elements.tagInputRow.hidden = !ui.tagInputExpanded;
     elements.addTag.setAttribute("aria-expanded", String(ui.tagInputExpanded));
@@ -533,6 +536,7 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
     if (!ui.tagInputExpanded) {
       elements.tagInput.value = "";
       elements.tagSuggestions.replaceChildren();
+      if (returnFocus && isNoteEditorOpen() && !elements.addTag.disabled) elements.addTag.focus({ preventScroll: true });
       return;
     }
 
@@ -566,7 +570,11 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
       selectNoteTag(existing.id);
       return Promise.resolve();
     }
+    const returnFocus = elements.tagInputRow.contains(document.activeElement)
+      || elements.tagSuggestions.contains(document.activeElement)
+      || document.activeElement === elements.addTag;
     const pending = { session, promise: null };
+    let tagCreated = false;
     ui.pendingTagCreation = pending;
     syncNoteEditorControls();
     const operation = (async () => {
@@ -578,13 +586,17 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
         elements.tagInput.value = "";
         renderSelectedNoteTags();
         setTagInputExpanded(false);
+        tagCreated = true;
         scheduleNoteAutoSave();
         showToast(`Tag “${tagLabel(tag)}” created.`);
       } catch (error) {
         if (isCurrentNoteEditorSession(session)) showError(error);
       } finally {
         if (ui.pendingTagCreation === pending) ui.pendingTagCreation = null;
-        if (isCurrentNoteEditorSession(session)) syncNoteEditorControls();
+        if (isCurrentNoteEditorSession(session)) {
+          syncNoteEditorControls();
+          if (tagCreated && returnFocus && document.activeElement === document.body) elements.addTag.focus({ preventScroll: true });
+        }
       }
     })();
     pending.promise = operation;
@@ -638,6 +650,11 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
     const editorSession = primaryEditorSession;
     if (!editorSession) return;
     syncPrimaryEditorSessionDraft();
+
+    const focusedControl = document.activeElement;
+    const tagFocus = isAutoSave && (elements.selectedNoteTags.contains(focusedControl) || focusedControl === elements.addTag)
+      ? { tagId: focusedControl.dataset.tagId || "" }
+      : null;
 
     ui.noteSaveInFlight = true;
     ui.noteAutoSaveInFlight = isAutoSave;
@@ -700,6 +717,11 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
         ui.noteSaveInFlight = false;
         ui.noteAutoSaveInFlight = false;
         syncNoteEditorControls();
+        if (tagFocus && document.activeElement === document.body) {
+          const target = [...elements.selectedNoteTags.querySelectorAll("button")]
+            .find(control => control.dataset.tagId === tagFocus.tagId) || elements.addTag;
+          if (!target.disabled) target.focus({ preventScroll: true });
+        }
         if (didSave && hasUnsavedNoteChanges()) scheduleNoteAutoSave();
         if (ui.noteCloseAfterSaveRequested) {
           ui.noteCloseAfterSaveRequested = false;

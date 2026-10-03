@@ -1,223 +1,193 @@
 # Nook UI standardization audit
 
-Audit date: 2026-10-02. Review base: `d170fa77` on `main`.
-The working tree was clean at the start. All changes remain uncommitted and
-unstaged for Ray's review. No deployment, dependency installation, schema
-change, real-library mutation, or external data upload was performed.
+Maintained audit, updated 2026-10-03. This pass started with a clean working
+tree at `1ce31e245c81fd35f543faff7c39062ddc9605b8` on `main`. The earlier
+standardization work is already committed in that base. This follow-up leaves
+its own changes unstaged and uncommitted for Ray's review.
 
-## Design authority and method
+## Scope and design authority
 
-Applied the locally installed Impeccable 4.5.0 Operate/refinement, audit,
-polish, harden, and craft-floor guidance. Its context command was run once;
-Nook's existing components, local fonts, semantic tokens, seven palettes,
-native dialogs, and ordered CSS layers supplied the design authority. No
-greenfield design or new visual identity was introduced. An independent
-read-only reviewer inspected the source and then verified the resulting fixes.
+Applied the installed Impeccable 4.5.0 Operate/refinement, audit, harden, polish,
+and craft-floor guidance. The context command ran once for this session; the
+manual detector ran once. Nook's existing local fonts, semantic colors, seven
+palettes, shared controls, ordered styles, and native dialogs remain the design
+authority. This pass improves verified interaction defects without replacing
+the visual system.
 
-The app has one static entry point, with in-page workspaces and dialogs rather
-than separate routes. Baseline screenshots were captured before editing.
-Shared primitives were corrected first, followed by their theme/mobile
-overrides and async interaction states. Tests used fresh Chromium profiles,
-temporary loopback origins, the fictional demo backup, and synthetic long
-titles, mixed-script labels, unbroken text, wide tables, and code blocks.
+Nook has one static entry point, with a library, paired note workspaces, and
+dialogs rather than separate routes. The audit used actual browser captures,
+source inspection, and an independent read-only reviewer. All runtime data was
+fictional, in fresh browser contexts on temporary loopback origins. No personal
+library, dependency installation, schema/backup change, external upload,
+deployment, staging, or commit was involved.
 
-## Findings and implemented outcomes
+## Findings and numbered acceptance outcomes
 
-| Finding | Result | Evidence |
+| # | Priority and finding | Implemented outcome | Verification |
+| --- | --- | --- | --- |
+| 1 | P1: delayed history reads changed shared versions before checking ownership; stale errors/focus/restore completion could affect a reopened dialog | Every opening has a generation; delayed updates and focus belong to that generation. Repeated restore is guarded. Loading is explicit; read/write failures retain recovery and retry behavior | Different-note and same-note reopen, stale failure, repeated/interrupted restore, actual synthetic restore, cancellation, failed read/write and recovery |
+| 2 | P2: rebuilding pagination removed the focused Next/Previous/page button | Focus follows the corresponding enabled control, or the current page at a boundary; a removed pagination surface falls back to the library | Keyboard Next/Previous, including the last-page boundary |
+| 3 | P2: chip removal, suggestion selection and tag creation removed their keyboard target in either pane | A surviving chip or Add tag receives focus. Primary focus is restored after autosave only when the same session remains active and focus has not moved to another field | Both panes; last-chip removal; suggestion selection; Enter and Add-button creation; post-autosave focus; deliberate focus movement during a delayed save |
+| 4 | P2: autosave rebuilt an open type picker and disabled its focused primary option | Open menus preserve the focused type identity. Primary type controls remain usable during autosave; session comparisons protect newer selections | Both pane pickers through autosave; change type during a held primary save, then verify the newer type is committed |
+| 5 | P1: composing Enter submitted unfinished tag text; composing Escape reached tag/global closing handlers | Tag actions and global navigation shortcuts ignore composition events | Composing Enter/Escape keep both panes' tag input open and create no record; normal completed Enter still creates a tag |
+
+The independent review of the initial implementation reproduced two remaining
+paths within outcome 3: primary Add focus disappeared during the following
+autosave, and creation from the Add button did not capture a return target.
+Those paths were corrected and added to the behavioral regression suite.
+The final independent review is recorded with the handoff snapshot; absence of
+additional findings is not merge or release approval.
+
+No P0 issue was observed in the inspected states. Existing native dialogs,
+labelled controls, safe Markdown, bounded pagination, local storage ownership,
+and guarded pane sessions remain strengths.
+
+## Audit health of the inspected sample
+
+These are Impeccable's 0–4 rubric judgments, not a WCAG certification or a
+performance benchmark.
+
+| Dimension | Score | Evidence and limit |
 | --- | --- | --- |
-| Secondary text, placeholders, filter counts, save/warning/error text used several pale literal colors | Components now use their semantic muted/selected/status colors; Coffee, Forest, Dark, and E-Ink owners retain their identities with readable secondary colors | Seven-palette screenshot matrix; zero low-contrast findings in the final sampled text/placeholder diagnostics |
-| Dialog titles/radii, workflow backdrops, close/search icons, and control text varied between component families | Shared title/control tokens, dialog shape and backdrop behavior; local thin SVG icons; redundant dialog eyebrows removed with the dependent conflict query | Settings, confirmation, history, workflow, and mobile sheet screenshots; conflict regression suites |
-| Main mobile controls ranged from 28 to 42 px; metadata targets were below 24 px; navigation labels were 10.4 px | Main mobile controls use 44 px targets, compact metadata/remove controls use at least 24 px, navigation labels use 12 px | 320/375/768/820 px measurements; no visible interactive targets below 24 px in the captured mobile surfaces |
-| Quick actions could highlight one result while keyboard focus remained on another tabbable result | Search owns combobox focus and active-descendant selection; results are removed from the Tab sequence; Arrow/Enter and close focus stay coherent | Arrow, Tab, Shift+Tab, empty-result, Enter, grouping, and focus-return checks |
-| Type/color picker accessible names omitted their current selection | Trigger names include the selected type/color | Source inspection and generated picker checks |
-| Side note could turn an empty title into an unintended fallback and kept a saved check icon for other states | Raw empty drafts remain empty; invalid required fields pause autosave; explicit save shows and focuses inline errors; both panes share status labels/icons/classes | Blank-title delay, storage unchanged, focused inline error, retry save, shared status-icon assertions |
-| Side note could overwrite newer typing after awaiting a post-save library refresh | Controls are normalized only when the current session remains clean | Deliberately delayed snapshot refresh retains the newer title/content and verifies their eventual autosave |
-| Catalog submits lacked pending/retry feedback; pending edits could be reopened and resubmitted after search | Busy forms disable controls; type/tag operations use stable entity keys; pending drafts and another active edit survive rendering; failures re-enable retry | Delayed add/update, repeated submit, search cancellation/reopen, another edit, and synthetic failure checks for both catalogs |
-| E-Ink paper resets suppressed editor keyboard focus, especially in the more specific Side note selectors | Focus rules preserve visible outlines in both raw editors and Split previews | Direct primary/Side focus assertions; forced-colors screenshots |
-| Inline title/type errors could overlap metadata | Visible errors participate in layout and can wrap | Side note validation screenshot and primary/Side flow checks |
+| Accessibility | 3/4 | Keyboard ownership, error recovery, focus visibility and sampled text contrast checked; native assistive technology and IME hardware not exercised |
+| Performance | 3/4 | Bounded library rendering, one active local theme and no added assets/dependencies; CPU/frame profiling not performed |
+| Theming | 3/4 | Seven palettes and theme persistence checked; legacy literal styling remains alongside semantic tokens |
+| Responsiveness | 3/4 | Narrow/mobile/tablet/desktop samples contain content; compact metadata intentionally retains 24 px targets rather than 44 px |
+| Implementation integrity | 4/4 | The selected fixes preserve component ownership, editor sessions, native controls and the incumbent design |
 
-A conflict-handler reference to a removed eyebrow was caught during regression
-testing and fixed before handoff. Both pane conflicts and the reload/recovery
-conflict workflow subsequently passed. Extended screenshots also caught the code-language caption and selected history
-metadata just below the text contrast threshold; these now use appropriate
-semantic text/selected colors. Decorative `aria-hidden` chevrons are excluded
-from text diagnostics. The independent reviewer also found
-the stronger Side note focus reset and the two async races above; each has a
-specific fix and runtime evidence.
+## Current coverage record
 
-## Coverage record
-
-| Surface / component | Exercised coverage |
+| Surface / component | Actual coverage this pass |
 | --- | --- |
-| Startup and onboarding | Empty library; first-use card, dismissal/reload, explicit guide creation and removal |
-| Library | Compact, comfortable, grid; search, sort, filters/counts, long type/tag labels, pagination, pin, More menu, timestamps, tag overflow, Trash, Undo/restore and permanent-delete confirmations |
-| Note workspace | Existing and new notes; Preview/Edit/Split; long Markdown, code/table containment; primary and Side pickers, independent queries, switch cancellation, clipboard, formatting, saved history |
-| Save/recovery lifecycle | Autosave, newer typing, delayed save/refresh, failed save, dirty close/cancel/discard, stale operations, two-tab conflicts, recovered/deleted originals, guarded navigation and focus restoration |
-| Settings | Types, Tags, Display, Data, Shortcuts; type/color/theme pickers; create/edit/busy/error/retry states; long-list More menus; text size and preview controls |
-| Workflow dialogs | Quick actions, Templates/custom templates, Daily note, empty/populated Draft Recovery, Markdown inspection, JSON merge/replace confirmation, bulk selection/JSON export/Trash/restore |
-| Destructive overlays | Dirty discard, catalog deletion, per-note Trash/permanent actions; Delete-library confirmation checked on desktop/mobile and canceled without deletion |
-| Responsive/navigation | Screenshot widths 320, 375, 768, 820, 1024, 1440; existing suites additionally exercise 414, 821, 960, 1180, 1280, 1920 and resize bounds; mobile sheets/Back guards, pane resizing/sidebar restoration |
-| Themes and preferences | Light, Coffee, Forest, Midnight, Dark, Retro, E-Ink; Auto/system changes, legacy aliases, reload and preference persistence |
-| Accessibility/display | Keyboard focus, combobox selection, Escape, Tab, focus return, required-field errors, reduced-motion contexts, forced-colors paired editor/Quick actions and resize controls |
-| Local/offline behavior | Actual IndexedDB synthetic saves, imports/exports and backup round trips, older schema backups, hosted offline reopen, static `file://` startup/Daily notes; no external requests observed |
+| Startup/onboarding | Empty-library capture; first-use dismissal/reload and explicit removable guide-note checks |
+| Library | Three layouts; fictional demo and long labels; search/filter/sort surfaces; keyboard pagination; pin/More visuals; Trash and bulk-selection surfaces |
+| Note workspace | New/existing notes; Preview/Edit/Split; long titles, mixed scripts, unbroken Markdown, wide code/tables; both pane type/tag pickers |
+| Settings | Types, Tags, Display, Data and Shortcuts; pending/retry forms and catalog edits; theme/font-size/preview controls; destructive confirmation canceled |
+| Workflows/data | Quick actions, templates, Daily notes, empty/populated recovery, Markdown inspection, backup merge/replace, bulk export/Trash/restore; synthetic IndexedDB/history round trips |
+| Async/navigation | Delayed saves and refreshes, newer typing/type choices, dirty close/cancel, guarded switching, conflicts/recovery, repeated/interrupted history operations |
+| Responsive/theme | Light, Coffee, Forest, Midnight, Dark, Retro and E-Ink; sampled widths 320–1440 px; mobile sheets/Back; reduced motion and forced colors |
+| Offline | Synthetic hosted offline reopen and static file-mode startup/Daily notes; no external requests in the UI audit/probes |
 
-All 150 final screenshot captures are listed in
-[the raw UI report](ui-audit/final-browser-report.json). The report is
-marked `completed: true`. It records zero document overflow, console errors,
-failed requests, external requests, and measured text/placeholder contrast
-findings. These measurements apply to visible sampled states and are not a
-complete WCAG assessment.
+The broad browser matrix completed before and after the main implementation:
+150 captures per round, zero measured document overflow, console/failed-request
+errors, external requests, or sampled text/placeholder contrast failures.
+The independent review's subsequent tag-focus repair was verified with the
+expanded interaction suite and affected regression checks; it did not change
+layout or theme styling. Sample measurements exclude hidden/disabled controls
+and are not proof of every possible content, color, focus or pointer state.
 
-## Before/after evidence
+## Verification and evidence
 
-Screenshots contain fictional data only. Note ordering/timestamps can differ
-between isolated runs; compare the components and states.
+Static checks are separate from runtime evidence:
 
-| Surface | Before | After |
-| --- | --- | --- |
-| Light Settings / Display | [Before](ui-audit/settings-before.png) | [After](ui-audit/final-settings-after.png) |
-| Coffee library | [Before](ui-audit/coffee-before.png) | [After](ui-audit/final-coffee-after.png) |
-| 320 px filter sheet | [Before](ui-audit/mobile-filters-before.png) | [After](ui-audit/final-mobile-filters-after.png) |
+- JavaScript syntax: storage, Markdown, every app module, and the new QA script.
+- Shared contracts: `tsc -p jsconfig.json` with the existing TypeScript tool.
+- Patch whitespace: `git diff --check`.
+- Node regressions: `node --test tests/*.test.js`, 48 passed.
+- Hosted cache fingerprint regenerated and covered by the Node regressions.
 
-Additional evidence: [Side note required-field error](ui-audit/final-side-note-validation.png),
-[forced-colors paired Split editors](ui-audit/final-forced-colors-focus.png).
-The complete screenshots remain in `/tmp/nook-ui-standardization-final-evidence` and
-can be regenerated with the optional audit script.
+Browser verification uses the existing Playwright library and installed Google
+Chrome in fresh contexts. Playwright's expected bundled Chromium binary was
+missing; no browser or dependency was installed.
 
-## Validation
-
-Static checks passed separately from browser checks:
-
-- `node --check` for storage, Markdown, every `js/app/*.js`, and the new audit script.
-- `tsc -p jsconfig.json` using the existing local TypeScript tool.
-- `git diff --check`.
-- `node --test tests/*.test.js`: 48 passed.
-- Service Worker fingerprint regenerated and verified by its regression tests.
-
-Browser checks passed with the existing local Playwright/Chromium installation:
-
-| Script | Result |
+| Script | Coverage/result |
 | --- | --- |
+| `scripts/test-ui-standardization.cjs` | 150 captures and 10 targeted check groups per round |
+| `scripts/test-ui-interactions.cjs` | 38 acceptance checks for the five selected findings and review repairs |
 | `scripts/test-maintainability.cjs` | 48 checks |
-| `scripts/test-note-switcher.cjs` | 31 check groups |
-| `scripts/test-note-card-actions.cjs` | 9 check groups |
-| `scripts/test-workspace-resize.cjs` | 11 check groups |
 | `scripts/test-workflows.cjs` | 39 checks |
-| `scripts/test-ui-standardization.cjs` | 150 captures; targeted keyboard/validation/pending/retry/refresh/focus checks passed |
+| `scripts/test-note-switcher.cjs` | 31 check groups |
 
-[Validation evidence](ui-audit/final-validation.json) preserves
-the browser check labels and static outcomes. Nook has no build step, package
-manager, or configured linter; none was installed or claimed.
+Fresh screenshots, raw reports and logs stay outside the repository:
 
-Impeccable's manual detector was run once on the changed HTML/CSS targets.
-[Raw detector output](ui-audit/final-impeccable-detection.json)
-contains 64 heuristic warnings (exit 2), including duplicate rounded-border
-warnings, local Geist font use, shadows, contained editor scrolling, compact
-text, and Markdown side rules. Its 10.4 px mobile navigation finding was fixed
-to 12 px. The other styling heuristics were assessed against Nook's incumbent
-identity and actual browser evidence: local fonts, quiet dialog elevation,
-segmented controls, contained long content, and Markdown quotation/alert rules
-were retained. This is not a claim that the detector returned zero warnings.
+- `/tmp/nook-reaudit-baseline/`: visual baseline and report.
+- `/tmp/nook-reaudit-final/`: visual confirmation and report.
+- `/tmp/nook-reaudit-interactions-reviewed/`: latest interaction report.
+- `/tmp/nook-reaudit-*.log`: runtime/static result logs.
+- `/tmp/nook-reaudit-detector.json`: manual detector output.
 
-## Limits and review checklist
+The detector returned 52 heuristic warnings (exit 2) on the inspected existing
+HTML/CSS: rounded-border combinations, compact padding, contained overflow,
+border/shadow combinations, type hierarchy and one layout transition. These
+are separate from deterministic runtime findings. Existing Markdown rules,
+contained editors, compact metadata, quiet dialog elevation and theme styling
+were retained after inspection; no zero-warning claim is made.
 
-No known blocker remains in the implemented and tested flows. Remaining
-verification limits:
+Nook has no build step or configured linter. Neither was installed or claimed.
 
-- Chromium on this Mac was exercised; Safari/Firefox, physical iOS/Android,
-  virtual keyboards, VoiceOver/NVDA, and OS browser zoom were not exercised.
-- Forced colors, reduced motion, and viewport widths were emulated. They do
-  not prove physical-device or assistive-technology behavior.
-- Diagnostic contrast sampling excludes hidden/disabled controls and does not
-  certify every icon, gradient, user Markdown color, or focus state.
-- Dense desktop metadata/control spacing retains the existing product design;
-  the mobile 24/44 px checks are not a universal target-size certification.
-- Storage-quota exhaustion, denied persistent-storage prompts, unsupported
-  IndexedDB, and a real hosted update rollout were not injected. Their
-  existing capability/error paths were inspected but not runtime certified.
-- Actual library deletion was canceled. Synthetic storage/import/Trash flows
-  ran in isolated test profiles; Ray's personal library was never opened.
+## Preserved historical evidence
+
+The prior standardization normalized semantic text/status colors, typography,
+dialog controls/icons, mobile targets, Quick actions selection, Side note
+validation/save feedback, catalog pending/retry behavior, and E-Ink focus.
+Its tracked evidence is preserved, with its original dates and baseline:
+
+- [Earlier browser report](ui-audit/final-browser-report.json)
+- [Earlier validation record](ui-audit/final-validation.json)
+- [Earlier detector output](ui-audit/final-impeccable-detection.json)
+- [Settings before](ui-audit/settings-before.png) and [after](ui-audit/final-settings-after.png)
+- [Coffee library before](ui-audit/coffee-before.png) and [after](ui-audit/final-coffee-after.png)
+- [320 px filters before](ui-audit/mobile-filters-before.png) and [after](ui-audit/final-mobile-filters-after.png)
+
+No new screenshot directory, dated report, raw QA JSON, or Review Input artifact
+was added to the repository in this pass.
+
+## Remaining limits and review gates
+
+- Chromium-based Google Chrome on this Mac was exercised. Safari/Firefox,
+  physical iOS/Android, native IME candidate windows, virtual keyboards,
+  VoiceOver/NVDA and OS browser zoom remain unverified.
+- Viewports, reduced motion and forced colors were emulated. The composition
+  tests dispatch browser KeyboardEvents; they do not prove native IME behavior.
+- A very long type label can visually clip at the leading edge of the compact
+  mobile Preview badge in the 375 px sample. The full label remains in the
+  note/type data and picker name. This minor existing styling detail was kept
+  outside the selected interaction batch for a separate visual review.
+- Storage-quota exhaustion, unsupported/denied IndexedDB, denied persistence
+  prompts and a real hosted-update rollout were not injected.
+- Library deletion was canceled; Ray's actual library was never opened.
+- Review/merge/release are separate decisions. Ray still needs to inspect the
+  exact handoff diff and judge his preferred browser/device behavior before
+  committing. No merge, PR, deployment or release approval is implied.
 
 Acceptance checklist:
 
-- [x] Existing offline architecture, storage/backup contract and visual identity retained.
-- [x] Shared controls, typography, icons, dialog treatment and semantic state colors normalized.
-- [x] All major accessible surfaces inventoried; screenshot and runtime coverage recorded.
-- [x] Long-content, mobile/tablet/desktop, seven palettes, keyboard and async interruption checks run.
-- [x] Independent findings fixed and verified; final checks passed.
-- [x] Cache fingerprint current; changes unstaged and uncommitted.
-- [ ] Ray's visual/product review, preferred browser/device checks and commit.
+- [x] Five selected improvements implemented with behavioral evidence.
+- [x] Previous committed work and offline storage/backup model preserved.
+- [x] Independent review findings reproduced and remediated in scope.
+- [x] Broad visual coverage and verification limits recorded honestly.
+- [x] Evidence stays outside the repository; changes unstaged/uncommitted.
+- [ ] Ray's code/product review, preferred-device checks and commit.
 
-For a review preview, from the repository root run:
+## Current changed-file scope
+
+```text
+docs/ui-standardization-audit.md
+js/app/editor.js
+js/app/events.js
+js/app/history.js
+js/app/library.js
+js/app/note-pickers.js
+scripts/test-ui-interactions.cjs
+sw.js
+```
+
+The script is the only new file; the other seven are tracked modifications.
+The exact final HEAD, staged/unstaged/untracked snapshot and patch fingerprints
+are supplied in the chat handoff, without staging or creating a commit.
+
+For an isolated review preview, run from the repository root:
 
 ```sh
 python3 -m http.server 8000 --bind 127.0.0.1
 ```
 
-Open `http://127.0.0.1:8000` in a fresh browser profile for synthetic review.
-Use the demo JSON only in that profile. An existing browser origin may contain
-personal data; changing port/profile intentionally creates a separate library.
-Opening `index.html` directly remains supported.
+Open `http://127.0.0.1:8000` in a fresh browser profile. Use fictional demo data
+only in that profile; an existing origin/profile can contain personal notes.
+Static `index.html` opening remains supported.
 
-The shared `docs/ui-audit/` evidence already present during the final handoff was
-preserved; final reports and screenshots use additional `final-` filenames.
+Run the new focused regression suite with the installed Chrome:
 
-## Exact changed files
-
-Runtime/visual implementation:
-
-```text
-css/base.css
-css/dialogs.css
-css/interactions.css
-css/management.css
-css/markdown.css
-css/mobile.css
-css/note-components.css
-css/note-detail.css
-css/organize.css
-css/themes/classic.css
-css/themes/coffee.css
-css/themes/dark.css
-css/themes/eink.css
-css/themes/forest.css
-css/workflows.css
-index.html
-js/app/editor.js
-js/app/elements.js
-js/app/feedback.js
-js/app/note-pickers.js
-js/app/organize.js
-js/app/productivity.js
-js/app/side-note.js
-sw.js
-```
-
-Tests, documentation and evidence (including preserved earlier evidence):
-
-```text
-README.md
-docs/architecture.md
-docs/ui-audit/browser-report.json
-docs/ui-audit/catalog-retry.png
-docs/ui-audit/coffee-after.png
-docs/ui-audit/coffee-before.png
-docs/ui-audit/final-browser-report.json
-docs/ui-audit/final-catalog-retry.png
-docs/ui-audit/final-coffee-after.png
-docs/ui-audit/final-forced-colors-focus.png
-docs/ui-audit/final-impeccable-detection.json
-docs/ui-audit/final-mobile-filters-after.png
-docs/ui-audit/final-settings-after.png
-docs/ui-audit/final-side-note-validation.png
-docs/ui-audit/final-validation.json
-docs/ui-audit/forced-colors-focus.png
-docs/ui-audit/impeccable-detection.json
-docs/ui-audit/mobile-filters-after.png
-docs/ui-audit/mobile-filters-before.png
-docs/ui-audit/settings-after.png
-docs/ui-audit/settings-before.png
-docs/ui-audit/side-note-validation.png
-docs/ui-standardization-audit.md
-scripts/test-ui-standardization.cjs
+```sh
+NOOK_BROWSER_CHANNEL=chrome node scripts/test-ui-interactions.cjs
 ```

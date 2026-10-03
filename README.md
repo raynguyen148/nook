@@ -149,8 +149,10 @@ On desktop, drag either side edge of a single note to widen it. Edge indicators
 appear only on hover, keyboard focus, or during a drag. Its default
 width is the minimum; its maximum fills the content area beside the sidebar,
 with a small outer gutter. With a Side note open, drag only the divider between
-the panes. Each pane keeps at least 400px where space permits (560px in Split)
-and at least 30% of the usable width. If the workspace cannot fit both pane
+the panes. Edit, Split, and Preview content follows the pane width, keeping its
+normal inner padding even on very wide screens. Each pane keeps at least 400px
+where space permits (560px in Split) and at least 30% of the usable width.
+If the workspace cannot fit both pane
 minimums, they stay equally sized and resizing is disabled. Mobile keeps the
 full-width note layout.
 Focus a resize edge and use Left/Right (Shift for larger steps), Home/End for

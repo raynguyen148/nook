@@ -87,6 +87,18 @@ async function main() {
     await fs.mkdir(process.env.NOOK_SCREENSHOT_DIR, { recursive: true });
     await page.screenshot({ path: path.join(process.env.NOOK_SCREENSHOT_DIR, `${name}.png`) });
   }
+  async function assertDocumentFillsPane(page, mode) {
+    const widths = await page.evaluate((mode) => {
+      const body = document.querySelector(mode === "preview" ? "#note-dialog .detail-preview-panel .quick-view-body" : "#note-dialog .dialog-body");
+      const style = getComputedStyle(body);
+      const available = body.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
+      const selectors = mode === "preview"
+        ? [".quick-view-document-header", ".quick-view-content-card", ".quick-view-dates"]
+        : [".note-content-field", "#note-meta"];
+      return { available, actual: selectors.map((selector) => document.querySelector(`#note-dialog ${selector}`).getBoundingClientRect().width) };
+    }, mode);
+    for (const actual of widths.actual) closeTo(actual, widths.available);
+  }
   try {
     const page = await setup();
     const baseline = await geometry(page);
@@ -183,6 +195,14 @@ async function main() {
         await matrix.locator("#note-resize-end").focus(); await press(matrix, "End");
         closeTo((await geometry(matrix)).primary.width, g.track.width);
         assert.equal((await geometry(matrix)).overflow, false);
+        for (const mode of ["edit", "split", "preview"]) {
+          await matrix.locator(`[data-note-editor-mode="${mode}"]`).click(); await settle(matrix);
+          await assertDocumentFillsPane(matrix, mode);
+          assert.equal((await geometry(matrix)).overflow, false);
+        }
+        if (width === 2560) await screenshot(matrix, `${theme}-single-expanded-preview`);
+        await matrix.locator('[data-note-editor-mode="edit"]').click(); await settle(matrix);
+        await matrix.locator("#note-resize-end").focus();
         await press(matrix, "Enter");
       }
       await screenshot(matrix, `${theme}-single-default`);

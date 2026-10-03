@@ -1251,9 +1251,8 @@
 .quick-view-document-header,
 .note-detail-surface .quick-view-content-card,
 .note-detail-surface .quick-view-dates {
-  /* Match the editor's wider document canvas while keeping an upper bound for
-   * ultra-wide screens. */
-  width: min(100%, 100rem);
+  /* The resizable workspace owns the document width, as it does in Edit. */
+  width: 100%;
   margin-inline: auto;
 }
 
@@ -1457,7 +1456,7 @@
 .note-detail-surface .note-meta,
 .note-detail-surface .quick-view-dates {
   display: flex;
-  width: min(100%, 100rem);
+  width: 100%;
   min-height: 0;
   flex-wrap: wrap;
   align-items: center;
