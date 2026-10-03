@@ -756,6 +756,12 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
       window.matchMedia(query).addEventListener("change", deferResponsivePagination);
     });
     window.addEventListener("resize", scheduleResponsivePagination, { passive: true });
+    if (typeof ResizeObserver === "function") {
+      const observer = new ResizeObserver(() => {
+        if (effectiveNotesColumnCount() !== ui.paginationColumns) deferResponsivePagination();
+      });
+      observer.observe(elements.notesList);
+    }
   }
 
   function renderNotes({ motion = "none" } = {}) {

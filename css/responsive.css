@@ -41,7 +41,7 @@
   }
 
   .workspace {
-    padding-inline: clamp(1rem, 3vw, 2.2rem);
+    padding-inline: var(--space-4);
   }
 
   .topbar {
@@ -250,12 +250,6 @@
   .app-shell.is-sidebar-collapsed .tag-filter-section,
   html[data-sidebar-collapsed="true"] .app-shell .tag-filter-section {
     display: none;
-  }
-
-  /* ── Content area expansion when sidebar is collapsed ── */
-  .app-shell.is-sidebar-collapsed .workspace:not(.is-side-by-side-open),
-  html[data-sidebar-collapsed="true"] .app-shell .workspace:not(.is-side-by-side-open) {
-    width: min(100%, 1720px);
   }
 
 }

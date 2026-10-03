@@ -1123,10 +1123,10 @@ select:focus-visible {
 
 
 .workspace {
-  width: min(100%, 1540px);
+  width: 100%;
   min-width: 0;
-  margin: 0 auto;
-  padding: 1.5rem clamp(1.25rem, 3.5vw, 3.5rem) 3.25rem;
+  margin: 0;
+  padding: 1.5rem var(--space-5) 3.25rem;
 }
 
 

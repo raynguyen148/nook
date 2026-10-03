@@ -45,6 +45,8 @@ practice, and personal ideas in one calm, searchable local library.
 - Keep the primary editor and Side note as independent sessions with per-pane draft recovery and stale-write conflict handling.
 - Manage note types and tags from Settings → Organize Notes.
 - Choose Light, Coffee, Forest, Midnight, Dark, Retro, E-Ink, or Auto theme, switch between Compact, Comfortable, and Grid layouts, or collapse the sidebar into an icon rail.
+- Use the full available width for the library and its toolbar, with small edge insets even on wide screens.
+- Comfortable view expands to three columns and Grid view to five columns when the library content area is at least 1,440px wide; smaller screens retain fewer columns.
 - Recover an unfinished local editor draft after an interrupted session.
 - Review drafts from closed tabs in Draft Recovery, import several Markdown files, or merge a backup while keeping local notes.
 - Use Quick actions, reusable templates, and one Daily note per local calendar date.

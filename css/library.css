@@ -68,12 +68,6 @@
 
 
 
-.workspace {
-  max-width: 1600px;
-}
-
-
-
 .topbar {
   align-items: center;
 }
@@ -152,10 +146,23 @@
 
 
 .notes-panel {
+  container: library / inline-size;
   border-color: #e2e8f0;
   border-radius: var(--surface-radius);
   background: #ffffff;
   box-shadow: 0 1px 3px rgb(15 23 42 / 4%), 0 8px 20px -14px rgb(15 23 42 / 14%);
+}
+
+@container library (min-width: 1440px) {
+  .notes-list--comfortable {
+    --notes-columns: 3;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .notes-list--grid {
+    --notes-columns: 5;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
 }
 
 
