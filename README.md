@@ -266,7 +266,7 @@ night woodland, Retro archival moss hill layers, and Zen a reed-lined shore. Cof
 steaming cup; Retro's has a desk lamp and book. These simple silhouettes are subtle, single-tone
 backgrounds that do not take up navigation space. Auto follows
 the Light or Dark scene. The effect is off by default. Transparency ranges from
-10–40%; higher values reveal more background. Turn off Enable glass to return
+10–50%; higher values reveal more background. Turn off Enable glass to return
 to the normal appearance. At 40, desktop cards combine two 40%-opacity layers
 for a 64% backplate; mobile cards and reading areas retain 60% opacity. Controls
 and Markdown code/callout surfaces stay solid for clarity.

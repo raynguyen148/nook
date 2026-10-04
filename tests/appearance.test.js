@@ -68,7 +68,7 @@ test("malformed stored preferences cannot enable the effect or escape its bounds
     const { app } = appearanceHarness({ stored });
     assert.deepEqual(plain(app.ui.glass), { enabled: false, transparency: 10 });
   }
-  for (const [value, expected] of [[-100, 10], [100, 40], [0, 10], [5, 10], [10, 10], [20, 20], [40, 40], [1.5, 10], [null, 10]]) {
+  for (const [value, expected] of [[-100, 10], [100, 50], [0, 10], [5, 10], [10, 10], [20, 20], [40, 40], [50, 50], [1.5, 10], [null, 10]]) {
     const { app, properties } = appearanceHarness({ stored: JSON.stringify({ enabled: true, transparency: value }) });
     assert.deepEqual(plain(app.ui.glass), { enabled: true, transparency: expected });
     assert.equal(properties.get("--glass-opacity"), `${100 - expected * 1.5}%`);
@@ -100,7 +100,7 @@ test("unsupported rendering retains the user's preference with the normal appear
 
 test("stacked library layers reveal scenery while reading retains a single protective film", () => {
   const { app, properties } = appearanceHarness();
-  for (const [transparency, card, reading] of [[10, "85%", "90%"], [20, "70%", "80%"], [40, "40%", "60%"]]) {
+  for (const [transparency, card, reading] of [[10, "85%", "90%"], [20, "70%", "80%"], [40, "40%", "60%"], [50, "25%", "50%"]]) {
     app.api.setGlass({ enabled: true, transparency });
     assert.equal(properties.get("--glass-card-opacity"), card);
     assert.equal(properties.get("--glass-reading-opacity"), reading);
@@ -111,7 +111,7 @@ test("stacked library layers reveal scenery while reading retains a single prote
 test("external preference updates normalize without writing back", () => {
   const { app, values, elements } = appearanceHarness();
   app.api.setGlass(app.theme.glass.parse('{"enabled":true,"transparency":100}'), { persist: false });
-  assert.equal(elements.glassTransparency.value, "40");
+  assert.equal(elements.glassTransparency.value, "50");
   assert.equal(values.has("nook:glass"), false);
   app.api.setGlass(app.theme.glass.parse(null), { persist: false });
   assert.equal(elements.glassEnabled.checked, false);

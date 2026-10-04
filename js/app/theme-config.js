@@ -39,7 +39,7 @@
   // Appearance preferences share this before-paint boundary with themes.
   const glassStorageKey = "nook:glass";
   const glassMin = 10;
-  const glassMax = 40;
+  const glassMax = 50;
   const glassDefault = 10;
 
   /** @param {unknown} value */
