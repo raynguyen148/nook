@@ -124,6 +124,52 @@
           assert(container.textContent.includes("<script>"), "raw HTML text was lost");
         });
 
+        run("ordered-list shell code stays together and following prose stays Markdown", () => {
+          const command = [
+            "npm run dev:candidate-application -- \\",
+            "  --apply --prepare-invitations \\",
+            '  --job "<OPEN_JOB_ID>" \\',
+            '  --candidate "<OWNED_TEST_SOURCE_ID>" \\',
+            '  --origin "http://localhost:3000" \\',
+            "  --print-links",
+          ].join("\n");
+          const source = [
+            "3. **Prepare invitation.** Open `devenv shell`:", "", "   ```bash",
+            ...command.split("\n").map((line) => `   ${line}`), "   ```", "",
+            "   Run in an interactive TTY; do not combine with `--out`.", "",
+            "   Expected: `Open link` and `Return to application`.", "",
+            "4. **Open preview.** Reload must not save interest.",
+          ].join("\n");
+          const container = render(source, { sourceMap: true });
+          const blocks = container.querySelectorAll("pre code");
+          assert(blocks.length === 1, `expected one code block, got ${blocks.length}`);
+          assert(blocks[0].textContent === command, "code indentation or source was changed");
+          assert(blocks[0].dataset.language === "bash", "code language was lost");
+          const items = container.querySelectorAll("ol > li");
+          assert(items.length === 2, "following list item was swallowed");
+          assert(items[0].querySelectorAll("p").length === 3, "following prose became code");
+          assert(items[1].querySelector("strong")?.textContent === "Open preview.", "following bold was lost");
+          assert(blocks[0].parentElement.closest("li") === items[0], "code escaped its list item");
+          assert(blocks[0].parentElement.getAttribute("data-markdown-source-start") === "2", "code source start drifted");
+          assert(blocks[0].parentElement.getAttribute("data-markdown-source-end") === "10", "code source end drifted");
+        });
+
+        run("list continuation indentation follows the actual marker width", () => {
+          for (const marker of ["-", "9.", "10.", "100."]) {
+            const indent = " ".repeat(marker.length + 1);
+            const source = [
+              `${marker} item`, "", `${indent}~~~text`, `${indent}  literal`, "",
+              `${indent}  next line`, `${indent}~~~`, "", `${indent}After **code**.`,
+              "", "Outside paragraph.",
+            ].join("\n");
+            const container = render(source);
+            assert(container.querySelectorAll("pre").length === 1, `${marker}: code split`);
+            assert(container.querySelector("pre code")?.textContent === "  literal\n\n  next line", `${marker}: code whitespace changed`);
+            assert(container.querySelector("li strong")?.textContent === "code", `${marker}: continuation escaped`);
+            assert(container.lastElementChild?.tagName === "P" && container.lastElementChild.textContent === "Outside paragraph.", `${marker}: outside paragraph swallowed`);
+          }
+        });
+
         report.textContent = results.join("\n");
         const failed = results.some((result) => result.startsWith("FAIL"));
         status.textContent = failed ? "Contract failures" : "All contract checks passed";

@@ -1147,6 +1147,7 @@
     if (!match) return null;
     return {
       content: match[3],
+      contentIndent: match[0].length - match[3].length,
       indent: match[1].replace(/\t/g, "    ").length,
       marker: match[2],
       ordered: /^\d/.test(match[2]),
@@ -1182,10 +1183,11 @@
           continue;
         }
         const indent = countIndent(lines[index]);
-        if (sawBlank && indent <= first.indent) break;
-        if (sawBlank && indent >= first.indent + 4) break;
+        // Continuation blocks belong to the item's content column, including
+        // deeper-indented code. Marker widths differ for bullets and 10., etc.
+        if (sawBlank && indent < marker.contentIndent) break;
         if (indent > first.indent) {
-          const strip = Math.min(lines[index].length, first.indent + 2);
+          const strip = Math.min(indent, marker.contentIndent);
           itemLines.push(lines[index].slice(strip));
         } else {
           itemLines.push(lines[index].trim());

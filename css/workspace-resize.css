@@ -48,10 +48,10 @@
   }
 
   .note-window-resize {
-    --note-window-hit-width: 1rem;
+    --note-window-hit-width: 1.25rem;
     display: block;
     position: absolute;
-    z-index: 1;
+    z-index: 2;
     top: 1rem;
     bottom: 1rem;
     width: var(--note-window-hit-width);
@@ -70,39 +70,52 @@
     right: calc((100% - var(--note-detail-single-width, var(--note-detail-default-width)) - var(--note-window-hit-width)) / 2);
   }
 
-  .note-window-resize::before,
+  /* Guide rail: subtle vertical line that fades softly at edges */
   .note-window-resize::after {
     content: "";
     position: absolute;
     left: 50%;
-    width: 2px;
-    border-radius: var(--control-radius);
     transform: translateX(-50%);
-    pointer-events: none;
-  }
-
-  .note-window-resize::before {
-    top: calc(50% - 1.25rem);
-    height: 2.5rem;
-    background: var(--text-muted);
-  }
-
-  .note-detail-workspace:not(.is-side-by-side) > .note-window-resize::before {
-    opacity: 0;
-  }
-
-  .note-detail-workspace:not(.is-side-by-side) > .note-window-resize:is(:focus-visible, :active, .is-focus, .is-active, .is-hover)::before {
-    opacity: 1;
-  }
-
-  .note-window-resize::after {
     top: 0;
     bottom: 0;
-    background: var(--focus-ring);
+    width: 2px;
+    border-radius: var(--radius-pill, 999px);
+    background: linear-gradient(180deg, transparent 0%, var(--focus-ring) 8%, var(--focus-ring) 92%, transparent 100%);
     opacity: 0;
-    transition: opacity var(--motion-duration-micro) var(--motion-ease-out);
+    z-index: 1;
+    pointer-events: none;
+    transition: opacity var(--motion-duration-short) var(--motion-ease-out);
   }
 
+  /* Grab handle: elegant centered capsule with tactile feedback */
+  .note-window-resize::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 4px;
+    height: 2.25rem;
+    border-radius: var(--radius-pill, 999px);
+    background: var(--border-strong);
+    opacity: 0.55;
+    box-shadow: 0 1px 2px rgb(0 0 0 / 6%);
+    z-index: 2;
+    pointer-events: none;
+    transition:
+      width var(--motion-duration-short) var(--motion-ease-out),
+      height var(--motion-duration-short) var(--motion-ease-out),
+      background-color var(--motion-duration-short) var(--motion-ease-out),
+      box-shadow var(--motion-duration-short) var(--motion-ease-out),
+      opacity var(--motion-duration-short) var(--motion-ease-out);
+  }
+
+  /* Single-pane resting state stays quiet and invisible */
+  .note-detail-workspace:not(.is-side-by-side) > .note-window-resize:not(:is(:hover, :active, :focus-visible, .is-focus, .is-active, .is-hover))::before {
+    opacity: 0;
+  }
+
+  /* Focus ring for keyboard accessibility */
   .note-window-resize:focus-visible,
   .note-window-resize.is-focus {
     outline: 2px solid var(--focus-ring);
@@ -110,13 +123,44 @@
     border-radius: var(--control-radius);
   }
 
-  .note-window-resize:is(:focus-visible, :active, .is-focus, .is-active, .is-hover)::after {
+  .note-window-resize:is(:focus-visible, .is-focus)::after {
+    opacity: 0.4;
+  }
+
+  .note-window-resize:is(:focus-visible, .is-focus)::before {
     opacity: 1;
+    width: 6px;
+    height: 2.75rem;
+    background: var(--primary-accent, var(--focus-ring));
+    box-shadow:
+      0 0 0 1.5px var(--surface-panel),
+      0 2px 10px var(--focus-ring-soft, rgb(158 107 2 / 16%));
+  }
+
+  /* Active / Dragging state: prominent feedback and glow */
+  .note-window-resize:is(:active, .is-active):not([aria-disabled="true"])::after {
+    opacity: 0.85;
+  }
+
+  .note-window-resize:is(:active, .is-active):not([aria-disabled="true"])::before {
+    opacity: 1;
+    width: 6px;
+    height: 3.25rem;
+    background: var(--primary-accent, var(--focus-ring));
+    box-shadow:
+      0 0 0 2px var(--surface-panel),
+      0 0 0 4px var(--focus-ring-soft, rgb(158 107 2 / 24%)),
+      0 3px 12px var(--focus-ring-soft, rgb(158 107 2 / 28%));
   }
 
   .note-window-resize[aria-disabled="true"] {
     cursor: not-allowed;
     opacity: 0.35;
+  }
+
+  .note-window-resize[aria-disabled="true"]::before {
+    opacity: 0.35;
+    box-shadow: none;
   }
 
   .note-window-resize.is-loading {
@@ -126,6 +170,7 @@
 
   .note-window-resize.is-error::before {
     outline: 2px dashed var(--danger-text);
+    outline-offset: 2px;
   }
 
   .note-window-resize.is-success::before {
@@ -140,10 +185,34 @@
 }
 
 @media (min-width: 821px) and (hover: hover) {
-  .note-detail-workspace:not(.is-side-by-side) > .note-window-resize:not([aria-disabled="true"]):hover::before,
   .note-window-resize:not([aria-disabled="true"]):hover::after {
-    opacity: 1;
+    opacity: 0.35;
   }
+
+  .note-window-resize:not([aria-disabled="true"]):hover::before {
+    opacity: 1;
+    width: 6px;
+    height: 2.75rem;
+    background: var(--primary-accent, var(--focus-ring));
+    box-shadow:
+      0 0 0 1.5px var(--surface-panel),
+      0 2px 10px var(--focus-ring-soft, rgb(158 107 2 / 16%));
+  }
+}
+
+/* Fallback class for touch/emulated hover */
+.note-window-resize.is-hover:not([aria-disabled="true"])::after {
+  opacity: 0.35;
+}
+
+.note-window-resize.is-hover:not([aria-disabled="true"])::before {
+  opacity: 1;
+  width: 6px;
+  height: 2.75rem;
+  background: var(--primary-accent, var(--focus-ring));
+  box-shadow:
+    0 0 0 1.5px var(--surface-panel),
+    0 2px 10px var(--focus-ring-soft, rgb(158 107 2 / 16%));
 }
 
 @media (min-width: 821px) and (pointer: coarse) {
@@ -164,6 +233,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .note-window-resize::before,
   .note-window-resize::after {
     transition: none;
   }
@@ -172,6 +242,7 @@
 @media (forced-colors: active) {
   .note-window-resize::before {
     background: CanvasText;
+    box-shadow: none;
   }
 
   .note-window-resize::after {
