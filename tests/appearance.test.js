@@ -144,11 +144,11 @@ test("every resolved theme has its own file-mode artwork matching the local sour
   assert.ok(bytes <= 30 * 1024, `Artwork uses ${bytes} bytes`);
 });
 
-test("Coffee and Retro have separate simple local sidebar silhouettes", () => {
+test("Coffee, Retro, and E-Ink have separate simple local sidebar silhouettes", () => {
   const css = fs.readFileSync(path.join(root, "css/appearance.css"), "utf8");
   const worker = fs.readFileSync(path.join(root, "sw.js"), "utf8");
   let bytes = 0;
-  for (const name of ["coffee", "retro"]) {
+  for (const name of ["coffee", "retro", "eink"]) {
     const svg = fs.readFileSync(path.join(root, `images/nature/${name}-sidebar.svg`), "utf8");
     const embedded = css.match(new RegExp(`--nature-${name}-sidebar: url\\("data:image/svg\\+xml,([^"\\n]+)"\\)`));
     assert.ok(embedded, `${name} sidebar must work through file://`);
