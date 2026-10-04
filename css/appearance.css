@@ -297,16 +297,65 @@ html[data-theme="eink"] {
       --text-muted: var(--text-default);
       isolation: isolate;
       background: transparent;
-      /* Fading the ancestor creates a backdrop root: the child film cannot
-       * sample the page until opacity reaches 1, then its blur snaps on. */
       opacity: 1;
-      transform: none;
-      transition: none;
     }
 
-    html[data-glass="true"] :is(#command-dialog, #organize-dialog)::backdrop {
-      opacity: 1;
-      transition: none;
+    /* Dialogs animate transform smoothly in glass mode without fading
+     * the ancestor, keeping the child frosted glass film perfectly crisp. */
+    @keyframes dialog-glass-enter {
+      from {
+        transform: translateY(-14px) scale(0.975);
+      }
+      to {
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    @media (min-width: 821px) and (prefers-reduced-motion: no-preference) {
+      html[data-glass="true"] :is(#command-dialog, #organize-dialog)[open] {
+        animation: dialog-glass-enter 240ms var(--motion-ease-out) both;
+      }
+      html[data-glass="true"] :is(#command-dialog, #organize-dialog)[open]::backdrop {
+        animation: command-backdrop-enter 240ms var(--motion-ease-out) both;
+      }
+
+      @supports (transition-behavior: allow-discrete) {
+        html[data-glass="true"] :is(#command-dialog, #organize-dialog) {
+          opacity: 1;
+          transform: translateY(-14px) scale(0.975);
+          transform-origin: center 20%;
+          transition:
+            transform 140ms var(--motion-ease-in),
+            display 140ms allow-discrete;
+        }
+        html[data-glass="true"] :is(#command-dialog, #organize-dialog)[open] {
+          animation: none;
+          opacity: 1;
+          transform: translateY(0) scale(1);
+          transition-duration: 240ms;
+          transition-timing-function: var(--motion-ease-out);
+        }
+        html[data-glass="true"] :is(#command-dialog, #organize-dialog)::backdrop {
+          opacity: 0;
+          transition:
+            opacity 140ms linear,
+            display 140ms allow-discrete;
+        }
+        html[data-glass="true"] :is(#command-dialog, #organize-dialog)[open]::backdrop {
+          animation: none;
+          opacity: 1;
+          transition-duration: 240ms;
+          transition-timing-function: var(--motion-ease-out);
+        }
+        @starting-style {
+          html[data-glass="true"] :is(#command-dialog, #organize-dialog)[open] {
+            transform: translateY(-14px) scale(0.975);
+          }
+          html[data-glass="true"] :is(#command-dialog, #organize-dialog)[open]::backdrop {
+            opacity: 0;
+          }
+        }
+      }
     }
 
     html[data-glass="true"] :is(#command-dialog, #organize-dialog)::before {

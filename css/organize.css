@@ -40,6 +40,84 @@
   --theme-picker-menu-shadow: 0 0.75rem 1.75rem rgb(42 55 79 / 12%), 0 0.15rem 0.45rem rgb(42 55 79 / 6%);
 }
 
+/* Settings modal presentation and animation (matching Quick Actions Spotlight motion) */
+:is(#organize-dialog, .organize-dialog) {
+  box-shadow:
+    0 24px 64px -12px rgb(0 0 0 / 24%),
+    0 12px 24px -8px rgb(0 0 0 / 12%),
+    0 0 0 1px var(--border-subtle);
+}
+
+@keyframes organize-dialog-enter {
+  from {
+    opacity: 0;
+    transform: translateY(-14px) scale(0.975);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes organize-backdrop-enter {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (min-width: 821px) and (prefers-reduced-motion: no-preference) {
+  :is(#organize-dialog, .organize-dialog)[open] {
+    animation: organize-dialog-enter 240ms var(--motion-ease-out) both;
+  }
+  :is(#organize-dialog, .organize-dialog)[open]::backdrop {
+    animation: organize-backdrop-enter 240ms var(--motion-ease-out) both;
+  }
+
+  /* Native discrete transitions where supported (Safari 17.4+, Chrome, Firefox) */
+  @supports (transition-behavior: allow-discrete) {
+    :is(#organize-dialog, .organize-dialog) {
+      opacity: 0;
+      transform: translateY(-14px) scale(0.975);
+      transform-origin: center 20%;
+      transition:
+        opacity 140ms var(--motion-ease-in),
+        transform 140ms var(--motion-ease-in),
+        display 140ms allow-discrete;
+    }
+    :is(#organize-dialog, .organize-dialog)[open] {
+      animation: none;
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      transition-duration: 240ms;
+      transition-timing-function: var(--motion-ease-out);
+    }
+    :is(#organize-dialog, .organize-dialog)::backdrop {
+      opacity: 0;
+      transition:
+        opacity 140ms linear,
+        display 140ms allow-discrete;
+    }
+    :is(#organize-dialog, .organize-dialog)[open]::backdrop {
+      animation: none;
+      opacity: 1;
+      transition-duration: 240ms;
+      transition-timing-function: var(--motion-ease-out);
+    }
+    @starting-style {
+      :is(#organize-dialog, .organize-dialog)[open] {
+        opacity: 0;
+        transform: translateY(-14px) scale(0.975);
+      }
+      :is(#organize-dialog, .organize-dialog)[open]::backdrop {
+        opacity: 0;
+      }
+    }
+  }
+}
+
 .organize-tab {
   display: inline-flex;
   align-items: center;

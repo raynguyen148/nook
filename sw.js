@@ -1,6 +1,6 @@
 "use strict";
 
-const CACHE_VERSION = "nook-app-326e462b8082";
+const CACHE_VERSION = "nook-app-1b2ea0f211eb";
 const APP_ASSETS = [
   "./",
   "./index.html",

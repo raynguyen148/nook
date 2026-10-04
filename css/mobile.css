@@ -2073,6 +2073,8 @@ dialog:not([open]),
     border-radius: 0;
     padding-top: env(safe-area-inset-top);
     padding-bottom: 0;
+    transform: none !important;
+    animation: none !important;
   }
   #organize-dialog > .mobile-navigation { display: flex; }
   #organize-dialog .dialog-header .eyebrow { display: none; }
