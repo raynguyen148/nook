@@ -429,7 +429,9 @@ Library and card films each range from 85–40% opacity; stacking them yields
 behind a 92% backplate. Reading and mobile cards use a single 90–60% film;
 sidebar tint ranges from 95–80%. Quick actions and Settings also use a stationary
 reading film on their dialog pseudo-element, with transparent header/footer
-chrome; native top-layer placement and picker containing blocks stay intact.
+chrome. Settings' fixed mobile navigation retains its separate background and
+backdrop blur to obscure panel content scrolling behind it; native top-layer
+placement and picker containing blocks stay intact.
 These two glass dialogs and their backdrops do not fade or scale: ancestor
 opacity below 1 creates a backdrop root that prevents the child film from
 sampling the page until the entrance finishes. Normal opaque-dialog motion is

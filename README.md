@@ -277,7 +277,9 @@ existing library header's transparency, keeping the borderless library layout.
 Cards share one blur layer; Preview, Edit, Split, and Side note share their pane's
 reading layer, including headers, footers, and formatting bars, without putting
 filters on ancestors of fixed menus. Quick actions and Settings use the same
-reading film, including their headers and footers. Buttons and menus retain their own surfaces.
+reading film, including their headers and footers. The fixed mobile navigation in Settings
+keeps its own background and blur so menu labels stay readable as content scrolls behind it.
+Buttons and menus retain their own surfaces.
 On desktop, navigation scrolls inside the sidebar while its artwork and glass
 stay fixed across the full panel, including with all tags expanded.
 
