@@ -2239,9 +2239,14 @@ dialog:not([open]),
     border-radius: 0.625rem;
   }
   #organize-dialog .management-search input {
-    padding-inline: 0.75rem;
+    padding-inline: 0.75rem 3rem;
     font-size: 16px;
     box-shadow: none;
+  }
+  #organize-dialog .management-search .clear-search {
+    width: 44px;
+    height: 44px;
+    right: 0;
   }
   #organize-dialog .management-toolbar .button {
     padding-inline: 0.75rem;

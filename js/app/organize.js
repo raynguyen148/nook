@@ -403,6 +403,7 @@ globalThis[Symbol.for("nook.app.modules")].register("organize", (app) => {
   }
 
   function renderTypeManagement({ animate = false } = {}) {
+    elements.typesClearSearch.classList.toggle("is-hidden", !elements.typesManagementSearch.value);
     const totalUsageCounts = new Map();
     const activeUsageCounts = new Map();
     library.notes.forEach((note) => {
@@ -530,6 +531,7 @@ globalThis[Symbol.for("nook.app.modules")].register("organize", (app) => {
   }
 
   function renderTagManagement({ animate = false } = {}) {
+    elements.tagsClearSearch.classList.toggle("is-hidden", !elements.tagsManagementSearch.value);
     const totalUsageCounts = new Map();
     const activeUsageCounts = new Map();
     library.notes.forEach((note) => {

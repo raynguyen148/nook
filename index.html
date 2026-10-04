@@ -1601,10 +1601,11 @@
             <span id="types-panel-count" class="organize-panel__count">0 types</span>
           </div>
           <div class="management-toolbar">
-            <label class="management-search" for="types-management-search">
-              <span class="sr-only">Search note types</span>
+            <div class="management-search">
+              <label class="sr-only" for="types-management-search">Search note types</label>
               <input id="types-management-search" type="search" placeholder="Search note types…" autocomplete="off" />
-            </label>
+              <button id="types-clear-search-btn" class="clear-search is-hidden" type="button" aria-label="Clear note type search"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4.75 4.75 6.5 6.5M11.25 4.75l-6.5 6.5" /></svg></button>
+            </div>
             <button id="add-type-toggle" class="button button-primary button-compact" type="button" aria-expanded="false" aria-controls="new-type-form">+ New type</button>
           </div>
         </div>
@@ -1633,10 +1634,11 @@
             <span id="tags-panel-count" class="organize-panel__count">0 tags</span>
           </div>
           <div class="management-toolbar">
-            <label class="management-search" for="tags-management-search">
-              <span class="sr-only">Search tags</span>
+            <div class="management-search">
+              <label class="sr-only" for="tags-management-search">Search tags</label>
               <input id="tags-management-search" type="search" placeholder="Search tags…" autocomplete="off" />
-            </label>
+              <button id="tags-clear-search-btn" class="clear-search is-hidden" type="button" aria-label="Clear tag search"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4.75 4.75 6.5 6.5M11.25 4.75l-6.5 6.5" /></svg></button>
+            </div>
             <button id="add-tag-toggle" class="button button-primary button-compact" type="button" aria-expanded="false" aria-controls="new-tag-form">+ New tag</button>
           </div>
         </div>

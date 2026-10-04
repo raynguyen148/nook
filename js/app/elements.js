@@ -240,6 +240,8 @@
       settingsShortcutModifiers: [...document.querySelectorAll(".settings-shortcut-modifier")],
       typesManagementSearch: document.querySelector("#types-management-search"),
       tagsManagementSearch: document.querySelector("#tags-management-search"),
+      typesClearSearch: document.querySelector("#types-clear-search-btn"),
+      tagsClearSearch: document.querySelector("#tags-clear-search-btn"),
       addTypeToggle: document.querySelector("#add-type-toggle"),
       addTagToggle: document.querySelector("#add-tag-toggle"),
       newTypeForm: document.querySelector("#new-type-form"),

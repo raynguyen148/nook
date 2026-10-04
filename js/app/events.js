@@ -554,6 +554,16 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
       if (ui.managementEditing?.kind === "tags") ui.managementEditing = null;
       renderTagManagement({ animate: true });
     });
+    [
+      [elements.typesManagementSearch, elements.typesClearSearch],
+      [elements.tagsManagementSearch, elements.tagsClearSearch],
+    ].forEach(([search, clear]) => {
+      clear.addEventListener("click", () => {
+        search.value = "";
+        search.dispatchEvent(new Event("input", { bubbles: true }));
+        search.focus();
+      });
+    });
     elements.newTypeForm.addEventListener("submit", addNewType);
     elements.newTagForm.addEventListener("submit", addNewTag);
     document.addEventListener("pointerdown", (event) => {

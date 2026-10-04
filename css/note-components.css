@@ -214,7 +214,8 @@ select::-ms-expand {
 
 
 
-.search-field input[type="search"]::-webkit-search-cancel-button {
+.search-field input[type="search"]::-webkit-search-cancel-button,
+.management-search input[type="search"]::-webkit-search-cancel-button {
   appearance: none;
   -webkit-appearance: none;
 }
