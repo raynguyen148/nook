@@ -152,6 +152,27 @@ async function main() {
     passed.push("Quick actions keeps its visible label within the shared header group at 821–1440px");
     await commands.setViewportSize({ width: 1280, height: 800 });
     await commands.locator("#quick-actions-btn").click();
+    const commandSearchShadow = () => commands.locator(".command-dialog__search").evaluate((header) => getComputedStyle(header).boxShadow);
+    assert.equal(await commands.locator("#command-search").evaluate((input) => input === document.activeElement), true);
+    assert.equal(await commandSearchShadow(), "none");
+    await commands.keyboard.press("Tab");
+    await commands.keyboard.press("Shift+Tab");
+    assert.notEqual(await commandSearchShadow(), "none");
+    await commands.locator("#command-search").click();
+    await commands.waitForFunction(() => getComputedStyle(document.querySelector(".command-dialog__search")).boxShadow === "none");
+    assert.equal(await commandSearchShadow(), "none");
+    await commands.keyboard.type("Settings");
+    assert.equal(await commandSearchShadow(), "none");
+    await commands.locator("#command-clear-search-btn").click();
+    assert.equal(await commands.locator("#command-search").inputValue(), "");
+    assert.equal(await commands.locator("#command-search").evaluate((input) => input === document.activeElement), true);
+    await commands.locator("#command-clear-search-btn").waitFor({ state: "hidden" });
+    assert.equal(await commands.locator("#command-clear-search-btn").isVisible(), false);
+    await commands.keyboard.press("Escape");
+    const commandShortcut = await commands.locator("#quick-actions-btn").getAttribute("aria-keyshortcuts");
+    await commands.keyboard.press(commandShortcut);
+    assert.equal(await commandSearchShadow(), "none");
+    passed.push("Quick actions search hides focus on open, mouse click, and typing; Tab restores its focus indicator");
     const commandIcons = await commands.locator(".command-result").evaluateAll((buttons) => buttons.map((button) => ({
       title: button.querySelector(".command-result__title").textContent,
       icon: button.querySelector("svg")?.dataset.commandIcon,

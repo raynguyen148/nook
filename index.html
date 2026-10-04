@@ -2004,10 +2004,13 @@
       <div class="dialog-header command-dialog__search">
         <h2 id="command-title" class="sr-only">Quick actions</h2>
         <svg class="command-dialog__search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><circle cx="10.75" cy="10.75" r="6.75"/><path d="m16 16 4.5 4.5"/></svg>
-        <label class="command-dialog__field" for="command-search">
-          <span class="sr-only">Find a note or action</span>
+        <div class="command-dialog__field">
+          <label class="sr-only" for="command-search">Find a note or action</label>
           <input id="command-search" type="search" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="command-results" autocomplete="off" placeholder="Type a command or search notes…" />
-        </label>
+          <button id="command-clear-search-btn" class="clear-search is-hidden" type="button" aria-label="Clear search">
+            <svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4.75 4.75 6.5 6.5M11.25 4.75l-6.5 6.5" /></svg>
+          </button>
+        </div>
         <button class="button button-secondary command-dialog__close" type="button" data-close-workflow="commandDialog" aria-label="Close quick actions"><kbd>Esc</kbd></button>
       </div>
       <div class="dialog-body">

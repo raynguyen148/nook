@@ -263,6 +263,7 @@
       sidebarToggleShortcut: document.querySelector("#sidebar-toggle-shortcut"),
       commandDialog: document.querySelector("#command-dialog"),
       commandSearch: document.querySelector("#command-search"),
+      commandClearSearch: document.querySelector("#command-clear-search-btn"),
       commandResults: document.querySelector("#command-results"),
       commandStatus: document.querySelector("#command-status"),
       commandShortcutHelp: document.querySelector("#command-shortcut-help"),

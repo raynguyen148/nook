@@ -226,6 +226,7 @@ globalThis[Symbol.for("nook.app.modules")].register("productivity", (app) => {
   }
 
   function renderCommandResults() {
+    elements.commandClearSearch.classList.toggle("is-hidden", !elements.commandSearch.value);
     const query = elements.commandSearch.value.trim().toLocaleLowerCase();
     const actions = commandActions().filter((item) => `${item.title} ${item.hint}`.toLocaleLowerCase().includes(query));
     const notes = library.notes.filter((note) => !note.deletedAt && (!query || (library.searchIndex.get(note.id) || note.title.toLocaleLowerCase()).includes(query)))
@@ -265,6 +266,7 @@ globalThis[Symbol.for("nook.app.modules")].register("productivity", (app) => {
 
   function openCommands() {
     if (api.activeModalDialog()) return;
+    elements.commandDialog.dataset.keyboardFocus = "false";
     elements.commandSearch.value = "";
     renderCommandResults();
     openWorkflowDialog(elements.commandDialog);
@@ -334,6 +336,17 @@ globalThis[Symbol.for("nook.app.modules")].register("productivity", (app) => {
     document.querySelectorAll("[data-open-recovery]").forEach((button) => button.addEventListener("click", () => api.openDraftRecovery()));
     document.querySelectorAll("[data-import-markdown]").forEach((button) => button.addEventListener("click", () => elements.markdownImportInput.click()));
     elements.commandSearch.addEventListener("input", renderCommandResults);
+    elements.commandClearSearch.addEventListener("click", () => {
+      elements.commandSearch.value = "";
+      renderCommandResults();
+      elements.commandSearch.focus();
+    });
+    elements.commandDialog.addEventListener("pointerdown", () => {
+      elements.commandDialog.dataset.keyboardFocus = "false";
+    });
+    elements.commandDialog.addEventListener("keydown", (event) => {
+      if (event.key === "Tab") elements.commandDialog.dataset.keyboardFocus = "true";
+    });
     elements.commandDialog.addEventListener("keydown", handleCommandKeydown);
     document.addEventListener("keydown", (event) => {
       const modifier = api.usesMacKeyboardShortcuts() ? event.metaKey && !event.ctrlKey : event.ctrlKey && !event.metaKey;
