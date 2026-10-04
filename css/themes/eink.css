@@ -4,12 +4,12 @@
  * design: large-canvas gentle grain only, clean smooth component surfaces, zero visual noise
  */
 /* ==========================================================================
-   Nook - Theme: E-Ink (Màn hình đọc sách E-Paper)
-   - Canvas: Warm Soft E-Ink Paper (#efece4) with ultra-faint micro-texture
-   - Surfaces: Smooth Book Paper (#f7f5ef) — clean, glare-free, no sandpaper noise
-   - Sidebar: Muted Paper Pulp (#e8e5dc) — cohesive with canvas
-   - Inks: Deep Carbon Ink (#141414), Reading Charcoal (#383838), Muted (#666666)
-   - Accent: Carbon Black (#141414), muted brick red for destructive note actions
+   Nook - Theme: Zen (Tinh Thần Thiền Định Wabi-Sabi)
+   - Canvas: Warm Washi Paper / Zen Sand (#f5f2eb) — calm, natural, glare-free
+   - Surfaces: Pure Washi Sheet (#fdfcf9) — serene, breathable writing surface
+   - Sidebar: Muted River Pebble (#eae5da) — grounded, organic separation
+   - Inks: Deep Sumi Ink (#1c1b18), Reading Charcoal (#423f38), Muted Stone (#767167)
+   - Accent: Sumi Ink (#1c1b18)
    - Typography: Editorial Serif Display (Headings) + High-Legibility Body
    ========================================================================== */
 
@@ -23,33 +23,33 @@ html[data-theme="eink"] {
   --eink-paper-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Cfilter id='grain'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' opacity='.025' filter='url%28%23grain%29'/%3E%3C/svg%3E");
 
   /* Harmonious, close-value paper tones (calm, cohesive, no glare) */
-  --eink-canvas: #efece4;        /* restful warm paper canvas */
-  --eink-sidebar: #e8e5dc;       /* gently defined paper rail (very close to canvas) */
-  --eink-paper: #f7f5ef;         /* smooth, clean book paper surface (no pure white!) */
-  --eink-paper-muted: #e8e5dc;   /* toolbar / dialog chrome / subtle surface */
-  --eink-paper-hover: #eeebe3;   /* soft paper hover */
-  --eink-paper-active: #141414;  /* active pill / inverted surface */
-  --eink-paper-active-text: #efece4;
+  --eink-canvas: #f5f2eb;        /* restful warm washi canvas */
+  --eink-sidebar: #eae5da;       /* gently defined stone paper rail */
+  --eink-paper: #fdfcf9;         /* smooth, clean washi paper surface */
+  --eink-paper-muted: #eae5da;   /* toolbar / dialog chrome / subtle surface */
+  --eink-paper-hover: #f0ebe0;   /* soft paper hover */
+  --eink-paper-active: #22201d;  /* active pill / inverted surface */
+  --eink-paper-active-text: #f5f2eb;
 
   /* Inks (Carbon & Grayscale) */
-  --eink-ink: #141414;           /* deep stark carbon ink */
-  --eink-ink-secondary: #383838; /* clean reading body */
-  --eink-ink-muted: #666666;     /* timestamps, counts, secondary info */
-  --eink-ink-subtle: #666666;    /* placeholders, hints */
-  --eink-border: #d5cfc2;        /* subtle, elegant paper hairline */
-  --eink-border-strong: #141414; /* emphasized / active border */
-  --eink-disabled-surface: #e8e5dc;
-  --eink-disabled-ink: #9a9486;
+  --eink-ink: #1c1b18;           /* natural sumi ink */
+  --eink-ink-secondary: #423f38; /* clean reading body */
+  --eink-ink-muted: #767167;     /* timestamps, counts, secondary info */
+  --eink-ink-subtle: #767167;    /* placeholders, hints */
+  --eink-border: #dad4c7;        /* subtle, elegant paper hairline */
+  --eink-border-strong: #22201d; /* emphasized / active border */
+  --eink-disabled-surface: #eae5da;
+  --eink-disabled-ink: #a09a8d;
   --eink-danger: #973f36;
   --eink-danger-soft: #f4e5df;
 
-  /* Anchor: Carbon Black (Monochrome) */
-  --eink-accent: #141414;
+  /* Anchor: Sumi Black */
+  --eink-accent: #1c1b18;
   --eink-accent-hover: #000000;
-  --eink-accent-text: #141414;
-  --eink-accent-soft: #e8e5dc;
+  --eink-accent-text: #1c1b18;
+  --eink-accent-soft: #eae5da;
   --eink-accent-soft-hover: #dedad0;
-  --eink-accent-ink: #efece4;
+  --eink-accent-ink: #f5f2eb;
 
   --eink-border-width: 1px;
   --eink-radius-sm: 0.25rem;
@@ -77,15 +77,15 @@ html[data-theme="eink"] {
   --primary-accent-border: #141414;
   --primary-accent-focus: rgba(20, 20, 20, 0.2);
   --primary-accent-shadow: none;
-  --primary-button-text: #efece4;
+  --primary-button-text: #f5f2eb;
 
   --pinned-card-border: #141414;
   --pinned-card-border-hover: #000000;
-  --pinned-card-surface: #eae7df;
+  --pinned-card-surface: #ede8dd;
   --pinned-card-shadow: none;
   --pinned-marker-background: #141414;
   --pinned-marker-border: #141414;
-  --pinned-marker-color: #efece4;
+  --pinned-marker-color: #f5f2eb;
 
   --note-card-surface: var(--eink-paper);
   --note-card-border: var(--eink-border);
@@ -109,20 +109,20 @@ html[data-theme="eink"] {
 
   --toast-surface: #141414;
   --toast-border: #333333;
-  --toast-text: #efece4;
+  --toast-text: #f5f2eb;
   --toast-status-surface: #262626;
-  --toast-status-icon: #efece4;
-  --toast-action: #efece4;
+  --toast-status-icon: #f5f2eb;
+  --toast-action: #f5f2eb;
   --toast-action-hover: #ffffff;
   --toast-focus: #ffffff;
   --toast-shadow: none;
 
   --toast-error-surface: #141414;
   --toast-error-border: #444444;
-  --toast-error-text: #efece4;
+  --toast-error-text: #f5f2eb;
   --toast-error-status-surface: #262626;
-  --toast-error-status-icon: #efece4;
-  --toast-error-action: #efece4;
+  --toast-error-status-icon: #f5f2eb;
+  --toast-error-action: #f5f2eb;
   --toast-error-action-hover: #ffffff;
   --toast-error-focus: #ffffff;
 
@@ -154,8 +154,8 @@ html[data-theme="eink"] body {
 }
 
 html[data-theme="eink"] ::selection {
-  background: #141414;
-  color: #efece4;
+  background: #1c1b18;
+  color: #f5f2eb;
 }
 
 html[data-theme="eink"] * {
@@ -314,33 +314,33 @@ html[data-theme="eink"] :where(.space-link, .sidebar-filter):hover {
 }
 
 html[data-theme="eink"] :where(.space-link, .sidebar-filter).is-active {
-  border-color: #141414 !important;
+  border-color: #1c1b18 !important;
   border-radius: var(--eink-radius-control) !important;
-  color: #efece4 !important;
-  background: #141414 !important;
+  color: #f5f2eb !important;
+  background: #1c1b18 !important;
   font-weight: 600;
 }
 
 html[data-theme="eink"] :where(.space-link, .sidebar-filter).is-active .filter-count {
-  color: #d5cfc2 !important;
+  color: #dad4c7 !important;
 }
 
 html[data-theme="eink"] .sidebar-filter--type.is-active {
-  border-color: #141414 !important;
+  border-color: #1c1b18 !important;
   border-radius: var(--eink-radius-control) !important;
-  color: #efece4 !important;
-  background: #141414 !important;
+  color: #f5f2eb !important;
+  background: #1c1b18 !important;
 }
 
 html[data-theme="eink"] .sidebar-filter--type.is-active .filter-count {
-  color: #d5cfc2 !important;
+  color: #dad4c7 !important;
 }
 
 html[data-theme="eink"] .space-link--trash.is-active {
-  border-color: #141414 !important;
+  border-color: #1c1b18 !important;
   border-radius: var(--eink-radius-control) !important;
-  color: #efece4 !important;
-  background: #141414 !important;
+  color: #f5f2eb !important;
+  background: #1c1b18 !important;
 }
 
 html[data-theme="eink"] .backup-health {
@@ -1019,11 +1019,20 @@ html[data-theme="eink"] .tag-picker:focus-within {
 /* --------------------------------------------------------------------------
    Dialogs & Note Detail Surface (Grounded, clean paper surfaces)
    -------------------------------------------------------------------------- */
-html[data-theme="eink"] :where(.app-dialog, .note-detail-surface) {
+html[data-theme="eink"] .app-dialog {
   border: 1px solid var(--eink-border);
   border-radius: var(--eink-radius-dialog);
   color: var(--eink-ink);
   background-color: var(--eink-canvas);
+  background-image: none;
+  box-shadow: none !important;
+}
+
+html[data-theme="eink"] .note-detail-surface {
+  border: 1px solid var(--eink-border);
+  border-radius: var(--eink-radius-dialog);
+  color: var(--eink-ink);
+  background-color: var(--eink-paper);
   background-image: none;
   box-shadow: none !important;
 }
@@ -1041,7 +1050,7 @@ html[data-theme="eink"] :where(.detail-commandbar, .dialog-header, .dialog-foote
 html[data-theme="eink"] .note-detail-surface .dialog-header,
 html[data-theme="eink"] .note-detail-surface .dialog-footer {
   border-color: var(--eink-border);
-  background-color: var(--eink-paper-muted);
+  background-color: var(--eink-canvas);
   background-image: none;
 }
 
@@ -1376,15 +1385,15 @@ html[data-theme="eink"] :where(.quick-view-content, .note-content-preview) .mark
 
 html[data-theme="eink"] :where(.quick-view-content, .note-content-preview) .markdown-code-copy-btn:is(:hover, :focus-visible) {
   outline: none;
-  border-color: #141414;
-  color: #efece4;
-  background: #141414;
+  border-color: #1c1b18;
+  color: #f5f2eb;
+  background: #1c1b18;
 }
 
 html[data-theme="eink"] :where(.quick-view-content, .note-content-preview) .markdown-code-copy-btn.is-copied {
-  border-color: #141414;
-  color: #efece4;
-  background: #141414;
+  border-color: #1c1b18;
+  color: #f5f2eb;
+  background: #1c1b18;
 }
 
 /* Syntax Highlighting Tokens in Monochrome Grayscale */

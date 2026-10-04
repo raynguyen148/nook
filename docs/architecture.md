@@ -447,7 +447,7 @@ and `--tag-menu-border/surface/shadow`. Default fallbacks stay in the component
 owner. Coffee, Forest, Dark, and Midnight supply palette values rather than
 repeating the same color selectors. `management.css` owns common type/color
 menu geometry; the component rules retain only their differences. Retro and
-E-Ink keep their intentional typography, shapes, and state overrides. This is
+Zen keep their intentional typography, shapes, and state overrides. This is
 a focused consolidation, not a claim that every historic theme override has
 been removed.
 

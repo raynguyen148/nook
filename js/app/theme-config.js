@@ -10,7 +10,7 @@
     midnight: { label: "Midnight", file: "midnight", color: "#18263f" },
     dark: { label: "Dark", file: "dark", color: "#09090b" },
     retro: { label: "Retro", file: "retro", color: "#2f5b3e" },
-    eink: { label: "E-Ink", file: "eink", color: "#efece4" },
+    eink: { label: "Zen", file: "eink", color: "#f5f2eb" },
     auto: { label: "Auto", file: "classic", color: "#9e6b02" },
   }).map(([key, value]) => [key, Object.freeze(value)])));
   const modes = Object.freeze(Object.keys(metadata));

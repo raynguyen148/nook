@@ -44,7 +44,7 @@ practice, and personal ideas in one calm, searchable local library.
 - Export and import a complete JSON backup, including version history. The local backup-health indicator reminds you when an export is missing or old.
 - Keep the primary editor and Side note as independent sessions with per-pane draft recovery and stale-write conflict handling.
 - Manage note types and tags from Settings → Organize Notes.
-- Choose Light, Coffee, Forest, Midnight, Dark, Retro, E-Ink, or Auto theme, switch between Compact, Comfortable, and Grid layouts, or collapse the sidebar into an icon rail.
+- Choose Light, Coffee, Forest, Midnight, Dark, Retro, Zen, or Auto theme, switch between Compact, Comfortable, and Grid layouts, or collapse the sidebar into an icon rail.
 - Use the full available width for the library and its toolbar, with small edge insets even on wide screens.
 - Comfortable view expands to three columns and Grid view to five columns when the library content area is at least 1,440px wide; smaller screens retain fewer columns.
 - Recover an unfinished local editor draft after an interrupted session.
@@ -255,14 +255,14 @@ has its own autosave, recovery record, conflict state, and history action.
 ### Themes
 
 Nook has a light, clean interface by default. You can use the theme button (or `T`) to cycle between eight
-modes: Light, Coffee, Forest, Midnight, Dark, Retro, E-Ink, and Auto. Auto matches
+modes: Light, Coffee, Forest, Midnight, Dark, Retro, Zen, and Auto. Auto matches
 your device's system color scheme preference (Light or Dark). Hover over or keyboard-focus the button to see the
 current and next theme. Auto stays selected after reload and updates when the system theme changes.
 
 In Settings → Display (Appearance on mobile), **Enable glass** turns on a fixed,
 theme-specific illustration and glass in the library, cards, and note detail together. Light has warm stone mountain layers,
 Coffee warm sepia mountain layers, Forest a pine lake, Midnight mountains and a moon, Dark a
-night woodland, Retro archival moss hill layers, and E-Ink a reed-lined shore. Coffee's sidebar has a small
+night woodland, Retro archival moss hill layers, and Zen a reed-lined shore. Coffee's sidebar has a small
 steaming cup; Retro's has a desk lamp and book. These simple silhouettes are subtle, single-tone
 backgrounds that do not take up navigation space. Auto follows
 the Light or Dark scene. The effect is off by default. Transparency ranges from
@@ -695,7 +695,7 @@ scripts/test-ui-standardization.cjs` with the same existing local Playwright
 setup. It captures all seven palettes, library layouts, settings panels,
 workflows, and widths from 320 to 1440 px in a fresh synthetic library. It also
 checks Quick actions focus, Side note validation and continued typing during
-refresh, catalog retries and search-driven re-rendering, and E-Ink/forced-colors
+refresh, catalog retries and search-driven re-rendering, and Zen/forced-colors
 focus. Contrast and target-size diagnostics support manual review; they are
 not a complete accessibility certification. `NOOK_UI_THEMES` can narrow the
 palette captures. The [UI audit record](docs/ui-standardization-audit.md)
