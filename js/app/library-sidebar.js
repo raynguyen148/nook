@@ -142,7 +142,7 @@
       const borderBottom = Number.parseFloat(sidebarStyles.borderBottomWidth) || 0;
       const paddingBottom = Number.parseFloat(sidebarStyles.paddingBottom) || 0;
       const availableBottom = sidebarBounds.bottom - borderBottom - paddingBottom - TAG_FILTER_HEIGHT_RESERVE;
-      const contentBottom = controlsBounds.bottom + elements.sidebar.scrollTop;
+      const contentBottom = controlsBounds.bottom + elements.sidebar.scrollTop + elements.sidebarScroll.scrollTop;
       return contentBottom > availableBottom;
     }
 
@@ -218,6 +218,7 @@
       if (collapsed) {
         window.requestAnimationFrame(() => {
           elements.sidebar.scrollTop = 0;
+          elements.sidebarScroll.scrollTop = 0;
         });
       }
     }
@@ -226,6 +227,7 @@
       if (tagFilterResizeObserver || typeof ResizeObserver !== "function") return;
       tagFilterResizeObserver = new ResizeObserver(scheduleTagFilterLayout);
       tagFilterResizeObserver.observe(elements.sidebar);
+      tagFilterResizeObserver.observe(elements.sidebarScroll);
     }
 
     function renderSidebar() {

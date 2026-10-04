@@ -339,6 +339,10 @@ select:focus-visible {
 
 
 
+.sidebar__scroll {
+  display: contents;
+}
+
 .sidebar__header {
   display: flex;
   align-items: center;

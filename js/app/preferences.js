@@ -32,6 +32,29 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
   const THEME_LABELS = Object.fromEntries(THEMES.map(mode => [mode, app.theme.describe(mode).label]));
   const THEME_STYLESHEET_FILES = Object.fromEntries(THEMES.map(mode => [mode, app.theme.describe(mode).file]));
 
+  function syncGlassUI() {
+    app.theme.glass.apply(ui.glass);
+    elements.glassEnabled.checked = ui.glass.enabled;
+    elements.glassTransparencyControl.classList.toggle("is-hidden", !ui.glass.enabled);
+    elements.glassTransparency.disabled = !ui.glass.enabled;
+    elements.glassTransparency.min = String(app.theme.glass.min);
+    elements.glassTransparency.max = String(app.theme.glass.max);
+    elements.glassTransparency.value = String(ui.glass.transparency);
+    elements.glassTransparency.setAttribute("aria-valuetext", `${ui.glass.transparency} percent transparency`);
+    elements.glassTransparencyValue.textContent = `${ui.glass.transparency}%`;
+  }
+
+  function setGlass(value, { persist = true } = {}) {
+    ui.glass = app.theme.glass.normalize(value);
+    syncGlassUI();
+    if (!persist) return;
+    try {
+      window.localStorage.setItem(app.theme.glass.storageKey, JSON.stringify(ui.glass));
+    } catch {
+      // The chosen appearance still works in this session when storage is blocked.
+    }
+  }
+
   // These core utilities are resolved only when an interaction occurs, after
   // every installer has completed.
   const pluralize = (...args) => api.pluralize(...args);
@@ -870,6 +893,8 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
   }
 
   Object.assign(api, {
+    syncGlassUI,
+    setGlass,
     getNextTheme,
     prefersReducedMotion,
     runUiViewTransition,

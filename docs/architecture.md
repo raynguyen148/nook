@@ -88,10 +88,10 @@ product decision.
 | `js/app/note-pickers.js` | Shared type/tag picker components and both panes’ picker rendering |
 | `js/app/formatting.js` | Markdown editing operations and mobile formatting scroll cues |
 | `js/app/split-scroll.js` | Split preview rendering and scroll mapping/synchronization |
-| `js/app/theme-config.js` | One theme catalogue for startup, preferences, labels, assets, and legacy aliases |
+| `js/app/theme-config.js` | Theme catalogue and normalized background/glass preference for startup and runtime |
 | `js/app/pane-controller.js` | Shared pane session, save, conflict, and recovery lifecycle |
 | `js/app/onboarding.js` | Dismissible local-data introduction and explicit ordinary guide-note creation |
-| `js/app/preferences.js` | Theme, layout, sidebar, responsive controls, and preference persistence |
+| `js/app/preferences.js` | Theme, background/glass, layout, sidebar, responsive controls, and preference persistence |
 | `js/app/feedback.js` | Toasts, confirmation dialogs, focus restoration, and shared pane save-status presentation |
 | `js/app/editor-session.js` | DOM-independent editor state machines, save sequencing, CAS inputs, conflict state, and per-session draft recovery |
 | `js/app/note-actions.js` | Pin, move-to-Trash with Undo, restore, permanent-delete, and empty-Trash mutations shared by cards and editor surfaces |
@@ -383,8 +383,8 @@ no forced reload during active editing.
 
 `css/app.css` is the shared ordered cascade manifest. Foundations and shared
 components load first; feature rules and accessibility follow. `index.html`
-then loads exactly one active theme stylesheet and finally `mobile.css`, so
-inactive theme selectors are not parsed or added to the live cascade.
+then loads exactly one active theme stylesheet and the focused layers below,
+so inactive theme stylesheets are not parsed or added to the live cascade.
 
 - `base.css`: reset, tokens, shell, and primitives.
 - `note-components.css`, `dialogs.css`, `management.css`, `markdown.css`:
@@ -397,6 +397,48 @@ inactive theme selectors are not parsed or added to the live cascade.
 - `mobile.css`: responsive geometry loaded after the active theme.
 - `note-typography.css` and `workflows.css`: focused detail typography and
   theme-aware productivity surfaces, loaded after mobile geometry.
+- `appearance.css`: optional fixed theme artwork and glass films, loaded last.
+  The canonical SVGs in `images/nature/` are also encoded in CSS for
+  `file://` compatibility; the appearance tests keep those copies in sync.
+  Main scenes use alpha masks tinted by each theme. Coffee and Retro have
+  separate sidebar artwork: simple filled silhouettes using the same tinted
+  alpha-mask treatment as other themes. These absolute background layers add
+  no layout height or scrolling space and contain no outlines or shading.
+  All source SVGs are cached with the app for hosted offline use.
+  Films live on pseudo-elements so fixed UI controls retain their viewport
+  positioning. On desktop with glass enabled, `sidebar__scroll` owns navigation
+  scrolling while the sidebar shell and its full-height film remain stationary;
+  tag fitting accounts for either scroll owner. Without glass and on mobile,
+  the wrapper uses `display: contents` to preserve the existing layout.
+  `node scripts/test-appearance-sidebar.cjs` is optional isolated Chrome QA for
+  this scroll/film boundary across all seven themes. It requires existing local
+  Playwright, accepts `NOOK_PLAYWRIGHT_MODULE` and `NOOK_SCREENSHOT_DIR`, and uses
+  synthetic notes on an ephemeral localhost origin.
+  Cards use translucent state-aware surfaces over one shared library
+  blur film (transparent on mobile to preserve the borderless layout). Each note
+  pane uses its own film across Preview/Edit/Split; the scene stays visible when
+  detail opens. Reading/editing backgrounds, pane headers/footers and formatting
+  bars are cleared to share that film without stacking additional opacity. Menus,
+  dialog controls, and Markdown code/callout backgrounds retain their surfaces.
+
+The `nook:glass` preference defaults off and stores only an enabled flag and
+integer transparency from 10–40; older values below 10 normalize to 10.
+The artwork retains its previous strength at 20 and doubles it at 40.
+Library and card films each range from 85–40% opacity; stacking them yields
+97.75–64% effective opacity on desktop, so the maximum no longer masks the scene
+behind a 92% backplate. Reading and mobile cards use a single 90–60% film;
+sidebar tint ranges from 95–80%. Quick actions and Settings also use a stationary
+reading film on their dialog pseudo-element, with transparent header/footer
+chrome; native top-layer placement and picker containing blocks stay intact.
+These two glass dialogs and their backdrops do not fade or scale: ancestor
+opacity below 1 creates a backdrop root that prevents the child film from
+sampling the page until the entrance finishes. Normal opaque-dialog motion is
+unchanged; Settings' inner panel transitions remain independent of the film.
+Solid controls and code/callout surfaces remain.
+The theme catalogue applies it before paint;
+preferences owns the controls and persistence, and storage events synchronize
+tabs. Unsupported filters/color mixing, reduced transparency, and forced colors
+keep the normal appearance. It does not change note records or backup formats.
 
 Keep selectors in their owning layer, reuse existing semantic tokens, and
 preserve the manifest order when moving rules. Tag resting colors use

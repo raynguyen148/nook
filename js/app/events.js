@@ -24,6 +24,8 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
     handleThemePickerMenuKeydown,
     handleThemePickerDocumentPointerdown,
     syncThemeUI,
+    syncGlassUI,
+    setGlass,
     clearAutoThemeTimer,
     refreshAutoTheme,
     setTheme,
@@ -216,6 +218,9 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
       if (message) showToast(message, tone);
     });
     window.addEventListener("storage", (event) => {
+      if (event.key === app.theme.glass.storageKey || event.key === null) {
+        setGlass(app.theme.glass.parse(event.key === null ? null : event.newValue), { persist: false });
+      }
       const theme = event.newValue === "warm" ? "coffee" : event.newValue === "midnight-blue" ? "midnight" : event.newValue;
       if (event.key === THEME_STORAGE_KEY && THEMES.includes(theme) && theme !== ui.theme) {
         setTheme(theme, { persist: false });
@@ -526,6 +531,8 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
     });
     elements.deleteLibraryDialog.addEventListener("close", finishDeleteLibraryClose);
     elements.notePreviewLines.addEventListener("input", () => setNotePreviewLines(elements.notePreviewLines.value));
+    elements.glassEnabled.addEventListener("change", () => setGlass({ ...ui.glass, enabled: elements.glassEnabled.checked }));
+    elements.glassTransparency.addEventListener("input", () => setGlass({ ...ui.glass, transparency: Number(elements.glassTransparency.value) }));
     elements.noteFontSizeControls.forEach((control) => {
       control.addEventListener("click", handleNoteFontSizeClick);
     });
@@ -888,6 +895,7 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
       observeTagFilterLayout();
       setupLibrarySync();
       syncThemeUI();
+      syncGlassUI();
       syncSidebarUI();
       syncNotePreviewLinesUI();
       syncNoteDetailFontSizeUI();

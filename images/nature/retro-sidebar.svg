@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" fill="#000">
+  <!-- A single desk lamp beside a closed book, with no surface details. -->
+  <path d="M122 56h50l21 55h-92Z"/>
+  <path d="M143 110h8v80h-8Zm-15 80h39c8 0 13 6 13 14h-65c0-8 5-14 13-14Z"/>
+  <rect x="35" y="185" width="73" height="19" rx="3"/>
+</svg>

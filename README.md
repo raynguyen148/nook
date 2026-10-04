@@ -259,6 +259,28 @@ modes: Light, Coffee, Forest, Midnight, Dark, Retro, E-Ink, and Auto. Auto match
 your device's system color scheme preference (Light or Dark). Hover over or keyboard-focus the button to see the
 current and next theme. Auto stays selected after reload and updates when the system theme changes.
 
+In Settings → Display (Appearance on mobile), **Enable glass** turns on a fixed,
+theme-specific illustration and glass in the library, cards, and note detail together. Light has warm stone mountain layers,
+Coffee warm sepia mountain layers, Forest a pine lake, Midnight mountains and a moon, Dark a
+night woodland, Retro archival moss hill layers, and E-Ink a reed-lined shore. Coffee's sidebar has a small
+steaming cup; Retro's has a desk lamp and book. These simple silhouettes are subtle, single-tone
+backgrounds that do not take up navigation space. Auto follows
+the Light or Dark scene. The effect is off by default. Transparency ranges from
+10–40%; higher values reveal more background. Turn off Enable glass to return
+to the normal appearance. At 40, desktop cards combine two 40%-opacity layers
+for a 64% backplate; mobile cards and reading areas retain 60% opacity. Controls
+and Markdown code/callout surfaces stay solid for clarity.
+The preference stays in this browser; accessibility
+preferences and unsupported browser effects retain the normal appearance.
+On mobile, the range changes how strongly the scenery shows through and the
+existing library header's transparency, keeping the borderless library layout.
+Cards share one blur layer; Preview, Edit, Split, and Side note share their pane's
+reading layer, including headers, footers, and formatting bars, without putting
+filters on ancestors of fixed menus. Quick actions and Settings use the same
+reading film, including their headers and footers. Buttons and menus retain their own surfaces.
+On desktop, navigation scrolls inside the sidebar while its artwork and glass
+stay fixed across the full panel, including with all tags expanded.
+
 ### Keyboard shortcuts
 
 The modifier is `Command` on macOS and `Control` on Windows/Linux.

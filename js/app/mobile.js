@@ -173,7 +173,12 @@ globalThis[Symbol.for("nook.app.modules")].register("mobile", (app) => {
 
   function dockMobileNavigation() {
     const parent = mobileQuery.matches && elements.organizeDialog.open ? elements.organizeDialog : navigationHome;
-    if (parent && elements.mobileNavigation.parentElement !== parent) parent.append(elements.mobileNavigation);
+    if (parent && elements.mobileNavigation.parentElement !== parent) {
+      const focused = document.activeElement;
+      const restoreFocus = focused instanceof HTMLElement && elements.mobileNavigation.contains(focused);
+      parent.append(elements.mobileNavigation);
+      if (restoreFocus) focused.focus({ preventScroll: true });
+    }
   }
 
   function openMobileCardActions(card, invoker) {
@@ -415,6 +420,11 @@ globalThis[Symbol.for("nook.app.modules")].register("mobile", (app) => {
       elements.organizeDialog.classList.remove("is-mobile-settings-home");
       dockMobileNavigation();
       syncMobileNavigation();
+      // The browser cannot restore the Settings invoker while it is still
+      // inside the closed dialog. Restore only an otherwise lost focus.
+      if (mobileQuery.matches && (document.activeElement === document.body || elements.organizeDialog.contains(document.activeElement))) {
+        elements.mobileSettings.focus({ preventScroll: true });
+      }
     });
     elements.mobileTheme.addEventListener("click", () => elements.themeToggle.click());
     elements.mobileChips.addEventListener("click", (event) => {

@@ -35,10 +35,12 @@
     <link rel="stylesheet" href="css/workflows.css" />
     <link rel="stylesheet" href="css/workspace-resize.css" />
     <link rel="stylesheet" href="css/note-card-actions.css" />
+    <link rel="stylesheet" href="css/appearance.css" />
   </head>
   <body>
     <main class="app-shell" aria-label="Nook" aria-busy="true" inert>
       <aside class="sidebar" aria-label="Note navigation">
+        <div id="sidebar-scroll" class="sidebar__scroll">
         <div class="sidebar__header">
           <div class="brand">
             <span class="brand-mark" aria-hidden="true">
@@ -209,6 +211,7 @@
           </div>
         </div>
 
+        </div>
       </aside>
 
       <section class="workspace">
@@ -1720,6 +1723,23 @@
                     <span class="theme-picker__option-label">E-Ink</span>
                   </button>
                 </div>
+              </div>
+            </div>
+          </div>
+          <div class="management-row display-setting display-setting--glass">
+            <div class="display-setting__copy">
+              <h3 class="management-row__name">Background &amp; glass</h3>
+              <p id="glass-help" class="dialog-description display-setting__description">Each theme has its own fixed illustration, with glass in the library, note cards, and note detail. Reading areas keep a stronger background for clarity. Accessibility preferences may turn the effect off.</p>
+            </div>
+            <div class="glass-control">
+              <label class="glass-control__toggle" for="glass-enabled"><input id="glass-enabled" type="checkbox" aria-describedby="glass-help" /> Enable glass</label>
+              <div id="glass-transparency-control" class="preview-lines-control is-hidden">
+                <div class="preview-lines-control__header">
+                  <label class="management-row__name" for="glass-transparency">Transparency</label>
+                  <output id="glass-transparency-value" class="usage-count preview-lines-control__value" for="glass-transparency">10%</output>
+                </div>
+                <input id="glass-transparency" type="range" min="10" max="40" step="1" value="10" aria-describedby="glass-transparency-help" />
+                <p id="glass-transparency-help" class="dialog-description">10–40%. Higher values show more background; reading areas remain more opaque.</p>
               </div>
             </div>
           </div>

@@ -36,6 +36,57 @@
   /** @param {string} mode */
   function describe(mode) { return metadata[normalize(mode)]; }
 
+  // Appearance preferences share this before-paint boundary with themes.
+  const glassStorageKey = "nook:glass";
+  const glassMin = 10;
+  const glassMax = 40;
+  const glassDefault = 10;
+
+  /** @param {unknown} value */
+  function normalizeGlass(value) {
+    const entry = /** @type {{ enabled?: unknown, transparency?: unknown } | null} */ (
+      value && typeof value === "object" ? value : null
+    );
+    const transparency = typeof entry?.transparency === "number" && Number.isInteger(entry.transparency)
+      ? Math.min(glassMax, Math.max(glassMin, entry.transparency))
+      : glassDefault;
+    return { enabled: entry?.enabled === true, transparency };
+  }
+
+  /** @param {string | null} value */
+  function parseGlass(value) {
+    try { return normalizeGlass(value ? JSON.parse(value) : null); }
+    catch { return normalizeGlass(null); }
+  }
+
+  function readGlass() {
+    try { return parseGlass(window.localStorage.getItem(glassStorageKey)); }
+    catch { return normalizeGlass(null); }
+  }
+
+  /** @param {{ enabled: boolean, transparency: number }} value */
+  function applyGlass(value) {
+    const supported = typeof CSS !== "undefined" &&
+      (CSS.supports("backdrop-filter", "blur(1px)") || CSS.supports("-webkit-backdrop-filter", "blur(1px)")) &&
+      CSS.supports("background-color", "color-mix(in srgb, white 80%, transparent)");
+    document.documentElement.dataset.glass = String(value.enabled && supported);
+    // Library film and card tint stack: at 40, two 40% layers yield 64%
+    // effective opacity, rather than the old nearly opaque 92% result.
+    document.documentElement.style.setProperty("--glass-opacity", `${100 - value.transparency * 1.5}%`);
+    document.documentElement.style.setProperty("--glass-card-opacity", `${100 - value.transparency * 1.5}%`);
+    // Reading has one film; sidebar's small labels keep a stronger tint.
+    document.documentElement.style.setProperty("--glass-reading-opacity", `${100 - value.transparency}%`);
+    document.documentElement.style.setProperty("--glass-sidebar-opacity", `${100 - value.transparency / 2}%`);
+    // Preserve the existing artwork strength at 20%; 40% doubles its visibility.
+    document.documentElement.style.setProperty("--glass-reveal", String(value.transparency / 20));
+  }
+
+  const glass = Object.freeze({
+    storageKey: glassStorageKey, min: glassMin, max: glassMax, defaultValue: glassDefault,
+    normalize: normalizeGlass, parse: parseGlass, read: readGlass, apply: applyGlass,
+  });
+  applyGlass(readGlass());
+
   const mode = readMode();
   const resolved = resolve(mode);
   document.documentElement.dataset.theme = resolved;
@@ -52,7 +103,7 @@
   /** @type {import('./contracts').ModuleRegistry} */
   const registry = Reflect.get(globalThis, Symbol.for("nook.app.modules"));
   registry.register("theme-config", (app) => {
-    app.theme = Object.freeze({ storageKey, modes, normalize, readMode, resolve, describe });
+    app.theme = Object.freeze({ storageKey, modes, normalize, readMode, resolve, describe, glass });
     app.api.getStoredTheme = readMode;
   });
 })();

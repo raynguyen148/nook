@@ -52,6 +52,7 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
   const library = { notes: [], types: [], tags: [], searchIndex: new Map() };
   const ui = {
     theme: getStoredTheme(),
+    glass: theme.glass.read(),
     sidebarCollapsed: getStoredSidebarCollapsed(),
     query: "",
     typeId: storedFilters.trashOnly ? "all" : storedFilters.typeId,

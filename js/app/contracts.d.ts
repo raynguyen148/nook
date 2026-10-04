@@ -70,6 +70,13 @@ export interface ThemeConfig {
   readMode(): string;
   resolve(mode: string): string;
   describe(mode: string): { label: string; file: string; color: string };
+  glass: {
+    storageKey: string; min: number; max: number; defaultValue: number;
+    normalize(value: unknown): { enabled: boolean; transparency: number };
+    parse(value: string | null): { enabled: boolean; transparency: number };
+    read(): { enabled: boolean; transparency: number };
+    apply(value: { enabled: boolean; transparency: number }): void;
+  };
 }
 
 export interface AppContext {
