@@ -75,10 +75,26 @@ async function main() {
       await page.locator("#tag-filter-toggle").click();
       await ready();
       check(`${theme}: Show less resets content scroll`, (await record()).scrollTop === 0);
+      await page.emulateMedia({ reducedMotion: "no-preference" });
       await page.locator("#sidebar-toggle-btn").click();
+      const horizontalModes = await page.evaluate(() => new Promise(resolve => {
+        const modes = [], start = performance.now();
+        function sample() {
+          modes.push(getComputedStyle(document.querySelector("#sidebar-scroll")).overflowX);
+          if (performance.now() - start < 600) requestAnimationFrame(sample);
+          else resolve(modes);
+        }
+        requestAnimationFrame(sample);
+      }));
+      check(`${theme}: collapse motion keeps horizontal scrolling disabled`, horizontalModes.every(mode => mode === "hidden"));
       await ready();
       check(`${theme}: collapse keeps header usable`, await page.locator("#sidebar-toggle-btn").isVisible());
+      const collapsedScroll = await page.locator("#sidebar-scroll").evaluate(el => getComputedStyle(el).overflowX);
+      check(`${theme}: collapsed navigation never shows a horizontal scrollbar`,
+        collapsedScroll === "hidden");
+      await page.screenshot({ path: `${out}/${theme}-collapsed.png` });
       await page.locator("#sidebar-toggle-btn").click();
+      await page.emulateMedia({ reducedMotion: "reduce" });
       await ready();
     }
     await page.setViewportSize({ width: 375, height: 812 });

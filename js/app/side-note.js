@@ -53,8 +53,8 @@
       cancelSecondarySurfaceAnimation();
       if (!elements.secondarySurface) return;
       const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      elements.secondarySurface.style.willChange = "opacity, transform";
-      const animation = elements.secondarySurface.animate(
+      const animation = api.animateNoteSurface(
+        elements.secondarySurface,
         reducedMotion
           ? [{ opacity: 0 }, { opacity: 1 }]
           : [
@@ -199,8 +199,8 @@
       elements.secondarySurface.inert = true;
 
       const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      elements.secondarySurface.style.willChange = "opacity, transform";
-      const closeAnimation = elements.secondarySurface.animate(
+      const closeAnimation = api.animateNoteSurface(
+        elements.secondarySurface,
         reducedMotion
           ? [{ opacity: 1 }, { opacity: 0 }]
           : [

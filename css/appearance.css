@@ -165,6 +165,7 @@ html[data-theme="eink"] {
         min-width: 0;
         min-height: 0;
         flex: 1;
+        overflow-x: hidden;
         overflow-y: auto;
         overscroll-behavior: contain;
       }

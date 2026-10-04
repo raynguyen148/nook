@@ -99,12 +99,20 @@
       cancelSecondarySurfaceAnimation();
     }
 
+    function animateNoteSurface(surface, keyframes, options) {
+      const glass = document.documentElement.dataset.glass === "true";
+      // Opacity creates a backdrop root that cuts the glass film off from the scene.
+      const frames = glass ? keyframes.map(({ opacity, ...frame }) => frame) : keyframes;
+      surface.style.willChange = glass ? "transform" : "opacity, transform";
+      return surface.animate(frames, options);
+    }
+
     function animateNoteDetailIn() {
       cancelNoteDetailAnimation();
       const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       const mobile = window.matchMedia("(max-width: 820px)").matches;
-      elements.noteDetailWorkspace.style.willChange = "opacity, transform";
-      const animation = elements.noteDetailWorkspace.animate(
+      const animation = animateNoteSurface(
+        elements.noteDetailWorkspace,
         reducedMotion
           ? [{ opacity: 0 }, { opacity: 1 }]
           : [
@@ -183,8 +191,8 @@
       };
 
       const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      elements.noteDetailWorkspace.style.willChange = "opacity, transform";
-      const closeAnimation = elements.noteDetailWorkspace.animate(
+      const closeAnimation = animateNoteSurface(
+        elements.noteDetailWorkspace,
         reducedMotion
           ? [{ opacity: 1 }, { opacity: 0 }]
           : [
@@ -234,6 +242,7 @@
       isDetailWorkspaceOpen,
       isQuickViewOpen,
       isNoteEditorOpen,
+      animateNoteSurface,
       openNoteDetail,
       closeNoteDetail,
       syncQuickViewHeight,

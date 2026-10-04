@@ -83,7 +83,7 @@ product decision.
 | `js/app/local-state.js` | Legacy recovery compatibility and backup health |
 | `js/app/search.js` | Search indexing/highlighting, filter primitives, ordering, and query scheduling |
 | `js/app/library-sidebar.js` | Sidebar filters, metadata badges, and card tag fitting |
-| `js/app/workspace.js` | Primary note preview, detail workspace, and workspace transitions |
+| `js/app/workspace.js` | Primary note preview, detail workspace, and shared primary/Side note surface animation policy; glass transitions keep opacity stable so backdrop blur remains continuous |
 | `js/app/clipboard.js` | Raw-Markdown copy and transient copy feedback |
 | `js/app/note-pickers.js` | Shared type/tag picker components and both panes’ picker rendering |
 | `js/app/formatting.js` | Markdown editing operations and mobile formatting scroll cues |
