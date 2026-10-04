@@ -1,6 +1,6 @@
 "use strict";
 
-const CACHE_VERSION = "nook-app-ecff79df4b4c";
+const CACHE_VERSION = "nook-app-092971688b62";
 const APP_ASSETS = [
   "./",
   "./index.html",
@@ -11,14 +11,21 @@ const APP_ASSETS = [
   "./css/app.css",
   "./css/appearance.css",
   "./images/nature/light.svg",
+  "./images/nature/ambient-light.svg",
   "./images/nature/coffee.svg",
+  "./images/nature/ambient-coffee.svg",
   "./images/nature/coffee-sidebar.svg",
   "./images/nature/forest.svg",
+  "./images/nature/ambient-forest.svg",
   "./images/nature/midnight.svg",
+  "./images/nature/ambient-midnight.svg",
   "./images/nature/dark.svg",
+  "./images/nature/ambient-dark.svg",
   "./images/nature/retro.svg",
+  "./images/nature/ambient-retro.svg",
   "./images/nature/retro-sidebar.svg",
   "./images/nature/eink.svg",
+  "./images/nature/ambient-eink.svg",
   "./images/nature/eink-sidebar.svg",
   "./css/mobile.css",
   "./css/accessibility.css",

@@ -87,6 +87,33 @@
   });
   applyGlass(readGlass());
 
+  // Artwork style preference (Ambient Studio Glow vs. Nature Scenery)
+  const backgroundStyleStorageKey = "nook:background-style";
+  const backgroundStyleDefault = "ambient";
+  const backgroundStyles = Object.freeze(["ambient", "nature"]);
+
+  /** @param {unknown} value */
+  function normalizeBackgroundStyle(value) {
+    return value === "nature" ? "nature" : "ambient";
+  }
+
+  function readBackgroundStyle() {
+    try { return normalizeBackgroundStyle(window.localStorage.getItem(backgroundStyleStorageKey)); }
+    catch { return backgroundStyleDefault; }
+  }
+
+  /** @param {string} value */
+  function applyBackgroundStyle(value) {
+    const style = normalizeBackgroundStyle(value);
+    document.documentElement.dataset.backgroundStyle = style;
+  }
+
+  const backgroundStyle = Object.freeze({
+    storageKey: backgroundStyleStorageKey, defaultValue: backgroundStyleDefault, styles: backgroundStyles,
+    normalize: normalizeBackgroundStyle, read: readBackgroundStyle, apply: applyBackgroundStyle,
+  });
+  applyBackgroundStyle(readBackgroundStyle());
+
   const mode = readMode();
   const resolved = resolve(mode);
   document.documentElement.dataset.theme = resolved;
@@ -103,7 +130,7 @@
   /** @type {import('./contracts').ModuleRegistry} */
   const registry = Reflect.get(globalThis, Symbol.for("nook.app.modules"));
   registry.register("theme-config", (app) => {
-    app.theme = Object.freeze({ storageKey, modes, normalize, readMode, resolve, describe, glass });
+    app.theme = Object.freeze({ storageKey, modes, normalize, readMode, resolve, describe, glass, backgroundStyle });
     app.api.getStoredTheme = readMode;
   });
 })();

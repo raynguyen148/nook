@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="1600" height="900">
+  <defs>
+    <radialGradient id="mid-cyan-aurora" cx="78%" cy="18%" r="66%" fx="82%" fy="14%">
+      <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.62"/>
+      <stop offset="28%" stop-color="#0284c7" stop-opacity="0.42"/>
+      <stop offset="60%" stop-color="#0369a1" stop-opacity="0.18"/>
+      <stop offset="85%" stop-color="#075985" stop-opacity="0.05"/>
+      <stop offset="100%" stop-color="#075985" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="mid-royal-depth" cx="18%" cy="78%" r="62%">
+      <stop offset="0%" stop-color="#2563eb" stop-opacity="0.55"/>
+      <stop offset="32%" stop-color="#1d4ed8" stop-opacity="0.32"/>
+      <stop offset="65%" stop-color="#1e40af" stop-opacity="0.14"/>
+      <stop offset="88%" stop-color="#1e3a8a" stop-opacity="0.04"/>
+      <stop offset="100%" stop-color="#1e3a8a" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="mid-astral-violet" cx="62%" cy="60%" r="52%">
+      <stop offset="0%" stop-color="#8b5cf6" stop-opacity="0.46"/>
+      <stop offset="32%" stop-color="#7c3aed" stop-opacity="0.25"/>
+      <stop offset="68%" stop-color="#6d28d9" stop-opacity="0.09"/>
+      <stop offset="100%" stop-color="#5b21b6" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="mid-cyan-bloom" cx="80%" cy="16%" r="26%">
+      <stop offset="0%" stop-color="#e0f2fe" stop-opacity="0.75"/>
+      <stop offset="30%" stop-color="#7dd3fc" stop-opacity="0.40"/>
+      <stop offset="65%" stop-color="#0284c7" stop-opacity="0.14"/>
+      <stop offset="100%" stop-color="#0284c7" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="mid-cobalt-glow" cx="26%" cy="22%" r="44%">
+      <stop offset="0%" stop-color="#06b6d4" stop-opacity="0.42"/>
+      <stop offset="35%" stop-color="#0891b2" stop-opacity="0.20"/>
+      <stop offset="70%" stop-color="#0e7490" stop-opacity="0.06"/>
+      <stop offset="100%" stop-color="#155e75" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1600" height="900" fill="url(#mid-cyan-aurora)"/>
+  <rect width="1600" height="900" fill="url(#mid-royal-depth)"/>
+  <rect width="1600" height="900" fill="url(#mid-astral-violet)"/>
+  <rect width="1600" height="900" fill="url(#mid-cobalt-glow)"/>
+  <rect width="1600" height="900" fill="url(#mid-cyan-bloom)"/>
+</svg>

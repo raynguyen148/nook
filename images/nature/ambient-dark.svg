@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="1600" height="900">
+  <defs>
+    <radialGradient id="dark-core" cx="78%" cy="22%" r="65%" fx="82%" fy="18%">
+      <stop offset="0%" stop-color="#f59e0b" stop-opacity="0.60"/>
+      <stop offset="25%" stop-color="#d97706" stop-opacity="0.40"/>
+      <stop offset="55%" stop-color="#b45309" stop-opacity="0.18"/>
+      <stop offset="80%" stop-color="#78350f" stop-opacity="0.05"/>
+      <stop offset="100%" stop-color="#451a03" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="dark-aurora" cx="18%" cy="78%" r="60%" fx="14%" fy="84%">
+      <stop offset="0%" stop-color="#06b6d4" stop-opacity="0.48"/>
+      <stop offset="30%" stop-color="#0891b2" stop-opacity="0.28"/>
+      <stop offset="62%" stop-color="#0e7490" stop-opacity="0.12"/>
+      <stop offset="85%" stop-color="#155e75" stop-opacity="0.03"/>
+      <stop offset="100%" stop-color="#164e63" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="dark-nebula" cx="45%" cy="42%" r="52%">
+      <stop offset="0%" stop-color="#6366f1" stop-opacity="0.42"/>
+      <stop offset="32%" stop-color="#4f46e5" stop-opacity="0.24"/>
+      <stop offset="68%" stop-color="#3730a3" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#312e81" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="dark-focal" cx="82%" cy="16%" r="28%">
+      <stop offset="0%" stop-color="#fffbeb" stop-opacity="0.70"/>
+      <stop offset="30%" stop-color="#fde68a" stop-opacity="0.36"/>
+      <stop offset="65%" stop-color="#f59e0b" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#f59e0b" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="dark-sapphire" cx="88%" cy="85%" r="42%">
+      <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.35"/>
+      <stop offset="40%" stop-color="#1d4ed8" stop-opacity="0.16"/>
+      <stop offset="75%" stop-color="#1e3a8a" stop-opacity="0.04"/>
+      <stop offset="100%" stop-color="#172554" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1600" height="900" fill="url(#dark-core)"/>
+  <rect width="1600" height="900" fill="url(#dark-aurora)"/>
+  <rect width="1600" height="900" fill="url(#dark-nebula)"/>
+  <rect width="1600" height="900" fill="url(#dark-sapphire)"/>
+  <rect width="1600" height="900" fill="url(#dark-focal)"/>
+</svg>

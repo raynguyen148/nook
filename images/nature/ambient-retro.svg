@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="1600" height="900">
+  <defs>
+    <radialGradient id="retro-olive-beam" cx="80%" cy="18%" r="64%">
+      <stop offset="0%" stop-color="#65a30d" stop-opacity="0.52"/>
+      <stop offset="28%" stop-color="#4d7c0f" stop-opacity="0.32"/>
+      <stop offset="60%" stop-color="#3f6212" stop-opacity="0.13"/>
+      <stop offset="85%" stop-color="#365314" stop-opacity="0.04"/>
+      <stop offset="100%" stop-color="#365314" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="retro-amber-vellum" cx="18%" cy="78%" r="60%">
+      <stop offset="0%" stop-color="#d97706" stop-opacity="0.48"/>
+      <stop offset="30%" stop-color="#b45309" stop-opacity="0.28"/>
+      <stop offset="62%" stop-color="#92400e" stop-opacity="0.11"/>
+      <stop offset="86%" stop-color="#78350f" stop-opacity="0.03"/>
+      <stop offset="100%" stop-color="#78350f" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="retro-sepia-depth" cx="50%" cy="44%" r="50%">
+      <stop offset="0%" stop-color="#b45309" stop-opacity="0.40"/>
+      <stop offset="34%" stop-color="#854d0e" stop-opacity="0.20"/>
+      <stop offset="68%" stop-color="#713f12" stop-opacity="0.07"/>
+      <stop offset="100%" stop-color="#451a03" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="retro-parchment-core" cx="82%" cy="15%" r="26%">
+      <stop offset="0%" stop-color="#fef9c3" stop-opacity="0.70"/>
+      <stop offset="32%" stop-color="#fef08a" stop-opacity="0.38"/>
+      <stop offset="65%" stop-color="#65a30d" stop-opacity="0.14"/>
+      <stop offset="100%" stop-color="#4d7c0f" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="retro-moss-accent" cx="84%" cy="80%" r="46%">
+      <stop offset="0%" stop-color="#84cc16" stop-opacity="0.38"/>
+      <stop offset="35%" stop-color="#65a30d" stop-opacity="0.18"/>
+      <stop offset="70%" stop-color="#4d7c0f" stop-opacity="0.06"/>
+      <stop offset="100%" stop-color="#3f6212" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1600" height="900" fill="url(#retro-olive-beam)"/>
+  <rect width="1600" height="900" fill="url(#retro-amber-vellum)"/>
+  <rect width="1600" height="900" fill="url(#retro-sepia-depth)"/>
+  <rect width="1600" height="900" fill="url(#retro-moss-accent)"/>
+  <rect width="1600" height="900" fill="url(#retro-parchment-core)"/>
+</svg>

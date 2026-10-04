@@ -9,8 +9,11 @@ const vm = require("node:vm");
 const root = path.resolve(__dirname, "..");
 const plain = (value) => JSON.parse(JSON.stringify(value));
 
-function appearanceHarness({ stored = null, blocked = false, supported = true } = {}) {
-  const values = new Map(stored === null ? [] : [["nook:glass", stored]]);
+function appearanceHarness({ stored = null, storedStyle = null, blocked = false, supported = true } = {}) {
+  const values = new Map([
+    ...(stored === null ? [] : [["nook:glass", stored]]),
+    ...(storedStyle === null ? [] : [["nook:background-style", storedStyle]]),
+  ]);
   const properties = new Map();
   const installers = new Map();
   const controls = () => ({
@@ -22,6 +25,7 @@ function appearanceHarness({ stored = null, blocked = false, supported = true } 
   const elements = {
     glassEnabled: controls(), glassTransparency: controls(),
     glassTransparencyControl: controls(), glassTransparencyValue: controls(),
+    glassStyleSelect: controls(),
   };
   const document = {
     documentElement: { dataset: {}, style: { setProperty(name, value) { properties.set(name, value); } } },
@@ -56,11 +60,38 @@ test("nature/glass defaults off before paint and in Settings", () => {
   const { app, document, properties, elements } = appearanceHarness();
   assert.deepEqual(plain(app.ui.glass), { enabled: false, transparency: 10 });
   assert.equal(document.documentElement.dataset.glass, "false");
+  assert.equal(document.documentElement.dataset.backgroundStyle, "ambient");
   assert.equal(properties.get("--glass-opacity"), "85%");
   app.api.syncGlassUI();
   assert.equal(elements.glassEnabled.checked, false);
   assert.equal(elements.glassTransparency.disabled, true);
+  assert.equal(elements.glassStyleSelect.disabled, true);
+  assert.equal(elements.glassStyleSelect.value, "ambient");
   assert.equal(elements.glassTransparencyControl.classList.values.has("is-hidden"), true);
+});
+
+test("dual-mode background style switches between ambient and nature with persistence", () => {
+  const { app, document, values, elements } = appearanceHarness();
+  assert.equal(document.documentElement.dataset.backgroundStyle, "ambient");
+  app.api.setBackgroundStyle("nature");
+  assert.equal(document.documentElement.dataset.backgroundStyle, "nature");
+  assert.equal(values.get("nook:background-style"), "nature");
+  assert.equal(elements.glassStyleSelect.value, "nature");
+
+  app.api.setBackgroundStyle("ambient");
+  assert.equal(document.documentElement.dataset.backgroundStyle, "ambient");
+  assert.equal(values.get("nook:background-style"), "ambient");
+  assert.equal(elements.glassStyleSelect.value, "ambient");
+
+  // Invalid values normalize to ambient
+  app.api.setBackgroundStyle("unknown");
+  assert.equal(document.documentElement.dataset.backgroundStyle, "ambient");
+
+  // Read pre-stored style
+  const restored = appearanceHarness({ storedStyle: "nature" });
+  assert.equal(restored.document.documentElement.dataset.backgroundStyle, "nature");
+  restored.app.api.syncGlassUI();
+  assert.equal(restored.elements.glassStyleSelect.value, "nature");
 });
 
 test("malformed stored preferences cannot enable the effect or escape its bounds", () => {

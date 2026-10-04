@@ -203,6 +203,18 @@ globalThis[Symbol.for("nook.app.modules")].register("productivity", (app) => {
     } else if (api.isBulkSelectionAvailable()) {
       actions.push({ title: "Select multiple notes", hint: "Export, move to Trash, or restore notes", icon: "select", action: () => api.startBulkSelection() });
     }
+    if (ui.glass?.enabled) {
+      actions.push({
+        title: ui.backgroundStyle === "nature" ? "Switch to Ambient Studio Glow" : "Switch to Nature Scenery",
+        hint: ui.backgroundStyle === "nature" ? "Volumetric caustic light sweeps & prismatic glass" : "Classic vector landscape illustrations",
+        icon: "settings",
+        action: () => {
+          const nextStyle = ui.backgroundStyle === "nature" ? "ambient" : "nature";
+          api.setBackgroundStyle(nextStyle);
+          api.showToast(`Artwork style set to ${nextStyle === "nature" ? "Nature Scenery" : "Ambient Studio Glow"}`);
+        },
+      });
+    }
     return actions;
   }
 

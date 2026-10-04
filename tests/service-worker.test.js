@@ -65,11 +65,12 @@ test("Service Worker asset manifest is complete and fingerprinted", () => {
   }
 });
 
-test("Service Worker installation and activation use the fingerprinted cache", async () => {
+test("Service Worker caches an update without activating until explicitly requested", async () => {
   const listeners = new Map();
   const added = [];
   const deleted = [];
   let claimed = false;
+  let skipWaitingCalls = 0;
   const context = {
     URL,
     Request,
@@ -90,7 +91,7 @@ test("Service Worker installation and activation use the fingerprinted cache", a
       registration: { scope: "https://nook.test/" },
       clients: { async claim() { claimed = true; } },
       addEventListener(name, listener) { listeners.set(name, listener); },
-      skipWaiting() {},
+      skipWaiting() { skipWaitingCalls += 1; },
     },
   };
   vm.runInNewContext(serviceWorkerSource, context, { filename: "sw.js" });
@@ -103,6 +104,14 @@ test("Service Worker installation and activation use the fingerprinted cache", a
     assets.map((asset) => new URL(asset, "https://nook.test/").pathname),
   );
   assert.ok(added.every((request) => request.cache === "reload"));
+  assert.equal(skipWaitingCalls, 0, "installation must leave an update waiting");
+  assert.deepEqual(deleted, [], "installation must preserve the active worker's cache");
+  assert.equal(claimed, false, "installation must not take over open tabs");
+
+  listeners.get("message")({ data: { type: "UNRELATED" } });
+  assert.equal(skipWaitingCalls, 0, "unrelated messages must not activate an update");
+  listeners.get("message")({ data: { type: "SKIP_WAITING" } });
+  assert.equal(skipWaitingCalls, 1, "explicit update requests must activate the waiting worker");
 
   let activatePromise;
   listeners.get("activate")({ waitUntil(promise) { activatePromise = promise; } });

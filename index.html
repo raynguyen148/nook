@@ -1742,6 +1742,22 @@
                 </div>
                 <input id="glass-transparency" type="range" min="10" max="50" step="1" value="10" aria-describedby="glass-transparency-help" />
                 <p id="glass-transparency-help" class="dialog-description">10–50%. Higher values show more background; reading areas remain more opaque.</p>
+                <div class="glass-style-control">
+                  <label id="glass-style-label" class="management-row__name" for="glass-style-trigger">Artwork style</label>
+                  <div class="sort-field glass-style-picker">
+                    <select id="glass-style-select" class="sort-field__native" aria-label="Artwork style" aria-hidden="true" tabindex="-1">
+                      <option value="ambient">Ambient Studio Glow</option>
+                      <option value="nature">Nature Scenery</option>
+                    </select>
+                    <button id="glass-style-trigger" class="sort-field__trigger" type="button" aria-haspopup="listbox" aria-expanded="false" aria-controls="glass-style-menu" aria-labelledby="glass-style-label glass-style-current">
+                      <span id="glass-style-current" class="sort-field__label">Ambient Studio Glow</span>
+                    </button>
+                    <div id="glass-style-menu" class="sort-field__menu" popover="auto" role="listbox" aria-labelledby="glass-style-label">
+                      <button class="sort-field__option" type="button" role="option" aria-selected="true" tabindex="-1" data-background-style-option="ambient">Ambient Studio Glow</button>
+                      <button class="sort-field__option" type="button" role="option" aria-selected="false" tabindex="-1" data-background-style-option="nature">Nature Scenery</button>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

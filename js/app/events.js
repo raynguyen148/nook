@@ -26,6 +26,7 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
     syncThemeUI,
     syncGlassUI,
     setGlass,
+    setBackgroundStyle,
     clearAutoThemeTimer,
     refreshAutoTheme,
     setTheme,
@@ -220,6 +221,9 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
     window.addEventListener("storage", (event) => {
       if (event.key === app.theme.glass.storageKey || event.key === null) {
         setGlass(app.theme.glass.parse(event.key === null ? null : event.newValue), { persist: false });
+      }
+      if (app.theme.backgroundStyle && (event.key === app.theme.backgroundStyle.storageKey || event.key === null)) {
+        setBackgroundStyle(event.key === null ? null : event.newValue, { persist: false });
       }
       const theme = event.newValue === "warm" ? "coffee" : event.newValue === "midnight-blue" ? "midnight" : event.newValue;
       if (event.key === THEME_STORAGE_KEY && THEMES.includes(theme) && theme !== ui.theme) {
@@ -533,6 +537,10 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
     elements.notePreviewLines.addEventListener("input", () => setNotePreviewLines(elements.notePreviewLines.value));
     elements.glassEnabled.addEventListener("change", () => setGlass({ ...ui.glass, enabled: elements.glassEnabled.checked }));
     elements.glassTransparency.addEventListener("input", () => setGlass({ ...ui.glass, transparency: Number(elements.glassTransparency.value) }));
+    if (elements.glassStyleSelect) {
+      elements.glassStyleSelect.addEventListener("change", () => setBackgroundStyle(elements.glassStyleSelect.value));
+    }
+    api.bindBackgroundStylePicker();
     elements.noteFontSizeControls.forEach((control) => {
       control.addEventListener("click", handleNoteFontSizeClick);
     });

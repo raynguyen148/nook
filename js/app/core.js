@@ -53,6 +53,7 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
   const ui = {
     theme: getStoredTheme(),
     glass: theme.glass.read(),
+    backgroundStyle: theme.backgroundStyle ? theme.backgroundStyle.read() : "ambient",
     sidebarCollapsed: getStoredSidebarCollapsed(),
     query: "",
     typeId: storedFilters.trashOnly ? "all" : storedFilters.typeId,

@@ -77,6 +77,12 @@ export interface ThemeConfig {
     read(): { enabled: boolean; transparency: number };
     apply(value: { enabled: boolean; transparency: number }): void;
   };
+  backgroundStyle?: {
+    storageKey: string; defaultValue: string; styles: readonly string[];
+    normalize(value: unknown): string;
+    read(): string;
+    apply(value: string): void;
+  };
 }
 
 export interface AppContext {
@@ -95,6 +101,7 @@ export interface AppContext {
     publishDraftPresence?(): void;
     createPaneController?: (adapter: PaneAdapter) => PaneController;
     getStoredTheme?: () => string;
+    setBackgroundStyle?: (value: string, options?: { persist?: boolean }) => void;
   };
 }
 

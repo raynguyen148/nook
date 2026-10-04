@@ -34,6 +34,10 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
 
   function syncGlassUI() {
     app.theme.glass.apply(ui.glass);
+    if (app.theme.backgroundStyle) {
+      ui.backgroundStyle = ui.backgroundStyle || app.theme.backgroundStyle.read();
+      app.theme.backgroundStyle.apply(ui.backgroundStyle);
+    }
     elements.glassEnabled.checked = ui.glass.enabled;
     elements.glassTransparencyControl.classList.toggle("is-hidden", !ui.glass.enabled);
     elements.glassTransparency.disabled = !ui.glass.enabled;
@@ -42,6 +46,11 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
     elements.glassTransparency.value = String(ui.glass.transparency);
     elements.glassTransparency.setAttribute("aria-valuetext", `${ui.glass.transparency} percent transparency`);
     elements.glassTransparencyValue.textContent = `${ui.glass.transparency}%`;
+    if (elements.glassStyleSelect) {
+      elements.glassStyleSelect.value = ui.backgroundStyle || "ambient";
+      elements.glassStyleSelect.disabled = !ui.glass.enabled;
+    }
+    syncBackgroundStylePicker();
   }
 
   function setGlass(value, { persist = true } = {}) {
@@ -53,6 +62,100 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
     } catch {
       // The chosen appearance still works in this session when storage is blocked.
     }
+  }
+
+  function setBackgroundStyle(value, { persist = true } = {}) {
+    const normalized = app.theme.backgroundStyle ? app.theme.backgroundStyle.normalize(value) : (value === "nature" ? "nature" : "ambient");
+    ui.backgroundStyle = normalized;
+    if (app.theme.backgroundStyle) {
+      app.theme.backgroundStyle.apply(ui.backgroundStyle);
+    }
+    if (elements.glassStyleSelect) {
+      elements.glassStyleSelect.value = ui.backgroundStyle;
+    }
+    syncBackgroundStylePicker();
+    if (!persist || !app.theme.backgroundStyle) return;
+    try {
+      window.localStorage.setItem(app.theme.backgroundStyle.storageKey, ui.backgroundStyle);
+    } catch {
+      // The chosen appearance still works in this session when storage is blocked.
+    }
+  }
+
+  function syncBackgroundStylePicker() {
+    if (!elements.glassStyleTrigger) return;
+    const selected = elements.glassStyleOptions.find(option => option.dataset.backgroundStyleOption === ui.backgroundStyle);
+    elements.glassStyleCurrent.textContent = selected?.textContent || "Ambient Studio Glow";
+    elements.glassStyleTrigger.disabled = !ui.glass.enabled;
+    elements.glassStyleOptions.forEach(option => {
+      option.setAttribute("aria-selected", String(option === selected));
+    });
+    if (!ui.glass.enabled && elements.glassStyleMenu.matches(":popover-open")) elements.glassStyleMenu.hidePopover();
+  }
+
+  function bindBackgroundStylePicker() {
+    const trigger = elements.glassStyleTrigger;
+    const menu = elements.glassStyleMenu;
+    const options = elements.glassStyleOptions;
+    if (!trigger || !menu) return;
+    const field = trigger.closest(".glass-style-picker");
+    const close = (focusTrigger = false) => {
+      if (menu.matches(":popover-open")) menu.hidePopover();
+      trigger.setAttribute("aria-expanded", "false");
+      if (focusTrigger) trigger.focus({ preventScroll: true });
+    };
+    const open = () => {
+      if (trigger.disabled || menu.matches(":popover-open")) return;
+      api.closeThemePicker();
+      const rect = trigger.getBoundingClientRect();
+      const viewport = window.visualViewport;
+      const left = viewport?.offsetLeft || 0;
+      const top = viewport?.offsetTop || 0;
+      const right = left + (viewport?.width || window.innerWidth);
+      const navigationBounds = elements.mobileNavigation?.getBoundingClientRect();
+      const bottom = navigationBounds?.height && elements.organizeDialog.contains(elements.mobileNavigation)
+        ? Math.min(top + (viewport?.height || window.innerHeight), navigationBounds.top)
+        : top + (viewport?.height || window.innerHeight);
+      menu.style.width = `${Math.min(rect.width, right - left - 16)}px`;
+      menu.showPopover();
+      const bounds = menu.getBoundingClientRect();
+      menu.style.left = `${Math.max(left + 8, Math.min(rect.left, right - bounds.width - 8))}px`;
+      menu.style.top = `${Math.max(top + 8, rect.bottom + bounds.height + 8 <= bottom ? rect.bottom + 4 : rect.top - bounds.height - 4)}px`;
+      trigger.setAttribute("aria-expanded", "true");
+      (options.find(option => option.getAttribute("aria-selected") === "true") || options[0])?.focus({ preventScroll: true });
+    };
+    trigger.addEventListener("click", () => menu.matches(":popover-open") ? close() : open());
+    trigger.addEventListener("keydown", event => {
+      if (!["ArrowDown", "ArrowUp"].includes(event.key)) return;
+      event.preventDefault();
+      open();
+    });
+    menu.addEventListener("click", event => {
+      const option = event.target.closest("[data-background-style-option]");
+      if (!option || !menu.contains(option)) return;
+      setBackgroundStyle(option.dataset.backgroundStyleOption);
+      close(true);
+    });
+    menu.addEventListener("keydown", event => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        event.stopPropagation();
+        close(true);
+        return;
+      }
+      const index = options.indexOf(document.activeElement);
+      const nextIndex = event.key === "ArrowDown" ? (index + 1) % options.length
+        : event.key === "ArrowUp" ? (index - 1 + options.length) % options.length
+        : event.key === "Home" ? 0 : event.key === "End" ? options.length - 1 : -1;
+      if (nextIndex < 0) return;
+      event.preventDefault();
+      options[nextIndex].focus({ preventScroll: true });
+    });
+    menu.addEventListener("toggle", () => trigger.setAttribute("aria-expanded", String(menu.matches(":popover-open"))));
+    field.addEventListener("focusout", event => { if (!field.contains(event.relatedTarget)) close(); });
+    elements.organizeDialog.addEventListener("close", () => close());
+    elements.displayPanel.addEventListener("scroll", event => { if (event.target === elements.displayPanel) close(); });
+    window.addEventListener("resize", () => close());
   }
 
   // These core utilities are resolved only when an interaction occurs, after
@@ -895,6 +998,8 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
   Object.assign(api, {
     syncGlassUI,
     setGlass,
+    setBackgroundStyle,
+    bindBackgroundStylePicker,
     getNextTheme,
     prefersReducedMotion,
     runUiViewTransition,
