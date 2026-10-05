@@ -1,41 +1,49 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="1600" height="900">
   <defs>
-    <radialGradient id="light-sunbeam" cx="82%" cy="16%" r="64%" fx="85%" fy="12%">
-      <stop offset="0%" stop-color="#f59e0b" stop-opacity="0.60"/>
-      <stop offset="25%" stop-color="#fbbf24" stop-opacity="0.42"/>
-      <stop offset="55%" stop-color="#fde68a" stop-opacity="0.20"/>
-      <stop offset="80%" stop-color="#fef3c7" stop-opacity="0.06"/>
-      <stop offset="100%" stop-color="#fef3c7" stop-opacity="0"/>
+    <linearGradient id="l-base" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fffbeb"/>
+      <stop offset="45%" stop-color="#fef2f2"/>
+      <stop offset="80%" stop-color="#fdf4ff"/>
+      <stop offset="100%" stop-color="#e0e7ff"/>
+    </linearGradient>
+    <linearGradient id="l-ribbon-coral" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#fb7185" stop-opacity="0.85"/>
+      <stop offset="40%" stop-color="#f43f5e" stop-opacity="0.75"/>
+      <stop offset="75%" stop-color="#f97316" stop-opacity="0.70"/>
+      <stop offset="100%" stop-color="#facc15" stop-opacity="0.65"/>
+    </linearGradient>
+    <linearGradient id="l-ribbon-iris" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#818cf8" stop-opacity="0.80"/>
+      <stop offset="50%" stop-color="#a855f7" stop-opacity="0.65"/>
+      <stop offset="85%" stop-color="#c084fc" stop-opacity="0.45"/>
+      <stop offset="100%" stop-color="#e879f9" stop-opacity="0.20"/>
+    </linearGradient>
+    <linearGradient id="l-ribbon-gold" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fbbf24" stop-opacity="0.85"/>
+      <stop offset="50%" stop-color="#f59e0b" stop-opacity="0.65"/>
+      <stop offset="100%" stop-color="#ea580c" stop-opacity="0.40"/>
+    </linearGradient>
+    <radialGradient id="l-glow-sun" cx="85%" cy="15%" r="55%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.95"/>
+      <stop offset="25%" stop-color="#fef08a" stop-opacity="0.75"/>
+      <stop offset="60%" stop-color="#fde047" stop-opacity="0.30"/>
+      <stop offset="100%" stop-color="#f59e0b" stop-opacity="0"/>
     </radialGradient>
-    <radialGradient id="light-sky-azure" cx="15%" cy="82%" r="60%">
-      <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.48"/>
-      <stop offset="30%" stop-color="#60a5fa" stop-opacity="0.30"/>
-      <stop offset="60%" stop-color="#93c5fd" stop-opacity="0.14"/>
-      <stop offset="85%" stop-color="#dbeafe" stop-opacity="0.04"/>
-      <stop offset="100%" stop-color="#dbeafe" stop-opacity="0"/>
-    </radialGradient>
-    <radialGradient id="light-rose-quartz" cx="52%" cy="38%" r="50%">
-      <stop offset="0%" stop-color="#ec4899" stop-opacity="0.38"/>
-      <stop offset="30%" stop-color="#f472b6" stop-opacity="0.24"/>
-      <stop offset="65%" stop-color="#fbcfe8" stop-opacity="0.08"/>
-      <stop offset="100%" stop-color="#fdf2f8" stop-opacity="0"/>
-    </radialGradient>
-    <radialGradient id="light-solar-core" cx="84%" cy="14%" r="28%">
-      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.80"/>
-      <stop offset="32%" stop-color="#fef3c7" stop-opacity="0.45"/>
-      <stop offset="68%" stop-color="#fde68a" stop-opacity="0.15"/>
-      <stop offset="100%" stop-color="#fbbf24" stop-opacity="0"/>
-    </radialGradient>
-    <radialGradient id="light-apricot-glow" cx="88%" cy="86%" r="44%">
-      <stop offset="0%" stop-color="#f97316" stop-opacity="0.45"/>
-      <stop offset="35%" stop-color="#fb923c" stop-opacity="0.26"/>
-      <stop offset="70%" stop-color="#fdba74" stop-opacity="0.09"/>
-      <stop offset="100%" stop-color="#ffedd5" stop-opacity="0"/>
+    <radialGradient id="l-glow-rose" cx="20%" cy="80%" r="50%">
+      <stop offset="0%" stop-color="#fda4af" stop-opacity="0.70"/>
+      <stop offset="50%" stop-color="#f43f5e" stop-opacity="0.30"/>
+      <stop offset="100%" stop-color="#fff1f2" stop-opacity="0"/>
     </radialGradient>
   </defs>
-  <rect width="1600" height="900" fill="url(#light-sunbeam)"/>
-  <rect width="1600" height="900" fill="url(#light-sky-azure)"/>
-  <rect width="1600" height="900" fill="url(#light-rose-quartz)"/>
-  <rect width="1600" height="900" fill="url(#light-apricot-glow)"/>
-  <rect width="1600" height="900" fill="url(#light-solar-core)"/>
+  <!-- Base Atmosphere -->
+  <rect width="1600" height="900" fill="url(#l-base)"/>
+  <!-- Fluid Wave 1: Iris & Lavender Underflow -->
+  <path d="M-100 950 C250 820 400 480 820 440 C1240 400 1380 620 1700 580 L1700 1000 L-100 1000 Z" fill="url(#l-ribbon-iris)"/>
+  <!-- Fluid Wave 2: Radiant Coral & Tangerine Crest -->
+  <path d="M-50 680 C320 620 540 280 980 220 C1360 170 1480 380 1680 320 L1680 950 C1350 900 1100 780 750 800 C400 820 150 920 -50 950 Z" fill="url(#l-ribbon-coral)"/>
+  <!-- Fluid Wave 3: Warm Golden Sunlight Flow -->
+  <path d="M200 -50 C550 180 850 120 1200 40 C1450 -20 1550 80 1680 60 L1680 -100 L200 -100 Z" fill="url(#l-ribbon-gold)"/>
+  <!-- Atmospheric Glow Pools -->
+  <rect width="1600" height="900" fill="url(#l-glow-rose)"/>
+  <rect width="1600" height="900" fill="url(#l-glow-sun)"/>
 </svg>
