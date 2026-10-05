@@ -49,6 +49,8 @@
   const MAX_SOURCE_LINES = 5000;
   const MAX_BLOCK_DEPTH = 24;
   let renderSequence = 0;
+  let emailFeedbackPopover = null;
+  let emailFeedbackTimer = 0;
 
   class MarkdownSafetyError extends Error {}
 
@@ -230,10 +232,123 @@
     return { url: unescapeMarkdown(url), title: titleMatch ? titleMatch[1] ?? titleMatch[2] ?? titleMatch[3] : "" };
   }
 
+  function getEmailAddressFromMailto(url) {
+    const address = url.slice("mailto:".length).split("?")[0];
+    try {
+      return decodeURIComponent(address);
+    } catch {
+      return address;
+    }
+  }
+
+  async function writeClipboardText(text) {
+    if (navigator.clipboard?.writeText && window.isSecureContext) {
+      await navigator.clipboard.writeText(text);
+      return;
+    }
+    const textarea = document.createElement("textarea");
+    const activeElement = document.activeElement;
+    textarea.value = text;
+    textarea.setAttribute("readonly", "");
+    textarea.style.position = "fixed";
+    textarea.style.opacity = "0";
+    textarea.style.pointerEvents = "none";
+    document.body.append(textarea);
+    let copied = false;
+    try {
+      textarea.focus();
+      textarea.select();
+      copied = document.execCommand("copy");
+    } finally {
+      textarea.remove();
+      if (activeElement?.isConnected && activeElement !== document.body) {
+        try {
+          activeElement.focus({ preventScroll: true });
+        } catch { /* Keep the copy result even if focus cannot be restored. */ }
+      }
+    }
+    if (!copied) throw new Error("Copy is not available in this browser.");
+  }
+
+  function positionEmailFeedbackPopover(anchor) {
+    if (!emailFeedbackPopover || !anchor.isConnected) return;
+    const anchorRect = anchor.getBoundingClientRect();
+    const popoverRect = emailFeedbackPopover.getBoundingClientRect();
+    const edge = 8;
+    const gap = 8;
+    const maxLeft = Math.max(edge, window.innerWidth - popoverRect.width - edge);
+    const left = Math.min(maxLeft, Math.max(edge, anchorRect.left + (anchorRect.width - popoverRect.width) / 2));
+    let top = anchorRect.top - popoverRect.height - gap;
+    if (top < edge) top = Math.min(window.innerHeight - popoverRect.height - edge, anchorRect.bottom + gap);
+    emailFeedbackPopover.style.left = `${Math.round(left)}px`;
+    emailFeedbackPopover.style.top = `${Math.round(Math.max(edge, top))}px`;
+  }
+
+  function showEmailFeedbackPopover(anchor, copied) {
+    if (!anchor.isConnected) return;
+    if (!emailFeedbackPopover) {
+      emailFeedbackPopover = createElement("div", "markdown-email-feedback");
+      emailFeedbackPopover.setAttribute("popover", "auto");
+      emailFeedbackPopover.setAttribute("role", "status");
+      emailFeedbackPopover.setAttribute("aria-live", "polite");
+    }
+    const popoverHost = anchor.closest("dialog[open]") || document.body;
+    if (emailFeedbackPopover.parentElement !== popoverHost) popoverHost.append(emailFeedbackPopover);
+    emailFeedbackPopover.textContent = copied ? "Email copied" : "Could not copy email";
+    emailFeedbackPopover.classList.toggle("markdown-email-feedback--error", !copied);
+
+    if (typeof emailFeedbackPopover.showPopover === "function") {
+      if (emailFeedbackPopover.matches(":popover-open")) emailFeedbackPopover.hidePopover();
+      emailFeedbackPopover.showPopover();
+      positionEmailFeedbackPopover(anchor);
+    } else {
+      emailFeedbackPopover.removeAttribute("popover");
+      emailFeedbackPopover.classList.add("is-visible");
+      positionEmailFeedbackPopover(anchor);
+    }
+
+    window.clearTimeout(emailFeedbackTimer);
+    emailFeedbackTimer = window.setTimeout(() => {
+      if (!emailFeedbackPopover) return;
+      if (typeof emailFeedbackPopover.hidePopover === "function" && emailFeedbackPopover.matches(":popover-open")) {
+        emailFeedbackPopover.hidePopover();
+      } else {
+        emailFeedbackPopover.classList.remove("is-visible");
+      }
+    }, 1600);
+  }
+
+  function makeEmailCopyButton(label, url, context, destination) {
+    const email = getEmailAddressFromMailto(url);
+    const button = createElement("button", "markdown-email-copy");
+    button.type = "button";
+    button.setAttribute("aria-label", `Copy email address: ${email}`);
+    button.title = "Copy email address";
+    const plainLabel = label === destination.url || label === unescapeMarkdown(destination.url) || label === destination.url.replace(/^mailto:/i, "");
+    if (plainLabel) appendDecodedText(button, label);
+    else appendInline(button, label, context);
+    button.addEventListener("click", async (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      if (button.getAttribute("aria-busy") === "true") return;
+      button.setAttribute("aria-busy", "true");
+      try {
+        await writeClipboardText(email);
+        showEmailFeedbackPopover(button, true);
+      } catch {
+        showEmailFeedbackPopover(button, false);
+      } finally {
+        button.removeAttribute("aria-busy");
+      }
+    });
+    return button;
+  }
+
   function makeLink(label, destination, context) {
     if (!destination || !isSafeLink(destination.url)) return null;
     const link = createElement("a");
     const url = unescapeMarkdown(destination.url).trim();
+    if (url.toLowerCase().startsWith("mailto:")) return makeEmailCopyButton(label, url, context, destination);
     link.href = url.startsWith("www.") ? `https://${url}` : url;
     link.rel = "noreferrer noopener";
     link.target = "_blank";

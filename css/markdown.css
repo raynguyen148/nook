@@ -492,6 +492,114 @@
 
 
 
+.quick-view-content .markdown-email-copy {
+  appearance: none;
+  margin: 0;
+  border: 0;
+  padding: 0;
+  color: var(--primary-accent-text, #4e59bf);
+  background: transparent;
+  font: inherit;
+  line-height: inherit;
+  text-align: inherit;
+  text-decoration: underline;
+  text-decoration-color: var(--primary-accent-text, #4e59bf);
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.15em;
+  transition:
+    color var(--interaction-duration, 160ms) var(--motion-ease-out, ease-out),
+    text-decoration-color var(--interaction-duration, 160ms) var(--motion-ease-out, ease-out);
+  cursor: pointer;
+}
+
+
+
+.quick-view-content .markdown-email-copy:hover {
+  color: var(--primary-accent-hover, #39449e);
+  text-decoration-color: var(--primary-accent-hover, #39449e);
+}
+
+
+
+.quick-view-content .markdown-email-copy:active:not(:disabled) {
+  text-decoration-thickness: 0.13em;
+}
+
+
+
+.quick-view-content .markdown-email-copy:disabled {
+  color: var(--text-muted, #71717a);
+  cursor: not-allowed;
+}
+
+
+
+.quick-view-content .markdown-email-copy[aria-busy="true"] {
+  cursor: progress;
+}
+
+
+
+.markdown-email-feedback {
+  position: fixed;
+  inset: auto;
+  z-index: 9999;
+  max-width: calc(100vw - 1rem);
+  margin: 0;
+  border: 1px solid var(--toast-border, var(--border-subtle, #e4e4e7));
+  border-radius: var(--control-radius, 0.65rem);
+  padding: 0.38rem 0.62rem;
+  color: var(--toast-text, #18181b);
+  background: var(--toast-surface, #fff);
+  box-shadow: var(--toast-shadow, 0 8px 20px rgb(0 0 0 / 14%));
+  font: 620 0.78rem/1.35 var(--font-sans, system-ui, sans-serif);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+
+
+.markdown-email-feedback[popover] {
+  position: fixed;
+}
+
+
+
+.markdown-email-feedback[popover]:not(:popover-open) {
+  display: none;
+}
+
+
+
+.markdown-email-feedback.is-visible {
+  display: block;
+}
+
+
+
+.markdown-email-feedback--error {
+  border-color: var(--toast-error-border, #fecaca);
+  color: var(--toast-error-text, var(--danger-text, #991b1b));
+  background: var(--toast-error-surface, #fef2f2);
+}
+
+
+
+@media (forced-colors: active) {
+  .markdown-email-feedback {
+    border-color: CanvasText;
+    color: CanvasText;
+    background: Canvas;
+    box-shadow: none;
+  }
+
+  .markdown-email-feedback--error {
+    color: Mark;
+  }
+}
+
+
+
 .quick-view-content .markdown-image,
 .note-content-preview .markdown-image {
   display: inline-block;

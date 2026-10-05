@@ -338,7 +338,9 @@ construction (`textContent`, created elements, and allowlisted attributes),
 not `innerHTML`. Raw HTML remains inert text except for the explicit
 `<details>`/`<summary>` block syntax. Images become accessible alt text
 instead of loading remote assets. Links allow safe HTTP(S), `mailto`, `tel`,
-and relative destinations; unsafe schemes remain text.
+and relative destinations; unsafe schemes remain text. Rendered `mailto` links
+act as copy controls: activating one copies its address and shows brief
+feedback without launching a mail app.
 
 Rendering has explicit safety bounds:
 

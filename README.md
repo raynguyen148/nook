@@ -416,7 +416,8 @@ broad CommonMark/GFM-style subset, including:
 - Fenced and indented code blocks with an optional language label
 - Unordered, ordered, nested, and task lists
 - Blockquotes and GitHub-style alerts: `NOTE`, `TIP`, `IMPORTANT`, `WARNING`, and `CAUTION`
-- Inline links, reference links, autolinks, and safe `http`, `https`, `mailto`, and `tel` destinations
+- Inline links, reference links, autolinks, and safe `http`, `https`, `mailto`, and `tel` destinations.
+  Rendered email links copy their address and show brief feedback instead of opening a mail app.
 - Tables with alignment, footnotes, allowlisted `<details>`/`<summary>` blocks, and mathematical-expression text blocks
 - Horizontal rules
 
