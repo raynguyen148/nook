@@ -222,13 +222,14 @@ html[data-theme="eink"] {
     html[data-glass="true"] .sidebar {
       isolation: isolate;
       background-color: transparent;
+      overflow: visible;
     }
 
     @media (min-width: 821px) {
-      /* Keep the film and art on a stationary shell. Scrolling that shell
-       * moves its absolute pseudo-elements and exposes unprotected content. */
+      /* Keep the stationary shell from scrolling while inner scroll handles content.
+       * Overflow visible allows the glass film and art to expand under the border without clipping. */
       html[data-glass="true"] .sidebar {
-        overflow: hidden;
+        overflow: visible;
       }
 
       html[data-glass="true"] .sidebar__scroll {
@@ -250,7 +251,7 @@ html[data-theme="eink"] {
     html[data-glass="true"] .sidebar::before {
       content: "";
       position: absolute;
-      inset: auto 0 0;
+      inset: auto -1px -1px -1px;
       height: min(48%, 22rem);
       z-index: -1;
       border-radius: inherit;
@@ -264,7 +265,7 @@ html[data-theme="eink"] {
     html[data-glass="true"] .sidebar::after {
       content: "";
       position: absolute;
-      inset: 0;
+      inset: -1px;
       z-index: -2;
       border-radius: inherit;
       pointer-events: none;
@@ -297,12 +298,13 @@ html[data-theme="eink"] {
       position: relative;
       isolation: isolate;
       background-color: transparent;
+      overflow: visible;
     }
 
     html[data-glass="true"] .notes-panel::before {
       content: "";
       position: absolute;
-      inset: 0;
+      inset: -1px;
       z-index: -1;
       border-radius: inherit;
       pointer-events: none;
@@ -338,10 +340,14 @@ html[data-theme="eink"] {
       background-color: transparent;
     }
 
+    html[data-glass="true"] .note-detail-surface {
+      overflow: visible;
+    }
+
     html[data-glass="true"] .note-detail-surface::before {
       content: "";
       position: absolute;
-      inset: 0;
+      inset: -1px;
       z-index: -1;
       border-radius: inherit;
       pointer-events: none;
@@ -381,6 +387,7 @@ html[data-theme="eink"] {
       isolation: isolate;
       background: transparent;
       opacity: 1;
+      overflow: visible;
     }
 
     /* Dialogs animate transform smoothly in glass mode without fading
@@ -444,7 +451,7 @@ html[data-theme="eink"] {
     html[data-glass="true"] :is(#command-dialog, #organize-dialog)::before {
       content: "";
       position: absolute;
-      inset: 0;
+      inset: -1px;
       z-index: -1;
       border-radius: inherit;
       pointer-events: none;
