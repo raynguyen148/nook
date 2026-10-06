@@ -27,7 +27,7 @@ html[data-theme="forest"] {
   --management-row-input-resting-border: #cbdccc;
   --management-row-input-resting-shadow: none;
   --form-control-resting-background: #ffffff;
-  --note-title-resting-background: #f8fbf7;
+  --note-title-resting-background: transparent;
 
   /* Evergreen anchor: reserved for actions, selected states, and emphasis. */
   --primary-accent: #2f6b4f;
@@ -483,7 +483,7 @@ html[data-theme="forest"] .note-content-preview {
 
 /* The title field sits directly on the editor surface, not on a white input card. */
 html[data-theme="forest"] #note-title {
-  background-color: #f8fbf7;
+  background-color: var(--note-title-resting-background);
 }
 
 html[data-theme="forest"] .detail-commandbar,
