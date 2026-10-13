@@ -49,7 +49,7 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
   });
   const elements = app.elements;
   const storedFilters = getStoredFilters();
-  const library = { notes: [], types: [], tags: [], searchIndex: new Map() };
+  const library = { notes: [], types: [], tags: [], searchIndex: new Map(), previewIndex: new Map() };
   const ui = {
     theme: getStoredTheme(),
     glass: theme.glass.read(),

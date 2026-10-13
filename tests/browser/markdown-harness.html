@@ -115,6 +115,16 @@
           assert(fallback && fallback.textContent === source, "large input was not preserved exactly");
         });
 
+        run("large unmatched inline delimiters stay responsive", () => {
+          ["[".repeat(40000), "[^".repeat(20000), "<".repeat(40000)].forEach((source) => {
+            const startedAt = performance.now();
+            const container = render(source);
+            const duration = performance.now() - startedAt;
+            assert(container.textContent === source, "unmatched delimiters changed");
+            assert(duration < 1000, `unmatched delimiters blocked rendering for ${Math.round(duration)}ms`);
+          });
+        });
+
         run("normal rendering and raw HTML safety remain intact", () => {
           const source = "# Heading\n\n**bold** <script>window.__nookTest = true</" + "script>";
           const container = render(source);

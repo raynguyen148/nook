@@ -357,7 +357,7 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
     const openPickerNote = (mode) => onOpen ? onOpen(note.id, mode) : selectSecondaryNote(note.id, mode);
     titleButton.addEventListener("click", () => secondary ? openPickerNote("preview") : openQuickView(note, titleButton));
     const preview = createElement("p", { className: "note-card__preview" });
-    appendHighlightedText(preview, previewForSearch(note.content));
+    appendHighlightedText(preview, previewForSearch(note));
     content.append(meta, titleButton, preview);
 
     const footer = createElement("div", { className: "note-card__footer" });

@@ -6,6 +6,9 @@
 
     const { api, storage, elements, library, ui } = app;
     const SEARCH_RENDER_DELAY = 150;
+    const NOTE_CARD_PREVIEW_MAX_LENGTH = 1200;
+    const SEARCH_PREVIEW_BEFORE = 58;
+    const SEARCH_PREVIEW_AFTER = 110;
     const collator = new Intl.Collator(undefined, { numeric: true, sensitivity: "base" });
     const persistFilters = (...args) => api.persistFilters(...args);
     const persistSort = (...args) => api.persistSort(...args);
@@ -48,24 +51,58 @@
       element.replaceChildren(fragment);
     }
 
-    function previewForSearch(noteContent) {
+    function normalizePreviewText(value) {
+      return String(value || "").replace(/\s+/g, " ").trim();
+    }
+
+    function noteCardPreview(note) {
+      const content = String(note?.content || "");
+      const cached = library.previewIndex.get(note?.id);
+      if (cached?.content === content) return cached.preview;
       const plainText = globalThis.NookMarkdown?.toPlainText
-        ? globalThis.NookMarkdown.toPlainText(noteContent)
-        : String(noteContent || "").replace(/\s+/g, " ").trim();
-      const preview = plainText.replace(/\s+/g, " ").trim();
+        ? globalThis.NookMarkdown.toPlainText(content)
+        : content;
+      const normalized = normalizePreviewText(plainText);
+      const preview = normalized.length > NOTE_CARD_PREVIEW_MAX_LENGTH
+        ? `${normalized.slice(0, NOTE_CARD_PREVIEW_MAX_LENGTH).trimEnd()}…`
+        : normalized;
+      if (note?.id) library.previewIndex.set(note.id, { content, preview });
+      return preview;
+    }
+
+    function syncNotePreviewIndex(notes = library.notes) {
+      const currentContent = new Map(notes.map(({ id, content }) => [id, String(content || "")]));
+      library.previewIndex.forEach((cached, id) => {
+        if (currentContent.get(id) !== cached.content) library.previewIndex.delete(id);
+      });
+    }
+
+    function previewForSearch(note) {
+      const preview = noteCardPreview(note);
       const normalizedQuery = normalizedSearchQuery();
       if (!preview || !normalizedQuery) return preview || "No content yet.";
 
-      const matchIndex = preview.toLocaleLowerCase().indexOf(normalizedQuery);
+      const content = String(note?.content || "");
+      const rawMatchIndex = content.toLocaleLowerCase().indexOf(normalizedQuery);
+      if (rawMatchIndex === -1) return preview;
+      const excerptStart = Math.max(0, rawMatchIndex - SEARCH_PREVIEW_BEFORE * 2);
+      const excerptEnd = Math.min(
+        content.length,
+        rawMatchIndex + normalizedQuery.length + SEARCH_PREVIEW_AFTER * 2,
+      );
+      const rawExcerpt = content.slice(excerptStart, excerptEnd);
+      const plainExcerpt = globalThis.NookMarkdown?.toPlainText
+        ? globalThis.NookMarkdown.toPlainText(rawExcerpt)
+        : rawExcerpt;
+      const excerpt = normalizePreviewText(plainExcerpt);
+      const matchIndex = excerpt.toLocaleLowerCase().indexOf(normalizedQuery);
       if (matchIndex === -1) return preview;
 
-      const contextBefore = 58;
-      const contextAfter = 110;
-      const start = Math.max(0, matchIndex - contextBefore);
-      const end = Math.min(preview.length, matchIndex + normalizedQuery.length + contextAfter);
-      const leadingEllipsis = start > 0 ? "…" : "";
-      const trailingEllipsis = end < preview.length ? "…" : "";
-      return `${leadingEllipsis}${preview.slice(start, end).trim()}${trailingEllipsis}`;
+      const start = Math.max(0, matchIndex - SEARCH_PREVIEW_BEFORE);
+      const end = Math.min(excerpt.length, matchIndex + normalizedQuery.length + SEARCH_PREVIEW_AFTER);
+      const leadingEllipsis = excerptStart > 0 || start > 0 ? "…" : "";
+      const trailingEllipsis = excerptEnd < content.length || end < excerpt.length ? "…" : "";
+      return `${leadingEllipsis}${excerpt.slice(start, end).trim()}${trailingEllipsis}`;
     }
 
     function resetToFirstPage() {
@@ -241,6 +278,7 @@
       normalizedSearchQuery,
       appendHighlightedText,
       previewForSearch,
+      syncNotePreviewIndex,
       resetToFirstPage,
       clearSearchRenderTimer,
       scheduleSearchRender,

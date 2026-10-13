@@ -60,6 +60,7 @@ globalThis[Symbol.for("nook.app.modules")].register("organize", (app) => {
   const resetToFirstPage = (...args) => api.resetToFirstPage(...args);
   const clearSearchRenderTimer = (...args) => api.clearSearchRenderTimer(...args);
   const ensureUiReferencesAreValid = (...args) => api.ensureUiReferencesAreValid(...args);
+  const syncNotePreviewIndex = (...args) => api.syncNotePreviewIndex(...args);
   const syncClearFiltersState = (...args) => api.syncClearFiltersState(...args);
   const renderSidebar = (...args) => api.renderSidebar(...args);
   const renderActiveFilters = (...args) => api.renderActiveFilters(...args);
@@ -710,6 +711,7 @@ globalThis[Symbol.for("nook.app.modules")].register("organize", (app) => {
     library.types = snapshot.types;
     library.tags = snapshot.tags;
     library.searchIndex = searchIndex;
+    syncNotePreviewIndex(snapshot.notes);
     api.reconcileEditorSessionsAfterLibraryRefresh?.({ external });
     renderLibrary();
   }

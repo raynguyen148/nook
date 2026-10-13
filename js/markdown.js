@@ -181,22 +181,26 @@
     return SAFE_LINK_SCHEME.test(url) || SAFE_RELATIVE_LINK.test(url);
   }
 
-  function findMatchingPair(source, start, opening, closing) {
-    let depth = 0;
-    let index = start;
-    while (index < source.length) {
+  function createInlinePairMaps(source) {
+    const brackets = new Map();
+    const parentheses = new Map();
+    const angles = new Map();
+    const bracketStack = [];
+    const parenthesisStack = [];
+    const angleStack = [];
+    for (let index = 0; index < source.length; index += 1) {
       if (source[index] === "\\") {
-        index += 2;
+        index += 1;
         continue;
       }
-      if (source[index] === opening) depth += 1;
-      if (source[index] === closing) {
-        depth -= 1;
-        if (depth === 0) return index;
-      }
-      index += 1;
+      if (source[index] === "[") bracketStack.push(index);
+      else if (source[index] === "]" && bracketStack.length) brackets.set(bracketStack.pop(), index);
+      else if (source[index] === "(") parenthesisStack.push(index);
+      else if (source[index] === ")" && parenthesisStack.length) parentheses.set(parenthesisStack.pop(), index);
+      else if (source[index] === "<") angleStack.push(index);
+      else if (source[index] === ">" && angleStack.length) angles.set(angleStack.pop(), index);
     }
-    return -1;
+    return { angles, brackets, parentheses };
   }
 
   function findClosingDelimiter(source, start, delimiter) {
@@ -368,30 +372,82 @@
     return imageAlt;
   }
 
-  function parseInlineLinkAt(source, index, context) {
+  function parseInlineLinkAt(source, index, context, pairs) {
     const labelStart = source[index] === "!" ? index + 1 : index;
     if (source[labelStart] !== "[") return null;
-    const labelEnd = findMatchingPair(source, labelStart, "[", "]");
-    if (labelEnd === -1) return null;
+    const labelEnd = pairs.brackets.get(labelStart);
+    if (labelEnd === undefined) return null;
     const label = source.slice(labelStart + 1, labelEnd);
     const afterLabel = labelEnd + 1;
     if (source[afterLabel] === "(") {
-      const destinationEnd = findMatchingPair(source, afterLabel, "(", ")");
-      if (destinationEnd === -1) return null;
+      const destinationEnd = pairs.parentheses.get(afterLabel);
+      if (destinationEnd === undefined) return null;
       const destination = parseLinkDestination(source.slice(afterLabel + 1, destinationEnd));
       return destination ? { end: destinationEnd + 1, label, destination } : null;
     }
     let referenceEnd = afterLabel;
     let referenceLabel = label;
     if (source[afterLabel] === "[") {
-      const end = findMatchingPair(source, afterLabel, "[", "]");
-      if (end === -1) return null;
+      const end = pairs.brackets.get(afterLabel);
+      if (end === undefined) return null;
       referenceEnd = end + 1;
       referenceLabel = source.slice(afterLabel + 1, end) || label;
     }
     const reference = context.references.get(normalizeReferenceLabel(referenceLabel));
     if (!reference) return null;
     return { end: referenceEnd, label, destination: reference };
+  }
+
+  function stripMarkdownLinks(source) {
+    const pairs = createInlinePairMaps(source);
+    let result = "";
+    let cursor = 0;
+    let index = 0;
+    while (index < source.length) {
+      const image = source[index] === "!" && source[index + 1] === "[";
+      const labelStart = image ? index + 1 : index;
+      if (source[labelStart] !== "[") {
+        index += 1;
+        continue;
+      }
+      const labelEnd = pairs.brackets.get(labelStart);
+      if (labelEnd === undefined) {
+        index += 1;
+        continue;
+      }
+      const destinationStart = labelEnd + 1;
+      const destinationEnd = source[destinationStart] === "("
+        ? pairs.parentheses.get(destinationStart)
+        : source[destinationStart] === "["
+          ? pairs.brackets.get(destinationStart)
+          : undefined;
+      if (destinationEnd === undefined) {
+        index += 1;
+        continue;
+      }
+      result += source.slice(cursor, index);
+      result += source.slice(labelStart + 1, labelEnd);
+      cursor = destinationEnd + 1;
+      index = cursor;
+    }
+    return `${result}${source.slice(cursor)}`;
+  }
+
+  function stripAngleSyntax(source) {
+    let result = "";
+    let cursor = 0;
+    let opening = source.indexOf("<");
+    while (opening !== -1) {
+      const closing = source.indexOf(">", opening + 1);
+      if (closing === -1) break;
+      const candidate = source.slice(opening + 1, closing);
+      const autolink = /^(?:[a-zA-Z][a-zA-Z0-9+.-]*:[^<>]+|[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+)$/.test(candidate);
+      result += source.slice(cursor, opening);
+      if (autolink) result += candidate;
+      cursor = closing + 1;
+      opening = source.indexOf("<", cursor);
+    }
+    return `${result}${source.slice(cursor)}`;
   }
 
   function trimAutolinkPunctuation(value) {
@@ -426,6 +482,7 @@
     }
     let index = 0;
     let textStart = 0;
+    const pairs = createInlinePairMaps(source);
 
     const flushText = (end) => {
       appendDecodedText(parent, source.slice(textStart, end));
@@ -465,7 +522,7 @@
       }
 
       if (character === "!" && source[index + 1] === "[") {
-        const image = parseInlineLinkAt(source, index, context);
+        const image = parseInlineLinkAt(source, index, context, pairs);
         if (image) {
           flushText(index);
           const element = makeImage(image.label);
@@ -479,8 +536,8 @@
 
       if (character === "[") {
         if (source[index + 1] === "^") {
-          const footnoteEnd = source.indexOf("]", index + 2);
-          const footnoteLabel = footnoteEnd === -1 ? "" : source.slice(index + 2, footnoteEnd);
+          const footnoteEnd = pairs.brackets.get(index);
+          const footnoteLabel = footnoteEnd === undefined ? "" : source.slice(index + 2, footnoteEnd);
           if (footnoteLabel && context.footnotes.has(normalizeReferenceLabel(footnoteLabel))) {
             flushText(index);
             const normalizedLabel = normalizeReferenceLabel(footnoteLabel);
@@ -504,7 +561,7 @@
             continue;
           }
         }
-        const link = parseInlineLinkAt(source, index, context);
+        const link = parseInlineLinkAt(source, index, context, pairs);
         if (link) {
           flushText(index);
           const element = makeLink(link.label, link.destination, context);
@@ -517,8 +574,8 @@
       }
 
       if (character === "<") {
-        const closingIndex = source.indexOf(">", index + 1);
-        if (closingIndex !== -1) {
+        const closingIndex = pairs.angles.get(index);
+        if (closingIndex !== undefined) {
           const candidate = source.slice(index + 1, closingIndex);
           const url = candidate.match(/^(?:https?:\/\/|mailto:)[^\s<>]+$/i) ? candidate : null;
           const email = candidate.match(/^[\w.+-]+@[\w.-]+\.[a-z]{2,}$/i);
@@ -1960,14 +2017,9 @@
     // List item markers
     text = text.replace(/^\s*(?:[-*+]|\d+\.)\s+/gm, "");
 
-    // Images: ![alt](url) -> alt
-    text = text.replace(/!\[([^\]]*)\](?:\([^)]*\)|\[[^\]]*\])/g, "$1");
-
-    // Links: [text](url) -> text
-    text = text.replace(/\[([^\]]+)\](?:\([^)]*\)|\[[^\]]*\])/g, "$1");
-
-    // Autolinks
-    text = text.replace(/<([a-zA-Z][a-zA-Z0-9+.-]*:[^>]+|[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+)>/g, "$1");
+    // Images and links retain their visible label without repeated rescans of
+    // malformed, unmatched delimiters.
+    text = stripMarkdownLinks(text);
 
     // Footnotes
     text = text.replace(/^\[\^[^\]]+\]:\s*/gm, "");
@@ -1993,11 +2045,8 @@
     text = text.replace(/\$\$([\s\S]*?)\$\$/g, "$1");
     text = text.replace(/\$([^$\n]+)\$/g, "$1");
 
-    // Details / Summary
-    text = text.replace(/<\/?(?:details|summary)[^>]*>/gi, "");
-
-    // Remaining HTML tags
-    text = text.replace(/<[^>]+>/g, "");
+    // Autolinks retain their destination; HTML tags are omitted from previews.
+    text = stripAngleSyntax(text);
 
     // HTML entities
     text = text
