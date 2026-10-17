@@ -48,7 +48,8 @@ async function main() {
       await page.locator("#tag-filter-toggle").click();
       await ready();
       const top = await record();
-      check(`${theme}: stationary shell covers full viewport pane`, top.shellScroll === 0 && top.contentHeight === top.shellHeight && Math.abs(top.filmHeight - top.shellHeight) < 2 && top.filter === "blur(12px)");
+      // The film extends 1px over each border while the shell stays non-scrolling.
+      check(`${theme}: stationary shell covers full viewport pane`, top.shellScroll === 0 && top.contentHeight <= top.shellHeight + 1 && Math.abs(top.filmHeight - top.shellHeight) <= 2 && top.filter === "blur(12px)");
       await page.screenshot({ path: `${out}/${theme}-top.png` });
       const blank = async () => { const hidden = await page.addStyleTag({ content: "#sidebar-scroll,#sidebar-scroll *{visibility:hidden!important}" }); const r = await page.locator(".sidebar").boundingBox(); const image = await page.screenshot({ clip: { x: r.x + 2, y: r.y + 2, width: r.width - 20, height: r.height - 4 } }); await hidden.evaluate(el => el.remove()); return image; };
       const first = await blank();
@@ -56,7 +57,7 @@ async function main() {
       await page.waitForTimeout(100);
       const bottom = await record();
       states.push({ theme, top, bottom });
-      check(`${theme}: only content scrolls, full-height film stays fixed`, bottom.scrollTop > 0 && bottom.shellScroll === 0 && bottom.contentHeight === bottom.shellHeight && bottom.filmHeight === top.filmHeight && !bottom.overflow);
+      check(`${theme}: only content scrolls, full-height film stays fixed`, bottom.scrollTop > 0 && bottom.shellScroll === 0 && bottom.contentHeight <= bottom.shellHeight + 1 && bottom.filmHeight === top.filmHeight && !bottom.overflow);
       const last = await blank();
       await fs.writeFile(`${out}/${theme}-blank-top.png`, first);
       await fs.writeFile(`${out}/${theme}-blank-bottom.png`, last);
@@ -89,6 +90,8 @@ async function main() {
       check(`${theme}: collapse motion keeps horizontal scrolling disabled`, horizontalModes.every(mode => mode === "hidden"));
       await ready();
       check(`${theme}: collapse keeps header usable`, await page.locator("#sidebar-toggle-btn").isVisible());
+      check(`${theme}: collapsed glass shell does not create a second scroll container`,
+        await page.locator(".sidebar").evaluate(el => getComputedStyle(el).overflowY === "visible"));
       const collapsedScroll = await page.locator("#sidebar-scroll").evaluate(el => getComputedStyle(el).overflowX);
       check(`${theme}: collapsed navigation never shows a horizontal scrollbar`,
         collapsedScroll === "hidden");

@@ -228,7 +228,9 @@ html[data-theme="eink"] {
     @media (min-width: 821px) {
       /* Keep the stationary shell from scrolling while inner scroll handles content.
        * Overflow visible allows the glass film and art to expand under the border without clipping. */
-      html[data-glass="true"] .sidebar {
+      html[data-glass="true"] .app-shell .sidebar {
+        /* Override the collapsed rail's overflow-x rule too: hidden would
+         * turn overflow-y into auto and scroll the film's 1px border bleed. */
         overflow: visible;
       }
 
