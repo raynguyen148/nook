@@ -39,10 +39,12 @@ theme-config
 → library-sidebar
 → library
 → workspace
+→ workspace-resize
 → clipboard
 → side-note
 → note-pickers
 → split-scroll
+→ split-resize
 → formatting
 → editor
 → note-switcher
@@ -99,6 +101,7 @@ product decision.
 | `css/note-card-actions.css` | Persistent More/pin controls, shared action popovers, and tag/timestamp footers across library layouts and both note pickers |
 | `js/app/side-note.js` | Side note navigation, DOM/editor adapter, and autosave presentation |
 | `js/app/workspace-resize.js` | Measured single-note width, bounded Side note ratio, pointer/keyboard resize, and browser-local size preferences |
+| `js/app/split-resize.js` | Independent Markdown/Preview column ratios, bounded pointer/keyboard resizing, cancellation and scroll-map refresh |
 | `js/app/note-switcher.js` | Shared note picker rendering, per-pane browsing state, cancellation, and guarded note switching |
 | `js/app/editor.js` | Primary DOM/editor adapter, validation, modes, autosave, and safe draft hydration |
 | `js/app/split-selection.js` | Split-mode source/preview selection mapping and highlight lifecycle |
@@ -424,17 +427,23 @@ so inactive theme stylesheets are not parsed or added to the live cascade.
   dialog controls, and Markdown code/callout backgrounds retain their surfaces.
 
 The `nook:glass` preference defaults off and stores only an enabled flag and
-integer transparency from 10–40; older values below 10 normalize to 10.
-The artwork retains its previous strength at 20 and doubles it at 40.
-Library and card films each range from 85–40% opacity; stacking them yields
-97.75–64% effective opacity on desktop, so the maximum no longer masks the scene
-behind a 92% backplate. Reading and mobile cards use a single 90–60% film;
-sidebar tint ranges from 95–80%. Quick actions and Settings also use a stationary
-reading film on their dialog pseudo-element, with transparent header/footer
+integer transparency from 10–50; older values below 10 normalize to 10.
+CSS caps Ambient artwork opacity at 72% and diffuses it with a static 24px blur;
+Nature keeps its original mask and strength behavior. Shared material tokens
+define directional reflections, inset highlights, and elevation; dark themes
+reduce reflection brightness. Library tint ranges from 85–32%, while card tint
+has a 72% floor, reading panes 84%, and dialog panes 88%. Mobile cards also
+respect the 72% floor; pinned cards use 94%. Sidebar tint ranges from 95–75%.
+Secondary sidebar and card labels use stronger theme-aware ink; library titles,
+descriptions and result counts use the strong text role over their shared film.
+The desktop workbench and pinned controls use decorative glass films without
+filtering their fixed-menu ancestors. The workbench stacking context stays above
+the library while its controls are pinned. Quick actions and Settings use a
+stationary reading film on their dialog pseudo-element, with transparent header/footer
 chrome. Settings' fixed mobile navigation retains its separate background and
 backdrop blur to obscure panel content scrolling behind it; native top-layer
 placement and picker containing blocks stay intact.
-These two glass dialogs and their backdrops do not fade or scale: ancestor
+These two glass dialogs do not fade: ancestor
 opacity below 1 creates a backdrop root that prevents the child film from
 sampling the page until the entrance finishes. Normal opaque-dialog motion is
 unchanged; Settings' inner panel transitions remain independent of the film.
@@ -475,6 +484,17 @@ editor heights, formatting overflow cues, and both Split scroll maps without
 saving or replacing drafts. `css/workspace-resize.css` loads after mobile and
 the focused styles. Preferences use `nook:note-detail-expansion` and
 `nook:note-detail-ratio` in localStorage; no data schema or backup changes.
+
+`split-resize.js` owns the internal Markdown/Preview separator in both panes.
+It measures the content grid minus its gap, bounds each column to at least
+220px and 25% where possible, and locks narrow grids at 50–50. Pointer moves
+are coalesced per animation frame; completed drags and keyboard changes persist
+independent `nook:split-ratio:primary` and `nook:split-ratio:secondary` preferences.
+Escape, pointer cancellation/lost capture, blur, mode or viewport changes cancel
+an active drag. Column changes rebuild the existing Split scroll map; selection
+overlays retain their existing ResizeObserver lifecycle. The separator has
+keyboard controls and live ARIA values; `css/split-resize.css` hides it at 820px
+and below. No note data or editor save state is changed by resizing.
 
 Side note temporarily collapses the sidebar at 960–1200px. The automatic state
 is never persisted. Closing the pane or widening the viewport restores the

@@ -34,6 +34,7 @@
     <link rel="stylesheet" href="css/note-typography.css" />
     <link rel="stylesheet" href="css/workflows.css" />
     <link rel="stylesheet" href="css/workspace-resize.css" />
+    <link rel="stylesheet" href="css/split-resize.css" />
     <link rel="stylesheet" href="css/note-card-actions.css" />
     <link rel="stylesheet" href="css/appearance.css" />
   </head>
@@ -762,6 +763,7 @@
                 <span class="note-editor-pane__label">Markdown</span>
                 <textarea id="note-content" rows="14" maxlength="50000" placeholder="Write anything you want to keep…"></textarea>
               </div>
+              <div id="note-split-resize" class="split-resize" role="separator" aria-orientation="vertical" aria-label="Markdown editor width" aria-controls="note-content note-content-preview" tabindex="0"></div>
               <div class="note-editor-pane note-editor-pane--preview">
                 <span class="note-editor-pane__label">Preview</span>
                 <div id="note-content-preview" class="quick-view-content note-content-preview" tabindex="0" aria-label="Rendered note preview" hidden></div>
@@ -1324,6 +1326,7 @@
                         <span class="note-editor-pane__label">Markdown</span>
                         <textarea id="secondary-note-content-editor" rows="14" maxlength="50000" placeholder="Write anything you want to keep…"></textarea>
                       </div>
+                      <div id="secondary-split-resize" class="split-resize" role="separator" aria-orientation="vertical" aria-label="Side note Markdown editor width" aria-controls="secondary-note-content-editor secondary-split-preview" tabindex="0"></div>
                       <div class="note-editor-pane note-editor-pane--preview">
                         <span class="note-editor-pane__label">Preview</span>
                         <div id="secondary-split-preview" class="quick-view-content note-content-preview" tabindex="0" aria-label="Rendered note preview" hidden></div>
@@ -2145,6 +2148,7 @@
     <script src="js/app/side-note.js"></script>
     <script src="js/app/note-pickers.js"></script>
     <script src="js/app/split-scroll.js"></script>
+    <script src="js/app/split-resize.js"></script>
     <script src="js/app/formatting.js"></script>
     <script src="js/app/editor-session.js"></script>
     <script src="js/app/note-actions.js"></script>

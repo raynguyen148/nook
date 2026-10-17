@@ -1,0 +1,94 @@
+.split-resize {
+  display: none;
+}
+
+@media (min-width: 821px) {
+  #note-content-field.is-split .note-content-editor,
+  #secondary-reader-view #secondary-content-field.is-split .note-content-editor {
+    position: relative;
+    grid-template-columns: minmax(0, var(--split-source-width, 1fr)) minmax(0, 1fr);
+  }
+
+  #note-content-field.is-split .note-editor-pane--preview,
+  #secondary-reader-view #secondary-content-field.is-split .note-editor-pane--preview {
+    border-left-width: 0;
+  }
+
+  .note-content-field.is-split .split-resize {
+    display: block;
+    position: absolute;
+    z-index: 2;
+    inset-block: 0;
+    left: var(--split-divider-position, 50%);
+    width: 16px;
+    transform: translateX(-50%);
+    cursor: col-resize;
+    touch-action: none;
+    user-select: none;
+    border-radius: var(--control-radius);
+  }
+
+  .split-resize::before,
+  .split-resize::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    pointer-events: none;
+  }
+
+  .split-resize::before {
+    inset-block: 0;
+    width: 1px;
+    background: var(--border-subtle);
+  }
+
+  .split-resize::after {
+    top: calc(50% - 18px);
+    width: 3px;
+    height: 36px;
+    border-radius: 3px;
+    background: var(--text-muted);
+    opacity: 0.4;
+    transition: background-color var(--motion-duration-micro), opacity var(--motion-duration-micro);
+  }
+
+  .split-resize:not([aria-disabled="true"]):is(:hover, :focus-visible, .is-active)::after {
+    background: var(--primary-accent);
+    opacity: 1;
+    width: 5px;
+  }
+
+  .split-resize:focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: -2px;
+  }
+
+  .split-resize[aria-disabled="true"] {
+    cursor: default;
+  }
+
+  .split-resize[aria-disabled="true"]::after {
+    display: none;
+  }
+
+  .app-shell.is-split-resizing,
+  .app-shell.is-split-resizing * {
+    cursor: col-resize;
+    user-select: none;
+  }
+}
+
+@media (min-width: 821px) and (pointer: coarse) {
+  .note-content-field.is-split .split-resize { width: 44px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .split-resize::after { transition: none; }
+}
+
+@media (forced-colors: active) {
+  .split-resize::before,
+  .split-resize::after { background: CanvasText; }
+  .split-resize:not([aria-disabled="true"]):is(:hover, :focus-visible, .is-active)::after { background: Highlight; }
+}

@@ -70,8 +70,8 @@
       (CSS.supports("backdrop-filter", "blur(1px)") || CSS.supports("-webkit-backdrop-filter", "blur(1px)")) &&
       CSS.supports("background-color", "color-mix(in srgb, white 80%, transparent)");
     document.documentElement.dataset.glass = String(value.enabled && supported);
-    // Library film and card tint stack: at 40, two 40% layers yield 64%
-    // effective opacity, rather than the old nearly opaque 92% result.
+    // CSS applies readability floors to card and reading tints; these values
+    // retain the user's transparency range for the shared material layers.
     document.documentElement.style.setProperty("--glass-opacity", `${100 - value.transparency * 1.5}%`);
     document.documentElement.style.setProperty("--glass-card-opacity", `${100 - value.transparency * 1.5}%`);
     // Reading has one film; sidebar's small labels keep a stronger tint.

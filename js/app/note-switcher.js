@@ -91,6 +91,8 @@
       const notes = library.notes.filter((note) => !api.isDeletedNote(note) && !excluded.has(note.id) &&
         (!query || (library.searchIndex.get(note.id) || `${note.title}\n${note.content}`.toLocaleLowerCase()).includes(query)));
       notes.sort((left, right) => {
+        const pinnedFirst = Number(Boolean(right.isPinned)) - Number(Boolean(left.isPinned));
+        if (pinnedFirst) return pinnedFirst;
         const direction = state.sort.endsWith("asc") ? 1 : -1;
         let comparison;
         if (state.sort.startsWith("title")) comparison = collator.compare(left.title, right.title);

@@ -1,6 +1,6 @@
 "use strict";
 
-const CACHE_VERSION = "nook-app-dd919cdcb91d";
+const CACHE_VERSION = "nook-app-8a73bbf63c59";
 const APP_ASSETS = [
   "./",
   "./index.html",
@@ -40,6 +40,7 @@ const APP_ASSETS = [
   "./css/note-typography.css",
   "./css/workflows.css",
   "./css/workspace-resize.css",
+  "./css/split-resize.css",
   "./css/note-card-actions.css",
   "./css/organize.css",
   "./css/responsive.css",
@@ -72,6 +73,7 @@ const APP_ASSETS = [
   "./js/app/side-note.js",
   "./js/app/note-pickers.js",
   "./js/app/split-scroll.js",
+  "./js/app/split-resize.js",
   "./js/app/formatting.js",
   "./js/app/onboarding.js",
   "./js/app/core.js",

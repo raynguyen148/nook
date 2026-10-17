@@ -67,6 +67,7 @@ QA uses an already installed local Playwright. Keep the app openable as a static
 - `js/app/note-switcher.js`: shared in-pane note picker, cancellation, and guarded switching.
 - `js/app/note-pickers.js`: shared type/tag picker components and pane adapters.
 - `js/app/split-scroll.js`: Split preview rendering and scroll synchronization.
+- `js/app/split-resize.js`: bounded Markdown/Preview column resizing, pointer/keyboard controls, and independent browser-local pane ratios.
 - `js/app/formatting.js`: Markdown editing operations and formatting scroll cues.
 - `js/app/editor.js`: primary editor adapter, modes, validation, autosave, and draft safety.
 - `js/app/split-selection.js`: Split-mode selection mapping and highlight lifecycle.

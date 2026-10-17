@@ -178,6 +178,7 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
   function bindEvents() {
     api.bindNoteCardEvents();
     api.bindNoteDetailResizeEvents();
+    api.bindSplitResizeEvents();
     api.bindMobileEvents();
     api.bindSplitSelectionEvents();
     api.bindFormattingScrollCues();

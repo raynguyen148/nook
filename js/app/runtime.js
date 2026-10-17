@@ -24,6 +24,7 @@
     "side-note",
     "note-pickers",
     "split-scroll",
+    "split-resize",
     "formatting",
     "editor",
     "note-switcher",

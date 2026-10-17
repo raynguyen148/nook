@@ -148,6 +148,8 @@
       noteContent: document.querySelector("#note-content"),
       noteContentPreview: document.querySelector("#note-content-preview"),
       noteContentEditor: document.querySelector(".note-content-editor"),
+      noteSplitResize: document.querySelector("#note-split-resize"),
+      secondarySplitResize: document.querySelector("#secondary-split-resize"),
       noteFormattingButtons: [...document.querySelectorAll("[data-note-formatting]")],
       notePreviewPanel: document.querySelector("#note-preview-panel"),
       notePreviewActions: document.querySelector("#note-preview-actions"),

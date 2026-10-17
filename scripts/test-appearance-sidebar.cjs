@@ -49,7 +49,7 @@ async function main() {
       await ready();
       const top = await record();
       // The film extends 1px over each border while the shell stays non-scrolling.
-      check(`${theme}: stationary shell covers full viewport pane`, top.shellScroll === 0 && top.contentHeight <= top.shellHeight + 1 && Math.abs(top.filmHeight - top.shellHeight) <= 2 && top.filter === "blur(12px)");
+      check(`${theme}: stationary shell covers full viewport pane`, top.shellScroll === 0 && top.contentHeight <= top.shellHeight + 1 && Math.abs(top.filmHeight - top.shellHeight) <= 2 && top.filter === "blur(20px) saturate(1.25)");
       await page.screenshot({ path: `${out}/${theme}-top.png` });
       const blank = async () => { const hidden = await page.addStyleTag({ content: "#sidebar-scroll,#sidebar-scroll *{visibility:hidden!important}" }); const r = await page.locator(".sidebar").boundingBox(); const image = await page.screenshot({ clip: { x: r.x + 2, y: r.y + 2, width: r.width - 20, height: r.height - 4 } }); await hidden.evaluate(el => el.remove()); return image; };
       const first = await blank();
@@ -99,12 +99,79 @@ async function main() {
       await page.locator("#sidebar-toggle-btn").click();
       await page.emulateMedia({ reducedMotion: "reduce" });
       await ready();
+      for (const width of [320, 375, 820]) {
+        await page.setViewportSize({ width, height: 812 });
+        await ready();
+        check(`${theme}: glass library fits ${width}px`, await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
+        if (width === 375) await page.screenshot({ path: `${out}/${theme}-mobile-library.png` });
+      }
     }
     await page.setViewportSize({ width: 375, height: 812 });
     await ready();
     await page.locator("#mobile-open-filters").click();
     check("mobile filter sheet remains usable", await page.locator("#mobile-filter-dialog").evaluate(el => el.scrollWidth <= el.clientWidth));
     await page.locator("#mobile-filters-done").click();
+
+    // Exercise the shared material on reading, overlays and small touch layouts.
+    for (const theme of ["light", "midnight"]) {
+      await page.setViewportSize({ width: 1440, height: 900 });
+      await page.evaluate(t => {
+        localStorage.setItem("nook:theme", t);
+        localStorage.removeItem("nook:active-filters");
+        localStorage.setItem("nook:sidebar-collapsed", "false");
+      }, theme);
+      await page.reload();
+      await ready();
+      await page.screenshot({ path: `${out}/${theme}-glass-library.png` });
+      check(`${theme}: fixed menu ancestors remain unfiltered`, await page.locator(".topbar").evaluate(el => getComputedStyle(el).backdropFilter === "none"));
+      await page.evaluate(() => window.scrollTo(0, 700));
+      await page.waitForTimeout(350);
+      check(`${theme}: pinned search remains above the library`, await page.locator("#search-input").evaluate(el => {
+        const rect = el.getBoundingClientRect();
+        return el === document.elementFromPoint(rect.x + rect.width / 2, rect.y + rect.height / 2);
+      }));
+      await page.evaluate(() => window.scrollTo(0, 0));
+      await page.waitForTimeout(350);
+      await page.locator("#organize-btn").click();
+      await page.locator("#display-tab").click();
+      await page.waitForTimeout(300);
+      await page.screenshot({ path: `${out}/${theme}-glass-settings.png` });
+      check(`${theme}: settings is a native modal with a separate film`, await page.locator("#organize-dialog").evaluate(el => el.matches(":modal") && getComputedStyle(el, "::before").backdropFilter.includes("blur(24px)")));
+      await page.keyboard.press("Escape");
+      check(`${theme}: settings restores keyboard focus`, await page.locator("#organize-btn").evaluate(el => el === document.activeElement));
+      await page.getByRole("button", { name: /^Open note:/ }).first().click();
+      for (const mode of ["preview", "edit", "split"]) {
+        await page.locator(`[data-note-editor-mode="${mode}"]`).click();
+        await page.waitForTimeout(300);
+        await page.screenshot({ path: `${out}/${theme}-glass-${mode}.png` });
+        check(`${theme}: ${mode} fits viewport`, await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
+      }
+      await page.locator("#note-quick-actions-btn").click();
+      check(`${theme}: Quick actions opens above the glass editor`, await page.locator("#command-dialog").evaluate(el => el.matches(":modal")));
+      await page.keyboard.press("Escape");
+      await page.locator("#close-note-dialog-btn").click();
+      for (const width of [320, 375, 414, 768]) {
+        await page.setViewportSize({ width, height: 812 });
+        await ready();
+        await page.screenshot({ path: `${out}/${theme}-glass-mobile-${width}.png` });
+        check(`${theme}: mobile ${width}px has no horizontal overflow`, await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
+      }
+      await page.setViewportSize({ width: 1440, height: 900 });
+      for (const transparency of [10, 50]) {
+        await page.evaluate(value => {
+          localStorage.setItem("nook:glass", JSON.stringify({ enabled: true, transparency: value }));
+          localStorage.setItem("nook:background-style", "nature");
+        }, transparency);
+        await page.reload();
+        await ready();
+        await page.screenshot({ path: `${out}/${theme}-glass-nature-${transparency}.png` });
+        check(`${theme}: nature at ${transparency}% stays within viewport`, await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
+      }
+      await page.evaluate(() => {
+        localStorage.setItem("nook:background-style", "ambient");
+        localStorage.setItem("nook:glass", JSON.stringify({ enabled: true, transparency: 40 }));
+      });
+    }
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.evaluate(() => localStorage.setItem("nook:glass", JSON.stringify({ enabled: false, transparency: 40 })));
     await page.reload();
@@ -116,6 +183,8 @@ async function main() {
     await page.reload();
     await ready();
     check("reduced transparency preserves original layout", await page.locator("#sidebar-scroll").evaluate(el => getComputedStyle(el).display === "contents"));
+    await page.emulateMedia({ forcedColors: "active" });
+    check("forced colors removes decorative glass filters", await page.locator(".sidebar").evaluate(el => getComputedStyle(el, "::after").backdropFilter === "none"));
     check("no console/runtime errors", errors.length === 0);
   }
   finally {

@@ -162,8 +162,17 @@ the limits, or Enter to reset. Double-click also resets; Escape cancels a drag.
 Single-note expansion and the two-pane ratio are remembered separately in
 this browser, with a session-only fallback if preference storage is blocked.
 
+Inside **Split**, hover the line between Markdown and Preview and drag to resize
+the columns. Each column keeps at least 220px and 25% where space permits;
+narrow panes stay evenly divided. The separator supports Left/Right (Shift for
+larger steps), Home/End, Enter or double-click to reset to 50–50, and Escape to
+cancel a drag. Primary and Side note column ratios are remembered separately.
+Split column resizing is available above the mobile breakpoint (820px).
+
 Use **Switch** in either pane to browse the same searchable card picker
-inside that pane. The other pane stays open. Opening the picker pauses that
+inside that pane. Pinned notes always appear first; the selected sort applies
+within the pinned and unpinned groups, including search results.
+The other pane stays open. Opening the picker pauses that
 pane's pending autosave without saving or replacing its draft. **Back to note**
 or Escape restores the same note, mode, and scroll position. Choosing another
 note saves pending changes first; a failed save or unresolved conflict returns
@@ -267,9 +276,14 @@ steaming cup; Retro's has a desk lamp and book. These simple silhouettes are sub
 backgrounds that do not take up navigation space. Auto follows
 the Light or Dark scene. The effect is off by default. Transparency ranges from
 10–50%; higher values reveal more background. Turn off Enable glass to return
-to the normal appearance. At 40, desktop cards combine two 40%-opacity layers
-for a 64% backplate; mobile cards and reading areas retain 60% opacity. Controls
+to the normal appearance. Glass uses softly diffused Ambient colors, illuminated
+edges and directional reflections, with deeper shadows on focused cards. Nature
+retains its crisp silhouettes. Light and dark themes have separate reflection
+strengths. Cards retain at least 72% surface tint, reading panes 84%, and Settings
+and Quick actions 88%, so increasing transparency keeps text readable. Controls
 and Markdown code/callout surfaces stay solid for clarity.
+Secondary labels use stronger theme-aware ink over glass; pinned cards retain
+at least 94% tint with a stronger border and pin control.
 The preference stays in this browser; accessibility
 preferences and unsupported browser effects retain the normal appearance.
 On mobile, the range changes how strongly the scenery shows through and the
@@ -279,7 +293,10 @@ reading layer, including headers, footers, and formatting bars, without putting
 filters on ancestors of fixed menus. Quick actions and Settings use the same
 reading film, including their headers and footers. The fixed mobile navigation in Settings
 keeps its own background and blur so menu labels stay readable as content scrolls behind it.
-Buttons and menus retain their own surfaces.
+The desktop workbench bar and its pinned controls use the same glass material;
+mobile navigation keeps a stronger tint above scrolling content. Buttons and
+menus retain their own surfaces. Reflections are static, with no continuous
+background animation or per-card blur.
 On desktop, navigation scrolls inside the sidebar while its artwork and glass
 stay fixed across the full panel, including with all tags expanded.
 
@@ -594,6 +611,7 @@ mutation occurs.
 | [`js/app/note-pickers.js`](js/app/note-pickers.js) | Shared type/tag picker components and both panes’ picker rendering |
 | [`js/app/formatting.js`](js/app/formatting.js) | Markdown editing operations and mobile formatting scroll cues |
 | [`js/app/split-scroll.js`](js/app/split-scroll.js) | Split preview rendering and scroll mapping/synchronization |
+| [`js/app/split-resize.js`](js/app/split-resize.js) | Bounded Markdown/Preview column sizing for both panes, pointer/keyboard controls, and local ratio preferences |
 | [`js/app/editor.js`](js/app/editor.js) | Primary DOM/editor adapter, autosave, validation, and mode controls |
 | [`js/app/theme-config.js`](js/app/theme-config.js) | One theme catalogue for startup, preferences, labels, assets, and legacy aliases |
 | [`js/app/pane-controller.js`](js/app/pane-controller.js) | Shared pane session, save, conflict, and recovery lifecycle |
@@ -613,6 +631,7 @@ mutation occurs.
 | [`scripts/test-maintainability.cjs`](scripts/test-maintainability.cjs) | Optional Chromium checks for onboarding, theme aliases, sidebar restoration, settings menus, and mobile formatting |
 | [`scripts/test-note-switcher.cjs`](scripts/test-note-switcher.cjs) | Optional Chromium checks for both pane pickers, draft safety, cancellation, conflicts, and responsive layouts |
 | [`scripts/test-workspace-resize.cjs`](scripts/test-workspace-resize.cjs) | Optional Chromium checks for width bounds, drag/keyboard cancellation, preference persistence, mode-specific floors, themes, and mobile layout |
+| [`scripts/test-split-resize.cjs`](scripts/test-split-resize.cjs) | Optional Chromium checks for Split column sizing, cancellation, scroll reflow, independent ratios, touch, themes, and mobile |
 | [`scripts/test-note-card-actions.cjs`](scripts/test-note-card-actions.cjs) | Optional Chromium checks for card More menus, pin visibility, tag/timestamp footers, both pickers, keyboard, and touch |
 | [`scripts/test-workflows.cjs`](scripts/test-workflows.cjs) | Optional Chromium storage/UI regression checks using isolated synthetic data |
 | [`scripts/test-ui-standardization.cjs`](scripts/test-ui-standardization.cjs) | Optional UI screenshots, overflow/contrast diagnostics, keyboard focus, validation, and delayed-save regression checks |
@@ -637,7 +656,7 @@ body: storage.js → markdown.js → classic-script registrations
 `js/storage.js` exposes the frozen `PersonalNotesStorage` API and
 `js/markdown.js` exposes the frozen `NookMarkdown` API. The application modules
 register installers in any script-tag order. `runtime.js` initializes them as
-`theme-config → elements → core → local-state → search → preferences → feedback → editor-session → pane-controller → note-actions → library-sidebar → library → workspace → clipboard → side-note → note-pickers → split-scroll → formatting → editor → note-switcher → split-selection → history → organize → sync → offline → mobile → recovery → data-import → productivity → bulk-actions → onboarding → events`, reports missing or duplicate modules and conflicting API ownership, and
+`theme-config → elements → core → local-state → search → preferences → feedback → editor-session → pane-controller → note-actions → library-sidebar → library → workspace → workspace-resize → clipboard → side-note → note-pickers → split-scroll → split-resize → formatting → editor → note-switcher → split-selection → history → organize → sync → offline → mobile → recovery → data-import → productivity → bulk-actions → onboarding → events`, reports missing or duplicate modules and conflicting API ownership, and
 `events.js` removes the temporary registry before bootstrap. This is a
 classic-script registry, not an ES Module graph. The UI continues to use the
 storage API instead of accessing IndexedDB directly.

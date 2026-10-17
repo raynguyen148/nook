@@ -110,6 +110,7 @@ Choose an owner by responsibility:
 | Shared in-pane note picker, cancellation, and switching | [note-switcher.js](../js/app/note-switcher.js) |
 | Type/tag pickers, Markdown formatting, raw copy | [note-pickers.js](../js/app/note-pickers.js), [formatting.js](../js/app/formatting.js), [clipboard.js](../js/app/clipboard.js) |
 | Split rendering/scrolling or selection mapping | [split-scroll.js](../js/app/split-scroll.js), [split-selection.js](../js/app/split-selection.js) |
+| Split column geometry and separator interactions | [split-resize.js](../js/app/split-resize.js), [split-resize.css](../css/split-resize.css) |
 | History dialog and restore workflow | [history.js](../js/app/history.js) |
 | Catalog management, export UI, library refresh | [organize.js](../js/app/organize.js) |
 | Markdown imports or JSON merge/replacement UI | [data-import.js](../js/app/data-import.js) |
