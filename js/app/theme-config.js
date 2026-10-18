@@ -123,6 +123,9 @@
   themeStylesheet.rel = "stylesheet";
   themeStylesheet.href = `css/themes/${describe(resolved).file}.css`;
   themeStylesheet.dataset.themeStylesheet = resolved;
+  // Script-inserted stylesheets do not block painting by default; without this
+  // the first frame can render before the palette arrives.
+  Reflect.set(themeStylesheet, "blocking", "render");
   document.head.append(themeStylesheet);
   const themeColor = document.querySelector('meta[name="theme-color"]');
   if (themeColor instanceof HTMLMetaElement) themeColor.content = describe(resolved).color;

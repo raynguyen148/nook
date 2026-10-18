@@ -1,0 +1,223 @@
+/* ==========================================================================
+   Nook - Loading Skeleton
+   Placeholders for the first library snapshot. The markup lives in
+   index.html and is replaced by the first render; the app shell's
+   aria-busy="true" state covers the remaining dynamic labels. Colors come from
+   the active theme's semantic tokens.
+   ========================================================================== */
+
+:root {
+  --skeleton-base: color-mix(in srgb, var(--text-muted, #64748b) 14%, transparent);
+  --skeleton-shine: color-mix(in srgb, var(--text-muted, #64748b) 26%, transparent);
+}
+
+.skeleton,
+.app-shell[aria-busy="true"] .filter-count:not(:empty),
+.app-shell[aria-busy="true"] .backup-health__message,
+.app-shell[aria-busy="true"] .notes-panel__range:empty::before {
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--skeleton-base) 0%, var(--skeleton-shine) 50%, var(--skeleton-base) 100%) 100% 0 / 200% 100%;
+  animation: nook-skeleton-shimmer 1.4s ease-in-out infinite;
+}
+
+@keyframes nook-skeleton-shimmer {
+  to {
+    background-position: 0 0;
+  }
+}
+
+/* The saved backup state is unknown until storage opens; do not flash the
+ * "No backup yet" warning colors first. */
+.app-shell[aria-busy="true"] .backup-health {
+  --backup-health-accent: var(--text-muted);
+  --backup-health-border: var(--border-subtle);
+  --backup-health-surface: var(--component-surface, transparent);
+}
+
+.app-shell[aria-busy="true"] .backup-health .status-dot {
+  opacity: 0.35;
+  filter: grayscale(1);
+}
+
+/* Existing text keeps its width, so the final label does not shift layout. */
+.app-shell[aria-busy="true"] .filter-count:not(:empty),
+.app-shell[aria-busy="true"] .backup-health__message {
+  color: transparent;
+  pointer-events: none;
+  user-select: none;
+}
+
+.app-shell[aria-busy="true"] .filter-count:not(:empty) {
+  min-width: 1.35rem;
+  text-align: center;
+}
+
+.app-shell[aria-busy="true"] .backup-health__message {
+  display: inline-block;
+}
+
+.app-shell[aria-busy="true"] .notes-panel__range:empty::before {
+  content: "";
+  display: inline-block;
+  width: 7rem;
+  height: 0.75rem;
+  vertical-align: middle;
+}
+
+.skeleton {
+  display: block;
+  flex: none;
+  height: 0.75rem;
+}
+
+.skeleton--badge { width: 4.5rem; height: 1.1rem; }
+.skeleton--title { width: 62%; height: 1.05rem; }
+.skeleton--line { width: 100%; }
+.skeleton--line-short { width: 68%; }
+.skeleton--chip { width: 3.25rem; height: 1.2rem; }
+.skeleton--dot { width: 0.55rem; height: 0.55rem; }
+.skeleton--label { width: 5.5rem; height: 0.8rem; }
+.skeleton--tag { width: 3.6rem; height: 1.5rem; }
+.skeleton--tag-wide { width: 5.2rem; }
+
+/* Library cards */
+.notes-skeleton {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+html[data-view-mode="grid"] .notes-skeleton {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+html[data-view-mode="compact"] .notes-skeleton {
+  grid-template-columns: 1fr;
+  gap: 0.375rem;
+}
+
+.note-skeleton {
+  display: grid;
+  align-content: start;
+  gap: 0.7rem;
+  min-height: 10.5rem;
+  border: 1px solid var(--note-card-border, var(--border-subtle, #e2e8f0));
+  border-radius: var(--radius-card, 0.625rem);
+  padding: 1.05rem 1.05rem 0.95rem;
+  background: var(--note-card-surface, var(--surface-panel, #fff));
+}
+
+.note-skeleton__footer {
+  display: flex;
+  align-self: end;
+  gap: 0.4rem;
+  margin-top: 0.4rem;
+}
+
+html[data-view-mode="compact"] .note-skeleton {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  min-height: 2.85rem;
+  padding: 0.35rem 0.75rem;
+}
+
+html[data-view-mode="compact"] .note-skeleton .skeleton--title {
+  width: 15.5rem;
+  max-width: 40%;
+}
+
+html[data-view-mode="compact"] .note-skeleton .skeleton--line {
+  flex: 1 1 0;
+  width: auto;
+}
+
+html[data-view-mode="compact"] .note-skeleton :is(.skeleton--line-short, .note-skeleton__footer) {
+  display: none;
+}
+
+/* Shorter grid cards and a capped row count keep the skeleton within one viewport. */
+html[data-view-mode="grid"] .note-skeleton { min-height: 8.5rem; }
+html[data-view-mode="compact"] .note-skeleton:nth-child(n + 9) { display: none; }
+
+@media (max-width: 1200px) {
+  html[data-view-mode="grid"] .notes-skeleton {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 960px) {
+  html[data-view-mode="grid"] .notes-skeleton {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 820px) {
+  .notes-skeleton,
+  html[data-view-mode="grid"] .notes-skeleton {
+    grid-template-columns: 1fr;
+  }
+
+  .note-skeleton:nth-child(n + 4) {
+    display: none;
+  }
+}
+
+/* Sidebar */
+.sidebar-skeleton {
+  display: grid;
+  gap: 0.12rem;
+}
+
+.sidebar-skeleton-row {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  min-height: 2.1rem;
+  padding: 0 0.7rem;
+}
+
+/* Version history. Reads usually finish within a frame or two, so the rows
+ * appear only if the read is still pending after a short delay. */
+.history-list__skeleton {
+  width: 100%;
+  height: 3.4rem;
+  margin: 0 0 0.45rem;
+  border-radius: var(--control-radius, 0.5rem);
+  opacity: 0;
+  animation:
+    nook-skeleton-reveal 160ms ease-out 200ms forwards,
+    nook-skeleton-shimmer 1.4s ease-in-out infinite;
+}
+
+@keyframes nook-skeleton-reveal {
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton,
+  .app-shell[aria-busy="true"] .filter-count:not(:empty),
+  .app-shell[aria-busy="true"] .backup-health__message,
+  .app-shell[aria-busy="true"] .notes-panel__range:empty::before {
+    animation: none;
+    background: var(--skeleton-base);
+  }
+
+  .history-list__skeleton {
+    animation: nook-skeleton-reveal 1ms linear 200ms forwards;
+  }
+}
+
+@media (forced-colors: active) {
+  .skeleton,
+  .app-shell[aria-busy="true"] .filter-count:not(:empty),
+  .app-shell[aria-busy="true"] .backup-health__message,
+  .app-shell[aria-busy="true"] .notes-panel__range:empty::before {
+    animation: none;
+    forced-color-adjust: none;
+    background: GrayText;
+    opacity: 0.35;
+  }
+}

@@ -108,7 +108,10 @@ globalThis[Symbol.for("nook.app.modules")].register("history", (app) => {
     elements.historyPreviewMeta.textContent = "Reading committed history from this browser.";
     syncHistoryRestoreControl();
     elements.historyList.setAttribute("aria-busy", "true");
-    elements.historyList.replaceChildren();
+    elements.historyList.replaceChildren(...Array.from({ length: 4 }, () => createElement("div", {
+      className: "skeleton history-list__skeleton",
+      attributes: { "aria-hidden": "true" },
+    })));
     elements.historyPreviewContent.replaceChildren();
     elements.historyDialog.showModal();
     syncToastHost();
@@ -127,6 +130,7 @@ globalThis[Symbol.for("nook.app.modules")].register("history", (app) => {
       if (!isCurrentHistorySession(session)) return;
       versions = [];
       renderHistoryPreview(null);
+      elements.historyList.replaceChildren();
       elements.historyList.setAttribute("aria-busy", "false");
       elements.historyPreviewTitle.textContent = "History could not load";
       elements.historyPreviewMeta.textContent = "Close this dialog and open Version history to try again.";

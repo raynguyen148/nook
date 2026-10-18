@@ -9,6 +9,7 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
     NOTE_PREVIEW_LINES_STORAGE_KEY,
     NOTE_DETAIL_FONT_SIZE_DEFAULT,
     NOTE_DETAIL_FONT_SIZE_STORAGE_KEY,
+    MOTION,
     THEME_STORAGE_KEY,
     THEMES,
   } = constants;
@@ -21,6 +22,8 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
     setThemePickerValue,
     handleThemePickerTriggerKeydown,
     handleThemePickerMenuClick,
+    handleThemePickerMenuPreload,
+    handleThemeTogglePreload,
     handleThemePickerMenuKeydown,
     handleThemePickerDocumentPointerdown,
     syncThemeUI,
@@ -242,6 +245,10 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
     elements.themePickerTrigger.addEventListener("click", toggleThemePicker);
     elements.themePickerTrigger.addEventListener("keydown", handleThemePickerTriggerKeydown);
     elements.themePickerMenu.addEventListener("click", handleThemePickerMenuClick);
+    elements.themePickerMenu.addEventListener("pointerover", handleThemePickerMenuPreload);
+    elements.themePickerMenu.addEventListener("focusin", handleThemePickerMenuPreload);
+    elements.themeToggle.addEventListener("pointerenter", handleThemeTogglePreload);
+    elements.themeToggle.addEventListener("focus", handleThemeTogglePreload);
     elements.themePickerMenu.addEventListener("keydown", handleThemePickerMenuKeydown);
     document.addEventListener("pointerdown", handleThemePickerDocumentPointerdown);
     document.addEventListener("visibilitychange", refreshAutoTheme);
@@ -949,6 +956,10 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
       elements.appShell.inert = false;
       elements.appShell.removeAttribute("inert");
       elements.appShell.setAttribute("aria-busy", "false");
+      // Ease the first real cards in over the skeleton they replaced.
+      if (!api.prefersReducedMotion()) {
+        elements.notesList.animate([{ opacity: 0 }, { opacity: 1 }], { duration: MOTION.short, easing: MOTION.easeOut });
+      }
       scheduleTopbarActionsPinning();
       if (result.notice) showToast(result.notice, "error");
       await offerStoredNoteDraftRecovery();

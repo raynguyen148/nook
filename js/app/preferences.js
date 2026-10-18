@@ -32,6 +32,68 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
   const THEME_LABELS = Object.fromEntries(THEMES.map(mode => [mode, app.theme.describe(mode).label]));
   const THEME_STYLESHEET_FILES = Object.fromEntries(THEMES.map(mode => [mode, app.theme.describe(mode).file]));
 
+  // Each palette is its own stylesheet. A switch downloads the next one while
+  // inactive (`media="not all"`), then swaps it and `data-theme` in a single
+  // synchronous step, so no frame renders with the old palette gone and the new
+  // one still missing.
+  const THEME_PRELOAD_TIMEOUT = 2500;
+  const preloadedThemeLinks = new Map();
+
+  function themeStylesheetHref(theme) {
+    return `css/themes/${THEME_STYLESHEET_FILES[theme] || THEME_STYLESHEET_FILES.light}.css`;
+  }
+
+  function resolveThemeMode(mode) {
+    return mode === "auto" ? app.theme.resolve("auto") : mode;
+  }
+
+  function preloadThemeStylesheet(theme) {
+    const href = themeStylesheetHref(theme);
+    if (elements.themeStylesheet?.getAttribute("href") === href) return Promise.resolve();
+    const pending = preloadedThemeLinks.get(href);
+    if (pending) return pending.ready;
+
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.media = "not all";
+    let settle = () => {};
+    const ready = new Promise((resolve) => { settle = resolve; });
+    // A slow or stalled download must not hold the theme change hostage; the
+    // swap then proceeds and the palette applies as soon as it arrives.
+    const timer = window.setTimeout(settle, THEME_PRELOAD_TIMEOUT);
+    link.addEventListener("load", () => {
+      window.clearTimeout(timer);
+      settle();
+    }, { once: true });
+    link.addEventListener("error", () => {
+      window.clearTimeout(timer);
+      link.remove();
+      preloadedThemeLinks.delete(href);
+      settle();
+    }, { once: true });
+    link.href = href;
+    preloadedThemeLinks.set(href, { link, ready });
+    document.head.append(link);
+    return ready;
+  }
+
+  function preloadThemeMode(mode) {
+    if (THEMES.includes(mode)) preloadThemeStylesheet(resolveThemeMode(mode));
+  }
+
+  async function whenThemeStylesheetReady() {
+    let target;
+    do {
+      target = resolveThemeMode(ui.theme);
+      await preloadThemeStylesheet(target);
+    } while (target !== resolveThemeMode(ui.theme));
+  }
+
+  async function applyThemeWhenReady() {
+    await whenThemeStylesheetReady();
+    syncThemeUI();
+  }
+
   function syncGlassUI() {
     app.theme.glass.apply(ui.glass);
     if (app.theme.backgroundStyle) {
@@ -222,7 +284,7 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
 
   function refreshAutoTheme() {
     if (ui.theme === "auto" && document.documentElement.dataset.theme !== resolveAutoTheme()) {
-      syncThemeUI();
+      applyThemeWhenReady();
     }
   }
 
@@ -354,6 +416,15 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
     openThemePicker();
   }
 
+  function handleThemePickerMenuPreload(event) {
+    const option = event.target instanceof Element ? event.target.closest("[data-theme-option]") : null;
+    if (option && elements.themePickerMenu.contains(option)) preloadThemeMode(option.dataset.themeOption);
+  }
+
+  function handleThemeTogglePreload() {
+    preloadThemeMode(getNextTheme(ui.theme));
+  }
+
   function handleThemePickerMenuClick(event) {
     const option = event.target.closest("[data-theme-option]");
     if (option && elements.themePickerMenu.contains(option)) {
@@ -400,10 +471,21 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
   function syncThemeUI() {
     const mode = ui.theme;
     const theme = mode === "auto" ? resolveAutoTheme() : mode;
-    const themeFile = THEME_STYLESHEET_FILES[theme] || THEME_STYLESHEET_FILES.light;
-    const themeHref = `css/themes/${themeFile}.css`;
-    if (elements.themeStylesheet?.getAttribute("href") !== themeHref) {
-      elements.themeStylesheet?.setAttribute("href", themeHref);
+    const themeHref = themeStylesheetHref(theme);
+    const activeStylesheet = elements.themeStylesheet;
+    if (activeStylesheet && activeStylesheet.getAttribute("href") !== themeHref) {
+      const preloaded = preloadedThemeLinks.get(themeHref);
+      if (preloaded) {
+        // Already downloaded: swap the live link in the same task.
+        preloadedThemeLinks.delete(themeHref);
+        const nextStylesheet = preloaded.link;
+        nextStylesheet.id = activeStylesheet.id;
+        activeStylesheet.remove();
+        nextStylesheet.removeAttribute("media");
+        elements.themeStylesheet = nextStylesheet;
+      } else {
+        activeStylesheet.setAttribute("href", themeHref);
+      }
     }
     if (elements.themeStylesheet) elements.themeStylesheet.dataset.themeStylesheet = theme;
     document.documentElement.dataset.theme = theme;
@@ -440,8 +522,10 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
   function setTheme(theme, { animate = true, persist = true } = {}) {
     if (!THEMES.includes(theme) || theme === ui.theme) return;
     ui.theme = theme;
-    const applyTheme = () => {
-      syncThemeUI();
+    // The View Transition keeps showing the previous frame until this promise
+    // settles, so the new palette is already loaded when the crossfade starts.
+    const applyTheme = async () => {
+      await applyThemeWhenReady();
       if (ui.topbarActionsPinned) syncPinnedTopbarControlMetrics();
       if (!persist) return;
       try {
@@ -1010,6 +1094,8 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
     setThemePickerValue,
     handleThemePickerTriggerKeydown,
     handleThemePickerMenuClick,
+    handleThemePickerMenuPreload,
+    handleThemeTogglePreload,
     handleThemePickerMenuKeydown,
     handleThemePickerDocumentPointerdown,
     syncThemeUI,

@@ -27,6 +27,11 @@
             ? Math.min(10, Math.max(2, parsedPreviewLines))
             : 3;
           document.documentElement.style.setProperty("--note-card-preview-lines", String(previewLines));
+          // Lets the loading skeleton match the saved library layout before scripts run.
+          const storedViewMode = window.localStorage.getItem("nook:notes-view-mode");
+          document.documentElement.dataset.viewMode = storedViewMode === "grid" || storedViewMode === "compact" || storedViewMode === "focus"
+            ? (storedViewMode === "focus" ? "compact" : storedViewMode)
+            : "comfortable";
         } catch { /* Use defaults when preference storage is unavailable. */ }
       })();
     </script>
@@ -36,6 +41,7 @@
     <link rel="stylesheet" href="css/workspace-resize.css" />
     <link rel="stylesheet" href="css/split-resize.css" />
     <link rel="stylesheet" href="css/note-card-actions.css" />
+    <link rel="stylesheet" href="css/skeleton.css" />
     <link rel="stylesheet" href="css/appearance.css" />
   </head>
   <body>
@@ -106,7 +112,7 @@
           <div class="sidebar__body-inner">
             <div id="backup-health" class="storage-status backup-health" data-state="never" aria-live="polite" aria-label="Notes are stored only in this browser. No backup download has been requested yet." title="Notes are stored only in this browser. No backup download has been requested yet.">
               <span id="backup-health-dot" class="status-dot status-dot--backup-never" aria-hidden="true"></span>
-              <span id="backup-health-message">Local · No backup yet</span>
+              <span id="backup-health-message" class="backup-health__message">Local · No backup yet</span>
             </div>
 
             <section class="space-navigation" aria-labelledby="space-navigation-heading">
@@ -183,7 +189,14 @@
                     </span>
                     <span id="updated-today-filter-count" class="filter-count">0</span>
                   </button>
-                  <div id="type-filter-list" class="type-filter-list"></div>
+                  <div id="type-filter-list" class="type-filter-list">
+                    <!-- Replaced by the first library render. -->
+                    <div class="sidebar-skeleton" aria-hidden="true">
+                      <span class="sidebar-skeleton-row"><span class="skeleton skeleton--dot"></span><span class="skeleton skeleton--label"></span></span>
+                      <span class="sidebar-skeleton-row"><span class="skeleton skeleton--dot"></span><span class="skeleton skeleton--label"></span></span>
+                      <span class="sidebar-skeleton-row"><span class="skeleton skeleton--dot"></span><span class="skeleton skeleton--label"></span></span>
+                    </div>
+                  </div>
                 </nav>
               </section>
 
@@ -193,7 +206,12 @@
                   <span id="tag-filter-count" class="filter-count"></span>
                 </div>
                 <p class="filter-help">Match all selected tags</p>
-                <div id="tag-filter-list" class="tag-filter-list"></div>
+                <div id="tag-filter-list" class="tag-filter-list">
+                  <span class="skeleton skeleton--tag" aria-hidden="true"></span>
+                  <span class="skeleton skeleton--tag skeleton--tag-wide" aria-hidden="true"></span>
+                  <span class="skeleton skeleton--tag" aria-hidden="true"></span>
+                  <span class="skeleton skeleton--tag skeleton--tag-wide" aria-hidden="true"></span>
+                </div>
                 <button
                   id="tag-filter-toggle"
                   class="text-button tag-filter-toggle is-hidden"
@@ -528,7 +546,53 @@
             <button id="recovery-indicator" class="text-button is-hidden" type="button" data-open-recovery>Recover drafts</button>
           </div>
 
-          <div id="notes-list" class="notes-list" tabindex="-1" aria-busy="true"></div>
+          <div id="notes-list" class="notes-list" tabindex="-1" aria-busy="true">
+          <!-- Placeholder shown until the first library snapshot replaces it. -->
+          <div class="notes-skeleton" aria-hidden="true">
+            <div class="note-skeleton">
+              <span class="skeleton skeleton--badge"></span>
+              <span class="skeleton skeleton--title"></span>
+              <span class="skeleton skeleton--line"></span>
+              <span class="skeleton skeleton--line skeleton--line-short"></span>
+              <span class="note-skeleton__footer"><span class="skeleton skeleton--chip"></span><span class="skeleton skeleton--chip"></span></span>
+            </div>
+            <div class="note-skeleton">
+              <span class="skeleton skeleton--badge"></span>
+              <span class="skeleton skeleton--title"></span>
+              <span class="skeleton skeleton--line"></span>
+              <span class="skeleton skeleton--line skeleton--line-short"></span>
+              <span class="note-skeleton__footer"><span class="skeleton skeleton--chip"></span><span class="skeleton skeleton--chip"></span></span>
+            </div>
+            <div class="note-skeleton">
+              <span class="skeleton skeleton--badge"></span>
+              <span class="skeleton skeleton--title"></span>
+              <span class="skeleton skeleton--line"></span>
+              <span class="skeleton skeleton--line skeleton--line-short"></span>
+              <span class="note-skeleton__footer"><span class="skeleton skeleton--chip"></span><span class="skeleton skeleton--chip"></span></span>
+            </div>
+            <div class="note-skeleton">
+              <span class="skeleton skeleton--badge"></span>
+              <span class="skeleton skeleton--title"></span>
+              <span class="skeleton skeleton--line"></span>
+              <span class="skeleton skeleton--line skeleton--line-short"></span>
+              <span class="note-skeleton__footer"><span class="skeleton skeleton--chip"></span><span class="skeleton skeleton--chip"></span></span>
+            </div>
+            <div class="note-skeleton">
+              <span class="skeleton skeleton--badge"></span>
+              <span class="skeleton skeleton--title"></span>
+              <span class="skeleton skeleton--line"></span>
+              <span class="skeleton skeleton--line skeleton--line-short"></span>
+              <span class="note-skeleton__footer"><span class="skeleton skeleton--chip"></span><span class="skeleton skeleton--chip"></span></span>
+            </div>
+            <div class="note-skeleton">
+              <span class="skeleton skeleton--badge"></span>
+              <span class="skeleton skeleton--title"></span>
+              <span class="skeleton skeleton--line"></span>
+              <span class="skeleton skeleton--line skeleton--line-short"></span>
+              <span class="note-skeleton__footer"><span class="skeleton skeleton--chip"></span><span class="skeleton skeleton--chip"></span></span>
+            </div>
+          </div>
+        </div>
           <footer class="notes-panel__footer">
             <span id="notes-range" class="notes-panel__range" role="status" aria-live="polite" aria-atomic="true"></span>
             <nav id="pagination" class="pagination is-hidden" aria-label="Notes pagination"></nav>
