@@ -301,11 +301,20 @@ html[data-theme="eink"] {
         -webkit-backdrop-filter: var(--glass-frost);
       }
 
+      /* Pinned pills float over scrolling cards, so both share one denser film.
+       * Theme rules also blur the toolbar itself, which makes it a backdrop root
+       * and leaves the pill pair with different frosting; the film alone blurs. */
+      html[data-glass="true"] :is(.toolbar, .topbar-actions).is-pinned::before {
+        background: var(--glass-sheen), color-mix(in srgb, var(--glass-detail-surface) 93%, transparent);
+      }
+
       html[data-glass="true"] :is(.toolbar, .topbar-actions).is-pinned {
         isolation: isolate;
         background: transparent;
         border-color: var(--glass-edge-low);
         box-shadow: var(--glass-rim), var(--glass-elevation-raised);
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
       }
 
       html[data-glass="true"] .topbar :is(.search-field input, .sort-field__trigger, .topbar-preferences) {
