@@ -305,12 +305,14 @@ html[data-theme="eink"] {
        * Theme rules also blur the toolbar itself, which makes it a backdrop root
        * and leaves the pill pair with different frosting; the film alone blurs. */
       html[data-glass="true"] :is(.toolbar, .topbar-actions).is-pinned::before {
-        background: var(--glass-sheen), color-mix(in srgb, var(--glass-detail-surface) 93%, transparent);
+        background: var(--glass-sheen);
       }
 
+      /* The tint sits on the pill itself, not only on the film: if a browser skips
+       * the film's backdrop blur, cards scrolling underneath must still be hidden. */
       html[data-glass="true"] :is(.toolbar, .topbar-actions).is-pinned {
         isolation: isolate;
-        background: transparent;
+        background: color-mix(in srgb, var(--glass-detail-surface) 95%, transparent);
         border-color: var(--glass-edge-low);
         box-shadow: var(--glass-rim), var(--glass-elevation-raised);
         backdrop-filter: none;
