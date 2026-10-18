@@ -319,7 +319,7 @@
       }
     }
 
-    function renderSecondarySplitPreview() {
+    function renderSecondarySplitPreview({ synchronize = true } = {}) {
       if (ui.secondaryNoteMode !== "split" || !elements.secondarySplitPreview || !elements.secondaryNoteContentEditor) return;
       lockNoteEditorScrollLeader(elements.secondaryNoteContentEditor);
       globalThis.NookMarkdown.renderInto(
@@ -329,7 +329,7 @@
         { sourceMap: true },
       );
       ui.secondaryScrollMap = null;
-      scheduleNoteEditorScrollMap(elements.secondaryNoteContentEditor);
+      scheduleNoteEditorScrollMap(elements.secondaryNoteContentEditor, { synchronize });
     }
 
     function scheduleSecondarySplitPreview() {
@@ -339,7 +339,7 @@
       window.cancelAnimationFrame(secondarySplitPreviewFrame);
       secondarySplitPreviewFrame = window.requestAnimationFrame(() => {
         secondarySplitPreviewFrame = 0;
-        renderSecondarySplitPreview();
+        renderSecondarySplitPreview({ synchronize: false });
       });
     }
 

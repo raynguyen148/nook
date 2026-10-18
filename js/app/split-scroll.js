@@ -6,6 +6,7 @@
 
     const { api, elements, ui } = app;
     const NOTE_EDITOR_SCROLL_MAP_MAX_ANCHORS = 320;
+    const pendingMapSynchronizations = new WeakMap();
 
 
     function clampScrollPosition(position, maximum) {
@@ -392,17 +393,22 @@
       session.setSyncTarget(target, target.scrollTop);
     }
 
-    function scheduleNoteEditorScrollMap(source = elements.noteContent) {
+    function scheduleNoteEditorScrollMap(source = elements.noteContent, { synchronize = true } = {}) {
       const session = getSplitScrollSession(source);
       if (!session || !session.isSplit) return;
+      const alreadyScheduled = Boolean(session.getMapFrame());
+      const synchronizationPending = alreadyScheduled && pendingMapSynchronizations.get(session.source);
+      pendingMapSynchronizations.set(session.source, Boolean(synchronizationPending || synchronize));
       window.cancelAnimationFrame(session.getMapFrame());
       session.setMapFrame(window.requestAnimationFrame(() => {
         session.setMapFrame(0);
         const liveSession = getSplitScrollSession(source);
+        const shouldSynchronize = pendingMapSynchronizations.get(liveSession.source) !== false;
+        pendingMapSynchronizations.delete(liveSession.source);
         if (!liveSession.isSplit) return;
         const scrollLeader = liveSession.getScrollLeader();
         const leadingSource = scrollLeader || source;
-        if (buildSplitScrollMap(liveSession)) {
+        if (buildSplitScrollMap(liveSession) && shouldSynchronize) {
           const other = leadingSource === liveSession.source ? liveSession.preview : liveSession.source;
           syncNoteEditorScroll(leadingSource, other);
         }
@@ -418,7 +424,7 @@
       session.setSyncTarget(target, target.scrollTop);
     }
 
-    function renderNoteEditorPreview() {
+    function renderNoteEditorPreview({ synchronize = true } = {}) {
       if (ui.noteEditorMode !== "split") return;
       lockNoteEditorScrollLeader(elements.noteContent);
       globalThis.NookMarkdown.renderInto(
@@ -428,7 +434,7 @@
         { sourceMap: true },
       );
       ui.noteScrollMap = null;
-      scheduleNoteEditorScrollMap(elements.noteContent);
+      scheduleNoteEditorScrollMap(elements.noteContent, { synchronize });
     }
 
     function scheduleNoteEditorPreview() {
@@ -438,7 +444,10 @@
       window.cancelAnimationFrame(ui.noteEditorPreviewFrame);
       ui.noteEditorPreviewFrame = window.requestAnimationFrame(() => {
         ui.noteEditorPreviewFrame = 0;
-        renderNoteEditorPreview();
+        // Rebuild the map for the new Markdown geometry, but keep the preview
+        // visually still while typing. A real source scroll scheduled in the
+        // same frame still requests synchronization and takes precedence.
+        renderNoteEditorPreview({ synchronize: false });
       });
     }
 

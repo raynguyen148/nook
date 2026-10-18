@@ -16,6 +16,7 @@ function fixture() {
   const context = {
     elements: { noteContent: source, noteContentPreview: preview },
     ui: { noteEditorMode: "split", noteScrollMapFrame: 0 },
+    pendingMapSynchronizations: new WeakMap(),
     window: {
       requestAnimationFrame(callback) { frames.set(++frameId, callback); return frameId; },
       cancelAnimationFrame(id) { frames.delete(id); },
@@ -96,6 +97,26 @@ test("preview render measures once in a scheduled pass", () => {
   assert.equal(f.builds(), 0);
   f.flush();
   assert.equal(f.builds(), 1);
+});
+
+test("typing redraw rebuilds its map without nudging a stationary preview", () => {
+  const f = fixture();
+  f.preview.scrollTop = 600;
+  f.context.renderNoteEditorPreview({ synchronize: false });
+  f.flush();
+  assert.equal(f.builds(), 1);
+  assert.equal(f.preview.scrollTop, 600);
+  assert.equal(f.context.ui.noteScrollLeader, null);
+});
+
+test("a real source scroll takes precedence over a typing redraw in the same frame", () => {
+  const f = fixture();
+  f.preview.scrollTop = 600;
+  f.context.renderNoteEditorPreview({ synchronize: false });
+  f.context.scheduleNoteEditorScrollMap(f.source);
+  f.flush();
+  assert.equal(f.builds(), 1);
+  assert.equal(f.preview.scrollTop, 200);
 });
 
 test("queued measurement does not run after leaving split mode", () => {
