@@ -923,6 +923,28 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
     elements.startupErrorMessage.textContent = `${message} Your existing browser data was not changed.`;
   }
 
+  // Measured from navigation start, so the splash stays up at least ~1s after first paint.
+  const LAUNCH_SPLASH_MIN_MS = 1200;
+
+  function dismissLaunchSplash() {
+    const splash = document.getElementById("launch-splash");
+    if (!splash) return;
+    const finish = () => {
+      splash.remove();
+      document.documentElement.classList.remove("has-launch-splash");
+    };
+    const leave = () => {
+      if (api.prefersReducedMotion()) {
+        finish();
+        return;
+      }
+      splash.classList.add("is-leaving");
+      splash.addEventListener("transitionend", finish, { once: true });
+      window.setTimeout(finish, 600);
+    };
+    window.setTimeout(leave, Math.max(0, LAUNCH_SPLASH_MIN_MS - performance.now()));
+  }
+
   async function bootstrap() {
     if (!storage) {
       showStartupError(new Error("The local storage module could not be loaded."));
@@ -961,9 +983,11 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
         elements.notesList.animate([{ opacity: 0 }, { opacity: 1 }], { duration: MOTION.short, easing: MOTION.easeOut });
       }
       scheduleTopbarActionsPinning();
+      dismissLaunchSplash();
       if (result.notice) showToast(result.notice, "error");
       await offerStoredNoteDraftRecovery();
     } catch (error) {
+      dismissLaunchSplash();
       showStartupError(error);
     }
   }

@@ -221,3 +221,57 @@ html[data-view-mode="compact"] .note-skeleton:nth-child(n + 9) { display: none; 
     opacity: 0.35;
   }
 }
+
+/* Launch splash. index.html turns it on for installed and phone-sized launches;
+ * events.js holds it for a minimum time, then fades it out. It stays white in
+ * every theme so launch looks the same regardless of the saved palette. */
+.launch-splash {
+  display: none;
+}
+
+html.has-launch-splash .launch-splash {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483000;
+  display: grid;
+  place-items: center;
+  background: #ffffff;
+  opacity: 1;
+  transition: opacity 320ms ease-out;
+}
+
+html.has-launch-splash .launch-splash.is-leaving {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.launch-splash__logo {
+  display: block;
+  width: 5rem;
+  height: 5rem;
+  filter: drop-shadow(0 6px 14px rgb(102 50 6 / 22%));
+  animation: nook-splash-logo-in 420ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+@keyframes nook-splash-logo-in {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.has-launch-splash .launch-splash {
+    transition: none;
+  }
+
+  .launch-splash__logo {
+    animation: none;
+  }
+}
+
+@media (forced-colors: active) {
+  html.has-launch-splash .launch-splash {
+    background: Canvas;
+  }
+}

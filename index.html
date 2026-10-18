@@ -33,6 +33,16 @@
             ? (storedViewMode === "focus" ? "compact" : storedViewMode)
             : "comfortable";
         } catch { /* Use defaults when preference storage is unavailable. */ }
+        try {
+          // Installed and phone-sized launches get one short in-app splash per session,
+          // since the system splash disappears at first paint. The timer is a failsafe.
+          const standalone = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
+          if ((standalone || window.matchMedia("(max-width: 820px)").matches) && !window.sessionStorage.getItem("nook:launch-splash")) {
+            window.sessionStorage.setItem("nook:launch-splash", "1");
+            document.documentElement.classList.add("has-launch-splash");
+            window.setTimeout(() => document.documentElement.classList.remove("has-launch-splash"), 8000);
+          }
+        } catch { /* Skip the splash when session storage is unavailable. */ }
       })();
     </script>
     <link rel="stylesheet" href="css/mobile.css" />
@@ -45,6 +55,9 @@
     <link rel="stylesheet" href="css/appearance.css" />
   </head>
   <body>
+    <div id="launch-splash" class="launch-splash" aria-hidden="true">
+      <img class="launch-splash__logo" src="favicon.svg" alt="" width="80" height="80" />
+    </div>
     <main class="app-shell" aria-label="Nook" aria-busy="true" inert>
       <aside class="sidebar" aria-label="Note navigation">
         <div id="sidebar-scroll" class="sidebar__scroll">
