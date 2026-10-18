@@ -777,9 +777,9 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
       }
 
       if (isModeKey && matchesModifierFree && pickerPane) {
-        if (!activeModalDialog() && !window.getSelection()?.toString() && formattingKey !== "3") {
+        if (!activeModalDialog() && !window.getSelection()?.toString()) {
           event.preventDefault();
-          api.setPaneNotePickerLayout(pickerPane, formattingKey === "1" ? "focus" : "comfortable");
+          api.setPaneNotePickerLayout(pickerPane, { 1: "compact", 2: "focus", 3: "comfortable" }[formattingKey]);
         }
         return;
       }

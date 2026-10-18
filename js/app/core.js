@@ -300,7 +300,8 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
 
   function readSecondaryViewMode() {
     try {
-      return window.localStorage.getItem("nook:secondary-view-mode") === "comfortable" ? "comfortable" : "focus";
+      const mode = window.localStorage.getItem("nook:secondary-view-mode");
+      return ["focus", "comfortable", "compact"].includes(mode) ? mode : "focus";
     } catch {
       return "focus";
     }

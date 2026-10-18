@@ -172,6 +172,10 @@ Split column resizing is available above the mobile breakpoint (820px).
 Use **Switch** in either pane to browse the same searchable card picker
 inside that pane. Pinned notes always appear first; the selected sort applies
 within the pinned and unpinned groups, including search results.
+Both pickers offer **Compact**, **Focus**, and **Comfortable** layouts (keys
+`1` / `2` / `3` outside text fields). Compact shares the library's note-row
+styling and mobile card presentation. Layout state is
+independent for each pane; the Side note layout is also remembered after reload.
 The other pane stays open. Opening the picker pauses that
 pane's pending autosave without saving or replacing its draft. **Back to note**
 or Escape restores the same note, mode, and scroll position. Choosing another

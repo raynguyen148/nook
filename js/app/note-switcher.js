@@ -11,13 +11,13 @@
         surface: elements.noteDialog, reader: elements.noteForm, view: elements.primaryPickerView,
         trigger: elements.primarySwitchNote, back: elements.primaryPickerBack,
         search: elements.primaryNoteSearch, clear: elements.primaryClearSearch, sort: elements.primarySort,
-        focus: elements.primaryFocusView, comfortable: elements.primaryComfortableView, list: elements.primaryNotesList,
+        focus: elements.primaryFocusView, comfortable: elements.primaryComfortableView, compact: elements.primaryCompactView, list: elements.primaryNotesList,
       },
       secondary: {
         surface: elements.secondarySurface, reader: elements.secondaryReaderView, view: elements.secondaryPickerView,
         trigger: elements.secondaryBackToPicker, back: elements.secondaryPickerBack,
         search: elements.secondaryNoteSearch, clear: elements.secondaryClearSearch, sort: elements.secondarySort,
-        focus: elements.secondaryFocusView, comfortable: elements.secondaryComfortableView, list: elements.secondaryNotesList,
+        focus: elements.secondaryFocusView, comfortable: elements.secondaryComfortableView, compact: elements.secondaryCompactView, list: elements.secondaryNotesList,
       },
     };
     Object.values(pickers).forEach((picker) => Object.assign(picker, {
@@ -49,7 +49,7 @@
       picker.busy = busy;
       picker.list.inert = busy;
       picker.list.setAttribute("aria-busy", String(busy));
-      [picker.search, picker.clear, picker.sort, picker.focus, picker.comfortable].forEach((control) => {
+      [picker.search, picker.clear, picker.sort, picker.focus, picker.comfortable, picker.compact].forEach((control) => {
         control.disabled = busy;
       });
       const sortTrigger = picker.sort.closest(".sort-field")?.querySelector(".sort-field__trigger");
@@ -60,14 +60,15 @@
       const picker = pickers[pane];
       const { viewMode } = ui.notePickers[pane];
       picker.list.classList.toggle("secondary-notes-list--comfortable", viewMode === "comfortable");
-      [["focus", picker.focus], ["comfortable", picker.comfortable]].forEach(([mode, button]) => {
+      picker.list.classList.toggle("notes-list--compact", viewMode === "compact");
+      [["focus", picker.focus], ["comfortable", picker.comfortable], ["compact", picker.compact]].forEach(([mode, button]) => {
         button.classList.toggle("is-active", mode === viewMode);
         button.setAttribute("aria-pressed", String(mode === viewMode));
       });
     }
 
     function setPaneNotePickerLayout(pane, mode) {
-      if (!["focus", "comfortable"].includes(mode) || pickers[pane].busy) return;
+      if (!["focus", "comfortable", "compact"].includes(mode) || pickers[pane].busy) return;
       ui.notePickers[pane].viewMode = mode;
       syncPaneNotePickerLayout(pane);
       if (pane === "secondary") {
@@ -240,6 +241,7 @@
         picker.sort.addEventListener("change", () => { state.sort = picker.sort.value; renderFromStart(); });
         picker.focus.addEventListener("click", () => setPaneNotePickerLayout(pane, "focus"));
         picker.comfortable.addEventListener("click", () => setPaneNotePickerLayout(pane, "comfortable"));
+        picker.compact.addEventListener("click", () => setPaneNotePickerLayout(pane, "compact"));
         picker.list.addEventListener("scroll", () => { if (state.open) state.scrollTop = picker.list.scrollTop; });
       });
       elements.primaryPickerLibrary.addEventListener("click", () => api.requestNoteEditorClose());

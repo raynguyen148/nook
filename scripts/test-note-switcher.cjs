@@ -33,6 +33,7 @@ async function main() {
     async function setup(options = {}) {
       const context = await browser.newContext({ viewport: { width: 1440, height: 900 }, reducedMotion: "reduce", ...options });
       await context.addInitScript(() => {
+        localStorage.setItem("nook:notes-view-mode", "compact");
         let storage;
         Object.defineProperty(globalThis, "PersonalNotesStorage", { configurable: true,
           get: () => storage,
@@ -92,6 +93,7 @@ async function main() {
       assert.equal(await page.locator(s.editor).inputValue(), `Draft in ${pane}`);
       assert.equal(await page.locator(`[${s.modes}="edit"]`).getAttribute("aria-pressed"), "true");
       await page.locator(s.trigger).click();
+      await page.locator(`#${pane}-compact-view-btn`).click();
       await page.locator(s.list).getByRole("button", { name: "Open note: Gamma", exact: true }).click();
       await page.waitForFunction(({ selector }) => document.querySelector(selector)?.textContent === "Gamma", { selector: s.title });
       assert.equal((await page.evaluate((id) => PersonalNotesStorage.getNote(id), old.id)).content, `Draft in ${pane}`);
@@ -306,7 +308,7 @@ async function main() {
     passed.push("Picker card actions preserve both panes, including a remembered but unopened side note");
     await pickerActions.context.close();
 
-    async function assertFits(page, selector) {
+    async function assertFits(page, selector, { checkScroll = true } = {}) {
       const bounds = await page.locator(selector).evaluate((element) => {
         const box = element.getBoundingClientRect();
         return { left: box.left, right: box.right, top: box.top, bottom: box.bottom, width: box.width, height: box.height,
@@ -314,16 +316,71 @@ async function main() {
       });
       assert.ok(bounds.width > 0 && bounds.height > 0 && bounds.left >= -1 && bounds.right <= bounds.viewportWidth + 1,
         `${selector} exceeds viewport: ${JSON.stringify(bounds)}`);
-      assert.ok(bounds.scrollWidth <= bounds.clientWidth + 1, `${selector} has horizontal overflow`);
+      if (checkScroll) assert.ok(bounds.scrollWidth <= bounds.clientWidth + 1, `${selector} has horizontal overflow: ${JSON.stringify(bounds)}`);
     }
+
+    async function assertCompactMatchesLibrary(page, pane, label) {
+      await page.mouse.move(0, 0);
+      await page.locator(`#${pane}-note-search`).focus();
+      await page.waitForTimeout(160);
+      const snapshots = await page.evaluate((pane) => {
+        const picker = document.querySelector(`#${pane}-notes-list .note-card`);
+        const title = picker.querySelector(".note-card__title").textContent;
+        const library = [...document.querySelectorAll("#notes-list .note-card")]
+          .find(card => card.querySelector(".note-card__title").textContent === title);
+        const properties = ["display", "flexDirection", "fontFamily", "fontSize", "fontWeight", "lineHeight",
+          "letterSpacing", "paddingTop", "paddingRight", "paddingBottom", "paddingLeft", "gap",
+          "color", "backgroundColor", "borderTopWidth", "borderTopColor", "borderRadius", "whiteSpace"];
+        const snapshot = card => Object.fromEntries(["", ".type-badge", ".note-card__title", ".note-card__preview",
+          ".note-card__tags", ".tag-chip", ".note-card__date", ".note-card__more", ".note-card__pin-toggle"]
+          .map(selector => {
+            let node = selector ? card.querySelector(selector) : card;
+            if (!node) return [selector || "card", null];
+            if (selector === ".tag-chip" && getComputedStyle(card.querySelector(".note-card__tags")).display === "none") {
+              return [selector, { display: "none" }];
+            }
+            // Tag fitting may hide a chip because the two lists have different
+            // available widths. Compare its styling without that fit state.
+            const probe = selector === ".tag-chip" ? node.cloneNode(true) : null;
+            if (probe) {
+              probe.hidden = false;
+              probe.classList.remove("is-hidden");
+              node.parentElement.append(probe);
+              node = probe;
+            }
+            const style = getComputedStyle(node);
+            if (style.display === "none") return [selector || "card", { display: "none" }];
+            const visual = Object.fromEntries(properties.map(property => [property, style[property]]));
+            // Wrapper ink is inherited but never painted; text descendants own
+            // their colors. Likewise, a zero-width border paints no color.
+            if (!selector || selector === ".note-card__tags") delete visual.color;
+            if (style.borderTopWidth === "0px") delete visual.borderTopColor;
+            probe?.remove();
+            return [selector || "card", visual];
+          }));
+        return { library: snapshot(library), picker: snapshot(picker) };
+      }, pane);
+      assert.deepEqual(snapshots.picker, snapshots.library, `${label}: Compact must share the library's visual styles`);
+    }
+
     const matrix = await setup();
+    await matrix.page.evaluate(async () => {
+      const type = await PersonalNotesStorage.addType({ name: "Long project category", color: "rose" });
+      const tags = await Promise.all(["Planning", "A long topic tag"].map(name => PersonalNotesStorage.addTag({ name })));
+      const note = await PersonalNotesStorage.saveNote({
+        title: "A long project note title — meeting decisions, follow-ups, and implementation details".repeat(2).slice(0, 160),
+        content: "Long preview content to verify that compact rows truncate without hiding their controls. ".repeat(8),
+        typeId: type.id, tagIds: tags.map(tag => tag.id),
+      });
+      await PersonalNotesStorage.setNotePinned(note.id, true);
+    });
     for (const theme of ["light", "coffee", "forest", "midnight", "dark", "retro", "eink"]) {
       await matrix.page.evaluate((value) => localStorage.setItem("nook:theme", value), theme);
       await matrix.page.reload(); await ready(matrix.page);
       await matrix.page.getByRole("button", { name: "Open note: Alpha", exact: true }).click();
       await matrix.page.locator("#toggle-dual-pane-btn").click();
       await matrix.page.locator("#secondary-notes-list").getByRole("button", { name: "Open note: Beta", exact: true }).click();
-      for (const width of [960, 1180, 1440]) {
+      for (const width of [960, 1180, 1440, 1920]) {
         await matrix.page.setViewportSize({ width, height: 900 });
         await assertFits(matrix.page, "#note-form .note-navigation");
         const navigation = await matrix.page.locator("#note-form .note-navigation").evaluate((group) => {
@@ -342,10 +399,48 @@ async function main() {
           const s = selectors[pane];
           await assertFits(matrix.page, s.trigger);
           await matrix.page.locator(s.trigger).click();
+          assert.deepEqual(await matrix.page.locator(`${s.view} .view-mode-button`).evaluateAll(buttons =>
+            buttons.map(button => button.id.split("-")[1])), ["compact", "focus", "comfortable"]);
           await assertFits(matrix.page, s.view);
           await assertFits(matrix.page, `#${pane}-note-search`);
-          await matrix.page.locator(`#${pane}-comfortable-view-btn`).click();
-          await assertFits(matrix.page, s.list);
+          for (const layout of ["focus", "comfortable", "compact"]) {
+            await matrix.page.locator(`#${pane}-${layout}-view-btn`).click();
+            assert.equal(await matrix.page.locator(`#${pane}-${layout}-view-btn`).getAttribute("aria-pressed"), "true");
+            assert.equal(await matrix.page.locator(`${s.view} .view-mode-button[aria-pressed="true"]`).count(), 1);
+            await assertFits(matrix.page, s.list);
+            await assertFits(matrix.page, `${s.list} .note-card:first-child`);
+            await assertFits(matrix.page, `${s.list} .note-card:last-child`);
+            const row = matrix.page.locator(`${s.list} .note-card:first-child`);
+            const height = await row.evaluate((el) => el.getBoundingClientRect().height);
+            if (layout === "comfortable") {
+              assert.ok(await matrix.page.locator(s.list).evaluate(el =>
+                el.closest(".secondary-picker-body").clientWidth < 640 ||
+                getComputedStyle(el).gridTemplateColumns.split(" ").length === 2), "Comfortable keeps two columns when the pane fits");
+            }
+            if (layout === "focus") matrix.focusHeight = height;
+            if (layout === "compact") {
+              await assertCompactMatchesLibrary(matrix.page, pane, `${theme}/${width}/${pane}`);
+              assert.ok(height < matrix.focusHeight * 0.65, `${theme}/${pane}: compact must condense the cards`);
+              assert.ok(await row.locator(".note-card__title").evaluate((el) => el.clientWidth > 20), "Keep a readable title target");
+              const timestamp = await row.locator(".note-card__date").evaluate((el) => ({
+                scroll: el.scrollWidth, client: el.clientWidth, max: getComputedStyle(el).maxWidth,
+                width: getComputedStyle(el).width, text: el.textContent,
+              }));
+              assert.ok(timestamp.scroll <= timestamp.client + 1, `${theme}/${width}/${pane}: timestamp clipped ${JSON.stringify(timestamp)}`);
+              await row.locator(".note-card__more").click();
+              assert.equal(await row.locator(".note-card__actions").evaluate((el) => el.matches(":popover-open")), true);
+              await matrix.page.keyboard.press("Escape");
+            }
+          }
+          await matrix.page.locator(`#${pane}-focus-view-btn`).focus();
+          await matrix.page.keyboard.press("1");
+          assert.equal(await matrix.page.locator(`#${pane}-compact-view-btn`).getAttribute("aria-pressed"), "true");
+          await matrix.page.locator(`#${pane}-note-search`).fill("3");
+          assert.equal(await matrix.page.locator(`#${pane}-note-search`).inputValue(), "3");
+          await matrix.page.locator(`#${pane}-note-search`).fill("");
+          if (process.env.NOOK_SCREENSHOT_DIR && theme === "dark" && width === 1440) {
+            await matrix.page.screenshot({ path: path.join(process.env.NOOK_SCREENSHOT_DIR, `compact-${pane}.png`) });
+          }
           await matrix.page.locator(s.back).click();
         }
       }
@@ -363,6 +458,14 @@ async function main() {
       await mobile.page.locator("#primary-switch-note-btn").click();
       await assertFits(mobile.page, "#primary-picker-view");
       await assertFits(mobile.page, "#primary-note-search");
+      await mobile.page.locator("#primary-compact-view-btn").click();
+      assert.equal(await mobile.page.locator("#primary-compact-view-btn").getAttribute("aria-pressed"), "true");
+      await assertCompactMatchesLibrary(mobile.page, "primary", `Mobile ${width}px`);
+      await assertFits(mobile.page, "#primary-notes-list .note-card:first-child");
+      // Tooltip boxes intentionally extend beyond the segmented control.
+      await assertFits(mobile.page, "#primary-picker-view .secondary-layout-control", { checkScroll: false });
+      const touchSize = await mobile.page.locator("#primary-notes-list .note-card__more").first().boundingBox();
+      assert.ok(touchSize.width >= 44 && touchSize.height >= 44);
       if (process.env.NOOK_SCREENSHOT_DIR && width === 375) {
         await mobile.page.screenshot({ path: path.join(process.env.NOOK_SCREENSHOT_DIR, "picker-mobile.png") });
       }
@@ -379,12 +482,38 @@ async function main() {
     }
 
     const { page, context } = await setup();
+    await page.locator("#secondary-back-to-picker-btn").click();
+    await page.locator("#secondary-compact-view-btn").click();
+    await page.locator("#primary-switch-note-btn").click();
+    assert.equal(await page.locator("#primary-focus-view-btn").getAttribute("aria-pressed"), "true");
+    await page.locator("#primary-compact-view-btn").click();
     if (process.env.NOOK_SCREENSHOT_DIR) {
       await fs.mkdir(process.env.NOOK_SCREENSHOT_DIR, { recursive: true });
       await page.screenshot({ path: path.join(process.env.NOOK_SCREENSHOT_DIR, "detail-desktop.png"), fullPage: true });
-      await page.locator("#primary-switch-note-btn").click();
       await page.screenshot({ path: path.join(process.env.NOOK_SCREENSHOT_DIR, "switch-primary.png"), fullPage: true });
     }
+    await page.reload(); await ready(page);
+    await page.getByRole("button", { name: "Open note: Alpha", exact: true }).click();
+    await page.locator("#toggle-dual-pane-btn").click();
+    assert.equal(await page.locator("#secondary-compact-view-btn").getAttribute("aria-pressed"), "true");
+    await page.locator("#close-secondary-pane-btn").click();
+    await page.locator("#note-secondary-surface").waitFor({ state: "hidden" });
+    await page.locator("#primary-switch-note-btn").click();
+    await page.locator("#primary-compact-view-btn").click();
+    const wideRow = page.locator("#primary-notes-list .note-card:first-child");
+    const wideGeometry = await wideRow.evaluate((el) => {
+      const title = el.querySelector(".note-card__title").getBoundingClientRect();
+      const preview = el.querySelector(".note-card__preview").getBoundingClientRect();
+      return { titleY: title.y + title.height / 2, previewY: preview.y + preview.height / 2,
+        overlaps: Math.max(title.top, preview.top) < Math.min(title.bottom, preview.bottom),
+        paneWidth: el.closest(".secondary-picker-body").clientWidth };
+    });
+    assert.ok(wideGeometry.paneWidth >= 760 && wideGeometry.overlaps,
+      `Wide Compact uses one horizontal row: ${JSON.stringify(wideGeometry)}`);
+    if (process.env.NOOK_SCREENSHOT_DIR) {
+      await page.screenshot({ path: path.join(process.env.NOOK_SCREENSHOT_DIR, "compact-wide.png") });
+    }
+    passed.push("Compact stays independent per pane; the Side note preference survives reload");
     await context.close();
     assert.deepEqual(errors, []);
     console.log(JSON.stringify({ passed, consoleErrors: errors }, null, 2));

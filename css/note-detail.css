@@ -1806,10 +1806,13 @@
   min-height: 0;
   overflow-y: auto;
   padding: 0.5rem 1rem 1rem;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
   grid-auto-rows: max-content;
   align-content: start;
+}
+
+.secondary-notes-list:not(.notes-list--compact) {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 0.65rem;
 }
 
@@ -1819,16 +1822,46 @@
 }
 
 .secondary-layout-control {
+  display: inline-flex;
   flex: none;
   margin: 0;
 }
 
-.secondary-notes-list .note-card__footer {
+@media (max-width: 820px), (pointer: coarse) {
+  .secondary-layout-control .view-mode-control__choices {
+    height: auto;
+  }
+
+  .secondary-layout-control .view-mode-button {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+
+.secondary-notes-list:not(.notes-list--compact) .note-card__footer {
   flex-wrap: wrap;
 }
 
 .secondary-notes-list .note-card__actions {
   margin-left: auto;
+}
+
+/* Row styling is shared with the library. Only the picker list's column
+ * count belongs here, since its pane can be narrow on a wide viewport. */
+@media (min-width: 1600px) {
+  .secondary-notes-list.notes-list--compact {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 820px) {
+  .secondary-notes-list.notes-list--compact {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.85rem;
+  }
 }
 
 .secondary-notes-empty,
@@ -1837,7 +1870,7 @@
 }
 
 @container (min-width: 640px) {
-  .secondary-notes-list--comfortable {
+  .secondary-notes-list.secondary-notes-list--comfortable {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
