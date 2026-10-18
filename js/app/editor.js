@@ -362,6 +362,8 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
     elements.noteId.value = note?.id || "";
     elements.noteTitle.value = note?.title || "";
     elements.noteContent.value = note?.content || "";
+    elements.noteContent.scrollTop = 0;
+    elements.noteContentPreview.scrollTop = 0;
     elements.noteContentEditor.style.removeProperty("height");
     elements.noteDialogTitle.textContent = note ? "Edit note" : "New note";
     elements.deleteNote.classList.toggle("is-hidden", !note);

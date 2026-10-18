@@ -237,7 +237,7 @@ html[data-theme="midnight"] .tag-filter-option {
 html[data-theme="midnight"] .tag-filter-option:hover {
   border-color: #466684;
   color: #e5efff;
-  background: #262626;
+  background: #1b304a;
 }
 
 html[data-theme="midnight"] .tag-filter-option .filter-count {
@@ -309,7 +309,7 @@ html[data-theme="midnight"] .button-secondary {
 html[data-theme="midnight"] .button-secondary:hover:not(:disabled) {
   border-color: #52718f;
   color: #ffffff;
-  background: #2d2d2d;
+  background: #203a55;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
@@ -361,7 +361,7 @@ html[data-theme="midnight"] .icon-button--danger:hover {
 
 html[data-theme="midnight"] .topbar-actions.is-pinned {
   border-color: #35506d;
-  background: rgba(24, 24, 24, 0.95);
+  background: rgba(15, 27, 45, 0.95);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
   backdrop-filter: blur(10px);
 }
@@ -389,7 +389,7 @@ html[data-theme="midnight"] .toolbar {
 
 html[data-theme="midnight"] .toolbar.is-pinned {
   border-color: #35506d;
-  background: rgba(37, 37, 38, 0.96);
+  background: rgba(20, 36, 58, 0.96);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
   backdrop-filter: blur(10px);
 }
@@ -927,12 +927,12 @@ html[data-theme="midnight"] .note-dialog .note-type-picker__trigger {
 
 html[data-theme="midnight"] .note-dialog .note-type-picker__trigger:hover {
   border-color: var(--detail-type-chip-color, #e5efff);
-  background-color: var(--detail-type-chip-background, #2d2d2d);
+  background-color: var(--detail-type-chip-background, #203a55);
 }
 
 html[data-theme="midnight"] .note-dialog .note-type-picker__trigger[aria-expanded="true"] {
   border-color: var(--primary-accent);
-  background-color: var(--detail-type-chip-background, #2d2d2d);
+  background-color: var(--detail-type-chip-background, #203a55);
 }
 
 
@@ -993,6 +993,7 @@ html[data-theme="midnight"] .detail-commandbar__info .note-save-status.is-error 
   border-color: rgba(239, 68, 68, 0.35);
 }
 
+html[data-theme="midnight"] .note-detail-surface .dialog-footer__tools .icon-button,
 html[data-theme="midnight"] .note-detail-surface .dialog-footer__preview-actions .icon-button,
 html[data-theme="midnight"] .note-detail-surface .note-delete-button,
 html[data-theme="midnight"] .note-detail-surface .note-save-shortcut__trigger,
@@ -1004,6 +1005,7 @@ html[data-theme="midnight"] .note-markdown-help__trigger {
   transition: color var(--interaction-duration) var(--motion-ease-out), background-color var(--interaction-duration) var(--motion-ease-out), border-color var(--interaction-duration) var(--motion-ease-out), transform var(--motion-duration-micro) var(--motion-ease-out);
 }
 
+html[data-theme="midnight"] .note-detail-surface .dialog-footer__tools .icon-button:hover:not(:disabled),
 html[data-theme="midnight"] .note-detail-surface .dialog-footer__preview-actions .icon-button:hover:not(:disabled),
 html[data-theme="midnight"] .note-detail-surface .note-save-shortcut__trigger:hover,
 html[data-theme="midnight"] .note-detail-surface .note-markdown-help__trigger:hover,
@@ -1011,7 +1013,7 @@ html[data-theme="midnight"] .note-save-shortcut__trigger:hover,
 html[data-theme="midnight"] .note-markdown-help__trigger:hover,
 html[data-theme="midnight"] .note-markdown-help__trigger:focus-visible {
   color: #e5efff;
-  background: #2d2d2d;
+  background: #203a55;
 }
 
 html[data-theme="midnight"] .note-detail-surface .note-delete-button:hover:not(:disabled) {
@@ -1063,7 +1065,7 @@ html[data-theme="midnight"] .quick-view-copy-button:hover:not(:disabled),
 html[data-theme="midnight"] .quick-view-export-button:hover:not(:disabled) {
   border-color: #557895;
   color: #ffffff;
-  background: #2d2d2d;
+  background: #203a55;
 }
 
 html[data-theme="midnight"] .quick-view-content a {
@@ -1103,7 +1105,7 @@ html[data-theme="midnight"] .note-content-preview pre {
 
 html[data-theme="midnight"] .quick-view-content .markdown-code-header,
 html[data-theme="midnight"] .note-content-preview .markdown-code-header {
-  border-bottom-color: #242424;
+  border-bottom-color: #1d3550;
   background: #112038;
 }
 
@@ -1124,7 +1126,7 @@ html[data-theme="midnight"] .quick-view-content .markdown-code-copy-btn:hover,
 html[data-theme="midnight"] .note-content-preview .markdown-code-copy-btn:hover {
   border-color: #557895;
   color: #ffffff;
-  background: #2d2d2d;
+  background: #203a55;
 }
 
 html[data-theme="midnight"] .quick-view-content .markdown-code-copy-btn.is-copied,

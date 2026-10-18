@@ -1088,9 +1088,9 @@ select:focus-visible {
 
 .tag-filter-option:has(input:checked),
 .tag-filter-option.is-active {
-  border-color: #c7d2fe;
-  color: #4338ca;
-  background: #eef2ff;
+  border-color: var(--selected-border);
+  color: var(--selected-text);
+  background: var(--selected-surface);
   font-weight: 600;
 }
 
@@ -1098,21 +1098,21 @@ select:focus-visible {
 
 .tag-filter-option:has(input:checked):hover,
 .tag-filter-option.is-active:hover {
-  border-color: #a5b4fc;
-  background: #e0e7ff;
+  border-color: var(--selected-border);
+  background: var(--selected-surface-hover, var(--selected-surface));
 }
 
 
 
 .tag-filter-option:has(input:checked) .filter-count,
 .tag-filter-option.is-active .filter-count {
-  color: #6366f1;
+  color: var(--selected-text);
 }
 
 
 
 .tag-filter-option:has(input:focus-visible) {
-  outline: 2px solid var(--primary-accent, #6366f1);
+  outline: 2px solid var(--focus-ring, var(--primary-accent, #6366f1));
   outline-offset: 2px;
 }
 

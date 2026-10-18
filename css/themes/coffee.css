@@ -204,6 +204,18 @@ html:not([data-theme]) .sidebar-filter.is-active .filter-count {
   color: var(--primary-accent-text);
 }
 
+html[data-theme="coffee"] .space-link--trash.is-active,
+html:not([data-theme]) .space-link--trash.is-active {
+  border-color: #e6b8b5;
+  color: #9c3832;
+  background: #fbf0ef;
+}
+
+html[data-theme="coffee"] .space-link--trash.is-active .filter-count,
+html:not([data-theme]) .space-link--trash.is-active .filter-count {
+  color: #9c3832;
+}
+
 /* Type filters keep their own quiet tint rather than inheriting the global
  * Coffee accent. This mirrors Midnight's type-aware active state while
  * preserving Coffee's warm, low-contrast paper palette. */

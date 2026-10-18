@@ -164,7 +164,10 @@ globalThis[Symbol.for("nook.app.modules")].register("mobile", (app) => {
 
   function showMobileSettingsHome() {
     elements.mobileSettingsBackup.textContent = elements.backupHealthMessage.textContent;
-    elements.mobileSettingsTheme.textContent = `Theme: ${ui.theme.charAt(0).toUpperCase()}${ui.theme.slice(1)}`;
+    const themeLabel = app.theme?.describe?.(ui.theme)?.label || `${ui.theme.charAt(0).toUpperCase()}${ui.theme.slice(1)}`;
+    elements.mobileSettingsTheme.textContent = ui.themeMode === "auto"
+      ? `Theme: Auto (${themeLabel})`
+      : `Theme: ${themeLabel}`;
     elements.mobileSettingsTypes.textContent = api.pluralize(library.types.length, "type");
     elements.mobileSettingsTags.textContent = api.pluralize(library.tags.length, "tag");
     elements.mobileSettingsTrashCount.textContent = `${library.notes.filter((note) => note.deletedAt).length} notes you can restore`;

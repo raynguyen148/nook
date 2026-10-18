@@ -338,6 +338,12 @@ globalThis[Symbol.for("nook.app.modules")].register("organize", (app) => {
       }
     });
     trigger.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && !menu.hidden) {
+        event.preventDefault();
+        event.stopPropagation();
+        closeColorPicker(pickerState);
+        return;
+      }
       if (["ArrowDown", "ArrowUp", " ", "Enter"].includes(event.key)) {
         event.preventDefault();
         if (menu.hidden) trigger.click();

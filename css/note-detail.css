@@ -48,10 +48,10 @@
   height: calc(100dvh - 2.5rem);
   min-height: 0;
   max-height: 100%;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-subtle);
   border-radius: 1rem;
   color: inherit;
-  background: #ffffff;
+  background: var(--surface-panel);
   box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05), 0 2px 6px -1px rgba(15, 23, 42, 0.03);
   isolation: isolate;
   overflow: hidden;
@@ -66,9 +66,9 @@
   gap: 0.75rem;
   min-height: 2.85rem;
   padding: 0.45rem 1rem;
-  border-bottom: 1px solid #e8ebf0;
+  border-bottom: 1px solid var(--border-subtle);
   border-radius: 1rem 1rem 0 0;
-  background: #ffffff;
+  background: var(--surface-panel);
 }
 
 
@@ -848,7 +848,7 @@
 
 .note-dialog .note-content-field.is-split .note-editor-pane--preview,
 .note-secondary-surface .note-content-field.is-split .note-editor-pane--preview {
-  border-left: 1px solid #e5e9ef;
+  border-left: 1px solid var(--border-subtle);
 }
 
 
@@ -860,7 +860,7 @@
   border: 0;
   border-radius: 0.85rem;
   padding: 0.95rem 1rem;
-  color: #1e293b;
+  color: var(--text-default);
   background: transparent;
   box-shadow: none;
 }
@@ -988,11 +988,11 @@
   align-items: center;
   justify-content: space-between;
   gap: 0.5rem;
-  border-top: 1px solid #e8ebf0;
+  border-top: 1px solid var(--border-subtle);
   border-radius: 0 0 1rem 1rem;
   padding: 0.35rem 1rem max(0.35rem, env(safe-area-inset-bottom));
   min-height: 2.35rem;
-  background: #ffffff;
+  background: var(--surface-panel);
 }
 
 
@@ -1051,11 +1051,11 @@
   left: 50%;
   width: max-content;
   max-width: min(16rem, calc(100vw - 1.5rem));
-  border: 1px solid #dfe3ea;
+  border: 1px solid var(--border-subtle);
   border-radius: var(--control-radius);
   padding: 0.54rem 0.72rem;
-  color: #556176;
-  background: #fff;
+  color: var(--text-default);
+  background: var(--surface-panel);
   box-shadow: 0 0.75rem 1.75rem rgb(36 46 66 / 12%), 0 0.15rem 0.45rem rgb(36 46 66 / 6%);
   font-size: 0.75rem;
   font-weight: 500;
@@ -1152,8 +1152,8 @@
 .note-detail-surface .note-save-shortcut__trigger:hover,
 .note-detail-surface .note-markdown-help__trigger:hover {
   border-color: transparent;
-  color: #0f172a;
-  background: #f1f5f9;
+  color: var(--text-strong);
+  background: var(--surface-muted);
 }
 
 
@@ -1161,8 +1161,8 @@
 .note-detail-surface .dialog-footer__tools .note-delete-button:hover:not(:disabled),
 .note-detail-surface .note-delete-button:hover:not(:disabled) {
   border-color: transparent;
-  color: #ef4444;
-  background: #fef2f2;
+  color: var(--danger-text);
+  background: var(--danger-surface);
 }
 
 
@@ -1260,7 +1260,7 @@
 
 .quick-view-document-header {
   padding-bottom: 1.65rem;
-  border-bottom: 1px solid #edf0f4;
+  border-bottom: 1px solid var(--border-subtle);
   transition: padding-bottom var(--motion-duration-short) var(--motion-ease-out);
 }
 
@@ -1289,11 +1289,11 @@
   flex: none;
   width: 1.55rem;
   height: 1.55rem;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-subtle);
   border-radius: 50%;
   padding: 0;
   color: var(--text-muted);
-  background: #f8fafc;
+  background: var(--surface-muted);
   opacity: 0;
   pointer-events: none;
   cursor: pointer;
@@ -1315,9 +1315,9 @@
 
 
 .quick-view-header-toggle:hover {
-  color: #0f172a;
-  background: #f1f5f9;
-  border-color: #cbd5e1;
+  color: var(--text-strong);
+  background: var(--selected-surface);
+  border-color: var(--border-strong);
 }
 
 
@@ -1390,7 +1390,7 @@
 
 .quick-view-document-header h1 {
   margin: 0 0 0.45rem;
-  color: #0f172a;
+  color: var(--text-strong);
   font-family: var(--font-display);
   font-size: clamp(1.25rem, 1.8vw, 1.45rem);
   font-weight: 650;
@@ -1444,7 +1444,7 @@
 
 .note-detail-surface .quick-view-content {
   min-height: 0;
-  color: #253249;
+  color: var(--text-default);
   font-size: 1.02rem;
   line-height: 1.78;
 }
@@ -1696,7 +1696,7 @@
   gap: 0.75rem;
   min-height: 2.85rem;
   padding: 0.45rem 1rem;
-  border-bottom: 1px solid #e8ebf0;
+  border-bottom: 1px solid var(--border-subtle);
   border-radius: 1rem 1rem 0 0;
   background: inherit;
   flex: none;
@@ -1933,7 +1933,7 @@
 .note-dialog .note-formatting-toolbar,
 #secondary-reader-view .note-formatting-toolbar {
   width: 100%;
-  border-bottom: 1px solid #e5e9ef;
+  border-bottom: 1px solid var(--border-subtle);
   gap: 0.22rem;
   min-height: 2.15rem;
   padding: 0.15rem 0.1rem;
@@ -1993,7 +1993,7 @@
 
 #secondary-reader-view #secondary-content-field.is-split .note-editor-pane--preview {
   display: grid;
-  border-left: 1px solid #e5e9ef;
+  border-left: 1px solid var(--border-subtle);
 }
 
 #secondary-reader-view #secondary-content-field:not(.is-split) .note-editor-pane--preview {

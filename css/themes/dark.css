@@ -993,6 +993,7 @@ html[data-theme="dark"] .detail-commandbar__info .note-save-status.is-error {
   border-color: rgba(239, 68, 68, 0.35);
 }
 
+html[data-theme="dark"] .note-detail-surface .dialog-footer__tools .icon-button,
 html[data-theme="dark"] .note-detail-surface .dialog-footer__preview-actions .icon-button,
 html[data-theme="dark"] .note-detail-surface .note-delete-button,
 html[data-theme="dark"] .note-detail-surface .note-save-shortcut__trigger,
@@ -1004,6 +1005,7 @@ html[data-theme="dark"] .note-markdown-help__trigger {
   transition: color var(--interaction-duration) var(--motion-ease-out), background-color var(--interaction-duration) var(--motion-ease-out), border-color var(--interaction-duration) var(--motion-ease-out), transform var(--motion-duration-micro) var(--motion-ease-out);
 }
 
+html[data-theme="dark"] .note-detail-surface .dialog-footer__tools .icon-button:hover:not(:disabled),
 html[data-theme="dark"] .note-detail-surface .dialog-footer__preview-actions .icon-button:hover:not(:disabled),
 html[data-theme="dark"] .note-detail-surface .note-save-shortcut__trigger:hover,
 html[data-theme="dark"] .note-detail-surface .note-markdown-help__trigger:hover,

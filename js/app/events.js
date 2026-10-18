@@ -303,7 +303,9 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
     elements.secondaryNoteFormattingButtons?.forEach((button) => {
       button.addEventListener("pointerdown", (event) => event.preventDefault());
       button.addEventListener("click", () => {
-        applyNoteFormatting(button.dataset.secondaryNoteFormatting, elements.secondaryNoteContentEditor);
+        if (!shared.secondaryEditorSession?.saving) {
+          applyNoteFormatting(button.dataset.secondaryNoteFormatting, elements.secondaryNoteContentEditor);
+        }
       });
     });
     elements.noteContentPreview.addEventListener("scroll", () => {
@@ -363,7 +365,9 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
     });
     elements.secondaryModeButtons?.forEach((button) => {
       button.addEventListener("click", () => {
-        setSecondaryNoteMode(button.dataset.secondaryEditorMode);
+        if (!shared.secondaryEditorSession?.saving) {
+          setSecondaryNoteMode(button.dataset.secondaryEditorMode);
+        }
       });
     });
     elements.secondaryNoteContentEditor?.addEventListener("input", onSecondaryNoteInput);
@@ -635,6 +639,30 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
         setTheme(getNextTheme(ui.theme));
         return;
       }
+      const target = event.target;
+      const editingText =
+        target instanceof HTMLInputElement ||
+        target instanceof HTMLTextAreaElement ||
+        target instanceof HTMLSelectElement ||
+        (target instanceof HTMLElement && target.isContentEditable);
+      if (
+        elements.organizeDialog.open &&
+        activeModalDialog() === elements.organizeDialog &&
+        event.key.toLowerCase() === "s" &&
+        !event.metaKey &&
+        !event.ctrlKey &&
+        !event.altKey &&
+        !event.shiftKey &&
+        !event.repeat &&
+        !event.defaultPrevented &&
+        !editingText &&
+        !openColorPickers.size &&
+        !elements.themePicker?.classList.contains("is-open")
+      ) {
+        event.preventDefault();
+        closeOrganize();
+        return;
+      }
       if (activeModalDialog()) return;
       const usesCommandKey = usesMacKeyboardShortcuts();
       const hasSaveModifier = usesCommandKey ? event.metaKey && !event.ctrlKey : event.ctrlKey && !event.metaKey;
@@ -723,12 +751,6 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
         return;
       }
 
-      const target = event.target;
-      const editingText =
-        target instanceof HTMLInputElement ||
-        target instanceof HTMLTextAreaElement ||
-        target instanceof HTMLSelectElement ||
-        (target instanceof HTMLElement && target.isContentEditable);
       const isModeKey = ["1", "2", "3"].includes(formattingKey);
       const selection = window.getSelection();
       const hasTextSelection = Boolean(selection && !selection.isCollapsed);
@@ -775,8 +797,10 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
 
         if (focusInSecondary) {
           event.preventDefault();
-          const mode = { 1: "edit", 2: "split", 3: "preview" }[formattingKey];
-          setSecondaryNoteMode(mode);
+          if (!shared.secondaryEditorSession?.saving) {
+            const mode = { 1: "edit", 2: "split", 3: "preview" }[formattingKey];
+            setSecondaryNoteMode(mode);
+          }
           return;
         }
 

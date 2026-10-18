@@ -1544,9 +1544,9 @@ dialog:not([open]),
   }
   html[data-theme="dark"] #note-dialog .note-save-status.is-saving,
   html[data-theme="midnight"] #note-dialog .note-save-status.is-saving {
-    color: #a5b4fc;
-    background: rgba(99, 102, 241, 0.14);
-    border-color: rgba(99, 102, 241, 0.28);
+    color: var(--selected-text);
+    background: var(--selected-surface);
+    border-color: var(--selected-border);
   }
   html[data-theme="dark"] #note-dialog .note-save-status.is-dirty,
   html[data-theme="midnight"] #note-dialog .note-save-status.is-dirty {
@@ -2113,7 +2113,7 @@ dialog:not([open]),
     width: 8px;
     height: 8px;
     border-radius: 999px;
-    background: #16a34a;
+    background: var(--backup-good-accent, #16a34a);
     flex: none;
   }
   .mobile-storage-summary p { margin: 0; font-size: 0.78125rem; line-height: 1.45; color: var(--text-muted); }

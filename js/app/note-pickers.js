@@ -127,6 +127,12 @@
       });
 
       trigger.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && !menu.hidden) {
+          event.preventDefault();
+          event.stopPropagation();
+          pickerInstance.close();
+          return;
+        }
         if (["ArrowDown", "ArrowUp", " ", "Enter"].includes(event.key)) {
           event.preventDefault();
           if (menu.hidden) trigger.click();
@@ -340,10 +346,16 @@
       renderTagSuggestions();
     }
 
+    function isSecondaryTagBusy() {
+      const session = shared.secondaryEditorSession;
+      return Boolean(session && (session.saving || ui.pendingSecondaryTagCreation?.session === session));
+    }
+
     function renderSecondarySelectedNoteTags() {
       if (!elements.secondarySelectedNoteTags) return;
       const focus = captureSelectedTagFocus(elements.secondarySelectedNoteTags);
       elements.secondarySelectedNoteTags.replaceChildren();
+      const disabled = isSecondaryTagBusy();
       const selectedTags = [...(ui.secondarySelectedNoteTagIds || [])].map(tagFor).filter(Boolean);
       selectedTags.forEach((tag) => {
         const chip = createElement("span", {
@@ -354,11 +366,13 @@
         const remove = createElement("button", {
           className: "selected-tag__remove",
           type: "button",
+          disabled,
           dataset: { tagId: tag.id },
           attributes: { "aria-label": `Remove tag ${tagLabel(tag)}` },
         });
         remove.append(createChipCloseIcon());
         remove.addEventListener("click", () => {
+          if (isSecondaryTagBusy()) return;
           ui.secondarySelectedNoteTagIds.delete(tag.id);
           renderSecondarySelectedNoteTags();
           renderSecondaryTagSuggestions();
@@ -376,6 +390,7 @@
         elements.secondaryTagSuggestions.replaceChildren();
         return;
       }
+      const disabled = isSecondaryTagBusy();
       const queryText = cleanTagInput(elements.secondaryTagInput.value);
       const query = queryText.toLocaleLowerCase();
       const available = library.tags
@@ -393,9 +408,12 @@
           className: "tag-suggestion",
           type: "button",
           text: tagLabel(tag),
+          disabled,
           attributes: { "aria-label": `Add tag ${tagLabel(tag)}` },
         });
-        button.addEventListener("click", () => selectSecondaryNoteTag(tag.id));
+        button.addEventListener("click", () => {
+          if (!isSecondaryTagBusy()) selectSecondaryNoteTag(tag.id);
+        });
         elements.secondaryTagSuggestions.append(button);
       });
       if (!hasExactMatch) {
@@ -403,6 +421,7 @@
           className: "tag-suggestion tag-suggestion--create",
           type: "button",
           text: `Create “${queryText}”`,
+          disabled,
         });
         create.addEventListener("click", addSecondaryTagFromEditor);
         elements.secondaryTagSuggestions.append(create);
@@ -461,6 +480,10 @@
       }
       const pending = { session, promise: null };
       ui.pendingSecondaryTagCreation = pending;
+      elements.secondaryTagInput.disabled = true;
+      if (elements.secondaryAddTag) elements.secondaryAddTag.disabled = true;
+      renderSecondarySelectedNoteTags();
+      renderSecondaryTagSuggestions();
       const operation = (async () => {
         try {
           const tag = await storage.addTag({ name: rawName });
@@ -477,6 +500,12 @@
           if (shared.secondaryEditorSession === session) showError(error);
         } finally {
           if (ui.pendingSecondaryTagCreation === pending) ui.pendingSecondaryTagCreation = null;
+          if (elements.secondaryTagInput) elements.secondaryTagInput.disabled = false;
+          if (elements.secondaryAddTag) elements.secondaryAddTag.disabled = false;
+          if (shared.secondaryEditorSession === session && ui.dualPaneOpen) {
+            renderSecondarySelectedNoteTags();
+            renderSecondaryTagSuggestions();
+          }
         }
       })();
       pending.promise = operation;

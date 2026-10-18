@@ -940,6 +940,12 @@
 
 
 
+.organize-dialog .management-row.data-setting--danger {
+  background: var(--danger-surface);
+}
+
+
+
 .organize-dialog .management-row__name {
   font-size: 0.875rem;
 }

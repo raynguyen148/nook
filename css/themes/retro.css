@@ -226,6 +226,8 @@ html[data-theme="retro"] .storage-status {
 html[data-theme="retro"] :where(.space-link, .sidebar-filter) { border: var(--retro-border-width) solid transparent; border-radius: var(--retro-radius-control); color: var(--retro-muted); font-weight: 700; }
 html[data-theme="retro"] :where(.space-link, .sidebar-filter):is(.is-active, [aria-pressed="true"]) { border-color: var(--retro-accent); color: var(--retro-accent); background: var(--retro-accent-soft); box-shadow: none; }
 html[data-theme="retro"] :where(.space-link, .sidebar-filter):is(.is-active, [aria-pressed="true"]) .filter-count { color: var(--retro-accent); }
+html[data-theme="retro"] .space-link--trash:is(.is-active, [aria-pressed="true"]) { border-color: var(--retro-red); color: var(--retro-red); background: var(--retro-red-soft); }
+html[data-theme="retro"] .space-link--trash:is(.is-active, [aria-pressed="true"]) .filter-count { color: var(--retro-red); }
 
 /* Note types keep their shared type-aware surface and text colors. */
 html[data-theme="retro"] .sidebar-filter--type:is(.is-active, [aria-pressed="true"]) {

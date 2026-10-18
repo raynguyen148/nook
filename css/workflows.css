@@ -14,7 +14,7 @@
 }
 .workflow-dialog[open] { display: flex; flex-direction: column; }
 .workflow-dialog > .dialog-header,
-.workflow-dialog > .dialog-footer { flex: none; padding: 1rem 1.25rem; gap: 0.75rem; background: inherit; }
+.workflow-dialog > .dialog-footer { flex: none; padding: 1rem 1.25rem; gap: 0.75rem; background: var(--surface-panel); }
 .workflow-dialog > .dialog-header { border-bottom: 1px solid var(--border-subtle); }
 .workflow-dialog > .dialog-header h2 { margin: 0; color: var(--text-strong); font-size: var(--font-size-dialog-title); font-weight: 650; letter-spacing: -0.015em; }
 .workflow-dialog > .dialog-footer { border-top: 1px solid var(--border-subtle); flex-wrap: wrap; }

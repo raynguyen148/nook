@@ -197,6 +197,16 @@ html[data-theme="forest"] .filter-count {
   color: var(--text-muted);
 }
 
+html[data-theme="forest"] .space-link--trash.is-active {
+  border-color: #e2bcb9;
+  color: #9b3535;
+  background: #faefef;
+}
+
+html[data-theme="forest"] .space-link--trash.is-active .filter-count {
+  color: #9b3535;
+}
+
 /* Type filters retain a subdued, type-aware surface so their selected state
  * reads at a glance without competing with Forest's leaf-green navigation. */
 html[data-theme="forest"] .sidebar-filter--type.is-active {

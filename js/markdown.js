@@ -979,7 +979,10 @@
         if (code[i] === '"' || code[i] === "'") {
           const quote = code[i];
           let end = i + 1;
-          while (end < len && code[end] !== quote) end += 1;
+          while (end < len && code[end] !== quote) {
+            if (code[end] === "\\") end += 2;
+            else end += 1;
+          }
           if (end < len) end += 1;
           pushToken(tokens, "string", code.slice(i, end));
           i = end;
@@ -1017,7 +1020,10 @@
         if (code[i] === '"' || code[i] === "'") {
           const quote = code[i];
           let end = i + 1;
-          while (end < len && code[end] !== quote) end += 1;
+          while (end < len && code[end] !== quote) {
+            if (code[end] === "\\") end += 2;
+            else end += 1;
+          }
           if (end < len) end += 1;
           pushToken(tokens, "string", code.slice(i, end));
           i = end;
@@ -1089,7 +1095,20 @@
         if (code[i] === "'" || code[i] === '"') {
           const quote = code[i];
           let end = i + 1;
-          while (end < len && code[end] !== quote) end += 1;
+          while (end < len) {
+            if (code[end] === "\\") {
+              end += 2;
+              continue;
+            }
+            if (code[end] === quote) {
+              if (code[end + 1] === quote) {
+                end += 2;
+                continue;
+              }
+              break;
+            }
+            end += 1;
+          }
           if (end < len) end += 1;
           pushToken(tokens, "string", code.slice(i, end));
           i = end;
@@ -1283,7 +1302,11 @@
           copyBtn._copyTimeout = null;
         }, 2000);
       } catch (err) {
-        // Fallback or ignore
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(new CustomEvent("nook:toast", {
+            detail: { message: "Could not copy code to clipboard.", tone: "error" }
+          }));
+        }
       }
     });
 
@@ -1817,12 +1840,17 @@
         checkbox.type = "checkbox";
         checkbox.checked = item.checked;
         checkbox.disabled = true;
-        checkbox.setAttribute("aria-label", item.checked ? "Completed task" : "Incomplete task");
+        const baseTaskLabel = item.checked ? "Completed task" : "Incomplete task";
+        checkbox.setAttribute("aria-label", baseTaskLabel);
         listItem.append(checkbox);
         const first = children.shift();
         if (first?.type === "paragraph") {
           const taskContent = createElement("span", "markdown-task-content");
           appendInlineLines(taskContent, first.lines, context);
+          const taskText = taskContent.textContent.trim();
+          if (taskText) {
+            checkbox.setAttribute("aria-label", `${baseTaskLabel}: ${taskText}`);
+          }
           listItem.append(taskContent);
         } else if (first) {
           renderBlock(listItem, first, context, options);

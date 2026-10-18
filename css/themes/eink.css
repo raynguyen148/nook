@@ -1102,6 +1102,11 @@ html[data-theme="eink"] #secondary-reader-view #secondary-split-preview {
   color: var(--eink-ink) !important;
 }
 
+html[data-theme="eink"] .note-content-field:not(.is-split) #note-content,
+html[data-theme="eink"] #secondary-content-field:not(.is-split) #secondary-note-content-editor {
+  padding-inline: 0 !important;
+}
+
 /* The paper reset preserves the active target for keyboard navigation. */
 html[data-theme="eink"][data-input-modality="keyboard"] #secondary-reader-view :is(
   #secondary-note-content-editor,

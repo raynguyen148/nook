@@ -644,19 +644,18 @@
       secondarySaveOperation = null;
       ui.secondaryNoteId = note.id;
       ui.secondaryNotePreviewHeaderCollapsed = false;
-      showSecondaryReader(note);
-      setSecondaryNoteMode(mode);
+      showSecondaryReader(note, mode);
     }
 
-    function showSecondaryReader(note) {
+    function showSecondaryReader(note, mode = ui.secondaryNoteMode || "preview") {
       api.resetPaneNotePicker("secondary");
       elements.secondaryReaderView?.classList.remove("is-hidden");
-      renderSecondaryReader(note);
+      renderSecondaryReader(note, mode);
       animateSecondaryViewSwitch(elements.secondaryReaderView);
       window.requestAnimationFrame(() => elements.secondarySurface?.focus({ preventScroll: true }));
     }
 
-    function renderSecondaryReader(note) {
+    function renderSecondaryReader(note, mode = ui.secondaryNoteMode || "preview") {
       if (!elements.secondaryReaderView) return;
       if (
         secondaryEditorSession &&
@@ -694,6 +693,7 @@
 
       if (elements.secondaryNoteContentEditor) {
         elements.secondaryNoteContentEditor.value = note.content || "";
+        elements.secondaryNoteContentEditor.scrollTop = 0;
       }
       if (elements.secondarySplitPreview) {
         globalThis.NookMarkdown.renderInto(
@@ -702,10 +702,11 @@
           "No content yet.",
           { sourceMap: true },
         );
+        elements.secondarySplitPreview.scrollTop = 0;
       }
 
       setSecondarySaveStatus("saved");
-      setSecondaryNoteMode(ui.secondaryNoteMode || "preview");
+      setSecondaryNoteMode(mode);
       syncSecondaryNotePreviewHeader();
       if (ui.secondaryNoteMode === "split" && elements.secondaryNoteContentEditor) {
         ui.secondaryScrollMap = null;

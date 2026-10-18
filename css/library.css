@@ -423,13 +423,13 @@
 
 .dialog-header {
   padding-top: 1.45rem;
-  background: linear-gradient(180deg, #fff, #fdfdfe);
+  background: var(--surface-panel);
 }
 
 
 
 .dialog-footer {
-  background: #fcfcfd;
+  background: var(--surface-panel);
 }
 
 
@@ -443,7 +443,7 @@
 
 .organize-tabs {
   gap: 0.45rem;
-  background: #fcfcfd;
+  background: var(--surface-muted);
 }
 
 
@@ -627,10 +627,10 @@
   top: 0.75rem;
   right: var(--pinned-controls-right, clamp(1rem, 3.5vw, 3.5rem));
   flex-wrap: nowrap;
-  border: 1px solid #dfe3eb;
+  border: 1px solid var(--border-subtle);
   border-radius: var(--control-radius);
   padding: 0.36rem;
-  background: rgb(255 255 255 / 94%);
+  background: var(--surface-panel);
   box-shadow: 0 12px 28px rgb(23 30 56 / 14%);
   animation: topbar-actions-pin-in var(--motion-duration-medium) var(--motion-ease-out);
 }

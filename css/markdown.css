@@ -608,7 +608,7 @@
   margin: 0.5rem 0.25rem 0.5rem 0;
   vertical-align: middle;
   border-radius: 0.55rem;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-subtle);
   box-shadow: 0 4px 14px -2px rgba(15, 23, 42, 0.06), 0 2px 6px -1px rgba(15, 23, 42, 0.03);
 }
 
@@ -621,9 +621,9 @@
   gap: 0.35rem;
   padding: 0.15rem 0.45rem;
   border-radius: 0.35rem;
-  border: 1px solid #e2e8f0;
-  color: #64748b;
-  background: #f1f5f9;
+  border: 1px solid var(--border-subtle);
+  color: var(--text-muted);
+  background: var(--surface-muted);
   font-size: 0.85em;
   font-style: italic;
 }
@@ -631,7 +631,7 @@
 
 
 .quick-view-content .markdown-empty {
-  color: #929baa;
+  color: var(--text-muted);
   font-style: italic;
 }
 
@@ -641,7 +641,7 @@
 .note-content-preview .markdown-table-wrapper {
   overflow-x: auto;
   margin: 0.9rem 0;
-  border: 1px solid #e1e5ec;
+  border: 1px solid var(--border-subtle);
   border-radius: 0.5rem;
 }
 
@@ -662,8 +662,8 @@
 .quick-view-content .markdown-table td,
 .note-content-preview .markdown-table th,
 .note-content-preview .markdown-table td {
-  border-right: 1px solid #e1e5ec;
-  border-bottom: 1px solid #e1e5ec;
+  border-right: 1px solid var(--border-subtle);
+  border-bottom: 1px solid var(--border-subtle);
   padding: 0.54rem 0.64rem;
   vertical-align: top;
   overflow-wrap: anywhere;
@@ -689,8 +689,8 @@
 
 .quick-view-content .markdown-table th,
 .note-content-preview .markdown-table th {
-  color: #303c50;
-  background: #f3f5f8;
+  color: var(--text-strong);
+  background: var(--surface-muted);
   font-weight: 730;
 }
 
@@ -882,17 +882,17 @@
 .quick-view-content .markdown-details,
 .note-content-preview .markdown-details {
   margin: 0.9rem 0;
-  border: 1px solid #e1e5ec;
+  border: 1px solid var(--border-subtle);
   border-radius: 0.52rem;
   padding: 0.64rem 0.75rem;
-  background: #fbfcfe;
+  background: var(--surface-muted);
 }
 
 
 
 .quick-view-content .markdown-details summary,
 .note-content-preview .markdown-details summary {
-  color: #4d5a70;
+  color: var(--text-strong);
   cursor: pointer;
   font-weight: 700;
 }
@@ -910,8 +910,8 @@
 .note-content-preview .markdown-math {
   border-radius: 0.28rem;
   padding: 0.08rem 0.3rem;
-  color: #4e4a9b;
-  background: #f0efff;
+  color: var(--selected-text, #4e4a9b);
+  background: var(--selected-surface, #f0efff);
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: 0.92em;
   font-style: italic;
@@ -924,7 +924,7 @@
   display: block;
   overflow-x: auto;
   margin: 0.9rem 0;
-  border: 1px solid #e1e5ec;
+  border: 1px solid var(--border-subtle);
   border-radius: 0.5rem;
   padding: 0.72rem 0.8rem;
   white-space: pre-wrap;
@@ -935,7 +935,7 @@
 .quick-view-content .markdown-footnotes,
 .note-content-preview .markdown-footnotes {
   margin-top: 1.15rem;
-  border-top: 1px solid #e1e5ec;
+  border-top: 1px solid var(--border-subtle);
   padding-top: 0.8rem;
   font-size: 0.82rem;
 }
@@ -945,7 +945,7 @@
 .quick-view-content .markdown-footnotes h4,
 .note-content-preview .markdown-footnotes h4 {
   margin: 0 0 0.45rem;
-  color: #6d7789;
+  color: var(--text-muted);
   font-size: 0.68rem;
   letter-spacing: 0.07em;
   text-transform: uppercase;

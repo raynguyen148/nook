@@ -135,6 +135,12 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
       else close();
     });
     trigger.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && !menu.hidden) {
+        event.preventDefault();
+        event.stopPropagation();
+        close();
+        return;
+      }
       if (!["ArrowDown", "ArrowUp", " ", "Enter"].includes(event.key)) return;
       event.preventDefault();
       if (menu.hidden) open();
