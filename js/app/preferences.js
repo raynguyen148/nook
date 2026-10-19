@@ -73,7 +73,13 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
     }, { once: true });
     link.href = href;
     preloadedThemeLinks.set(href, { link, ready });
-    document.head.append(link);
+    // Cascade order matters: the live palette sits before the shared component
+    // layers in <head> (mobile.css ... appearance.css), so the preloaded one must
+    // sit in the same slot. Appending it to the end would let palette rules
+    // override the later glass layer after a swap, until the next reload.
+    const activeStylesheet = elements.themeStylesheet;
+    if (activeStylesheet?.isConnected) activeStylesheet.after(link);
+    else document.head.append(link);
     return ready;
   }
 
@@ -476,7 +482,7 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
     if (activeStylesheet && activeStylesheet.getAttribute("href") !== themeHref) {
       const preloaded = preloadedThemeLinks.get(themeHref);
       if (preloaded) {
-        // Already downloaded: swap the live link in the same task.
+        // Already downloaded and positioned beside the live link: swap in the same task.
         preloadedThemeLinks.delete(themeHref);
         const nextStylesheet = preloaded.link;
         nextStylesheet.id = activeStylesheet.id;
