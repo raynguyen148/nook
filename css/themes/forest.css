@@ -19,7 +19,6 @@ html[data-theme="forest"] {
   --theme-danger-border: #e6bfc1;
   --backup-good-accent: #2f6b4f;
   --backup-warning-accent: #8d5608;
-  --backup-never-accent: #b13d43;
   background: #f3f7f1;
   color: #1e2d24;
   --management-search-resting-border: #cbdccc;
@@ -153,7 +152,7 @@ html[data-theme="forest"] .results-meta {
 
 html[data-theme="forest"] .eyebrow {
   color: var(--primary-accent);
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
   letter-spacing: 0.08em;
 }
 
@@ -585,12 +584,12 @@ html[data-theme="forest"] .note-content-preview .markdown-code-copy-btn.is-copie
 }
 
 /* Forest syntax highlighting */
-html[data-theme="forest"] .token-keyword { color: #d7a5e8; font-weight: 600; }
+html[data-theme="forest"] .token-keyword { color: #d7a5e8; font-weight: var(--font-weight-semibold); }
 html[data-theme="forest"] .token-string { color: #a8d98a; }
 html[data-theme="forest"] .token-comment { color: #8fb49b; font-style: italic; }
 html[data-theme="forest"] .token-number { color: #e8c37d; }
 html[data-theme="forest"] .token-function { color: #8ed0e8; }
-html[data-theme="forest"] .token-boolean { color: #f0a98b; font-weight: 600; }
+html[data-theme="forest"] .token-boolean { color: #f0a98b; font-weight: var(--font-weight-semibold); }
 html[data-theme="forest"] .token-operator { color: #b9dfc2; }
 html[data-theme="forest"] .token-property,
 html[data-theme="forest"] .token-tag { color: #f1a1b1; }
@@ -707,4 +706,11 @@ html[data-theme="forest"] .theme-toggle__icon--coffee,
 html[data-theme="forest"] .theme-toggle__icon--moon,
 html[data-theme="forest"] .theme-toggle__icon--auto {
   display: none !important;
+}
+
+/* Logo tile follows the theme accent. */
+html[data-theme="forest"] {
+  --brand-mark-start: #3f8a66;
+  --brand-mark-mid: #2f6b4f;
+  --brand-mark-end: #1f4a36;
 }

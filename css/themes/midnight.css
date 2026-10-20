@@ -40,7 +40,6 @@ html[data-theme="midnight"] {
   --theme-danger-border: rgb(239 68 68 / 38%);
   --backup-good-accent: #4ade80;
   --backup-warning-accent: #fbbf24;
-  --backup-never-accent: #f87171;
   background: #0f1b2d;
   color: #c1d3e8;
   --management-search-resting-border: #3d5a78;
@@ -275,7 +274,7 @@ html[data-theme="midnight"] .tag-filter-option:has(input:focus-visible) {
    -------------------------------------------------------------------------- */
 html[data-theme="midnight"] .eyebrow {
   color: var(--primary-accent);
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
   letter-spacing: 0.05em;
 }
 
@@ -318,7 +317,7 @@ html[data-theme="midnight"] .button-primary {
   color: var(--primary-button-text);
   background: var(--primary-accent);
   box-shadow: 0 1px 6px rgba(74, 168, 237, 0.25);
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
   letter-spacing: -0.01em;
   transition: color var(--interaction-duration) var(--interaction-easing), background-color var(--interaction-duration) var(--interaction-easing), border-color var(--interaction-duration) var(--interaction-easing), box-shadow var(--interaction-duration) var(--interaction-easing), transform var(--motion-duration-micro) var(--motion-ease-out);
 }
@@ -389,7 +388,7 @@ html[data-theme="midnight"] .toolbar {
 
 html[data-theme="midnight"] .toolbar.is-pinned {
   border-color: #35506d;
-  background: rgba(20, 36, 58, 0.96);
+  background: rgba(15, 27, 45, 0.95);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
   backdrop-filter: blur(10px);
 }
@@ -455,7 +454,7 @@ html[data-theme="midnight"] .search-shortcut kbd {
   border: 0 !important;
   box-shadow: none !important;
   color: #c1d3e8 !important;
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
 }
 
 html[data-theme="midnight"] .clear-search {
@@ -720,7 +719,7 @@ html[data-theme="midnight"] .pagination-button.is-active {
   border-color: var(--primary-accent-border);
   color: var(--primary-accent-text);
   background: var(--primary-accent-soft);
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
 }
 
 html[data-theme="midnight"] .pagination-button:disabled,
@@ -1228,7 +1227,7 @@ html[data-theme="midnight"] .quick-view-content .markdown-table th,
 html[data-theme="midnight"] .note-content-preview .markdown-table th {
   color: #e5efff;
   background: #14243a;
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
 }
 
 html[data-theme="midnight"] .quick-view-content .markdown-table th,
@@ -1468,4 +1467,11 @@ html[data-theme="midnight"] .theme-toggle__icon--midnight {
 
 html[data-theme="midnight"] .theme-toggle__icon--midnight {
   display: inline-flex !important;
+}
+
+/* Logo tile follows the theme accent. */
+html[data-theme="midnight"] {
+  --brand-mark-start: #3a8ad0;
+  --brand-mark-mid: #2769a8;
+  --brand-mark-end: #184a7c;
 }

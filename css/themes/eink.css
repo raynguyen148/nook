@@ -263,7 +263,7 @@ html[data-theme="eink"] .brand-mark {
 html[data-theme="eink"] .brand strong {
   font-family: var(--font-display);
   color: var(--eink-ink);
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
   letter-spacing: -0.01em;
 }
 
@@ -271,7 +271,7 @@ html[data-theme="eink"] .brand small,
 html[data-theme="eink"] .filter-heading,
 html[data-theme="eink"] .filter-section-title h2 {
   color: var(--eink-ink-muted);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
 }
 
 html[data-theme="eink"] .storage-status {
@@ -318,7 +318,7 @@ html[data-theme="eink"] :where(.space-link, .sidebar-filter).is-active {
   border-radius: var(--eink-radius-control) !important;
   color: #f5f2eb !important;
   background: #1c1b18 !important;
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
 }
 
 html[data-theme="eink"] :where(.space-link, .sidebar-filter).is-active .filter-count {
@@ -373,7 +373,7 @@ html[data-theme="eink"] .notes-panel .note-card .tag-chip {
   box-shadow: none !important;
   font-family: var(--font-sans) !important;
   font-size: 0.68rem !important;
-  font-weight: 600 !important;
+  font-weight: var(--font-weight-semibold) !important;
   line-height: 1.2 !important;
   transition:
     color var(--interaction-duration) var(--interaction-easing),
@@ -385,7 +385,7 @@ html[data-theme="eink"] .notes-panel .note-card .tag-chip {
 html[data-theme="eink"] .tag-filter-option .filter-count {
   color: var(--eink-ink-muted) !important;
   font-size: 0.64rem !important;
-  font-weight: 600 !important;
+  font-weight: var(--font-weight-semibold) !important;
   padding-left: 0.05rem;
   transition: color var(--interaction-duration) var(--interaction-easing);
 }
@@ -420,7 +420,7 @@ html[data-theme="eink"] .notes-panel .note-card .tag-chip.is-selected {
   border-color: #141414 !important;
   color: #efece4 !important;
   background: #141414 !important;
-  font-weight: 600 !important;
+  font-weight: var(--font-weight-semibold) !important;
 }
 
 html[data-theme="eink"] :where(
@@ -483,7 +483,7 @@ html[data-theme="eink"] .topbar {
 html[data-theme="eink"] .topbar h1 {
   font-family: var(--font-display);
   color: var(--eink-ink);
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
   letter-spacing: -0.02em;
 }
 
@@ -555,7 +555,7 @@ html[data-theme="eink"] .notes-panel__heading {
 
 html[data-theme="eink"] .notes-panel__heading h2 {
   font-family: var(--font-display);
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
   color: var(--eink-ink);
 }
 
@@ -591,7 +591,7 @@ html[data-theme="eink"] .note-editor-mode__button[aria-pressed="true"] {
   border-color: #141414 !important;
   color: #efece4 !important;
   background: #141414 !important;
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   box-shadow: none !important;
 }
 
@@ -697,7 +697,7 @@ html[data-theme="eink"] .note-card__pin-toggle svg {
 
 html[data-theme="eink"] .note-card__title {
   font-family: var(--font-display);
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
   color: var(--eink-ink);
   letter-spacing: -0.015em;
 }
@@ -717,7 +717,7 @@ html[data-theme="eink"] mark.search-highlight {
   border-radius: var(--eink-radius-sm);
   color: #141414;
   background: #dedad0;
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
 }
 
 /* --------------------------------------------------------------------------
@@ -736,7 +736,7 @@ html[data-theme="eink"] :is(.note-dialog, #note-dialog, .quick-view-dialog, .not
   background: transparent !important;
   font-family: var(--font-sans);
   font-size: 0.68rem;
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   letter-spacing: 0.02em;
   box-shadow: none !important;
 }
@@ -783,7 +783,7 @@ html[data-theme="eink"] :where(.active-filter-pill, .notes-count, .usage-count, 
   color: var(--eink-ink);
   background: var(--eink-paper-muted);
   box-shadow: none;
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
 }
 
 html[data-theme="eink"] .active-filter-pill.is-active,
@@ -803,7 +803,7 @@ html[data-theme="eink"] .active-filter-pill.active-filter-pill--type .active-fil
 
 html[data-theme="eink"] :where(.text-button, .active-filter-clear-all, .active-filter-pill__clear) {
   color: var(--eink-ink);
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
 }
 
 /* --------------------------------------------------------------------------
@@ -812,7 +812,7 @@ html[data-theme="eink"] :where(.text-button, .active-filter-clear-all, .active-f
 html[data-theme="eink"] :where(.more-tags, .untagged, .quick-view-no-tags) {
   color: var(--eink-ink-muted);
   font-size: 0.68rem;
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
 }
 
 html[data-theme="eink"] :is(.selected-tag button, .selected-tag__remove) {
@@ -860,7 +860,7 @@ html[data-theme="eink"] #empty-trash-btn {
   border: 1px solid var(--eink-border) !important;
   color: var(--eink-ink);
   box-shadow: none !important;
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   transition:
     color var(--interaction-duration) var(--interaction-easing),
     background-color var(--interaction-duration) var(--interaction-easing),
@@ -892,7 +892,7 @@ html[data-theme="eink"] .button-primary {
   color: #efece4 !important;
   background: #141414 !important;
   box-shadow: none !important;
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
 }
 
 html[data-theme="eink"] #new-note-btn:hover:not(:disabled),
@@ -922,7 +922,7 @@ html[data-theme="eink"] .button-danger {
   border-color: #141414;
   color: #141414;
   background: transparent;
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
 }
 
 html[data-theme="eink"] .button-danger:hover:not(:disabled) {
@@ -1069,7 +1069,7 @@ html[data-theme="eink"] .note-secondary-surface .field--title input {
   background-color: transparent !important;
   box-shadow: none !important;
   font-family: var(--font-display) !important;
-  font-weight: 700 !important;
+  font-weight: var(--font-weight-bold) !important;
   font-size: 1.45rem !important;
 }
 
@@ -1148,7 +1148,7 @@ html[data-theme="eink"] #note-dialog .note-save-status {
   background-image: none !important;
   font-family: var(--font-sans);
   font-size: 0.68rem;
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   line-height: 1.2;
   padding: 0.12rem 0.45rem !important;
   box-shadow: none !important;
@@ -1198,7 +1198,7 @@ html[data-theme="eink"] #note-dialog .note-save-status.is-error {
   border-color: #141414 !important;
   color: #141414 !important;
   background-color: var(--eink-paper-muted) !important;
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
   text-decoration: underline;
 }
 
@@ -1313,14 +1313,14 @@ html[data-theme="eink"] :where(.quick-view-content, .note-content-preview) {
 html[data-theme="eink"] .quick-view-document-header h1 {
   font-family: var(--font-display);
   color: var(--eink-ink);
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
   letter-spacing: -0.02em;
 }
 
 html[data-theme="eink"] :where(.quick-view-content, .note-content-preview) :where(h1, h2, h3, h4, h5, h6) {
   color: var(--eink-ink);
   font-family: var(--font-display);
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
   letter-spacing: -0.02em;
 }
 
@@ -1352,7 +1352,7 @@ html[data-theme="eink"] :where(.quick-view-content, .note-content-preview) code:
   color: var(--eink-ink);
   font-family: var(--font-mono);
   font-size: 0.88em;
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
 }
 
 html[data-theme="eink"] :where(.quick-view-content, .note-content-preview) pre {
@@ -1402,15 +1402,15 @@ html[data-theme="eink"] :where(.quick-view-content, .note-content-preview) .mark
 }
 
 /* Syntax Highlighting Tokens in Monochrome Grayscale */
-html[data-theme="eink"] .token-keyword { color: #141414; font-weight: 700; }
+html[data-theme="eink"] .token-keyword { color: #141414; font-weight: var(--font-weight-bold); }
 html[data-theme="eink"] .token-string { color: #383838; }
-html[data-theme="eink"] .token-function { color: #141414; font-weight: 600; }
+html[data-theme="eink"] .token-function { color: #141414; font-weight: var(--font-weight-semibold); }
 html[data-theme="eink"] .token-number { color: #2e2e2e; }
-html[data-theme="eink"] .token-boolean { color: #141414; font-weight: 700; }
+html[data-theme="eink"] .token-boolean { color: #141414; font-weight: var(--font-weight-bold); }
 html[data-theme="eink"] .token-comment { color: #707070; font-style: italic; }
 html[data-theme="eink"] .token-operator { color: #141414; }
 html[data-theme="eink"] :where(.token-property, .token-tag) { color: #2e2e2e; }
-html[data-theme="eink"] .token-type { color: #141414; font-weight: 600; }
+html[data-theme="eink"] .token-type { color: #141414; font-weight: var(--font-weight-semibold); }
 html[data-theme="eink"] .token-punctuation { color: #666666; }
 
 /* Tables, Details, Alerts */
@@ -1429,7 +1429,7 @@ html[data-theme="eink"] :where(.quick-view-content, .note-content-preview) .mark
   color: var(--eink-ink);
   background-color: var(--eink-paper-muted);
   font-family: var(--font-display);
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
 }
 
 html[data-theme="eink"] :where(.quick-view-content, .note-content-preview) .markdown-table tbody tr:nth-child(even) {
@@ -1455,7 +1455,7 @@ html[data-theme="eink"] :where(.quick-view-content, .note-content-preview) .mark
 html[data-theme="eink"] :where(.quick-view-content, .note-content-preview) .markdown-alert__title {
   color: #141414 !important;
   font-family: var(--font-display);
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
 }
 
 html[data-theme="eink"] :where(.quick-view-content, .note-content-preview) .markdown-details {
@@ -1469,7 +1469,7 @@ html[data-theme="eink"] :where(.quick-view-content, .note-content-preview) .mark
 html[data-theme="eink"] :where(.quick-view-content, .note-content-preview) .markdown-details summary {
   color: var(--eink-ink);
   font-family: var(--font-display);
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
 }
 
 html[data-theme="eink"] :where(.quick-view-content, .note-content-preview) .markdown-math {
@@ -1491,7 +1491,7 @@ html[data-theme="eink"] :where(.quick-view-content, .note-content-preview) .mark
 
 html[data-theme="eink"] :where(.quick-view-content, .note-content-preview) :where(.markdown-footnote-ref, .markdown-footnote-backref) {
   color: var(--eink-ink);
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
 }
 
 html[data-theme="eink"] :where(.quick-view-content, .note-content-preview) .markdown-task-item > input {

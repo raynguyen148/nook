@@ -195,7 +195,7 @@
   max-width: 100%;
   margin: 0.25rem 0 0;
   color: var(--text-muted);
-  font-size: 0.8125rem;
+  font-size: var(--font-size-label);
   line-height: 1.4;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -267,8 +267,8 @@
 .notes-panel__range {
   flex: none;
   color: var(--text-muted);
-  font-size: 0.8125rem;
-  font-weight: 400;
+  font-size: var(--font-size-label);
+  font-weight: var(--font-weight-regular);
   font-variant-numeric: tabular-nums;
 }
 
@@ -529,7 +529,7 @@
     min-height: 2.25rem;
     padding: 0.35rem 0.9rem;
     font-size: 0.82rem;
-    font-weight: 600;
+    font-weight: var(--font-weight-semibold);
     border-radius: var(--control-radius);
     gap: 0.35rem;
   }
@@ -683,9 +683,29 @@
   min-width: 0;
   padding: 0.36rem;
   border-radius: var(--control-radius);
-  background: rgb(248 250 252 / 96%);
+  background: var(--surface-panel);
   box-shadow: 0 12px 28px rgb(23 30 56 / 14%);
   animation: topbar-actions-pin-in var(--motion-duration-medium) var(--motion-ease-out);
+}
+
+/* One continuous band behind the pinned pills, so scrolling cards never show
+ * through the gaps above or between them. It spans the topbar's own column. */
+.topbar.is-actions-pinned::after {
+  content: "";
+  position: fixed;
+  z-index: 88;
+  top: 0;
+  right: var(--pinned-controls-right, 0);
+  left: var(--pinned-toolbar-left, 0);
+  height: calc(var(--pinned-actions-height, 2.75rem) + 1.75rem);
+  pointer-events: none;
+  background: linear-gradient(to bottom, var(--surface-page) 72%, transparent);
+  animation: topbar-band-in var(--motion-duration-medium) var(--motion-ease-out);
+}
+
+@keyframes topbar-band-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 
@@ -740,6 +760,6 @@
   border-radius: var(--surface-radius); color: var(--text-default); background: var(--surface-panel);
 }
 .welcome-card > div:first-child { flex: 1 1 24rem; min-width: 0; }
-.welcome-card h2 { margin: 0 0 0.4rem; color: var(--text-strong); font-size: 1rem; }
+.welcome-card h2 { margin: 0 0 0.4rem; color: var(--text-strong); font-size: var(--font-size-md); }
 .welcome-card p { margin: 0.3rem 0; max-width: 65ch; font-size: 0.8rem; line-height: 1.6; }
 .welcome-card__actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); }

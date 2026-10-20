@@ -15,7 +15,7 @@
 .app-shell[aria-busy="true"] .filter-count:not(:empty),
 .app-shell[aria-busy="true"] .backup-health__message,
 .app-shell[aria-busy="true"] .notes-panel__range:empty::before {
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: linear-gradient(90deg, var(--skeleton-base) 0%, var(--skeleton-shine) 50%, var(--skeleton-base) 100%) 100% 0 / 200% 100%;
   animation: nook-skeleton-shimmer 1.4s ease-in-out infinite;
 }

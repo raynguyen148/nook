@@ -75,6 +75,7 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
     tagInputExpanded: false,
     tagFiltersExpanded: false,
     noteSaveInFlight: false,
+    noteEditorIsClean: false,
     noteAutoSaveInFlight: false,
     noteCloseAfterSaveRequested: false,
     noteAutoSaveTimer: 0,
@@ -274,7 +275,7 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
     elements.settingsShortcutModifiers.forEach((element) => {
       element.textContent = modifier;
     });
-    elements.noteSaveShortcutHelp.textContent = `Press 1 for the Markdown editor, 2 for split preview, and 3 for Preview. Press 4 to toggle Side Note on desktop when focus is outside form fields and no text is selected. Press T to cycle the theme when focus is outside text fields and editable controls. Formatting shortcuts support bold, italic, links, inline code, numbered lists, and bullet lists. Quick save keeps this note open: ${modifierName}, Shift, and S. Save note and close: ${modifierName} and Enter.`;
+    elements.noteSaveShortcutHelp.textContent = `Press 1 for the Markdown editor, 2 for split preview, and 3 for Preview. Press 4 to toggle Side note on desktop when focus is outside form fields and no text is selected. Press T to cycle the theme when focus is outside text fields and editable controls. Formatting shortcuts support bold, italic, links, inline code, numbered lists, and bullet lists. Quick save keeps this note open: ${modifierName}, Shift, and S. Save note and close: ${modifierName} and Enter.`;
   }
 
   function createElement(tagName, options = {}) {
@@ -349,8 +350,9 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
     return shortDateFormatter.format(date);
   }
 
-  function getNoteCardDateInfo(note) {
-    const isEdited = Boolean(
+  // The card date follows a date sort, so "Newest created" never shows an updated time.
+  function getNoteCardDateInfo(note, { sort = "" } = {}) {
+    const isEdited = !String(sort).startsWith("created-") && Boolean(
       note?.updatedAt &&
       note?.createdAt &&
       new Date(note.updatedAt).getTime() > new Date(note.createdAt).getTime()
@@ -377,7 +379,9 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
       text: `Created ${formatRelativeNoteDate(note.createdAt)}`,
       label: "Created",
       datetime: note.createdAt,
-      title: `Created ${formatFullDate(note.createdAt)}`,
+      title: note?.updatedAt && note.updatedAt !== note.createdAt
+        ? `Created ${formatFullDate(note.createdAt)} · Updated ${formatFullDate(note.updatedAt)}`
+        : `Created ${formatFullDate(note.createdAt)}`,
     };
   }
 

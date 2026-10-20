@@ -271,11 +271,13 @@
       elements.createdTodayFilter.classList.toggle("is-active", ui.todayOnly);
       elements.createdTodayFilter.setAttribute("aria-pressed", String(ui.todayOnly));
       elements.createdTodayFilterCount.textContent = todayCount;
-      elements.createdTodayFilter.title = `Created Today (${todayCount})`;
+      elements.createdTodayFilter.classList.toggle("is-empty", todayCount === 0);
+      elements.createdTodayFilter.title = `Created today (${todayCount})`;
       elements.updatedTodayFilter.classList.toggle("is-active", ui.updatedTodayOnly);
       elements.updatedTodayFilter.setAttribute("aria-pressed", String(ui.updatedTodayOnly));
       elements.updatedTodayFilterCount.textContent = updatedTodayCount;
-      elements.updatedTodayFilter.title = `Updated Today (${updatedTodayCount})`;
+      elements.updatedTodayFilter.classList.toggle("is-empty", updatedTodayCount === 0);
+      elements.updatedTodayFilter.title = `Updated today (${updatedTodayCount})`;
       elements.emptyTrash.classList.toggle("is-hidden", !ui.trashOnly || trashCount === 0);
       elements.newNote.classList.toggle("is-hidden", ui.trashOnly);
       elements.sidebar?.classList.toggle("is-trash-view", ui.trashOnly);
@@ -286,7 +288,7 @@
       library.types.forEach((type) => {
         const typeCount = noteCountsByType.get(type.id) || 0;
         const button = createElement("button", {
-          className: `sidebar-filter sidebar-filter--type sidebar-filter--${safeTypeColor(type)}${ui.typeId === type.id ? " is-active" : ""}`,
+          className: `sidebar-filter sidebar-filter--type sidebar-filter--${safeTypeColor(type)}${ui.typeId === type.id ? " is-active" : ""}${typeCount === 0 ? " is-empty" : ""}`,
           type: "button",
           attributes: {
             "aria-pressed": String(ui.typeId === type.id),
@@ -309,7 +311,7 @@
         const tagCount = noteCountsByTag.get(tag.id) || 0;
         const isSelected = ui.tagIds.has(tag.id);
         const label = createElement("label", {
-          className: `tag-filter-option${isSelected ? " is-active" : ""}`,
+          className: `tag-filter-option${isSelected ? " is-active" : ""}${tagCount === 0 ? " is-empty" : ""}`,
           attributes: { title: `Filter by ${tagLabel(tag)} (${tagCount})` },
         });
         const input = createElement("input", {
@@ -394,22 +396,22 @@
       }
       if (ui.todayOnly) {
         fragment.append(
-          makeFilterPill("Created Today", () => {
+          makeFilterPill("Created today", () => {
             ui.todayOnly = false;
             persistFilters();
             resetToFirstPage();
             renderLibrary({ motion: "filter" });
-          }, [], "Filter by Created Today"),
+          }, [], "Filter by Created today"),
         );
       }
       if (ui.updatedTodayOnly) {
         fragment.append(
-          makeFilterPill("Updated Today", () => {
+          makeFilterPill("Updated today", () => {
             ui.updatedTodayOnly = false;
             persistFilters();
             resetToFirstPage();
             renderLibrary({ motion: "filter" });
-          }, [], "Filter by Updated Today"),
+          }, [], "Filter by Updated today"),
         );
       }
       [...ui.tagIds].map(tagFor).filter(Boolean).forEach((tag) => {

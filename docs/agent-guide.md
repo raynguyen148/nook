@@ -315,6 +315,8 @@ new selectors. The live cascade is:
 ```text
 app.css ordered layers → one active theme
 → mobile.css → note-typography.css → workflows.css
+→ workspace-resize.css → split-resize.css → note-card-actions.css
+→ skeleton.css → appearance.css (glass mode, loaded last)
 ```
 
 | Layer | Responsibility |
@@ -327,6 +329,22 @@ app.css ordered layers → one active theme
 | `accessibility.css` | Existing focus, reduced-motion, forced-colors rules |
 | `themes/*.css` | Palette tokens and intentional theme-specific structure |
 | `note-typography.css` | Detail-only typography preference |
+| `workspace-resize.css`, `split-resize.css` | Pane/column resize handles |
+| `note-card-actions.css` | Card pin/menu actions, including pinned-card states |
+| `skeleton.css` | Loading placeholders |
+| `appearance.css` | Glass mode (`html[data-glass="true"]`) and its switch |
+
+`base.css` owns the shared scale tokens. Prefer them over new literals:
+
+- Type: `--font-size-2xs|xs|label|control|body|md|dialog-title` and
+  `--font-weight-regular|medium|semibold|bold`.
+- Shape: `--radius-sm`, `--radius-md`, `--radius-lg` (`--radius-dialog`), and
+  `--radius-pill` where pills are intended.
+- Elevation: `--shadow-xs|sm|md|lg`.
+- Control size: `--control-height-sm|md|lg`.
+
+The theme id `eink` is labelled "Zen" in the UI; its brand mark keeps the
+original colours, while other themes may set `--brand-mark-start|mid|end`.
 
 Use BEM-like names (`.block`, `.block__element`, `.block--modifier`) and existing
 state classes such as `.is-hidden` and `.is-active`. Reuse semantic roles such

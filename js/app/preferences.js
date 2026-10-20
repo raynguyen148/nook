@@ -560,10 +560,17 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
   let sidebarWorkspaceCollapsed = false;
   let sidePaneExpandedByUser = false;
 
+  function workspaceWantsSidebarSpace() {
+    if (ui.dualPaneOpen && window.matchMedia("(min-width: 960px) and (max-width: 1200px)").matches) return true;
+    // Split needs two readable columns; borrow the sidebar until the viewport is wide enough.
+    return ui.noteEditorMode === "split" && Boolean(api.isNoteEditorOpen?.()) &&
+      window.matchMedia("(min-width: 821px) and (max-width: 1440px)").matches;
+  }
+
   function syncSidePaneSidebar() {
-    if (!ui.dualPaneOpen) sidePaneExpandedByUser = false;
-    const collapsed = ui.dualPaneOpen && !sidePaneExpandedByUser &&
-      window.matchMedia("(min-width: 960px) and (max-width: 1200px)").matches;
+    const isWideWorkspace = ui.dualPaneOpen || (ui.noteEditorMode === "split" && Boolean(api.isNoteEditorOpen?.()));
+    if (!isWideWorkspace) sidePaneExpandedByUser = false;
+    const collapsed = !sidePaneExpandedByUser && workspaceWantsSidebarSpace();
     if (collapsed !== sidebarWorkspaceCollapsed) {
       clearSidebarCollapseChoreography();
       clearSidebarExpandChoreography();
@@ -656,7 +663,7 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
   }
 
   function toggleSidebar(collapsed = !(ui.sidebarCollapsed || sidebarWorkspaceCollapsed)) {
-    if (ui.dualPaneOpen) sidePaneExpandedByUser = !collapsed;
+    if (ui.dualPaneOpen || (ui.noteEditorMode === "split" && api.isNoteEditorOpen?.())) sidePaneExpandedByUser = !collapsed;
     sidebarWorkspaceCollapsed = false;
     // Persist explicit user intent even if workspace resizing interrupts animation.
     persistSidebarCollapsedState(collapsed);

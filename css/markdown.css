@@ -82,7 +82,7 @@
   min-height: 1.48rem;
   max-width: 14rem;
   border: 1px solid var(--tag-chip-border, #e3e6ed);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   padding: 0.17rem 0.45rem;
   color: var(--tag-chip-text, #68748a);
   background: var(--tag-chip-surface, #fafbfc);
@@ -128,7 +128,7 @@
   min-height: 6rem;
   color: #334155;
   font-size: 0.95rem;
-  font-weight: 400;
+  font-weight: var(--font-weight-regular);
   line-height: 1.7;
   overflow-wrap: anywhere;
 }
@@ -184,7 +184,7 @@
 .quick-view-content h2 {
   margin: 1.25rem 0 0.55rem;
   font-size: 1.28rem;
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
   letter-spacing: -0.025em;
 }
 
@@ -213,7 +213,7 @@
 .quick-view-content h6 {
   margin: 0.85rem 0 0.35rem;
   font-size: 0.88rem;
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   color: #475569;
 }
 
@@ -284,7 +284,7 @@
   border: 1px solid #e2e8f0;
   border-radius: 0.65rem;
   background: #f8fafc;
-  box-shadow: 0 2px 8px -2px rgba(15, 23, 42, 0.05);
+  box-shadow: var(--shadow-md);
 }
 
 
@@ -307,7 +307,7 @@
   color: var(--text-default);
   font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace);
   font-size: 0.68rem;
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
   letter-spacing: 0.06em;
 }
 
@@ -324,7 +324,7 @@
   color: #64748b;
   background: #ffffff;
   font-size: 0.72rem;
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   cursor: pointer;
   transition: color var(--motion-duration-short) var(--motion-ease-out), background-color var(--motion-duration-short) var(--motion-ease-out), border-color var(--motion-duration-short) var(--motion-ease-out), transform var(--motion-duration-micro) var(--motion-ease-out);
 }
@@ -413,7 +413,7 @@
 .quick-view-content .token-keyword,
 .note-content-preview .token-keyword {
   color: #9333ea;
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
 }
 
 
@@ -442,7 +442,7 @@
 .quick-view-content .token-boolean,
 .note-content-preview .token-boolean {
   color: #ea580c;
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
 }
 
 
@@ -642,7 +642,42 @@
   overflow-x: auto;
   margin: 0.9rem 0;
   border: 1px solid var(--border-subtle);
-  border-radius: 0.5rem;
+  border-radius: var(--radius-sm);
+}
+
+/* Wide tables fade at the edge that still has hidden columns. The scroll
+ * timeline is inactive when the table fits, so no mask is applied then. */
+@property --table-cue-start {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --table-cue-end {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@supports (animation-timeline: scroll(self inline)) {
+  .quick-view-content .markdown-table-wrapper,
+  .note-content-preview .markdown-table-wrapper {
+    animation: markdown-table-scroll-cue linear both;
+    animation-timeline: scroll(self inline);
+    mask-image: linear-gradient(
+      to right,
+      transparent 0,
+      #000 var(--table-cue-start),
+      #000 calc(100% - var(--table-cue-end)),
+      transparent 100%
+    );
+  }
+}
+
+@keyframes markdown-table-scroll-cue {
+  0% { --table-cue-start: 0px; --table-cue-end: 1.75rem; }
+  8%, 92% { --table-cue-start: 1.75rem; --table-cue-end: 1.75rem; }
+  100% { --table-cue-start: 1.75rem; --table-cue-end: 0px; }
 }
 
 
@@ -894,7 +929,7 @@
 .note-content-preview .markdown-details summary {
   color: var(--text-strong);
   cursor: pointer;
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
 }
 
 
@@ -925,7 +960,7 @@
   overflow-x: auto;
   margin: 0.9rem 0;
   border: 1px solid var(--border-subtle);
-  border-radius: 0.5rem;
+  border-radius: var(--radius-sm);
   padding: 0.72rem 0.8rem;
   white-space: pre-wrap;
 }

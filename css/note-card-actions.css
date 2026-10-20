@@ -115,8 +115,8 @@ html .note-card .note-card__footer .note-card__date {
   text-overflow: ellipsis;
   white-space: nowrap;
   color: var(--note-card-date-ink);
-  font-size: 0.6875rem;
-  font-weight: 400;
+  font-size: var(--font-size-2xs);
+  font-weight: var(--font-weight-regular);
   font-variant-numeric: tabular-nums;
 }
 
@@ -181,8 +181,8 @@ html .note-card .note-card__actions[popover] > .note-card__action {
   color: var(--text-default);
   background: transparent;
   font-family: var(--font-sans);
-  font-size: 0.8125rem;
-  font-weight: 400;
+  font-size: var(--font-size-label);
+  font-weight: var(--font-weight-regular);
   line-height: 1.25;
   text-align: left;
   white-space: nowrap;
@@ -269,4 +269,12 @@ html .note-card .note-card__actions[popover] > .note-card__action:disabled {
     color: CanvasText; border-color: CanvasText; background: Canvas; box-shadow: none;
   }
   .note-card__action--separated::before { background: CanvasText; }
+}
+
+/* A pinned card already has a tinted surface and border; the pin itself is a
+ * quiet accent icon rather than a filled tile. Retro and Zen keep their own marker. */
+html:not([data-theme="retro"], [data-theme="eink"]) .note-card.note-card--pinned .note-card__top-actions .note-card__pin-toggle:not(:hover, :focus-visible, :active) {
+  border-color: transparent;
+  color: var(--pinned-marker-color, var(--selected-text));
+  background: transparent;
 }

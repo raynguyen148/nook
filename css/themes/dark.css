@@ -40,7 +40,6 @@ html[data-theme="dark"] {
   --theme-danger-border: rgb(239 68 68 / 38%);
   --backup-good-accent: #6ee7b7;
   --backup-warning-accent: #fcd34d;
-  --backup-never-accent: #fca5a5;
   background: #09090b;
   color: #fafafa;
   --management-search-resting-border: #27272a;
@@ -275,7 +274,7 @@ html[data-theme="dark"] .tag-filter-option:has(input:focus-visible) {
    -------------------------------------------------------------------------- */
 html[data-theme="dark"] .eyebrow {
   color: var(--primary-accent);
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
   letter-spacing: 0.05em;
 }
 
@@ -318,7 +317,7 @@ html[data-theme="dark"] .button-primary {
   color: var(--primary-button-text);
   background: var(--primary-accent);
   box-shadow: 0 1px 6px rgba(196, 136, 40, 0.25);
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
   letter-spacing: -0.01em;
   transition: color var(--interaction-duration) var(--interaction-easing), background-color var(--interaction-duration) var(--interaction-easing), border-color var(--interaction-duration) var(--interaction-easing), box-shadow var(--interaction-duration) var(--interaction-easing), transform var(--motion-duration-micro) var(--motion-ease-out);
 }
@@ -389,7 +388,7 @@ html[data-theme="dark"] .toolbar {
 
 html[data-theme="dark"] .toolbar.is-pinned {
   border-color: #27272a;
-  background: rgba(37, 37, 38, 0.96);
+  background: rgba(24, 24, 24, 0.95);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
   backdrop-filter: blur(10px);
 }
@@ -455,7 +454,7 @@ html[data-theme="dark"] .search-shortcut kbd {
   border: 0 !important;
   box-shadow: none !important;
   color: #d4d4d8 !important;
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
 }
 
 html[data-theme="dark"] .clear-search {
@@ -720,7 +719,7 @@ html[data-theme="dark"] .pagination-button.is-active {
   border-color: var(--primary-accent-border);
   color: var(--primary-accent-text);
   background: var(--primary-accent-soft);
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
 }
 
 html[data-theme="dark"] .pagination-button:disabled,
@@ -1228,7 +1227,7 @@ html[data-theme="dark"] .quick-view-content .markdown-table th,
 html[data-theme="dark"] .note-content-preview .markdown-table th {
   color: #fafafa;
   background: #18181b;
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
 }
 
 html[data-theme="dark"] .quick-view-content .markdown-table th,
@@ -1463,4 +1462,11 @@ html[data-theme="dark"] .theme-toggle__icon--moon {
 html[data-theme="dark"] .theme-toggle__icon--sun,
 html[data-theme="dark"] .theme-toggle__icon--coffee {
   display: none !important;
+}
+
+/* Logo tile follows the theme accent. */
+html[data-theme="dark"] {
+  --brand-mark-start: #b37b20;
+  --brand-mark-mid: #936113;
+  --brand-mark-end: #704708;
 }

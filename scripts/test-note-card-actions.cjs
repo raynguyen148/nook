@@ -175,7 +175,7 @@ async function main() {
           assert.equal(await isOpen(card), false, "second More click closes rather than reopening");
           await card.locator(".note-card__more").click(); await settle(page);
           const labels = await card.locator(".note-card__action-label:visible").allTextContents();
-          assert.deepEqual(labels, width < 960 ? ["Edit note", "Copy content", "Move to Trash"] : ["Edit note", "Copy content", "Open Side Note", "Move to Trash"]);
+          assert.deepEqual(labels, width < 960 ? ["Edit note", "Copy content", "Move to Trash"] : ["Edit note", "Copy content", "Open Side note", "Move to Trash"]);
           await page.keyboard.press("End");
           assert.equal(await page.evaluate(() => document.activeElement.classList.contains("note-card__action--danger")), true);
           if (width === 1440) await screenshot(page, theme + "-" + layout);
@@ -234,14 +234,14 @@ async function main() {
     await page.waitForFunction(() => Boolean(document.querySelector("#notes-list .note-card__action.is-copied")));
     assert.equal(await isOpen(primary), true, "copy feedback remains in menu");
     assert.match(await page.evaluate(() => navigator.clipboard.readText()), /Synthetic note/);
-    await primary.getByRole("menuitem", { name: "Open Primary with Side Note", exact: true }).click(); await settle(page);
+    await primary.getByRole("menuitem", { name: "Open Primary with Side note", exact: true }).click(); await settle(page);
     const side = page.locator("#secondary-notes-list .note-card").first();
     await side.hover();
     await side.locator(".note-card__pin-toggle").click(); await settle(page);
     assert.equal(await page.locator("#secondary-picker-view").isVisible(), true, "pin does not navigate the picker");
     assert.equal(await side.locator(".note-card__pin-toggle").getAttribute("aria-pressed"), "true");
     await side.locator(".note-card__more").click(); await settle(page);
-    await assertFits(side, "Side Note picker menu");
+    await assertFits(side, "Side note picker menu");
     assert.equal(await side.locator(".note-card__action--side-note").count(), 0);
     await page.keyboard.press("Escape"); await settle(page);
     assert.equal(await page.locator("#secondary-picker-view").isVisible(), true, "Escape closes only menu");

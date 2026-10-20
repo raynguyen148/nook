@@ -300,7 +300,7 @@ async function main() {
     await pickerActions.page.locator("#close-note-dialog-btn").click();
     await pickerActions.page.locator("#note-detail-workspace").waitFor({ state: "hidden" });
     await pickerActions.page.getByRole("button", { name: "Actions for Alpha", exact: true }).click();
-    await pickerActions.page.getByRole("menuitem", { name: "Open Alpha with Side Note", exact: true }).click();
+    await pickerActions.page.getByRole("menuitem", { name: "Open Alpha with Side note", exact: true }).click();
     await pickerActions.page.locator("#secondary-notes-list").getByRole("button", { name: "Actions for Beta", exact: true }).click();
     await pickerActions.page.locator("#secondary-notes-list").getByRole("menuitem", { name: "Move Beta to Trash", exact: true }).click();
     assert.equal(await pickerActions.page.locator("#secondary-picker-view").isVisible(), true);

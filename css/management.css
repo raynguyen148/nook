@@ -33,7 +33,7 @@
   gap: 0.15rem;
   padding: 0.18rem;
   margin: 1.25rem 1.25rem 0;
-  border-radius: 9999px;
+  border-radius: var(--radius-pill);
   background: #f1f5f9;
 }
 
@@ -41,12 +41,12 @@
 
 .organize-tab {
   border: 0;
-  border-radius: 9999px;
+  border-radius: var(--radius-pill);
   padding: 0.3rem 0.8rem;
   color: var(--text-muted);
   background: transparent;
   font-size: 0.82rem;
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   cursor: pointer;
 }
 
@@ -115,7 +115,7 @@
 
 .organize-dialog :is(.organize-panel, .management-list, .theme-picker__options, .color-picker__menu)::-webkit-scrollbar-thumb {
   border: 0.22rem solid transparent;
-  border-radius: 9999px;
+  border-radius: var(--radius-pill);
   background: var(--settings-scrollbar-thumb);
   background-clip: padding-box;
 }
@@ -210,7 +210,7 @@
   color: #556276;
   background: #fff;
   font: inherit;
-  font-size: 0.75rem;
+  font-size: var(--font-size-xs);
   line-height: 1.2;
   text-align: left;
   cursor: pointer;
@@ -369,7 +369,7 @@
   margin-left: auto;
   content: "✓";
   font-size: 1.05em;
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
 }
 
 
@@ -388,7 +388,7 @@
   flex-direction: column;
   gap: 0;
   border: 1px solid #e2e8f0;
-  border-radius: 1rem;
+  border-radius: var(--radius-lg);
   background: #ffffff;
   overflow: hidden;
   max-height: min(52vh, 28rem);
@@ -515,12 +515,12 @@
   display: inline-flex;
   align-items: center;
   flex: none;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   padding: 0.1rem 0.46rem;
   color: var(--text-muted);
   background: #f1f5f9;
   font-size: 0.72rem;
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
   line-height: 1.2;
   white-space: nowrap;
 }
@@ -671,7 +671,7 @@
   margin-left: auto;
   content: "✓";
   font-size: 1.05em;
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
 }
 
 
@@ -947,7 +947,7 @@
 
 
 .organize-dialog .management-row__name {
-  font-size: 0.875rem;
+  font-size: var(--font-size-control);
 }
 
 

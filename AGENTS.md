@@ -40,7 +40,11 @@ QA uses an already installed local Playwright. Keep the app openable as a static
   labels, buttons, and script loading order.
 - `css/`: ordered style layers. Foundations and shared components load first;
   focused library, settings, note-detail, accessibility, and theme layers load
-  afterward. Preserve the order in `index.html` when moving rules.
+  afterward. Preserve the order in `index.html` when moving rules; the
+  current tail is `mobile`, `note-typography`, `workflows`, `workspace-resize`,
+  `split-resize`, `note-card-actions`, `skeleton`, then `appearance` (glass).
+  Prefer the scale tokens in `css/base.css` (`--font-size-*`, `--font-weight-*`,
+  `--radius-*`, `--shadow-*`, `--control-height-*`) over new literals.
 - `js/storage.js`: IndexedDB setup, validation, normalization, legacy migration,
   note/type/tag CRUD, backup export, and backup import. It exposes the frozen
   `globalThis.PersonalNotesStorage` API.

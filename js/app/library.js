@@ -346,7 +346,7 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
     const content = createElement("div", { className: "note-card__content" });
     const meta = createElement("div", { className: "note-card__meta" });
     meta.append(makeTypeBadge(type, { isFilter: !secondary && !ui.trashOnly }));
-    const dateInfo = getNoteCardDateInfo(note);
+    const dateInfo = getNoteCardDateInfo(note, { sort: secondary ? "" : ui.sort });
     const dateElement = createElement("time", {
       className: "note-card__date",
       text: dateInfo.text,
@@ -383,7 +383,6 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
         }),
       );
     }
-    if (!resolvedTags.length) tags.append(createElement("span", { className: "untagged", text: "No tags" }));
 
     const actions = createElement("div", {
       className: "note-card__actions",
@@ -451,8 +450,8 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
         className: "note-card__action note-card__action--side-note",
         type: "button",
         attributes: {
-          "aria-label": `Open ${note.title} with Side Note`,
-          title: "Open Side Note",
+          "aria-label": `Open ${note.title} with Side note`,
+          title: "Open Side note",
         },
       });
       sideNote.append(createNoteCardActionIcon([

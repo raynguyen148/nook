@@ -26,7 +26,6 @@ html:not([data-theme]) {
   --theme-danger-border: #e1b9b2;
   --backup-good-accent: #2f7a4b;
   --backup-warning-accent: #975207;
-  --backup-never-accent: #a83232;
   --management-search-resting-border: #d8ccbd;
   --management-search-resting-shadow: 0 1px 2px rgb(0 0 0 / 4%);
   --management-row-input-resting-border: #d8ccbd;
@@ -150,7 +149,7 @@ html:not([data-theme]) .brand strong {
 html[data-theme="coffee"] .brand small,
 html:not([data-theme]) .brand small {
   color: var(--text-muted);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   letter-spacing: 0.01em;
 }
 
@@ -159,7 +158,7 @@ html[data-theme="coffee"] .filter-section-title h2,
 html:not([data-theme]) .filter-heading,
 html:not([data-theme]) .filter-section-title h2 {
   color: var(--text-muted);
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
   letter-spacing: 0.06em;
 }
 
@@ -322,7 +321,7 @@ html:not([data-theme]) .tag-filter-option.is-active .filter-count {
 html[data-theme="coffee"] .topbar h1,
 html:not([data-theme]) .topbar h1 {
   font-family: var(--font-display);
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
   letter-spacing: -0.025em;
   color: #261e18;
 }
@@ -330,7 +329,7 @@ html:not([data-theme]) .topbar h1 {
 html[data-theme="coffee"] .eyebrow,
 html:not([data-theme]) .eyebrow {
   color: var(--primary-accent);
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
   letter-spacing: 0.08em;
 }
 
@@ -346,14 +345,14 @@ html[data-theme="coffee"] .notes-panel,
 html:not([data-theme]) .notes-panel {
   background: #faf6f0;
   border: 1px solid #e5dacb;
-  border-radius: 1rem;
+  border-radius: var(--radius-lg);
   box-shadow: 0 4px 24px -2px rgba(65, 45, 25, 0.05), 0 2px 8px -1px rgba(65, 45, 25, 0.03);
 }
 
 html[data-theme="coffee"] .notes-panel__heading h2,
 html:not([data-theme]) .notes-panel__heading h2 {
   font-family: var(--font-display);
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
   letter-spacing: -0.02em;
   color: #261e18;
 }
@@ -418,7 +417,7 @@ html:not([data-theme]) .search-shortcut kbd {
   border: 0 !important;
   box-shadow: none !important;
   color: #261e18 !important;
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
 }
 
 html[data-theme="coffee"] .sort-field select,
@@ -550,7 +549,7 @@ html:not([data-theme]) .note-card--pinned {
 
 html[data-theme="coffee"] .note-card__title,
 html:not([data-theme]) .note-card__title {
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
   transition: color var(--interaction-duration) var(--motion-ease-out);
 }
 
@@ -601,7 +600,7 @@ html:not([data-theme]) .pagination-button.is-active {
   background: var(--primary-accent-soft);
   border-color: var(--primary-accent-border);
   color: var(--primary-accent-text);
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
 }
 
 html[data-theme="coffee"] .pagination-button:disabled,
@@ -622,7 +621,7 @@ html:not([data-theme]) .button-primary {
   background: var(--primary-accent);
   color: #ffffff;
   border-radius: 6px;
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   box-shadow: 0 2px 6px rgba(163, 86, 22, 0.22);
   transition: color var(--interaction-duration) var(--interaction-easing), background-color var(--interaction-duration) var(--interaction-easing), border-color var(--interaction-duration) var(--interaction-easing), box-shadow var(--interaction-duration) var(--interaction-easing), transform var(--motion-duration-micro) var(--motion-ease-out);
 }
@@ -739,7 +738,7 @@ html:not([data-theme]) textarea::placeholder {
 html[data-theme="coffee"] .field--title input,
 html:not([data-theme]) .field--title input {
   font-family: var(--font-display);
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
   letter-spacing: -0.02em;
   color: #261e18;
   background-color: transparent;
@@ -792,7 +791,7 @@ html:not([data-theme]) .note-detail-surface .dialog-footer {
 html[data-theme="coffee"] .quick-view-document-header h1,
 html:not([data-theme]) .quick-view-document-header h1 {
   font-family: var(--font-display);
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
   letter-spacing: -0.025em;
   color: #261e18;
 }
@@ -904,7 +903,7 @@ html:not([data-theme]) .note-content-preview .markdown-code-copy-btn.is-copied {
 
 /* Coffee syntax highlighting */
 html[data-theme="coffee"] .token-keyword,
-html:not([data-theme]) .token-keyword { color: #f2994a; font-weight: 600; }
+html:not([data-theme]) .token-keyword { color: #f2994a; font-weight: var(--font-weight-semibold); }
 html[data-theme="coffee"] .token-string,
 html:not([data-theme]) .token-string { color: #a9c676; }
 html[data-theme="coffee"] .token-comment,
@@ -914,7 +913,7 @@ html:not([data-theme]) .token-number { color: #d4a373; }
 html[data-theme="coffee"] .token-function,
 html:not([data-theme]) .token-function { color: #f4c478; }
 html[data-theme="coffee"] .token-boolean,
-html:not([data-theme]) .token-boolean { color: #f29b62; font-weight: 600; }
+html:not([data-theme]) .token-boolean { color: #f29b62; font-weight: var(--font-weight-semibold); }
 html[data-theme="coffee"] .token-operator,
 html:not([data-theme]) .token-operator { color: #c8aa8d; }
 html[data-theme="coffee"] .token-property,
@@ -1180,7 +1179,7 @@ html:not([data-theme]) .tag-add-button {
   background: #ebe1d2;
   border-color: #d8ccbd;
   color: #4a3c31;
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   transition: color var(--interaction-duration) var(--interaction-easing), background-color var(--interaction-duration) var(--interaction-easing), border-color var(--interaction-duration) var(--interaction-easing), transform var(--motion-duration-micro) var(--motion-ease-out);
 }
 

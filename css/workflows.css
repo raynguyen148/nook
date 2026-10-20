@@ -135,7 +135,7 @@ html .workflow-dialog.command-dialog::backdrop {
 .command-dialog input::placeholder { color: var(--text-muted); opacity: 1; }
 .command-dialog .command-dialog__close { flex: none; min-height: 0; padding: var(--space-1) var(--space-2); border-color: var(--border-subtle); color: var(--text-muted); background: var(--surface-muted); box-shadow: none; }
 .command-dialog__close kbd { font: 0.7rem var(--font-mono); }
-.command-dialog .field-help { flex: none; margin: 0; padding: var(--space-3) var(--space-4); color: var(--text-muted); font-size: 0.75rem; line-height: 1.5; }
+.command-dialog .field-help { flex: none; margin: 0; padding: var(--space-3) var(--space-4); color: var(--text-muted); font-size: var(--font-size-xs); line-height: 1.5; }
 .command-dialog .workflow-list {
   min-height: 0;
   overflow-y: auto;
@@ -148,7 +148,7 @@ html .workflow-dialog.command-dialog::backdrop {
 .command-group + .command-group { margin-top: var(--space-2); padding-top: var(--space-2); border-top: 1px solid var(--border-subtle); }
 .command-result + .command-result { margin-top: var(--space-1); }
 .command-group__heading { display: flex; justify-content: space-between; align-items: center; gap: var(--space-2); padding: var(--space-2) var(--space-3); color: var(--text-muted); font: 600 0.65rem var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; }
-.command-group__meta { font-weight: 400; letter-spacing: 0.04em; }
+.command-group__meta { font-weight: var(--font-weight-regular); letter-spacing: 0.04em; }
 .command-dialog > .command-dialog__footer { justify-content: space-between; align-items: center; padding: var(--space-2) var(--space-4); gap: var(--space-2); background: var(--surface-muted); }
 .command-dialog__help { display: flex; flex-wrap: wrap; gap: var(--space-3); margin: 0; color: var(--text-muted); font-size: 0.7rem; }
 .command-dialog__help > span { display: inline-flex; align-items: center; gap: var(--space-1); white-space: nowrap; }
@@ -176,8 +176,8 @@ html .workflow-dialog.command-dialog::backdrop {
 .command-result__copy { display: grid; min-width: 0; gap: 0.125rem; }
 .command-result__title,
 .command-result__hint { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.command-result__title { font-size: 0.85rem; font-weight: 600; }
-.command-result__hint { color: var(--text-muted); font-size: 0.75rem; font-weight: 400; }
+.command-result__title { font-size: 0.85rem; font-weight: var(--font-weight-semibold); }
+.command-result__hint { color: var(--text-muted); font-size: var(--font-size-xs); font-weight: var(--font-weight-regular); }
 @media (hover: hover) {
   .command-result:hover:not(:disabled) { border-color: var(--border-subtle); background: var(--surface-muted); }
 }
@@ -194,7 +194,7 @@ html .workflow-dialog.command-dialog::backdrop {
 /* Hallmark · component: Select notes · Nook existing tokens and controls
  * Hallmark · pre-emit critique: P5 H5 E5 S5 R5 V4
  */
-.select-notes { display: inline-flex; flex: none; width: auto; min-height: 0; padding-inline: 0.6rem; gap: 0.35rem; color: var(--component-text); font-size: 0.8rem; font-weight: 500; white-space: nowrap; }
+.select-notes { display: inline-flex; flex: none; width: auto; min-height: 0; padding-inline: 0.6rem; gap: 0.35rem; color: var(--component-text); font-size: 0.8rem; font-weight: var(--font-weight-medium); white-space: nowrap; }
 .select-notes svg { color: var(--primary-accent); }
 .view-mode-choice--selection { margin-right: var(--space-1); padding-right: var(--space-1); border-right: 1px solid var(--component-border); }
 .view-mode-choice--selection:not(:has(> button:not(.is-hidden))) { display: none; }
@@ -230,9 +230,9 @@ html:is([data-theme="retro"], [data-theme="eink"]) .bulk-actions {
   border-color: var(--border-subtle);
 }
 .bulk-actions__selection { display: flex; align-items: center; align-self: stretch; gap: var(--space-1); min-width: 0; }
-.bulk-actions__count { display: flex; align-items: center; align-self: stretch; flex: none; padding-inline: var(--space-2); border-radius: var(--bulk-actions-radius); color: var(--selected-text); background: var(--selected-surface); font-size: 0.75rem; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.bulk-actions__count { display: flex; align-items: center; align-self: stretch; flex: none; padding-inline: var(--space-2); border-radius: var(--bulk-actions-radius); color: var(--selected-text); background: var(--selected-surface); font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .bulk-actions__tools { display: flex; align-items: center; gap: var(--space-1); padding-left: var(--space-1); border-left: 1px solid var(--border-subtle); }
-.notes-panel .bulk-actions .button { min-height: 0; height: calc(var(--control-height) - 0.32rem - 2px); gap: var(--space-1); padding: var(--space-1) var(--space-2); border-color: transparent; border-radius: var(--bulk-actions-radius); color: var(--text-default); background: transparent; font-size: 0.75rem; font-weight: 500; white-space: nowrap; box-shadow: none; }
+.notes-panel .bulk-actions .button { min-height: 0; height: calc(var(--control-height) - 0.32rem - 2px); gap: var(--space-1); padding: var(--space-1) var(--space-2); border-color: transparent; border-radius: var(--bulk-actions-radius); color: var(--text-default); background: transparent; font-size: var(--font-size-xs); font-weight: var(--font-weight-medium); white-space: nowrap; box-shadow: none; }
 .notes-panel .bulk-actions .button-danger { color: var(--danger-text); background: var(--danger-surface); }
 .notes-panel .bulk-actions .bulk-actions__select-all--deselect { color: var(--danger-text); }
 .bulk-actions__select-all .button-icon-svg { color: var(--text-muted); }
@@ -261,8 +261,8 @@ html:is([data-theme="retro"], [data-theme="eink"]) .bulk-actions {
   .workflow-dialog > .dialog-footer { padding-bottom: max(1rem, env(safe-area-inset-bottom)); }
   .workflow-dialog > .dialog-footer .button { flex: 1; }
   .workflow-dialog input,
-  .workflow-dialog select { font-size: 1rem; min-height: 44px; }
-  .command-dialog #command-search { font-size: 1rem; min-height: 44px; }
+  .workflow-dialog select { font-size: var(--font-size-md); min-height: 44px; }
+  .command-dialog #command-search { font-size: var(--font-size-md); min-height: 44px; }
   .command-dialog .clear-search { width: 44px; height: 44px; right: 0; }
   .workflow-dialog .icon-button { width: 44px; height: 44px; }
   .workflow-row__actions .button,

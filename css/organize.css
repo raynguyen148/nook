@@ -118,6 +118,10 @@
   }
 }
 
+.organize-tab__mobile-only {
+  display: none;
+}
+
 .organize-tab {
   display: inline-flex;
   align-items: center;
@@ -155,7 +159,7 @@
   color: var(--note-card-preview, #64748b);
   font-size: 0.72rem;
   font-variant-numeric: tabular-nums;
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   line-height: 1.2;
   white-space: nowrap;
 }
@@ -245,7 +249,7 @@
 
 .management-row__name {
   color: #0f172a;
-  font-size: 0.875rem;
+  font-size: var(--font-size-control);
   font-weight: 540;
   white-space: nowrap;
   overflow: hidden;
@@ -262,7 +266,7 @@
   color: var(--note-card-preview);
   font-size: 0.84rem;
   font-variant-numeric: tabular-nums;
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
   line-height: 1.2;
   white-space: nowrap;
 }
@@ -278,7 +282,7 @@
 
 .management-row__usage span {
   color: var(--note-card-preview);
-  font-weight: 400;
+  font-weight: var(--font-weight-regular);
   font-size: 0.8rem;
 }
 
@@ -289,7 +293,7 @@
   align-items: center;
   gap: 0.28rem;
   color: var(--note-card-preview);
-  font-weight: 400;
+  font-weight: var(--font-weight-regular);
   font-size: 0.8rem;
   opacity: 0.85;
 }
@@ -321,7 +325,7 @@
   background: #f1f5f9;
   border: 1px solid #e2e8f0;
   font-size: 0.68rem;
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
   letter-spacing: 0.07em;
   text-transform: uppercase;
   flex: none;
@@ -376,7 +380,7 @@
   padding: 0 0.62rem;
   font-size: 0.76rem;
   font-weight: 550;
-  border-radius: 0.5rem;
+  border-radius: var(--radius-sm);
   justify-content: center;
 }
 
@@ -478,7 +482,7 @@ form.management-row .management-row__controls--editing .color-picker__trigger {
   background-size: 0.86rem 0.86rem;
   font: inherit;
   font-size: 0.78rem;
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   appearance: none;
 }
 
@@ -514,7 +518,7 @@ form.management-row .management-row__controls--editing .color-picker__trigger {
   background-size: 0.86rem 0.86rem;
   font: inherit;
   font-size: 0.78rem;
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   line-height: 1.2;
   text-align: left;
   cursor: pointer;
@@ -677,7 +681,7 @@ form.management-row .management-row__controls--editing .color-picker__trigger {
   overflow: hidden;
   color: var(--note-card-muted);
   font-size: 0.64rem;
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
   line-height: 1.2;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -792,7 +796,7 @@ form.management-row .management-row__controls--editing .color-picker__trigger {
   background: transparent;
   font: inherit;
   font-size: 0.78rem;
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   line-height: 1.2;
   text-align: left;
   cursor: pointer;
@@ -821,7 +825,7 @@ form.management-row .management-row__controls--editing .color-picker__trigger {
 .theme-picker__option[aria-selected="true"]::after {
   content: "✓";
   font-size: 0.82rem;
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
 }
 
 
@@ -869,7 +873,7 @@ form.management-row .management-row__controls--editing .color-picker__trigger {
 
 .preview-lines-control__header label {
   font-size: 0.78rem;
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
 }
 
 
@@ -1149,6 +1153,10 @@ form.management-row .management-row__controls--editing .color-picker__trigger {
 
   .organize-tab__mobile-hidden {
     display: none;
+  }
+
+  .organize-tab__mobile-only {
+    display: inline;
   }
 
   .organize-panel__intro {

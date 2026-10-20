@@ -98,6 +98,7 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
     if (mode === "preview") renderQuickView();
     else renderNoteEditorPreview();
     scheduleNoteEditorHeight();
+    if (previousMode !== mode) api.syncSidePaneSidebar?.();
     if (previousMode !== mode && isNoteEditorOpen()) {
       api.syncNoteDetailSize();
       noteEditorModeAnimation?.cancel();
@@ -257,6 +258,22 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
 
   function setNoteSaveStatus(state, customLabel = "") {
     api.renderNoteSaveStatus(elements.noteSaveStatus, elements.noteSaveStatusLabel, state, customLabel);
+    ui.noteEditorIsClean = state === "saved";
+    syncNoteFooterActions();
+  }
+
+  // A saved note needs one exit: "Done". Return + "Save & return" only appear once there is something to save.
+  function syncNoteFooterActions() {
+    const submitButton = noteSubmitButton();
+    const isClean = Boolean(ui.noteEditorIsClean) && !ui.noteSaveInFlight;
+    if (elements.cancelNote) {
+      if (isClean && document.activeElement === elements.cancelNote) submitButton?.focus({ preventScroll: true });
+      elements.cancelNote.classList.toggle("is-hidden", isClean);
+    }
+    if (submitButton) {
+      submitButton.textContent = ui.noteSaveInFlight ? "Saving…" : isClean ? "Done" : "Save & return";
+      submitButton.title = isClean ? "Return to notes" : "Save changes and return to notes";
+    }
   }
 
   function scheduleNoteAutoSave() {
@@ -324,8 +341,8 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
     const submitButton = noteSubmitButton();
     if (submitButton) {
       submitButton.disabled = disabled || isCreatingTag;
-      submitButton.textContent = disabled ? "Saving…" : "Save & return";
     }
+    syncNoteFooterActions();
     if (elements.mobileNoteDone) {
       elements.mobileNoteDone.disabled = disabled || isCreatingTag;
       elements.mobileNoteActions.disabled = disabled;
@@ -483,6 +500,7 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
     // Keep the currently visible surface intact for the exit animation. The
     // next editor open re-syncs the DOM classes before it becomes visible.
     ui.noteEditorMode = "edit";
+    api.syncSidePaneSidebar?.();
     ui.viewInvoker = null;
   }
 

@@ -67,9 +67,9 @@
               <svg viewBox="0 0 64 64" fill="none">
                 <defs>
                   <linearGradient id="nook-brand-mark-gradient" x1="12" y1="6" x2="52" y2="58" gradientUnits="userSpaceOnUse">
-                    <stop stop-color="#9a5619" />
-                    <stop offset="0.55" stop-color="#824410" />
-                    <stop offset="1" stop-color="#663206" />
+                    <stop class="brand-mark__stop brand-mark__stop--start" stop-color="#9a5619" />
+                    <stop class="brand-mark__stop brand-mark__stop--mid" offset="0.55" stop-color="#824410" />
+                    <stop class="brand-mark__stop brand-mark__stop--end" offset="1" stop-color="#663206" />
                   </linearGradient>
                   <linearGradient id="nook-right-stem-gradient" x1="38" y1="15" x2="46" y2="49" gradientUnits="userSpaceOnUse">
                     <stop stop-color="#f0f5fa" />
@@ -186,7 +186,7 @@
                         <rect x="3.5" y="5.25" width="17" height="15.25" rx="2" />
                         <path d="M7.5 3.75v3M16.5 3.75v3M3.75 9.25h16.5" />
                       </svg>
-                      <span>Created Today</span>
+                      <span>Created today</span>
                     </span>
                     <span id="created-today-filter-count" class="filter-count">0</span>
                   </button>
@@ -198,7 +198,7 @@
                         <circle cx="16.25" cy="16" r="3.25" />
                         <path d="M16.25 14.35v1.9l1.25.75" />
                       </svg>
-                      <span>Updated Today</span>
+                      <span>Updated today</span>
                     </span>
                     <span id="updated-today-filter-count" class="filter-count">0</span>
                   </button>
@@ -722,7 +722,7 @@
                     <rect x="3" y="3" width="18" height="18" rx="3.5" />
                     <rect x="13.5" y="6" width="4.5" height="12" rx="1.5" fill="currentColor" stroke="none" />
                   </svg>
-                  <span class="note-editor-mode__label">Side Note</span>
+                  <span class="note-editor-mode__label">Side note</span>
                 </button>
                 <span id="note-editor-mode-side-note-tooltip" class="shortcut-tooltip" role="tooltip">
                   <span>Open side note</span>
@@ -967,7 +967,7 @@
                   <path d="M5 6h.01M9 6h.01M13 6h.01M17 6h.01M5 10h.01M9 10h.01M13 10h.01M17 10h.01M7.5 13h9"></path>
                 </svg>
               </button>
-              <span id="note-save-shortcut-help" class="sr-only">Press 1 for the Markdown editor, 2 for split preview, and 3 for Preview. Press 4 to toggle Side Note on desktop when focus is outside form fields and no text is selected. Press T to cycle the theme when focus is outside text fields and editable controls. Formatting shortcuts support bold, italic, links, inline code, numbered lists, and bullet lists. Quick save keeps this note open. Save note closes it.</span>
+              <span id="note-save-shortcut-help" class="sr-only">Press 1 for the Markdown editor, 2 for split preview, and 3 for Preview. Press 4 to toggle Side note on desktop when focus is outside form fields and no text is selected. Press T to cycle the theme when focus is outside text fields and editable controls. Formatting shortcuts support bold, italic, links, inline code, numbered lists, and bullet lists. Quick save keeps this note open. Save note closes it.</span>
               <div class="note-save-shortcut__tooltip" role="tooltip">
                 <p>Note shortcuts</p>
                 <div class="note-save-shortcut__row">
@@ -983,7 +983,7 @@
                   <span class="note-save-shortcut__keys"><kbd>3</kbd></span>
                 </div>
                 <div class="note-save-shortcut__row">
-                  <span>Side Note (desktop)</span>
+                  <span>Side note (desktop)</span>
                   <span class="note-save-shortcut__keys"><kbd>4</kbd></span>
                 </div>
                 <div class="note-save-shortcut__row">
@@ -1666,7 +1666,7 @@
       </section>
       <div class="organize-tabs" role="tablist" aria-label="Library settings">
         <button id="types-tab" class="organize-tab is-active" type="button" role="tab" aria-selected="true" aria-controls="types-panel" tabindex="0">
-          <span><span class="organize-tab__mobile-hidden">Note </span>Types</span>
+          <span><span class="organize-tab__mobile-hidden">Note types</span><span class="organize-tab__mobile-only">Types</span></span>
         </button>
         <button id="tags-tab" class="organize-tab" type="button" role="tab" aria-selected="false" aria-controls="tags-panel" tabindex="-1">
           <span>Tags</span>
@@ -1822,7 +1822,7 @@
               <p id="glass-help" class="dialog-description display-setting__description">Each theme has its own fixed illustration, with glass in the library, note cards, and note detail. Reading areas keep a stronger background for clarity. Accessibility preferences may turn the effect off.</p>
             </div>
             <div class="glass-control">
-              <label class="glass-control__toggle" for="glass-enabled"><input id="glass-enabled" type="checkbox" aria-describedby="glass-help" /> Enable glass</label>
+              <label class="glass-control__toggle" for="glass-enabled"><input id="glass-enabled" type="checkbox" role="switch" aria-describedby="glass-help" /> Enable glass</label>
               <div id="glass-transparency-control" class="preview-lines-control is-hidden">
                 <div class="preview-lines-control__header">
                   <label class="management-row__name" for="glass-transparency">Transparency</label>
@@ -2012,7 +2012,7 @@
                 </dd>
               </div>
               <div class="management-row shortcut-row">
-                <dt class="shortcut-row__label">Toggle Side Note (desktop)</dt>
+                <dt class="shortcut-row__label">Toggle Side note (desktop)</dt>
                 <dd class="shortcut-keys"><kbd>4</kbd></dd>
               </div>
               <div class="management-row shortcut-row">
@@ -2071,7 +2071,7 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7m4-7v7"/></svg><span>Trash</span>
       </button>
       <button id="mobile-nav-settings" class="mobile-navigation__item" type="button" aria-haspopup="dialog">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/><circle cx="9" cy="6" r="2" fill="var(--surface-panel)"/><circle cx="15" cy="12" r="2" fill="var(--surface-panel)"/><circle cx="9" cy="18" r="2" fill="var(--surface-panel)"/></svg><span>Settings</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg><span>Settings</span>
       </button>
     </nav>
     <dialog id="mobile-filter-dialog" class="mobile-sheet" aria-labelledby="mobile-filter-title">

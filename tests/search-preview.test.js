@@ -9,14 +9,22 @@ const vm = require("node:vm");
 const sourcePath = path.join(__dirname, "..", "js", "app", "search.js");
 const sourceCode = fs.readFileSync(sourcePath, "utf8");
 
-function fixture(query = "") {
+function realMarkdown() {
+  const context = {};
+  context.globalThis = context;
+  const markdownPath = path.join(__dirname, "..", "js", "markdown.js");
+  vm.runInNewContext(fs.readFileSync(markdownPath, "utf8"), context, { filename: markdownPath });
+  return context.NookMarkdown;
+}
+
+function fixture(query = "", markdown = null) {
   let installer;
   let conversions = 0;
   const registry = { register(name, install) { assert.equal(name, "search"); installer = install; } };
   const context = { Date, Intl, Map, Set, Symbol };
   context.globalThis = context;
   context[Symbol.for("nook.app.modules")] = registry;
-  context.NookMarkdown = {
+  context.NookMarkdown = markdown || {
     toPlainText(value) {
       conversions += 1;
       return String(value).replace(/\*\*/g, "");
@@ -65,4 +73,20 @@ test("removed and changed notes are pruned from the preview cache", () => {
   f.library.previewIndex.set("changed", { content: "old", preview: "old" });
   f.api.syncNotePreviewIndex([{ id: "keep", content: "a" }, { id: "changed", content: "new" }]);
   assert.deepEqual([...f.library.previewIndex.keys()], ["keep"]);
+});
+
+test("note-card previews keep block boundaries and skip an opening heading that repeats the title", () => {
+  const f = fixture("", realMarkdown());
+  const note = {
+    id: "note-1",
+    title: "Code review checklist for risky changes",
+    content: "# Code review checklist\n\nA useful review starts\nwith behavior.\n\n## Before approving\n\n- [ ] One purpose\n- [ ] Tests cover it\n",
+  };
+  assert.equal(
+    f.api.previewForSearch(note),
+    "A useful review starts with behavior. Before approving · One purpose · Tests cover it",
+  );
+
+  note.title = "Unrelated title";
+  assert.match(f.api.previewForSearch(note), /^Code review checklist · A useful review/);
 });

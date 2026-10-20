@@ -2005,9 +2005,42 @@
     }
   }
 
-  function toPlainText(source) {
+  const PLAIN_TEXT_BLOCK_START = /^\s*(?:#{1,6}\s|[-*+]\s|\d+[.)]\s|>|\||```|~~~|[=-]{2,}\s*$|(?:[-*_]\s*){3,}$)/;
+
+  // Joins soft-wrapped paragraph lines so each remaining line is one block.
+  // Fenced code keeps its own lines; every other block start begins a line.
+  function joinSoftWrappedLines(source) {
+    const lines = source.replace(/\r\n?/g, "\n").split("\n");
+    const output = [];
+    let inFence = false;
+    let joinable = false;
+    lines.forEach((line) => {
+      const isFence = /^\s*(?:```|~~~)/.test(line);
+      if (inFence || isFence) {
+        output.push(line);
+        if (isFence) inFence = !inFence;
+        joinable = false;
+        return;
+      }
+      if (!line.trim()) {
+        output.push("");
+        joinable = false;
+        return;
+      }
+      const isBlockStart = PLAIN_TEXT_BLOCK_START.test(line);
+      if (joinable && !isBlockStart) {
+        output[output.length - 1] += ` ${line.trim()}`;
+      } else {
+        output.push(line);
+      }
+      joinable = !isBlockStart || /^\s*(?:[-*+]\s|\d+[.)]\s|>)/.test(line);
+    });
+    return output.join("\n");
+  }
+
+  function toPlainText(source, { preserveBlocks = false } = {}) {
     if (!source) return "";
-    let text = String(source);
+    let text = preserveBlocks ? joinSoftWrappedLines(String(source)) : String(source);
 
     // HTML comments
     text = text.replace(/<!--[\s\S]*?-->/g, "");
@@ -2085,6 +2118,13 @@
       .replace(/&#39;|&apos;/gi, "'")
       .replace(/&nbsp;/gi, " ");
 
+    if (preserveBlocks) {
+      return text
+        .split("\n")
+        .map((line) => line.replace(/\s+/g, " ").trim())
+        .filter(Boolean)
+        .join("\n");
+    }
     return text.replace(/\s+/g, " ").trim();
   }
 

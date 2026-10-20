@@ -55,18 +55,49 @@
       return String(value || "").replace(/\s+/g, " ").trim();
     }
 
+    function comparablePreviewText(value) {
+      return normalizePreviewText(value).toLocaleLowerCase().replace(/[^\p{L}\p{N}]+/gu, " ").trim();
+    }
+
+    // The card already shows the title, so an opening heading that repeats it
+    // (or is its leading phrase) only duplicates it in the excerpt.
+    function withoutTitleHeading(content, title) {
+      const match = /^\s*#{1,6}[ \t]+([^\n]+?)[ \t#]*(?:\n|$)/.exec(content);
+      if (!match) return content;
+      const heading = comparablePreviewText(match[1]);
+      const comparableTitle = comparablePreviewText(title);
+      if (!heading || !comparableTitle) return content;
+      const repeatsTitle = comparableTitle === heading || comparableTitle.startsWith(`${heading} `);
+      return repeatsTitle ? content.slice(match[0].length) : content;
+    }
+
+    // Separates blocks that lost their line breaks, unless the previous block
+    // already ends a sentence.
+    function joinPreviewBlocks(text) {
+      return String(text || "")
+        .split("\n")
+        .map(normalizePreviewText)
+        .filter(Boolean)
+        .reduce((joined, block) => {
+          if (!joined) return block;
+          return /[.!?:;…。！？]$/u.test(joined) ? `${joined} ${block}` : `${joined} · ${block}`;
+        }, "");
+    }
+
     function noteCardPreview(note) {
       const content = String(note?.content || "");
+      const title = String(note?.title || "");
       const cached = library.previewIndex.get(note?.id);
-      if (cached?.content === content) return cached.preview;
+      if (cached?.content === content && cached.title === title) return cached.preview;
+      const source = withoutTitleHeading(content, title);
       const plainText = globalThis.NookMarkdown?.toPlainText
-        ? globalThis.NookMarkdown.toPlainText(content)
-        : content;
-      const normalized = normalizePreviewText(plainText);
+        ? globalThis.NookMarkdown.toPlainText(source, { preserveBlocks: true })
+        : source;
+      const normalized = joinPreviewBlocks(plainText);
       const preview = normalized.length > NOTE_CARD_PREVIEW_MAX_LENGTH
         ? `${normalized.slice(0, NOTE_CARD_PREVIEW_MAX_LENGTH).trimEnd()}…`
         : normalized;
-      if (note?.id) library.previewIndex.set(note.id, { content, preview });
+      if (note?.id) library.previewIndex.set(note.id, { content, title, preview });
       return preview;
     }
 

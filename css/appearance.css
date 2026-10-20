@@ -140,29 +140,96 @@ html[data-theme="eink"] {
 
 .glass-control__toggle {
   display: flex;
+  flex-direction: row-reverse;
   align-items: center;
-  gap: 0.5rem;
-  font-size: 0.875rem;
-  font-weight: 600;
+  justify-content: space-between;
+  gap: 0.75rem;
+  min-height: var(--control-height-md);
+  font-size: var(--font-size-control);
+  font-weight: var(--font-weight-semibold);
   cursor: pointer;
 }
 
+/* The glass preference reads as an on/off switch aligned with the other
+ * right-column controls. It stays a native checkbox for forms and AT. */
 #glass-enabled {
-  width: 1rem;
-  height: 1rem;
+  position: relative;
+  width: 2.25rem;
+  height: 1.3rem;
   min-height: 0;
-  flex: 0 0 1rem;
+  flex: 0 0 2.25rem;
   margin: 0;
   padding: 0;
-  border: 0;
-  background: transparent;
+  border: 1px solid color-mix(in srgb, var(--text-muted) 30%, var(--border-strong));
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, var(--text-muted) 22%, var(--surface-panel));
   box-shadow: none;
-  accent-color: var(--primary-accent);
+  appearance: none;
+  cursor: pointer;
+  transition:
+    background-color var(--motion-duration-short) var(--motion-ease-out),
+    border-color var(--motion-duration-short) var(--motion-ease-out);
+}
+
+#glass-enabled::before {
+  position: absolute;
+  top: 50%;
+  left: 0.14rem;
+  width: 0.92rem;
+  height: 0.92rem;
+  border-radius: 50%;
+  background: var(--surface-panel);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 22%);
+  content: "";
+  transform: translateY(-50%);
+  transition: transform var(--motion-duration-short) var(--motion-ease-out);
+}
+
+#glass-enabled:checked {
+  border-color: var(--primary-accent);
+  background: var(--primary-accent);
+}
+
+#glass-enabled:checked::before {
+  background: var(--text-on-accent);
+  transform: translate(0.94rem, -50%);
+}
+
+#glass-enabled:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
 }
 
 .glass-control__toggle input:focus-visible {
   outline: 2px solid var(--focus-color);
   outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #glass-enabled,
+  #glass-enabled::before {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  #glass-enabled {
+    border-color: CanvasText;
+    background: Canvas;
+  }
+
+  #glass-enabled::before {
+    background: CanvasText;
+  }
+
+  #glass-enabled:checked {
+    border-color: Highlight;
+    background: Highlight;
+  }
+
+  #glass-enabled:checked::before {
+    background: HighlightText;
+  }
 }
 
 #glass-transparency-help {
@@ -177,7 +244,7 @@ html[data-theme="eink"] {
 
 .glass-style-control label {
   font-size: 0.78rem;
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
 }
 
 .glass-style-picker {
@@ -306,6 +373,14 @@ html[data-theme="eink"] {
        * and leaves the pill pair with different frosting; the film alone blurs. */
       html[data-glass="true"] :is(.toolbar, .topbar-actions).is-pinned::before {
         background: var(--glass-sheen);
+      }
+
+      /* The band behind the pills frosts the illustration instead of hiding it. */
+      html[data-glass="true"] .topbar.is-actions-pinned::after {
+        background: linear-gradient(to bottom, color-mix(in srgb, var(--surface-page) 62%, transparent) 72%, transparent);
+        backdrop-filter: var(--glass-frost);
+        -webkit-backdrop-filter: var(--glass-frost);
+        mask-image: linear-gradient(to bottom, #000 72%, transparent);
       }
 
       /* The tint sits on the pill itself, not only on the film: if a browser skips

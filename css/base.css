@@ -60,7 +60,11 @@
 }
 
 :root {
+  /* Three control sizes: compact inline affordances, icon tools, and primary fields. */
+  --control-height-sm: 1.5rem;
+  --control-height-md: 2rem;
   --control-height: 2.4rem;
+  --control-height-lg: var(--control-height);
   --control-radius: 0.625rem;
   --surface-radius: 0.75rem;
   --note-card-preview-lines: 3;
@@ -130,20 +134,37 @@
   --note-title-resting-border: transparent;
   --backup-good-accent: #047857;
   --backup-warning-accent: #92400e;
-  --backup-never-accent: #b91c1c;
-  --font-size-control: 0.875rem;
+  --backup-never-accent: var(--backup-warning-accent);
+  /* Type scale. Prefer these steps over one-off sizes in new rules. */
+  --font-size-2xs: 0.6875rem;
+  --font-size-xs: 0.75rem;
   --font-size-label: 0.8125rem;
+  --font-size-control: 0.875rem;
+  --font-size-body: 0.9375rem;
+  --font-size-md: 1rem;
   --font-size-dialog-title: 1.125rem;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
   --space-1: 0.25rem;
   --space-2: 0.5rem;
   --space-3: 0.75rem;
   --space-4: 1rem;
   --space-5: 1.25rem;
   --spacing-control: var(--control-height);
+  --radius-sm: 0.5rem;
+  --radius-md: var(--surface-radius);
+  --radius-lg: 1rem;
   --radius-control: var(--control-radius);
   --radius-card: var(--surface-radius);
-  --radius-dialog: 1rem;
+  --radius-dialog: var(--radius-lg);
   --radius-pill: 999px;
+  /* Neutral elevation steps for light surfaces; themes may override. */
+  --shadow-xs: 0 1px 2px rgb(0 0 0 / 4%);
+  --shadow-sm: 0 1px 3px rgb(0 0 0 / 4%);
+  --shadow-md: 0 2px 8px -2px rgb(15 23 42 / 5%);
+  --shadow-lg: 0 4px 20px -2px rgb(15 23 42 / 5%), 0 2px 6px -1px rgb(15 23 42 / 3%);
   --motion-duration-state: var(--motion-duration-short);
   --motion-ease-state: var(--motion-ease-out);
   --component-surface: var(--surface-panel);
@@ -330,7 +351,7 @@ select:focus-visible {
   border: 1px solid #e2e8f0;
   border-radius: var(--surface-radius);
   background: #ffffff;
-  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05), 0 2px 6px -1px rgba(15, 23, 42, 0.03);
+  box-shadow: var(--shadow-lg);
   transition:
     background-color var(--motion-duration-short) var(--motion-ease-out),
     border-color var(--motion-duration-short) var(--motion-ease-out),
@@ -374,8 +395,8 @@ select:focus-visible {
   align-items: center;
   justify-content: center;
   flex: none;
-  width: 1.45rem;
-  height: 1.45rem;
+  width: var(--control-height-sm);
+  height: var(--control-height-sm);
   border: 1px solid #e2e8f0;
   border-radius: 50%;
   padding: 0;
@@ -442,6 +463,11 @@ select:focus-visible {
   display: block;
 }
 
+/* Themes may tint the logo tile; the default stays the original brown. */
+.brand-mark__stop--start { stop-color: var(--brand-mark-start, #9a5619); }
+.brand-mark__stop--mid { stop-color: var(--brand-mark-mid, #824410); }
+.brand-mark__stop--end { stop-color: var(--brand-mark-end, #663206); }
+
 
 
 .brand strong,
@@ -504,17 +530,18 @@ select:focus-visible {
   --backup-health-border: color-mix(in srgb, var(--backup-health-accent) 46%, var(--component-border));
   --backup-health-surface: color-mix(in srgb, var(--backup-health-accent) 9%, var(--component-surface));
   --backup-health-text: var(--backup-health-accent);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
 }
 
 
 
+/* No backup yet is a gentle nudge for new libraries, not an error. */
 .backup-health[data-state="never"] {
   --backup-health-accent: var(--backup-never-accent);
-  --backup-health-border: color-mix(in srgb, var(--backup-health-accent) 46%, var(--component-border));
-  --backup-health-surface: color-mix(in srgb, var(--backup-health-accent) 9%, var(--component-surface));
+  --backup-health-border: color-mix(in srgb, var(--backup-health-accent) 36%, var(--component-border));
+  --backup-health-surface: color-mix(in srgb, var(--backup-health-accent) 7%, var(--component-surface));
   --backup-health-text: var(--backup-health-accent);
-  font-weight: 600;
+  font-weight: 560;
 }
 
 
@@ -574,7 +601,7 @@ select:focus-visible {
   color: var(--primary-accent, #9e6b02);
   background: transparent;
   font-size: 0.72rem;
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
 }
 
 
@@ -659,7 +686,7 @@ select:focus-visible {
 .space-link.is-active {
   color: #0f172a;
   background: #e2e8f0;
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
 }
 
 
@@ -724,7 +751,7 @@ select:focus-visible {
 .sidebar-filter.is-active {
   color: #0f172a;
   background: #e2e8f0;
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
 }
 
 
@@ -857,13 +884,24 @@ select:focus-visible {
   color: var(--text-muted);
   font-size: 0.73rem;
   font-variant-numeric: tabular-nums;
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
 }
 
 
 
 .sidebar-filter.is-active .filter-count {
   color: var(--primary-accent, #9e6b02);
+}
+
+
+
+/* Filters with no matching notes stay available but recede. */
+:is(.sidebar-filter, .tag-filter-option).is-empty:not(.is-active) {
+  color: color-mix(in srgb, var(--text-muted) 82%, transparent);
+}
+
+:is(.sidebar-filter, .tag-filter-option).is-empty:not(.is-active) :is(.filter-count, .type-dot) {
+  opacity: 0.55;
 }
 
 
@@ -981,6 +1019,7 @@ select:focus-visible {
   gap: 0.22rem;
   margin-top: 0.38rem;
   padding: 0.2rem 0.22rem;
+  min-height: var(--control-height-sm);
   font-size: 0.7rem;
 }
 
@@ -1008,14 +1047,14 @@ select:focus-visible {
   gap: 0.28rem;
   min-height: 1.48rem;
   border: 1px solid #e2e8f0;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   padding: 0.16rem 0.48rem;
   color: #475569;
   background: #f8fafc;
   cursor: pointer;
   user-select: none;
   font-size: 0.68rem;
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   line-height: 1.2;
   transform-origin: center center;
   transition:
@@ -1079,7 +1118,7 @@ select:focus-visible {
   align-items: center;
   justify-content: center;
   font-size: 0.64rem;
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   color: var(--text-muted);
   padding-left: 0.05rem;
 }
@@ -1091,7 +1130,7 @@ select:focus-visible {
   border-color: var(--selected-border);
   color: var(--selected-text);
   background: var(--selected-surface);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
 }
 
 
@@ -1149,7 +1188,7 @@ select:focus-visible {
   margin: 0 0 0.45rem;
   color: var(--text-muted);
   font-size: 0.69rem;
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
@@ -1366,7 +1405,7 @@ h2 {
 .button-compact {
   min-height: 2.25rem;
   padding: 0.4rem 0.62rem;
-  font-size: 0.75rem;
+  font-size: var(--font-size-xs);
 }
 
 
@@ -1380,7 +1419,7 @@ h2 {
 
 .button-icon {
   font-size: 1.05rem;
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
   line-height: 1;
 }
 
@@ -1400,7 +1439,7 @@ h2 {
   border-radius: var(--surface-radius);
   padding: clamp(1rem, 2.3vw, 1.35rem);
   background: #ffffff;
-  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05), 0 2px 6px -1px rgba(15, 23, 42, 0.03);
+  box-shadow: var(--shadow-lg);
 }
 
 

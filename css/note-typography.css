@@ -68,7 +68,7 @@
   color: var(--text-strong);
   background: transparent;
   font-family: var(--font-sans);
-  font-size: 0.8125rem;
+  font-size: var(--font-size-label);
   font-weight: 550;
   line-height: 1;
   white-space: nowrap;
@@ -79,7 +79,7 @@
 .note-font-size-control .note-font-size-control__value {
   min-width: 3rem;
   color: var(--text-default);
-  font-size: 0.75rem;
+  font-size: var(--font-size-xs);
   font-variant-numeric: tabular-nums;
 }
 
@@ -126,7 +126,7 @@
   color: var(--text-default);
   background: transparent;
   font-family: var(--font-sans);
-  font-size: 0.9375rem;
+  font-size: var(--font-size-body);
   font-weight: 550;
   line-height: 1;
   cursor: pointer;
@@ -183,13 +183,13 @@
 .note-font-size-popover__title,
 .note-font-size-popover__help {
   margin: 0;
-  font-size: 0.75rem;
+  font-size: var(--font-size-xs);
   line-height: 1.5;
 }
 
 .note-font-size-popover__title {
-  font-size: 0.8125rem;
-  font-weight: 600;
+  font-size: var(--font-size-label);
+  font-weight: var(--font-weight-semibold);
 }
 
 .note-font-size-popover__help {
@@ -198,7 +198,7 @@
   justify-content: space-between;
   gap: 0.5rem;
   color: var(--text-default);
-  font-size: 0.6875rem;
+  font-size: var(--font-size-2xs);
 }
 
 .note-font-size-popover .note-font-size-control--popover {
@@ -227,7 +227,7 @@
   height: 2rem;
   padding: 0 0.25rem;
   color: var(--text-default);
-  font-size: 0.6875rem;
+  font-size: var(--font-size-2xs);
 }
 
 .note-font-size-popover__stepper {
@@ -254,8 +254,8 @@
 
 .note-font-size-popover__readout {
   color: var(--text-strong);
-  font-size: 1rem;
-  font-weight: 600;
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
   font-variant-numeric: tabular-nums;
   line-height: 1;
   white-space: nowrap;
@@ -329,7 +329,7 @@ html[data-theme="retro"] .note-font-size-popover .note-font-size-control--popove
   }
 
   #mobile-note-actions-body .note-font-size-popover__title {
-    font-size: 0.875rem;
+    font-size: var(--font-size-control);
   }
 
   .display-setting--note-font .note-font-size-control {

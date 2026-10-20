@@ -99,12 +99,12 @@ dialog:not([open]),
     border-radius: var(--radius-pill);
     background: var(--surface-panel);
     border: 1px solid var(--border-subtle);
-    font-size: 0.9375rem;
-    font-weight: 700;
+    font-size: var(--font-size-body);
+    font-weight: var(--font-weight-bold);
     line-height: 1;
     color: var(--text-strong);
     white-space: nowrap;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    box-shadow: var(--shadow-sm);
     cursor: pointer;
     transition: background var(--motion-duration-micro) var(--motion-ease-out),
                 transform var(--motion-duration-micro) var(--motion-ease-out),
@@ -117,7 +117,7 @@ dialog:not([open]),
   .mobile-space-icon {
     width: 26px;
     height: 26px;
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
     background: var(--selected-surface);
     color: var(--selected-text);
     display: flex;
@@ -145,8 +145,8 @@ dialog:not([open]),
   #mobile-library-title {
     display: inline-block;
     line-height: 1;
-    font-size: 0.9375rem;
-    font-weight: 700;
+    font-size: var(--font-size-body);
+    font-weight: var(--font-weight-bold);
     color: var(--text-strong);
   }
   .mobile-space-chevron {
@@ -175,7 +175,7 @@ dialog:not([open]),
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    box-shadow: var(--shadow-xs);
     transition: transform var(--motion-duration-micro) var(--motion-ease-out),
                 background var(--motion-duration-micro) var(--motion-ease-out),
                 box-shadow var(--motion-duration-micro) var(--motion-ease-out);
@@ -195,12 +195,12 @@ dialog:not([open]),
     top: -4px;
     min-width: 1.15rem;
     padding: 0.1rem 0.28rem;
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
     background: var(--selected-surface);
     color: var(--selected-text);
     box-shadow: 0 0 0 2px var(--surface-panel);
-    font-size: 0.6875rem;
-    font-weight: 700;
+    font-size: var(--font-size-2xs);
+    font-weight: var(--font-weight-bold);
     line-height: 1;
     display: flex;
     align-items: center;
@@ -239,7 +239,7 @@ dialog:not([open]),
     background: var(--surface-panel);
     border: 1px solid color-mix(in srgb, var(--border-subtle) 85%, transparent);
     color: var(--text-muted);
-    font-size: 0.75rem;
+    font-size: var(--font-size-xs);
     font-weight: 550;
     line-height: 1;
     gap: 5px;
@@ -256,17 +256,17 @@ dialog:not([open]),
     transform: scale(0.96);
     background: var(--surface-muted);
   }
-  .mobile-type-chip .type-dot { width: 5.5px; height: 5.5px; border-radius: 999px; }
+  .mobile-type-chip .type-dot { width: 5.5px; height: 5.5px; border-radius: var(--radius-pill); }
   .mobile-type-chip.is-active {
     color: var(--selected-text);
     background: var(--selected-surface);
     border-color: var(--selected-border);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
-    font-weight: 600;
+    font-weight: var(--font-weight-semibold);
   }
   .mobile-type-chip__count {
     font-size: 0.65rem;
-    font-weight: 500;
+    font-weight: var(--font-weight-medium);
     color: var(--text-muted);
     opacity: 1;
     font-variant-numeric: tabular-nums;
@@ -284,7 +284,7 @@ dialog:not([open]),
     align-items: center;
     gap: var(--space-2);
     padding: 0.85rem 1.15rem;
-    border-radius: 1rem;
+    border-radius: var(--radius-lg);
     background: var(--surface-panel);
     border: 1px solid var(--border-subtle);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
@@ -304,8 +304,8 @@ dialog:not([open]),
     min-height: 38px;
     padding: 0 0.85rem;
     border-radius: var(--radius-pill);
-    font-size: 0.8125rem;
-    font-weight: 600;
+    font-size: var(--font-size-label);
+    font-weight: var(--font-weight-semibold);
     flex: none;
   }
   .notes-panel .toolbar-slot { display: none; }
@@ -330,7 +330,7 @@ dialog:not([open]),
   .notes-panel__range {
     color: var(--text-strong);
     font-size: 0.78125rem;
-    font-weight: 400;
+    font-weight: var(--font-weight-regular);
     line-height: 1.4;
     text-align: center;
   }
@@ -350,13 +350,13 @@ dialog:not([open]),
     min-height: 34px;
     padding: 0.2rem 0.35rem 0.2rem 0.75rem;
     border-radius: var(--radius-pill);
-    font-size: 0.8125rem;
+    font-size: var(--font-size-label);
     font-weight: 550;
     gap: 0.35rem;
     background: var(--surface-panel);
     border: 1px solid var(--border-subtle);
     color: var(--text-strong);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    box-shadow: var(--shadow-sm);
   }
   .notes-panel .active-filter-pill__clear {
     width: 26px;
@@ -414,7 +414,7 @@ dialog:not([open]),
     margin: 0;
     padding-right: 2.75rem;
     font-size: 0.98rem;
-    font-weight: 700;
+    font-weight: var(--font-weight-bold);
     letter-spacing: -0.015em;
     color: var(--text-strong);
     line-height: 1.35;
@@ -435,19 +435,20 @@ dialog:not([open]),
     overflow: hidden;
     word-break: break-word;
   }
+  /* Keep the desktop reading order: type, title, excerpt, then tags/date. */
   :is(.notes-panel, .notes-list--compact) .note-card__meta {
-    order: 2;
+    order: -1;
     display: flex;
     align-items: center;
     padding: 0;
-    margin: 0.45rem 0 0;
+    margin: 0;
     gap: var(--space-2);
     font-size: 0.72rem;
     color: var(--text-muted);
   }
   :is(.notes-panel, .notes-list--compact) .note-card__date {
     margin-left: auto;
-    font-weight: 500;
+    font-weight: var(--font-weight-medium);
     line-height: 1.4;
     color: var(--text-muted);
     white-space: nowrap;
@@ -456,8 +457,8 @@ dialog:not([open]),
   :is(.notes-panel, .notes-list--compact) .note-card .type-badge {
     min-height: 24px;
     padding: 2px 8px;
-    font-size: 0.6875rem;
-    font-weight: 600;
+    font-size: var(--font-size-2xs);
+    font-weight: var(--font-weight-semibold);
     color: var(--text-strong);
     line-height: 1.4;
     border-radius: var(--radius-pill);
@@ -465,8 +466,8 @@ dialog:not([open]),
   :is(.notes-panel, .notes-list--compact) .note-card .tag-chip {
     min-height: 24px;
     padding: 0.15rem 0.55rem;
-    font-size: 0.6875rem;
-    font-weight: 500;
+    font-size: var(--font-size-2xs);
+    font-weight: var(--font-weight-medium);
     line-height: 1.4;
     background: var(--surface-muted);
     color: var(--text-muted);
@@ -478,8 +479,8 @@ dialog:not([open]),
     background: var(--surface-panel);
   }
   :is(.notes-panel, .notes-list--compact) .note-card .more-tags {
-    font-size: 0.6875rem;
-    font-weight: 600;
+    font-size: var(--font-size-2xs);
+    font-weight: var(--font-weight-semibold);
     color: var(--text-muted);
     padding: 0.15rem 0.4rem;
   }
@@ -540,7 +541,7 @@ dialog:not([open]),
     padding: 0;
     border-radius: 50% !important;
     cursor: pointer;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    box-shadow: var(--shadow-xs);
     transition: transform var(--motion-duration-micro) var(--motion-ease-out),
                 background-color var(--motion-duration-short) var(--motion-ease-out),
                 border-color var(--motion-duration-short) var(--motion-ease-out);
@@ -606,7 +607,7 @@ dialog:not([open]),
     box-shadow: var(--retro-shadow-xs);
     font-family: var(--font-mono);
     font-size: 0.68rem;
-    font-weight: 600;
+    font-weight: var(--font-weight-semibold);
     line-height: 1.2;
     padding: 0.15rem 0.45rem;
   }
@@ -651,8 +652,8 @@ dialog:not([open]),
   .notes-panel .pagination-button {
     min-width: 44px;
     height: 44px;
-    font-size: 0.875rem;
-    font-weight: 600;
+    font-size: var(--font-size-control);
+    font-weight: var(--font-weight-semibold);
     border-radius: 0.65rem;
     font-variant-numeric: tabular-nums;
     border: 1px solid var(--border-subtle);
@@ -674,12 +675,12 @@ dialog:not([open]),
     background: var(--selected-surface);
     color: var(--selected-text);
     border-color: var(--selected-border);
-    font-weight: 700;
+    font-weight: var(--font-weight-bold);
   }
   .notes-panel .pagination-button--direction {
     min-width: 48px;
     padding: 0 0.85rem;
-    font-size: 0.8125rem;
+    font-size: var(--font-size-label);
   }
   .notes-panel .pagination-button:disabled {
     opacity: 0.4;
@@ -694,7 +695,7 @@ dialog:not([open]),
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    font-size: 1rem;
+    font-size: var(--font-size-md);
     color: var(--text-muted);
   }
   .mobile-navigation {
@@ -735,15 +736,15 @@ dialog:not([open]),
   }
   .mobile-navigation__item svg { width: 21px; height: 21px; }
   .mobile-navigation__item span {
-    font-size: 0.75rem;
+    font-size: var(--font-size-xs);
     line-height: 1.25;
-    font-weight: 600;
+    font-weight: var(--font-weight-semibold);
     letter-spacing: -0.01em;
     white-space: nowrap;
   }
   .mobile-navigation__item[aria-current] {
     color: var(--selected-text);
-    font-weight: 700;
+    font-weight: var(--font-weight-bold);
   }
   .mobile-navigation__item[aria-current] svg {
     stroke-width: 2.1px;
@@ -814,7 +815,7 @@ dialog:not([open]),
     width: 36px;
     height: 5px;
     margin: 0.65rem auto 0.35rem;
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
     background: color-mix(in srgb, var(--text-muted) 35%, transparent);
   }
   .mobile-sheet::backdrop {
@@ -830,7 +831,7 @@ dialog:not([open]),
     .mobile-sheet[open]::backdrop { opacity: 0; }
   }
   .mobile-sheet__header { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); flex: none; padding: 0.65rem var(--mobile-gutter); border-bottom: 1px solid var(--border-subtle); }
-  .mobile-sheet__header h2 { margin: 0; font-size: 1.05rem; font-weight: 700; line-height: 1.4; color: var(--text-strong); }
+  .mobile-sheet__header h2 { margin: 0; font-size: 1.05rem; font-weight: var(--font-weight-bold); line-height: 1.4; color: var(--text-strong); }
   #mobile-card-title { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; overflow-wrap: anywhere; }
   .mobile-sheet__header .icon-button {
     flex: none;
@@ -857,7 +858,7 @@ dialog:not([open]),
     transform: scale(0.92);
   }
   .mobile-sheet__body { min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 1rem var(--mobile-gutter); }
-  .mobile-sheet__body h3 { margin: 0 0 0.45rem; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.06em; }
+  .mobile-sheet__body h3 { margin: 0 0 0.45rem; font-size: 0.72rem; font-weight: var(--font-weight-bold); text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.06em; }
   /* Single-Tier Compact Mobile Sheet Footer */
   .mobile-sheet__footer {
     display: flex;
@@ -883,8 +884,8 @@ dialog:not([open]),
   }
   #mobile-filter-results {
     color: var(--text-strong);
-    font-size: 0.8125rem;
-    font-weight: 600;
+    font-size: var(--font-size-label);
+    font-weight: var(--font-weight-semibold);
     line-height: 1.3;
     letter-spacing: -0.01em;
     display: inline-flex;
@@ -908,7 +909,7 @@ dialog:not([open]),
     display: inline-flex;
     align-items: center;
     gap: 0.25rem;
-    font-size: 0.75rem;
+    font-size: var(--font-size-xs);
     font-weight: 550;
     color: var(--text-muted);
     text-decoration: none !important;
@@ -951,7 +952,7 @@ dialog:not([open]),
     height: 44px !important;
     padding: 0 1.15rem !important;
     border-radius: var(--control-radius) !important;
-    font-size: 0.8125rem !important;
+    font-size: var(--font-size-label) !important;
     font-weight: 650 !important;
     letter-spacing: -0.01em;
     display: inline-flex;
@@ -988,8 +989,8 @@ dialog:not([open]),
     background: color-mix(in oklch, var(--retro-paper) 68%, transparent);
     box-shadow: var(--retro-shadow-xs);
     font-family: var(--font-mono);
-    font-size: 0.75rem;
-    font-weight: 600;
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
   }
   html[data-theme="retro"] #mobile-filter-dialog .tag-filter-option.is-active,
   html[data-theme="retro"] #mobile-filter-dialog .tag-filter-option:has(input:checked) {
@@ -1022,11 +1023,11 @@ dialog:not([open]),
     width: 100%;
     min-height: 52px;
     padding: 0.8rem 1.15rem;
-    border-radius: 1rem;
+    border-radius: var(--radius-lg);
     border: 1px solid var(--border-subtle);
     background: var(--surface-panel);
     color: var(--text-strong);
-    font-size: 0.9375rem;
+    font-size: var(--font-size-body);
     font-weight: 550;
     line-height: 1.4;
     cursor: pointer;
@@ -1122,8 +1123,8 @@ dialog:not([open]),
   }
   #mobile-space-dialog .mobile-sheet__header h2,
   #mobile-filter-dialog .mobile-sheet__header h2 {
-    font-size: 0.9375rem;
-    font-weight: 700;
+    font-size: var(--font-size-body);
+    font-weight: var(--font-weight-bold);
   }
   #mobile-space-dialog .mobile-sheet__header .icon-button,
   #mobile-filter-dialog .mobile-sheet__header .icon-button {
@@ -1149,11 +1150,11 @@ dialog:not([open]),
   .mobile-space-option[aria-pressed="true"] .mobile-space-option__icon { color: var(--selected-text); background: var(--surface-panel); }
   .mobile-space-option__copy { min-width: 0; }
   .mobile-space-option__copy strong, .mobile-space-option__copy small { display: block; }
-  .mobile-space-option__copy strong { font-size: 0.875rem; font-weight: 650; line-height: 1.25; color: var(--text-strong); }
+  .mobile-space-option__copy strong { font-size: var(--font-size-control); font-weight: 650; line-height: 1.25; color: var(--text-strong); }
   .mobile-space-option[aria-pressed="true"] .mobile-space-option__copy strong { color: var(--selected-text); }
-  .mobile-space-option__copy small { margin-top: 1px; overflow: hidden; color: var(--text-muted); font-size: 0.72rem; font-weight: 400; line-height: 1.35; text-overflow: ellipsis; white-space: nowrap; }
+  .mobile-space-option__copy small { margin-top: 1px; overflow: hidden; color: var(--text-muted); font-size: 0.72rem; font-weight: var(--font-weight-regular); line-height: 1.35; text-overflow: ellipsis; white-space: nowrap; }
   .mobile-space-option__trailing { display: inline-flex; align-items: center; gap: 6px; }
-  .mobile-space-option__count { min-width: 24px; padding: 2px 7px; border-radius: var(--radius-pill); color: var(--text-muted); background: var(--surface-muted); font-size: 0.7rem; font-weight: 600; line-height: 1.2; text-align: center; font-variant-numeric: tabular-nums; }
+  .mobile-space-option__count { min-width: 24px; padding: 2px 7px; border-radius: var(--radius-pill); color: var(--text-muted); background: var(--surface-muted); font-size: 0.7rem; font-weight: var(--font-weight-semibold); line-height: 1.2; text-align: center; font-variant-numeric: tabular-nums; }
   .mobile-space-option[aria-pressed="true"] .mobile-space-option__count { background: var(--surface-panel); color: var(--selected-text); }
   .mobile-space-option__check { display: none; width: 17px; height: 17px; color: var(--selected-text); }
   .mobile-space-option[aria-pressed="true"] .mobile-space-option__check { display: block; }
@@ -1210,7 +1211,7 @@ dialog:not([open]),
   #mobile-sort-slot h3 {
     margin: 0 0 0.5rem;
     font-size: 0.7rem;
-    font-weight: 700;
+    font-weight: var(--font-weight-bold);
     text-transform: uppercase;
     color: var(--text-muted);
     letter-spacing: 0.05em;
@@ -1226,7 +1227,7 @@ dialog:not([open]),
   #mobile-filter-dialog .filter-heading > span,
   #mobile-filter-dialog .filter-section-title h2 {
     font-size: 0.7rem;
-    font-weight: 700;
+    font-weight: var(--font-weight-bold);
     text-transform: uppercase;
     color: var(--text-muted);
     letter-spacing: 0.05em;
@@ -1234,7 +1235,7 @@ dialog:not([open]),
   }
   #mobile-filter-dialog #clear-filters-btn {
     font-size: 0.72rem;
-    font-weight: 600;
+    font-weight: var(--font-weight-semibold);
     color: var(--selected-text);
     text-decoration: none !important;
     background: transparent;
@@ -1255,7 +1256,7 @@ dialog:not([open]),
     gap: 0.35rem;
   }
   #mobile-filter-dialog .sidebar-filter {
-    font-size: 0.75rem; font-weight: 550; line-height: 1.2; padding: 0 0.65rem; gap: 6px; border-radius: var(--control-radius); width: 100%; min-height: 44px; height: 44px;
+    font-size: var(--font-size-xs); font-weight: 550; line-height: 1.2; padding: 0 0.65rem; gap: 6px; border-radius: var(--control-radius); width: 100%; min-height: 44px; height: 44px;
     justify-content: space-between;
     border: 1px solid color-mix(in srgb, var(--border-subtle) 85%, transparent); background: var(--surface-panel); color: var(--text-default);
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
@@ -1269,11 +1270,11 @@ dialog:not([open]),
   #mobile-filter-dialog .sidebar-filter__label { min-width: 0; gap: 5px; display: inline-flex; align-items: center; overflow: hidden; }
   #mobile-filter-dialog .sidebar-filter--type .sidebar-filter__label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   #mobile-filter-dialog .sidebar-filter__icon { width: 13px; height: 13px; flex: none; }
-  #mobile-filter-dialog .sidebar-filter .type-dot { width: 5.5px; height: 5.5px; border-radius: 999px; flex: none; }
-  #mobile-filter-dialog .sidebar-filter .filter-count { font-size: 0.65rem; font-weight: 500; color: var(--text-muted); opacity: 1; font-variant-numeric: tabular-nums; flex: none; margin-left: 4px; }
+  #mobile-filter-dialog .sidebar-filter .type-dot { width: 5.5px; height: 5.5px; border-radius: var(--radius-pill); flex: none; }
+  #mobile-filter-dialog .sidebar-filter .filter-count { font-size: 0.65rem; font-weight: var(--font-weight-medium); color: var(--text-muted); opacity: 1; font-variant-numeric: tabular-nums; flex: none; margin-left: 4px; }
   #mobile-filter-dialog .sidebar-filter.is-active .filter-count,
   #mobile-filter-dialog .sidebar-filter[aria-pressed="true"] .filter-count { color: var(--selected-text); opacity: 1; }
-  #mobile-filter-count { font-size: 0.6875rem; font-weight: 500; }
+  #mobile-filter-count { font-size: var(--font-size-2xs); font-weight: var(--font-weight-medium); }
   #mobile-filter-dialog .filter-section-title {
     display: flex;
     align-items: center;
@@ -1281,7 +1282,7 @@ dialog:not([open]),
     margin: 0 0 0.15rem;
   }
   #mobile-filter-dialog .filter-help {
-    font-size: 0.6875rem;
+    font-size: var(--font-size-2xs);
     color: var(--text-muted);
     margin: 0 0 0.5rem;
   }
@@ -1294,7 +1295,7 @@ dialog:not([open]),
     flex-wrap: wrap;
   }
   #mobile-filter-dialog .tag-filter-option {
-    min-height: 44px; height: 44px; padding: 0 0.6rem; font-size: 0.75rem; font-weight: 500; line-height: 1; border-radius: var(--radius-pill); gap: 4px;
+    min-height: 44px; height: 44px; padding: 0 0.6rem; font-size: var(--font-size-xs); font-weight: var(--font-weight-medium); line-height: 1; border-radius: var(--radius-pill); gap: 4px;
     border: 1px solid color-mix(in srgb, var(--border-subtle) 85%, transparent); background: var(--surface-panel); color: var(--text-default);
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02); display: inline-flex; align-items: center;
     transition: background var(--motion-duration-micro) var(--motion-ease-out), transform var(--motion-duration-micro) var(--motion-ease-out), border-color var(--motion-duration-micro) var(--motion-ease-out);
@@ -1302,7 +1303,7 @@ dialog:not([open]),
   #mobile-filter-dialog .tag-filter-option:active { transform: scale(0.96); }
   #mobile-filter-dialog .tag-filter-option.is-active,
   #mobile-filter-dialog .tag-filter-option:has(input:checked) {
-    background: var(--selected-surface); color: var(--selected-text); border-color: var(--selected-border); font-weight: 600;
+    background: var(--selected-surface); color: var(--selected-text); border-color: var(--selected-border); font-weight: var(--font-weight-semibold);
   }
   #mobile-filter-dialog .tag-filter-option .filter-count { font-size: 0.65rem; color: var(--text-muted); opacity: 1; font-variant-numeric: tabular-nums; }
   #mobile-filter-dialog .tag-filter-option.is-active .filter-count,
@@ -1310,13 +1311,13 @@ dialog:not([open]),
   #mobile-filter-dialog .tag-filter-toggle {
     margin-top: 0.45rem;
     font-size: 0.72rem;
-    font-weight: 600;
+    font-weight: var(--font-weight-semibold);
     color: var(--selected-text);
   }
   #mobile-filter-dialog .sort-field { width: 100%; }
   .mobile-sort-choices { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.35rem; }
   .mobile-sort-choices .button {
-    min-height: 44px; height: 44px; padding: 0 0.55rem; border-radius: var(--control-radius); font-size: 0.75rem; font-weight: 550; line-height: 1.2; box-shadow: none; white-space: nowrap; justify-content: center;
+    min-height: 44px; height: 44px; padding: 0 0.55rem; border-radius: var(--control-radius); font-size: var(--font-size-xs); font-weight: 550; line-height: 1.2; box-shadow: none; white-space: nowrap; justify-content: center;
     display: inline-flex; align-items: center; gap: 0.3rem; border: 1px solid color-mix(in srgb, var(--border-subtle) 85%, transparent);
     background: var(--surface-panel); color: var(--text-default);
     transition: background var(--motion-duration-micro) var(--motion-ease-out), transform var(--motion-duration-micro) var(--motion-ease-out), color var(--motion-duration-micro) var(--motion-ease-out), border-color var(--motion-duration-micro) var(--motion-ease-out);
@@ -1326,7 +1327,7 @@ dialog:not([open]),
     color: var(--selected-text);
     background: var(--selected-surface);
     border-color: var(--selected-border);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    box-shadow: var(--shadow-sm);
     font-weight: 650;
   }
   .mobile-sort-choices .button[aria-pressed="true"]::before {
@@ -1372,7 +1373,7 @@ dialog:not([open]),
     border: 1px solid var(--border-subtle);
     background: var(--surface-panel);
     color: var(--text-strong);
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    box-shadow: var(--shadow-xs);
     cursor: pointer;
     transition: transform var(--motion-duration-micro) var(--motion-ease-out),
                 background var(--motion-duration-micro) var(--motion-ease-out);
@@ -1394,8 +1395,8 @@ dialog:not([open]),
   #note-dialog .detail-back-button span, #note-dialog .detail-commandbar__state { display: none; }
   #note-dialog .note-navigation .button {
     min-height: 44px;
-    font-size: 0.8125rem;
-    font-weight: 600;
+    font-size: var(--font-size-label);
+    font-weight: var(--font-weight-semibold);
   }
   #note-dialog .note-switcher__back {
     min-height: 44px;
@@ -1426,8 +1427,8 @@ dialog:not([open]),
   #note-dialog .note-editor-mode__button {
     border: none;
     background: transparent;
-    font-size: 0.8125rem;
-    font-weight: 600;
+    font-size: var(--font-size-label);
+    font-weight: var(--font-weight-semibold);
     color: var(--text-muted);
     min-width: 44px;
     min-height: 44px;
@@ -1463,7 +1464,7 @@ dialog:not([open]),
     min-height: 28px;
     padding: 0 0.75rem;
     border-radius: var(--radius-pill);
-    font-size: 0.75rem;
+    font-size: var(--font-size-xs);
     font-weight: 550;
     line-height: 1;
     white-space: nowrap;
@@ -1569,7 +1570,7 @@ dialog:not([open]),
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    box-shadow: var(--shadow-xs);
     cursor: pointer;
     transition: transform var(--motion-duration-micro) var(--motion-ease-out),
                 background var(--motion-duration-micro) var(--motion-ease-out);
@@ -1578,7 +1579,7 @@ dialog:not([open]),
     transform: scale(0.92);
     background: var(--surface-muted);
   }
-  .mobile-editor-actions .button { min-height: 44px; padding: 0.4rem 0.75rem; font-size: 0.8125rem; }
+  .mobile-editor-actions .button { min-height: 44px; padding: 0.4rem 0.75rem; font-size: var(--font-size-label); }
   #note-dialog .dialog-body {
     padding: 18px var(--mobile-gutter) 12px;
     /* Let wrapped metadata grow and scroll instead of spilling into the editor. */
@@ -1621,7 +1622,7 @@ dialog:not([open]),
     height: 44px;
     padding: 0 0.4rem 0 0.85rem;
     font-size: var(--mobile-caption);
-    font-weight: 500;
+    font-weight: var(--font-weight-medium);
     border-radius: var(--radius-pill);
     gap: 0.35rem;
     display: inline-flex;
@@ -1664,7 +1665,7 @@ dialog:not([open]),
     min-height: 44px;
     padding: 0 0.85rem;
     font-size: 16px;
-    font-weight: 500;
+    font-weight: var(--font-weight-medium);
     color: var(--text-strong);
     background: var(--surface-muted);
     border: 1px solid var(--border-subtle);
@@ -1681,7 +1682,7 @@ dialog:not([open]),
   }
   #note-dialog .tag-picker__input-row input::placeholder {
     color: var(--text-muted);
-    font-size: 0.8125rem;
+    font-size: var(--font-size-label);
   }
   #note-dialog .note-type-picker__trigger {
     min-height: 44px;
@@ -1689,7 +1690,7 @@ dialog:not([open]),
     padding: 0 1.85rem 0 0.85rem;
     border-radius: var(--radius-pill);
     font-size: var(--mobile-caption);
-    font-weight: 600;
+    font-weight: var(--font-weight-semibold);
     background-position: right 0.65rem center;
     background-size: 0.72rem 0.72rem;
     background-repeat: no-repeat;
@@ -1716,11 +1717,11 @@ dialog:not([open]),
     align-items: center;
     justify-content: center;
     font-size: 1.25rem;
-    font-weight: 400;
+    font-weight: var(--font-weight-regular);
     line-height: 1;
     flex: none;
     cursor: pointer;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    box-shadow: var(--shadow-xs);
     transition: transform var(--motion-duration-micro) var(--motion-ease-out),
                 background var(--motion-duration-micro) var(--motion-ease-out),
                 border-color var(--motion-duration-micro) var(--motion-ease-out);
@@ -1770,8 +1771,8 @@ dialog:not([open]),
     padding: 0.55rem 0.85rem;
     border: none;
     border-radius: 0.55rem;
-    font-size: 0.875rem;
-    font-weight: 500;
+    font-size: var(--font-size-control);
+    font-weight: var(--font-weight-medium);
     line-height: 1.35;
     color: var(--text-strong);
     background: transparent;
@@ -1791,7 +1792,7 @@ dialog:not([open]),
   #note-dialog .tag-suggestion--create {
     color: var(--selected-text);
     background: var(--selected-surface);
-    font-weight: 600;
+    font-weight: var(--font-weight-semibold);
     border: 1px solid var(--selected-border);
     margin-top: 0.25rem;
   }
@@ -1808,7 +1809,7 @@ dialog:not([open]),
     background: var(--retro-paper);
     box-shadow: var(--retro-shadow-xs);
     font-family: var(--font-mono);
-    font-weight: 600;
+    font-weight: var(--font-weight-semibold);
   }
   html[data-theme="retro"] #note-dialog .selected-tag__remove {
     color: var(--retro-muted);
@@ -1967,7 +1968,7 @@ dialog:not([open]),
     border-radius: 0;
     background: transparent;
     color: var(--text-strong);
-    font-size: 0.9375rem;
+    font-size: var(--font-size-body);
     font-weight: 550;
     line-height: 1.4;
     cursor: pointer;
@@ -2000,7 +2001,7 @@ dialog:not([open]),
   }
   #mobile-note-actions-body .mobile-action-label {
     display: inline;
-    font-size: 0.9375rem;
+    font-size: var(--font-size-body);
     line-height: 1.4;
     font-weight: 550;
     color: inherit;
@@ -2093,14 +2094,14 @@ dialog:not([open]),
   .mobile-storage-summary {
     padding: 1rem 1.15rem;
     border: 1px solid var(--border-subtle);
-    border-radius: 1rem;
+    border-radius: var(--radius-lg);
     background: var(--surface-panel);
     display: flex; flex-direction: column; gap: 0.45rem;
   }
   .mobile-storage-summary h3 {
     margin: 0;
     font-size: 0.92rem;
-    font-weight: 700;
+    font-weight: var(--font-weight-bold);
     line-height: 1.35;
     color: var(--text-strong);
     display: flex;
@@ -2112,12 +2113,12 @@ dialog:not([open]),
     display: inline-block;
     width: 8px;
     height: 8px;
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
     background: var(--backup-good-accent, #16a34a);
     flex: none;
   }
   .mobile-storage-summary p { margin: 0; font-size: 0.78125rem; line-height: 1.45; color: var(--text-muted); }
-  #mobile-settings-backup { font-weight: 600; color: var(--text-strong); }
+  #mobile-settings-backup { font-weight: var(--font-weight-semibold); color: var(--text-strong); }
   .mobile-storage-summary .button {
     width: 100%; min-height: 44px; margin-top: 0.5rem;
     font-size: 0.85rem; font-weight: 650;
@@ -2129,7 +2130,7 @@ dialog:not([open]),
   }
   .mobile-settings-links {
     display: flex; flex-direction: column; gap: 0;
-    border: 1px solid var(--border-subtle); border-radius: 1rem;
+    border: 1px solid var(--border-subtle); border-radius: var(--radius-lg);
     overflow: hidden; background: var(--surface-panel);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
   }
@@ -2146,7 +2147,7 @@ dialog:not([open]),
   .mobile-settings-links > button:hover, .mobile-settings-links > button:active { background: var(--surface-muted); }
   .mobile-settings-links > button:focus-visible { outline-offset: -3px; }
   .mobile-settings-links strong { display: block; font-size: 0.92rem; font-weight: 650; color: var(--text-strong); line-height: 1.35; }
-  .mobile-settings-links small { display: block; margin-top: 2px; font-size: 0.75rem; color: var(--text-muted); line-height: 1.4; font-weight: 400; }
+  .mobile-settings-links small { display: block; margin-top: 2px; font-size: var(--font-size-xs); color: var(--text-muted); line-height: 1.4; font-weight: var(--font-weight-regular); }
   .mobile-settings-links span[aria-hidden="true"] {
     display: inline-block;
     width: 8px;
@@ -2175,7 +2176,7 @@ dialog:not([open]),
     background: var(--surface-muted);
     box-shadow: none;
     font-size: var(--mobile-supporting);
-    font-weight: 600;
+    font-weight: var(--font-weight-semibold);
     color: var(--selected-text);
     cursor: pointer;
     transition: transform var(--motion-duration-micro) var(--motion-ease-out),
@@ -2265,7 +2266,7 @@ dialog:not([open]),
     border-radius: 1.15rem;
     border: 1px solid var(--border-subtle);
     background: var(--surface-panel);
-    box-shadow: 0 2px 8px -2px rgba(15, 23, 42, 0.05);
+    box-shadow: var(--shadow-md);
     grid-template-columns: none;
   }
   #organize-dialog .management-create-row input {
@@ -2298,7 +2299,7 @@ dialog:not([open]),
     height: 44px;
     padding: 0 0.85rem;
     border-radius: var(--radius-pill);
-    font-size: 0.8125rem;
+    font-size: var(--font-size-label);
     font-weight: 550;
     border: 1px solid var(--border-subtle);
     background: var(--surface-muted);
@@ -2308,8 +2309,8 @@ dialog:not([open]),
     min-height: 44px;
     height: 44px;
     padding: 0 1.15rem;
-    font-size: 0.8125rem;
-    font-weight: 600;
+    font-size: var(--font-size-label);
+    font-weight: var(--font-weight-semibold);
     border-radius: var(--radius-pill);
     margin-left: auto;
     grid-column: auto;
@@ -2352,7 +2353,7 @@ dialog:not([open]),
   }
   #organize-dialog .management-row__name {
     font-size: var(--mobile-control);
-    font-weight: 600;
+    font-weight: var(--font-weight-semibold);
     color: var(--text-strong);
     overflow: hidden;
     text-overflow: ellipsis;
@@ -2362,7 +2363,7 @@ dialog:not([open]),
   #organize-dialog .management-row__default {
     padding: 0.14rem 0.36rem;
     font-size: 0.625rem;
-    font-weight: 700;
+    font-weight: var(--font-weight-bold);
     text-transform: uppercase;
     letter-spacing: 0.05em;
     border-radius: 0.3rem;
@@ -2417,8 +2418,8 @@ dialog:not([open]),
     min-height: 44px;
     height: 44px;
     padding: 0 0.75rem;
-    font-size: 0.75rem;
-    font-weight: 600;
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
     border-radius: var(--radius-pill);
     flex: none;
   }
@@ -2430,7 +2431,7 @@ dialog:not([open]),
     background: var(--surface-panel);
     border-radius: 0.65rem;
     border: 1px solid var(--border-subtle);
-    box-shadow: 0 2px 8px -2px rgba(15, 23, 42, 0.05);
+    box-shadow: var(--shadow-md);
     margin: 0.25rem 0;
   }
   #organize-dialog form.management-row .management-row__main {
@@ -2484,7 +2485,7 @@ dialog:not([open]),
     height: 44px;
     padding: 0 0.65rem;
     border-radius: var(--control-radius);
-    font-size: 0.8125rem;
+    font-size: var(--font-size-label);
     font-weight: 550;
     border: 1px solid var(--border-subtle);
     background: var(--surface-muted);
@@ -2498,8 +2499,8 @@ dialog:not([open]),
     min-height: 44px;
     height: 44px;
     padding: 0 0.85rem;
-    font-size: 0.8125rem;
-    font-weight: 600;
+    font-size: var(--font-size-label);
+    font-weight: var(--font-weight-semibold);
     border-radius: var(--control-radius);
     flex: none;
   }
@@ -2539,7 +2540,7 @@ dialog:not([open]),
   }
   #organize-dialog .data-setting h3,
   #organize-dialog .display-setting h3 {
-    font-size: 1rem;
+    font-size: var(--font-size-md);
     font-weight: 650;
     color: var(--text-strong);
     line-height: 1.35;
@@ -2547,7 +2548,7 @@ dialog:not([open]),
   }
   #organize-dialog .data-setting .dialog-description,
   #organize-dialog .display-setting .dialog-description {
-    font-size: 0.8125rem;
+    font-size: var(--font-size-label);
     color: var(--text-muted);
     line-height: 1.5;
     margin: 0;
@@ -2586,8 +2587,8 @@ dialog:not([open]),
     width: 100%;
     min-height: 46px;
     border-radius: var(--radius-pill);
-    font-size: 0.875rem;
-    font-weight: 600;
+    font-size: var(--font-size-control);
+    font-weight: var(--font-weight-semibold);
     letter-spacing: -0.01em;
     box-shadow: none;
     cursor: pointer;
@@ -2632,8 +2633,8 @@ dialog:not([open]),
     padding: 0;
   }
   #organize-dialog .shortcut-group .shortcut-group__title {
-    font-size: 0.8125rem;
-    font-weight: 700;
+    font-size: var(--font-size-label);
+    font-weight: var(--font-weight-bold);
     text-transform: uppercase;
     letter-spacing: 0.05em;
     color: var(--text-muted);
@@ -2671,8 +2672,8 @@ dialog:not([open]),
     border-bottom: none;
   }
   #organize-dialog .shortcut-row__label {
-    font-size: 0.875rem;
-    font-weight: 500;
+    font-size: var(--font-size-control);
+    font-weight: var(--font-weight-medium);
     color: var(--text-strong);
     line-height: 1.35;
     flex: 1 1 auto;
@@ -2687,8 +2688,8 @@ dialog:not([open]),
     flex: none;
     margin: 0;
     color: var(--text-muted);
-    font-size: 0.75rem;
-    font-weight: 500;
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
   }
   #organize-dialog .shortcut-key-combo {
     display: inline-flex;
@@ -2699,7 +2700,7 @@ dialog:not([open]),
   #organize-dialog .shortcut-key-alternative {
     padding-inline: 0.15rem;
     color: var(--text-muted);
-    font-size: 0.75rem;
+    font-size: var(--font-size-xs);
   }
   #organize-dialog .shortcut-keys kbd {
     display: inline-flex;
@@ -2709,7 +2710,7 @@ dialog:not([open]),
     min-height: 1.65rem;
     padding: 0.15rem 0.42rem;
     font-family: var(--font-mono);
-    font-size: 0.75rem;
+    font-size: var(--font-size-xs);
     font-weight: 650;
     line-height: 1;
     color: var(--text-strong);
@@ -2732,8 +2733,8 @@ dialog:not([open]),
     padding: 0.85rem 1rem;
   }
   #organize-dialog .shortcut-list .shortcut-row:has(.shortcut-keys--labeled) .shortcut-row__label {
-    font-size: 0.875rem;
-    font-weight: 600;
+    font-size: var(--font-size-control);
+    font-weight: var(--font-weight-semibold);
     color: var(--text-strong);
   }
   #organize-dialog .shortcut-keys--labeled {
@@ -2794,13 +2795,13 @@ dialog:not([open]),
   .notes-panel .empty-state h3 {
     margin: 0;
     font-size: 1.15rem;
-    font-weight: 700;
+    font-weight: var(--font-weight-bold);
     color: var(--text-strong);
   }
   .notes-panel .notes-empty p,
   .notes-panel .empty-state p {
     margin: 0;
-    font-size: 0.875rem;
+    font-size: var(--font-size-control);
     color: var(--text-muted);
     max-width: 24rem;
     line-height: 1.5;
@@ -2930,8 +2931,8 @@ dialog:not([open]),
     box-sizing: border-box;
   }
   .confirmation-dialog .dialog-header .eyebrow {
-    font-size: 0.6875rem;
-    font-weight: 700;
+    font-size: var(--font-size-2xs);
+    font-weight: var(--font-weight-bold);
     letter-spacing: 0.05em;
     text-transform: uppercase;
     color: var(--text-muted);
@@ -2939,7 +2940,7 @@ dialog:not([open]),
   }
   .confirmation-dialog .dialog-header h2 {
     font-size: 1.125rem;
-    font-weight: 700;
+    font-weight: var(--font-weight-bold);
     color: var(--text-strong);
     line-height: 1.35;
     margin: 0;
@@ -3005,8 +3006,8 @@ dialog:not([open]),
     min-width: 0;
     min-height: 44px;
     border-radius: var(--radius-pill);
-    font-size: 0.875rem;
-    font-weight: 600;
+    font-size: var(--font-size-control);
+    font-weight: var(--font-weight-semibold);
     letter-spacing: -0.01em;
     display: inline-flex;
     align-items: center;
