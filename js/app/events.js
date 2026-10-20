@@ -549,6 +549,11 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
     elements.notePreviewLines.addEventListener("input", () => setNotePreviewLines(elements.notePreviewLines.value));
     elements.glassEnabled.addEventListener("change", () => setGlass({ ...ui.glass, enabled: elements.glassEnabled.checked }));
     elements.glassTransparency.addEventListener("input", () => setGlass({ ...ui.glass, transparency: Number(elements.glassTransparency.value) }));
+    elements.glassFrostInputs.forEach(input => {
+      input.addEventListener("change", () => {
+        if (input.checked) setGlass({ ...ui.glass, frost: input.value });
+      });
+    });
     if (elements.glassStyleSelect) {
       elements.glassStyleSelect.addEventListener("change", () => setBackgroundStyle(elements.glassStyleSelect.value));
     }

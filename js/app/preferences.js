@@ -114,6 +114,10 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
     elements.glassTransparency.value = String(ui.glass.transparency);
     elements.glassTransparency.setAttribute("aria-valuetext", `${ui.glass.transparency} percent transparency`);
     elements.glassTransparencyValue.textContent = `${ui.glass.transparency}%`;
+    elements.glassFrostControl.disabled = !ui.glass.enabled;
+    elements.glassFrostInputs.forEach(input => {
+      input.checked = input.value === ui.glass.frost;
+    });
     if (elements.glassStyleSelect) {
       elements.glassStyleSelect.value = ui.backgroundStyle || "ambient";
       elements.glassStyleSelect.disabled = !ui.glass.enabled;

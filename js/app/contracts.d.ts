@@ -63,6 +63,8 @@ export interface PaneController {
   hasUnsavedChanges(): boolean;
 }
 
+export interface GlassPreference { enabled: boolean; transparency: number; frost: string }
+
 export interface ThemeConfig {
   storageKey: string;
   modes: readonly string[];
@@ -72,10 +74,11 @@ export interface ThemeConfig {
   describe(mode: string): { label: string; file: string; color: string };
   glass: {
     storageKey: string; min: number; max: number; defaultValue: number;
-    normalize(value: unknown): { enabled: boolean; transparency: number };
-    parse(value: string | null): { enabled: boolean; transparency: number };
-    read(): { enabled: boolean; transparency: number };
-    apply(value: { enabled: boolean; transparency: number }): void;
+    frostLevels: readonly string[]; frostDefault: string;
+    normalize(value: unknown): GlassPreference;
+    parse(value: string | null): GlassPreference;
+    read(): GlassPreference;
+    apply(value: GlassPreference): void;
   };
   backgroundStyle?: {
     storageKey: string; defaultValue: string; styles: readonly string[];

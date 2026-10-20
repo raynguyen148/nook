@@ -26,6 +26,8 @@ function appearanceHarness({ stored = null, storedStyle = null, blocked = false,
     glassEnabled: controls(), glassTransparency: controls(),
     glassTransparencyControl: controls(), glassTransparencyValue: controls(),
     glassStyleSelect: controls(),
+    glassFrostControl: controls(),
+    glassFrostInputs: ["clear", "soft", "frosted"].map(value => ({ ...controls(), value })),
   };
   const document = {
     documentElement: { dataset: {}, style: { setProperty(name, value) { properties.set(name, value); } } },
@@ -58,16 +60,19 @@ function appearanceHarness({ stored = null, storedStyle = null, blocked = false,
 
 test("nature/glass defaults off before paint and in Settings", () => {
   const { app, document, properties, elements } = appearanceHarness();
-  assert.deepEqual(plain(app.ui.glass), { enabled: false, transparency: 10 });
+  assert.deepEqual(plain(app.ui.glass), { enabled: false, transparency: 10, frost: "soft" });
   assert.equal(document.documentElement.dataset.glass, "false");
   assert.equal(document.documentElement.dataset.backgroundStyle, "ambient");
-  assert.equal(properties.get("--glass-opacity"), "85%");
+  assert.equal(properties.get("--glass-opacity"), "64%");
   app.api.syncGlassUI();
   assert.equal(elements.glassEnabled.checked, false);
   assert.equal(elements.glassTransparency.disabled, true);
   assert.equal(elements.glassStyleSelect.disabled, true);
   assert.equal(elements.glassStyleSelect.value, "ambient");
   assert.equal(elements.glassTransparencyControl.classList.values.has("is-hidden"), true);
+  assert.equal(document.documentElement.dataset.glassFrost, "soft");
+  assert.equal(elements.glassFrostControl.disabled, true);
+  assert.deepEqual(elements.glassFrostInputs.map(input => input.checked), [false, true, false]);
 });
 
 test("dual-mode background style switches between ambient and nature with persistence", () => {
@@ -97,12 +102,12 @@ test("dual-mode background style switches between ambient and nature with persis
 test("malformed stored preferences cannot enable the effect or escape its bounds", () => {
   for (const stored of ["{", "null", "[]", '"true"', '{"enabled":"true","transparency":"20"}']) {
     const { app } = appearanceHarness({ stored });
-    assert.deepEqual(plain(app.ui.glass), { enabled: false, transparency: 10 });
+    assert.deepEqual(plain(app.ui.glass), { enabled: false, transparency: 10, frost: "soft" });
   }
   for (const [value, expected] of [[-100, 10], [100, 50], [0, 10], [5, 10], [10, 10], [20, 20], [40, 40], [50, 50], [1.5, 10], [null, 10]]) {
     const { app, properties } = appearanceHarness({ stored: JSON.stringify({ enabled: true, transparency: value }) });
-    assert.deepEqual(plain(app.ui.glass), { enabled: true, transparency: expected });
-    assert.equal(properties.get("--glass-opacity"), `${100 - expected * 1.5}%`);
+    assert.deepEqual(plain(app.ui.glass), { enabled: true, transparency: expected, frost: "soft" });
+    assert.equal(properties.get("--glass-opacity"), `${78 - expected * 1.4}%`);
   }
 });
 
@@ -110,7 +115,7 @@ test("runtime changes remain usable when preference reads and writes are blocked
   const { app, document, properties, elements } = appearanceHarness({ blocked: true });
   app.api.setGlass({ enabled: true, transparency: 40 });
   assert.equal(document.documentElement.dataset.glass, "true");
-  assert.equal(properties.get("--glass-opacity"), "40%");
+  assert.equal(properties.get("--glass-opacity"), "22%");
   assert.equal(properties.get("--glass-reveal"), "2");
   assert.equal(properties.get("--glass-sidebar-opacity"), "80%");
   assert.equal(elements.glassTransparency.disabled, false);
@@ -126,12 +131,12 @@ test("unsupported rendering retains the user's preference with the normal appear
   const { app, document, values } = appearanceHarness({ supported: false });
   app.api.setGlass({ enabled: true, transparency: 0 });
   assert.equal(document.documentElement.dataset.glass, "false");
-  assert.deepEqual(JSON.parse(values.get("nook:glass")), { enabled: true, transparency: 10 });
+  assert.deepEqual(JSON.parse(values.get("nook:glass")), { enabled: true, transparency: 10, frost: "soft" });
 });
 
 test("stacked library layers reveal scenery while reading retains a single protective film", () => {
   const { app, properties } = appearanceHarness();
-  for (const [transparency, card, reading] of [[10, "85%", "90%"], [20, "70%", "80%"], [40, "40%", "60%"], [50, "25%", "50%"]]) {
+  for (const [transparency, card, reading] of [[10, "66%", "90%"], [20, "54%", "80%"], [40, "30%", "60%"], [50, "18%", "50%"]]) {
     app.api.setGlass({ enabled: true, transparency });
     assert.equal(properties.get("--glass-card-opacity"), card);
     assert.equal(properties.get("--glass-reading-opacity"), reading);
@@ -193,4 +198,47 @@ test("Coffee, Retro, and E-Ink have separate simple local sidebar silhouettes", 
     bytes += Buffer.byteLength(svg);
   }
   assert.ok(bytes <= 5 * 1024, `Sidebar artwork uses ${bytes} bytes`);
+});
+
+test("frost level defaults to soft and unknown stored values cannot escape the allowlist", () => {
+  const { app, document } = appearanceHarness({ stored: JSON.stringify({ enabled: true, transparency: 20 }) });
+  assert.equal(app.ui.glass.frost, "soft");
+  assert.equal(document.documentElement.dataset.glassFrost, "soft");
+  assert.deepEqual(plain(app.theme.glass.frostLevels), ["clear", "soft", "frosted"]);
+  for (const frost of ["Clear", "FROSTED", "", "heavy", 2, null, true, ["clear"], { value: "clear" }]) {
+    const { app: current } = appearanceHarness({ stored: JSON.stringify({ enabled: true, transparency: 20, frost }) });
+    assert.equal(current.ui.glass.frost, "soft", JSON.stringify(frost));
+  }
+  for (const frost of ["clear", "soft", "frosted"]) {
+    const { app: current, document: doc } = appearanceHarness({ stored: JSON.stringify({ enabled: true, transparency: 20, frost }) });
+    assert.equal(current.ui.glass.frost, frost);
+    assert.equal(doc.documentElement.dataset.glassFrost, frost);
+  }
+});
+
+test("changing frost updates the page, the radios, and the stored preference without touching transparency", () => {
+  const { app, document, values, elements } = appearanceHarness();
+  app.api.setGlass({ ...app.ui.glass, enabled: true, transparency: 30 });
+  assert.equal(elements.glassFrostControl.disabled, false);
+  app.api.setGlass({ ...app.ui.glass, frost: "frosted" });
+  assert.equal(document.documentElement.dataset.glassFrost, "frosted");
+  assert.deepEqual(elements.glassFrostInputs.map(input => input.checked), [false, false, true]);
+  assert.deepEqual(JSON.parse(values.get("nook:glass")), { enabled: true, transparency: 30, frost: "frosted" });
+  app.api.setGlass({ ...app.ui.glass, frost: "clear" });
+  assert.deepEqual(elements.glassFrostInputs.map(input => input.checked), [true, false, false]);
+  assert.equal(elements.glassTransparency.value, "30");
+  app.api.setGlass({ ...app.ui.glass, frost: "bogus" });
+  assert.equal(app.ui.glass.frost, "soft");
+  app.api.setGlass({ ...app.ui.glass, enabled: false });
+  assert.equal(elements.glassFrostControl.disabled, true);
+  assert.equal(app.ui.glass.frost, "soft");
+});
+
+test("external frost updates normalize without writing back", () => {
+  const { app, document, values } = appearanceHarness();
+  app.api.setGlass(app.theme.glass.parse('{"enabled":true,"transparency":20,"frost":"frosted"}'), { persist: false });
+  assert.equal(document.documentElement.dataset.glassFrost, "frosted");
+  assert.equal(values.has("nook:glass"), false);
+  app.api.setGlass(app.theme.glass.parse(null), { persist: false });
+  assert.equal(document.documentElement.dataset.glassFrost, "soft");
 });

@@ -237,6 +237,8 @@
       glassTransparencyControl: document.querySelector("#glass-transparency-control"),
       glassTransparency: document.querySelector("#glass-transparency"),
       glassTransparencyValue: document.querySelector("#glass-transparency-value"),
+      glassFrostControl: document.querySelector(".glass-frost-control"),
+      glassFrostInputs: [...document.querySelectorAll('input[name="glass-frost"]')],
       glassStyleSelect: document.querySelector("#glass-style-select"),
       glassStyleTrigger: document.querySelector("#glass-style-trigger"),
       glassStyleCurrent: document.querySelector("#glass-style-current"),

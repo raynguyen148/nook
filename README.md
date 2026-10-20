@@ -279,14 +279,23 @@ night woodland, Retro archival moss hill layers, and Zen a reed-lined shore. Cof
 steaming cup; Retro's has a desk lamp and book. These simple silhouettes are subtle, single-tone
 backgrounds that do not take up navigation space. Auto follows
 the Light or Dark scene. The effect is off by default. Transparency ranges from
-10–50%; higher values reveal more background. Turn off Enable glass to return
+10–50%; higher values reveal more background. **Frost** sets how diffused the
+glass looks: Clear keeps the background sharp, Soft (the default) is a light,
+clean frost, and Frosted adds a stronger blur, fine grain, and a pale haze. Frost
+changes only blur and texture, so the readability tint floors below still apply,
+and phones cap the Frosted blur. Turn off Enable glass to return
 to the normal appearance. Glass uses softly diffused Ambient colors, illuminated
-edges and directional reflections, with deeper shadows on focused cards. Nature
-retains its crisp silhouettes. Light and dark themes have separate reflection
-strengths. Cards retain at least 72% surface tint, reading panes 84%, and Settings
-and Quick actions 88%, so increasing transparency keeps text readable. Controls
-and Markdown code/callout surfaces stay solid for clarity.
-Secondary labels use stronger theme-aware ink over glass; pinned cards retain
+edges and directional reflections, with deeper shadows on focused cards. Ambient
+glass draws each theme's backdrop as layered satin folds: soft tonal gradients, a thin lit
+edge on each crest, fine threads fanning from it, and a faint halo around the light source.
+A few static colour glows sit above it (theme-specific in Light and Midnight, accent-derived
+elsewhere) so the frost has something to diffuse; Nature retains its crisp silhouettes
+without either. Light and dark themes have separate reflection
+strengths. On desktop the library panel and cards run lighter than reading areas so the
+colour shows at the default setting: cards retain at least 53% surface tint (72% on
+mobile), reading panes 84%, and Settings and Quick actions 88%, so increasing
+transparency keeps text readable. Controls and Markdown code/callout surfaces stay solid
+for clarity. Secondary labels use stronger theme-aware ink over glass; pinned cards retain
 at least 94% tint with a stronger border and pin control.
 The preference stays in this browser; accessibility
 preferences and unsupported browser effects retain the normal appearance.

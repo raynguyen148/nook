@@ -426,14 +426,38 @@ so inactive theme stylesheets are not parsed or added to the live cascade.
   bars are cleared to share that film without stacking additional opacity. Menus,
   dialog controls, and Markdown code/callout backgrounds retain their surfaces.
 
-The `nook:glass` preference defaults off and stores only an enabled flag and
-integer transparency from 10–50; older values below 10 normalize to 10.
-CSS caps Ambient artwork opacity at 72% and diffuses it with a static 24px blur;
+The `nook:glass` preference defaults off and stores only an enabled flag, an
+integer transparency from 10–50 (older values below 10 normalize to 10), and a
+`frost` level of `clear`, `soft` (default), or `frosted`. Records without `frost`,
+or with an unknown value, normalize to `soft`, so older preferences keep working.
+`theme-config.js` mirrors the level to `html[data-glass-frost]` before first
+paint; `appearance.css` maps it to blur, saturation, haze, and grain variables
+only, never to the readability tint floors.
+Each theme's Ambient artwork is one inline SVG built the same way: a gradient base, three
+overlapping folds with a lit crest edge, satin sheen bands, two fans of hairline threads
+(`<use>` copies of a crest path), a halo of rings around the light source (no dots, which read as stray pixels), and a
+vignette. Palettes are per theme. CSS caps its opacity at 72% and puts no `filter` on the
+full-viewport layers (they would re-rasterize at device resolution), so the hairlines survive
+in the gutters while the frost films diffuse the rest;
 Nature keeps its original mask and strength behavior. Shared material tokens
-define directional reflections, inset highlights, and elevation; dark themes
-reduce reflection brightness. Library tint ranges from 85–32%, while card tint
-has a 72% floor, reading panes 84%, and dialog panes 88%. Mobile cards also
-respect the 72% floor; pinned cards use 94%. Sidebar tint ranges from 95–75%.
+define faint directional reflections, hairline inset highlights, and elevation (no blurred
+inner glow, which read as smudge); grain and haze belong to Frosted only;
+the lit rim sits on each decorative film rather than its host, since a host's
+own shadow paints beneath the film. Dark themes reduce reflection brightness
+and use a lighter haze. The frost filter is `blur() saturate()` only; each film's blur radius
+is the main GPU cost because the library film moves over the fixed art while the page scrolls,
+so the defaults are 5px (Clear), 14px (Soft), and 26px (Frosted, 20px on phones). Library tint ranges from 64–32% and card
+tint from 66–53% (`applyGlass` writes `78 − 1.4t` and `78 − 1.2t`; the CSS floors are 32% and
+53%), so the colour behind them shows at the default setting. Reading panes keep an 84% floor
+and dialog panes 88%. Mobile cards have no panel behind them and keep a 72% floor; pinned cards
+use 94%. Sidebar tint ranges from 95–75%.
+Ambient glass also adds a static `body::after` layer of three soft glows, coloured by
+`--glass-orb-a/b/c` (explicit palettes in Light and Midnight, derived from the accent for the
+other themes). Its opacity follows `--glass-reveal` and Nature scenery does not use it. The
+artwork, glows, and tints were audited together: render the theme's SVG, blur it like the
+film, add the glows, then the panel and card tints, and measure card text over the whole
+library area, without crediting the gloss. Every theme stays at 4.5:1 or better at transparency
+10, 30, and 50 and at 5, 14, and 26px blur (lowest 4.62:1); keep new palettes there.
 Secondary sidebar and card labels use stronger theme-aware ink; library titles,
 descriptions and result counts use the strong text role over their shared film.
 The desktop workbench and pinned controls use decorative glass films without

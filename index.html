@@ -1819,7 +1819,7 @@
           <div class="management-row display-setting display-setting--glass">
             <div class="display-setting__copy">
               <h3 class="management-row__name">Background &amp; glass</h3>
-              <p id="glass-help" class="dialog-description display-setting__description">Each theme has its own fixed illustration, with glass in the library, note cards, and note detail. Reading areas keep a stronger background for clarity. Accessibility preferences may turn the effect off.</p>
+              <p id="glass-help" class="dialog-description display-setting__description">Each theme has its own fixed illustration, with glass in the library, note cards, and note detail. Choose how much shows through and how frosted it looks. Reading areas keep a stronger background for clarity. Accessibility preferences may turn the effect off.</p>
             </div>
             <div class="glass-control">
               <label class="glass-control__toggle" for="glass-enabled"><input id="glass-enabled" type="checkbox" role="switch" aria-describedby="glass-help" /> Enable glass</label>
@@ -1830,6 +1830,15 @@
                 </div>
                 <input id="glass-transparency" type="range" min="10" max="50" step="1" value="10" aria-describedby="glass-transparency-help" />
                 <p id="glass-transparency-help" class="dialog-description">10–50%. Higher values show more background; reading areas remain more opaque.</p>
+                <fieldset class="glass-frost-control" aria-describedby="glass-frost-help">
+                  <legend class="management-row__name">Frost</legend>
+                  <div class="glass-frost-control__choices">
+                    <label class="glass-frost-choice"><input type="radio" name="glass-frost" value="clear" /><span>Clear</span></label>
+                    <label class="glass-frost-choice"><input type="radio" name="glass-frost" value="soft" checked /><span>Soft</span></label>
+                    <label class="glass-frost-choice"><input type="radio" name="glass-frost" value="frosted" /><span>Frosted</span></label>
+                  </div>
+                  <p id="glass-frost-help" class="dialog-description">Clear keeps the background sharp; Frosted blurs it into a soft haze.</p>
+                </fieldset>
                 <div class="glass-style-control">
                   <label id="glass-style-label" class="management-row__name" for="glass-style-trigger">Artwork style</label>
                   <div class="sort-field glass-style-picker">

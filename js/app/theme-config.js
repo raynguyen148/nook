@@ -41,16 +41,20 @@
   const glassMin = 10;
   const glassMax = 50;
   const glassDefault = 10;
+  // Frost is the material's blur and haze, independent of how much art shows.
+  const glassFrostLevels = Object.freeze(["clear", "soft", "frosted"]);
+  const glassFrostDefault = "soft";
 
   /** @param {unknown} value */
   function normalizeGlass(value) {
-    const entry = /** @type {{ enabled?: unknown, transparency?: unknown } | null} */ (
+    const entry = /** @type {{ enabled?: unknown, transparency?: unknown, frost?: unknown } | null} */ (
       value && typeof value === "object" ? value : null
     );
     const transparency = typeof entry?.transparency === "number" && Number.isInteger(entry.transparency)
       ? Math.min(glassMax, Math.max(glassMin, entry.transparency))
       : glassDefault;
-    return { enabled: entry?.enabled === true, transparency };
+    const frost = glassFrostLevels.find(level => level === entry?.frost) || glassFrostDefault;
+    return { enabled: entry?.enabled === true, transparency, frost };
   }
 
   /** @param {string | null} value */
@@ -64,16 +68,19 @@
     catch { return normalizeGlass(null); }
   }
 
-  /** @param {{ enabled: boolean, transparency: number }} value */
+  /** @param {{ enabled: boolean, transparency: number, frost: string }} value */
   function applyGlass(value) {
     const supported = typeof CSS !== "undefined" &&
       (CSS.supports("backdrop-filter", "blur(1px)") || CSS.supports("-webkit-backdrop-filter", "blur(1px)")) &&
       CSS.supports("background-color", "color-mix(in srgb, white 80%, transparent)");
     document.documentElement.dataset.glass = String(value.enabled && supported);
+    document.documentElement.dataset.glassFrost = normalizeGlass(value).frost;
     // CSS applies readability floors to card and reading tints; these values
     // retain the user's transparency range for the shared material layers.
-    document.documentElement.style.setProperty("--glass-opacity", `${100 - value.transparency * 1.5}%`);
-    document.documentElement.style.setProperty("--glass-card-opacity", `${100 - value.transparency * 1.5}%`);
+    // The library panel and cards run lighter than reading areas so the colour
+    // behind them shows even at the default setting.
+    document.documentElement.style.setProperty("--glass-opacity", `${78 - value.transparency * 1.4}%`);
+    document.documentElement.style.setProperty("--glass-card-opacity", `${78 - value.transparency * 1.2}%`);
     // Reading has one film; sidebar's small labels keep a stronger tint.
     document.documentElement.style.setProperty("--glass-reading-opacity", `${100 - value.transparency}%`);
     document.documentElement.style.setProperty("--glass-sidebar-opacity", `${100 - value.transparency / 2}%`);
@@ -83,6 +90,7 @@
 
   const glass = Object.freeze({
     storageKey: glassStorageKey, min: glassMin, max: glassMax, defaultValue: glassDefault,
+    frostLevels: glassFrostLevels, frostDefault: glassFrostDefault,
     normalize: normalizeGlass, parse: parseGlass, read: readGlass, apply: applyGlass,
   });
   applyGlass(readGlass());
