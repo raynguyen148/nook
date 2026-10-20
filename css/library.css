@@ -76,7 +76,7 @@
 
 .topbar-actions {
   align-items: center;
-  gap: 0.45rem;
+  gap: var(--space-2);
 }
 
 
@@ -112,8 +112,8 @@
 .topbar-actions .topbar-preferences .topbar-preferences__actions {
   width: auto;
   padding-inline: 0.55rem;
-  gap: 0.4rem;
-  font-weight: 550;
+  gap: var(--space-1-5);
+  font-weight: var(--font-weight-emphasis);
 }
 .topbar-preferences .topbar-preferences__actions .button-label { display: inline; }
 .topbar-preferences__actions .button-icon-svg { color: var(--primary-accent-text); }
@@ -186,7 +186,7 @@
 .notes-panel__title-row {
   display: flex;
   align-items: center;
-  gap: 0.35rem;
+  gap: var(--space-1-5);
 }
 
 
@@ -210,7 +210,7 @@
   flex: 0 0 auto;
   justify-content: flex-end;
   flex-wrap: wrap;
-  gap: 0.55rem;
+  gap: var(--space-2);
 }
 
 
@@ -260,7 +260,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
+  gap: var(--space-4);
   margin-top: 1.25rem;
 }
 
@@ -442,7 +442,7 @@
 
 
 .organize-tabs {
-  gap: 0.45rem;
+  gap: var(--space-2);
   background: var(--surface-muted);
 }
 
@@ -493,7 +493,7 @@
   .topbar-actions {
     display: flex;
     align-items: center;
-    gap: 0.3rem;
+    gap: var(--space-1);
     width: 100%;
   }
 
@@ -518,7 +518,7 @@
     min-width: 0;
     min-height: 2.25rem;
     padding: 0.35rem 0.85rem;
-    font-size: 0.82rem;
+    font-size: var(--font-size-label);
     border-radius: var(--control-radius);
   }
 
@@ -528,10 +528,10 @@
     min-width: 0;
     min-height: 2.25rem;
     padding: 0.35rem 0.9rem;
-    font-size: 0.82rem;
+    font-size: var(--font-size-label);
     font-weight: var(--font-weight-semibold);
     border-radius: var(--control-radius);
-    gap: 0.35rem;
+    gap: var(--space-1-5);
   }
 
   #new-note-shortcut {
@@ -571,7 +571,7 @@
     align-items: center;
     justify-content: space-between;
     flex-wrap: wrap;
-    gap: 0.55rem;
+    gap: var(--space-2);
   }
 
   .note-dialog .note-markdown-help__tooltip {
@@ -595,14 +595,14 @@
   }
 
   .toolbar {
-    gap: 0.58rem;
+    gap: var(--space-2-5);
     padding: 0.4rem;
   }
 
   .notes-panel__heading {
     align-items: flex-start;
     flex-direction: column;
-    gap: 0.75rem;
+    gap: var(--space-3);
     padding-bottom: 0.85rem;
   }
 
@@ -761,5 +761,5 @@
 }
 .welcome-card > div:first-child { flex: 1 1 24rem; min-width: 0; }
 .welcome-card h2 { margin: 0 0 0.4rem; color: var(--text-strong); font-size: var(--font-size-md); }
-.welcome-card p { margin: 0.3rem 0; max-width: 65ch; font-size: 0.8rem; line-height: 1.6; }
+.welcome-card p { margin: 0.3rem 0; max-width: 65ch; font-size: var(--font-size-label); line-height: 1.6; }
 .welcome-card__actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); }

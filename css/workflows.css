@@ -14,9 +14,9 @@
 }
 .workflow-dialog[open] { display: flex; flex-direction: column; }
 .workflow-dialog > .dialog-header,
-.workflow-dialog > .dialog-footer { flex: none; padding: 1rem 1.25rem; gap: 0.75rem; background: var(--surface-panel); }
+.workflow-dialog > .dialog-footer { flex: none; padding: 1rem 1.25rem; gap: var(--space-3); background: var(--surface-panel); }
 .workflow-dialog > .dialog-header { border-bottom: 1px solid var(--border-subtle); }
-.workflow-dialog > .dialog-header h2 { margin: 0; color: var(--text-strong); font-size: var(--font-size-dialog-title); font-weight: 650; letter-spacing: -0.015em; }
+.workflow-dialog > .dialog-header h2 { margin: 0; color: var(--text-strong); font-size: var(--font-size-dialog-title); font-weight: var(--font-weight-strong); letter-spacing: -0.015em; }
 .workflow-dialog > .dialog-footer { border-top: 1px solid var(--border-subtle); flex-wrap: wrap; }
 .workflow-dialog > .dialog-body { min-height: 0; overflow: auto; padding: 1rem 1.25rem; }
 .workflow-dialog .dialog-description,
@@ -26,14 +26,14 @@
 .workflow-dialog select { width: 100%; color: var(--text-strong); background-color: var(--surface-panel); border-color: var(--border-subtle); }
 .workflow-dialog::backdrop { background: rgb(27 35 58 / 35%); }
 .workflow-dialog .field > span:not(.sr-only) { color: var(--text-default); }
-.workflow-list { display: grid; gap: 0.65rem; margin-top: 1rem; }
+.workflow-list { display: grid; gap: var(--space-2-5); margin-top: 1rem; }
 .workflow-row { min-width: 0; padding: 0.9rem; border: 1px solid var(--border-subtle); border-radius: var(--control-radius); }
-.workflow-row__title { margin: 0; color: var(--text-strong); font-size: 0.95rem; overflow-wrap: anywhere; }
-.workflow-row__meta { margin: 0.35rem 0; color: var(--text-muted); font-size: 0.8rem; overflow-wrap: anywhere; }
-.workflow-row__actions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.75rem; }
+.workflow-row__title { margin: 0; color: var(--text-strong); font-size: var(--font-size-body); overflow-wrap: anywhere; }
+.workflow-row__meta { margin: 0.35rem 0; color: var(--text-muted); font-size: var(--font-size-label); overflow-wrap: anywhere; }
+.workflow-row__actions { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: 0.75rem; }
 .workflow-row__source { max-height: 12rem; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere; font: 0.82rem/1.6 var(--font-mono); }
 .workflow-row details { margin-top: 0.6rem; }
-.workflow-row summary { color: var(--text-muted); cursor: pointer; font-size: 0.8rem; }
+.workflow-row summary { color: var(--text-muted); cursor: pointer; font-size: var(--font-size-label); }
 .command-dialog {
   width: min(calc(100% - 2rem), 40rem);
   max-height: min(80dvh, 42rem);
@@ -150,7 +150,7 @@ html .workflow-dialog.command-dialog::backdrop {
 .command-group__heading { display: flex; justify-content: space-between; align-items: center; gap: var(--space-2); padding: var(--space-2) var(--space-3); color: var(--text-muted); font: 600 0.65rem var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; }
 .command-group__meta { font-weight: var(--font-weight-regular); letter-spacing: 0.04em; }
 .command-dialog > .command-dialog__footer { justify-content: space-between; align-items: center; padding: var(--space-2) var(--space-4); gap: var(--space-2); background: var(--surface-muted); }
-.command-dialog__help { display: flex; flex-wrap: wrap; gap: var(--space-3); margin: 0; color: var(--text-muted); font-size: 0.7rem; }
+.command-dialog__help { display: flex; flex-wrap: wrap; gap: var(--space-3); margin: 0; color: var(--text-muted); font-size: var(--font-size-2xs); }
 .command-dialog__help > span { display: inline-flex; align-items: center; gap: var(--space-1); white-space: nowrap; }
 .command-dialog__total { color: var(--text-muted); font: 0.65rem var(--font-mono); white-space: nowrap; }
 #command-status:empty { display: none; }
@@ -162,7 +162,7 @@ html .workflow-dialog.command-dialog::backdrop {
   display: grid;
   grid-template-columns: 1.25rem minmax(0, 1fr);
   align-items: center;
-  gap: 0.75rem;
+  gap: var(--space-3);
   text-align: left;
   border: 1px solid transparent;
   border-radius: var(--control-radius);
@@ -173,7 +173,7 @@ html .workflow-dialog.command-dialog::backdrop {
   touch-action: manipulation;
 }
 .command-result__icon { display: block; width: 1.125rem; height: 1.125rem; color: var(--text-muted); }
-.command-result__copy { display: grid; min-width: 0; gap: 0.125rem; }
+.command-result__copy { display: grid; min-width: 0; gap: var(--space-0-5); }
 .command-result__title,
 .command-result__hint { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .command-result__title { font-size: 0.85rem; font-weight: var(--font-weight-semibold); }
@@ -189,12 +189,12 @@ html .workflow-dialog.command-dialog::backdrop {
 }
 .command-result.is-active .command-result__icon { color: var(--selected-text); }
 .command-result.is-active .command-result__hint { color: var(--selected-text); }
-.command-result:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: -2px; }
+.command-result:focus-visible { outline: var(--focus-ring-width) solid var(--focus-ring); outline-offset: -2px; }
 .command-result:disabled { opacity: 0.5; cursor: not-allowed; }
 /* Hallmark · component: Select notes · Nook existing tokens and controls
  * Hallmark · pre-emit critique: P5 H5 E5 S5 R5 V4
  */
-.select-notes { display: inline-flex; flex: none; width: auto; min-height: 0; padding-inline: 0.6rem; gap: 0.35rem; color: var(--component-text); font-size: 0.8rem; font-weight: var(--font-weight-medium); white-space: nowrap; }
+.select-notes { display: inline-flex; flex: none; width: auto; min-height: 0; padding-inline: 0.6rem; gap: var(--space-1-5); color: var(--component-text); font-size: var(--font-size-label); font-weight: var(--font-weight-medium); white-space: nowrap; }
 .select-notes svg { color: var(--primary-accent); }
 .view-mode-choice--selection { margin-right: var(--space-1); padding-right: var(--space-1); border-right: 1px solid var(--component-border); }
 .view-mode-choice--selection:not(:has(> button:not(.is-hidden))) { display: none; }
@@ -204,7 +204,7 @@ html .workflow-dialog.command-dialog::backdrop {
   background: var(--selected-surface);
   box-shadow: none;
 }
-.selection-heading { display: flex; justify-content: flex-end; gap: 0.75rem; margin-bottom: 0.5rem; }
+.selection-heading { display: flex; justify-content: flex-end; gap: var(--space-3); margin-bottom: 0.5rem; }
 .selection-heading:not(:has(> :not(.is-hidden))) { display: none; }
 #recovery-indicator { margin-right: auto; }
 /* Hallmark · component: selection toolbar · genre: modern-minimal · theme: Nook existing
@@ -244,10 +244,10 @@ html:is([data-theme="retro"], [data-theme="eink"]) .bulk-actions {
   .notes-panel .bulk-actions .button-danger:hover:not(:disabled) { border-color: var(--danger-border); color: var(--danger-text); background: var(--danger-surface); }
   .notes-panel .bulk-actions .bulk-actions__select-all--deselect:hover:not(:disabled) { color: var(--danger-text); }
 }
-.note-selection { display: flex; align-items: center; gap: 0.35rem; font-size: 0.8rem; color: var(--text-muted); cursor: pointer; }
+.note-selection { display: flex; align-items: center; gap: var(--space-1-5); font-size: var(--font-size-label); color: var(--text-muted); cursor: pointer; }
 .note-selection input { width: 1.1rem; height: 1.1rem; accent-color: var(--primary-accent); }
 .note-card--selected { outline: 2px solid var(--border-focus); outline-offset: -1px; }
-.note-card--selectable .note-card__top-actions { display: flex; gap: 0.6rem; opacity: 1; visibility: visible; pointer-events: auto; }
+.note-card--selectable .note-card__top-actions { display: flex; gap: var(--space-2-5); opacity: 1; visibility: visible; pointer-events: auto; }
 @media (min-width: 821px) {
   .notes-list--compact .note-card--selectable .note-card__top-actions { display: contents; }
   .notes-list--compact .note-selection { order: 0; flex: none; }

@@ -118,7 +118,7 @@
   /* Focus ring for keyboard accessibility */
   .note-window-resize:focus-visible,
   .note-window-resize.is-focus {
-    outline: 2px solid var(--focus-ring);
+    outline: var(--focus-ring-width) solid var(--focus-ring);
     outline-offset: -2px;
     border-radius: var(--control-radius);
   }
@@ -170,7 +170,7 @@
 
   .note-window-resize.is-error::before {
     outline: 2px dashed var(--danger-text);
-    outline-offset: 2px;
+    outline-offset: var(--focus-ring-offset);
   }
 
   .note-window-resize.is-success::before {

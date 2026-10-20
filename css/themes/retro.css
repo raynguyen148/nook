@@ -326,7 +326,7 @@ html[data-theme="retro"] .notes-list--compact .type-badge {
 
 html[data-theme="retro"] .type-badge--filter:focus-visible {
   outline: 2px solid var(--retro-accent);
-  outline-offset: 2px;
+  outline-offset: var(--focus-ring-offset);
 }
 
 @media (hover: hover) {
@@ -364,7 +364,7 @@ html[data-theme="retro"] :is(.note-dialog, #note-dialog, .quick-view-dialog) .no
 
 html[data-theme="retro"] :is(.note-dialog, #note-dialog, .quick-view-dialog) .note-type-picker__trigger:focus-visible {
   outline: 2px solid var(--retro-type-ink);
-  outline-offset: 2px;
+  outline-offset: var(--focus-ring-offset);
 }
 
 /* Active filter pill for note type */
@@ -456,7 +456,7 @@ html[data-theme="retro"] :where(input:not([type]), input[type="text"], input[typ
 html[data-theme="retro"] .tag-picker:focus-within {
   border-color: var(--retro-accent) !important;
   outline: 2px solid var(--retro-accent) !important;
-  outline-offset: 2px;
+  outline-offset: var(--focus-ring-offset);
   background-color: var(--retro-paper) !important;
   box-shadow: none !important;
 }
@@ -479,7 +479,7 @@ html[data-theme="retro"] .clear-search {
 
 html[data-theme="retro"] .clear-search:focus-visible {
   outline: var(--retro-border-width) solid var(--retro-border);
-  outline-offset: 2px;
+  outline-offset: var(--focus-ring-offset);
 }
 
 html[data-theme="retro"] :where(.sort-field__trigger, .view-mode-control__choices, .note-editor-modes) { border: var(--retro-border-width) solid var(--retro-border); border-radius: var(--retro-radius-control); background: var(--retro-paper); box-shadow: none; }
@@ -515,7 +515,7 @@ html[data-theme="retro"] .topbar-actions .theme-toggle__icon {
 }
 html[data-theme="retro"] .button-danger { border-color: var(--retro-red); color: var(--retro-accent-ink); background: var(--retro-red); }
 html[data-theme="retro"] :where(.button-primary, .button-secondary, .button-danger, .icon-button, .mobile-filter-toggle):focus-visible,
-html[data-theme="retro"] :where(.pagination-button, .note-card__action, .note-formatting-tool__button):focus-visible { outline: 2px solid var(--retro-accent); outline-offset: 2px; }
+html[data-theme="retro"] :where(.pagination-button, .note-card__action, .note-formatting-tool__button):focus-visible { outline: 2px solid var(--retro-accent); outline-offset: var(--focus-ring-offset); }
 html[data-theme="retro"] :where(.button-primary, .button-secondary, .button-danger, .icon-button, .mobile-filter-toggle):active:not(:disabled) { transform: none; box-shadow: none; }
 html[data-theme="retro"] :where(.button-primary, .button-secondary, .button-danger, .icon-button, .mobile-filter-toggle):disabled { border-color: var(--retro-disabled-ink); color: var(--retro-disabled-ink); background: var(--retro-disabled-surface); box-shadow: none; transform: none; }
 
@@ -540,7 +540,7 @@ html[data-theme="retro"] .note-detail-surface .dialog-footer__tools :where(.icon
 html[data-theme="retro"] .note-detail-surface .dialog-footer__preview-actions :where(.icon-button, .note-delete-button, .note-save-shortcut__trigger, .note-markdown-help__trigger):focus-visible {
   border-color: var(--retro-border);
   outline: 2px solid var(--retro-accent);
-  outline-offset: 2px;
+  outline-offset: var(--focus-ring-offset);
   color: var(--retro-accent);
   background: var(--retro-accent-soft);
 }
@@ -613,7 +613,7 @@ html[data-theme="retro"] .note-detail-surface .dialog-footer {
 }
 
 html[data-theme="retro"] #note-title { border: 0 !important; border-bottom: var(--retro-border-width) solid var(--retro-border) !important; border-radius: 0 !important; padding-inline: 0; color: var(--retro-ink) !important; background: transparent !important; box-shadow: none !important; font-family: var(--font-display); font-style: normal; font-weight: var(--font-weight-bold); }
-html[data-theme="retro"] #note-title:focus-visible { border-bottom-color: var(--retro-accent) !important; outline: 2px solid var(--retro-accent) !important; outline-offset: 2px; }
+html[data-theme="retro"] #note-title:focus-visible { border-bottom-color: var(--retro-accent) !important; outline: 2px solid var(--retro-accent) !important; outline-offset: var(--focus-ring-offset); }
 html[data-theme="retro"] .note-formatting-toolbar { border: var(--retro-border-width) solid var(--retro-border); border-radius: var(--retro-radius-control); box-shadow: var(--retro-shadow-sm); }
 html[data-theme="retro"] .note-formatting-tool__button { font-family: var(--font-mono); }
 html[data-theme="retro"] .note-formatting-tool__button:is(:hover, :focus-visible) { border-color: var(--retro-accent); color: var(--retro-accent); background: var(--retro-accent-soft); }
@@ -681,7 +681,7 @@ html[data-theme="retro"] :where(.quick-view-content, .note-content-preview) .mar
 
 html[data-theme="retro"] :where(.quick-view-content, .note-content-preview) .markdown-details { border: var(--retro-border-width) solid var(--retro-border); border-radius: var(--retro-radius-control); color: var(--retro-ink); background: var(--retro-paper-muted); box-shadow: none; }
 html[data-theme="retro"] :where(.quick-view-content, .note-content-preview) .markdown-details summary { color: var(--retro-ink); font-family: var(--font-display); font-style: normal; font-weight: var(--font-weight-bold); }
-html[data-theme="retro"] :where(.quick-view-content, .note-content-preview) .markdown-details summary:focus-visible { outline: 2px solid var(--retro-accent); outline-offset: 2px; background: var(--retro-accent-soft); }
+html[data-theme="retro"] :where(.quick-view-content, .note-content-preview) .markdown-details summary:focus-visible { outline: 2px solid var(--retro-accent); outline-offset: var(--focus-ring-offset); background: var(--retro-accent-soft); }
 html[data-theme="retro"] :where(.quick-view-content, .note-content-preview) .markdown-math { border: var(--retro-border-width) solid var(--retro-border); color: var(--retro-ink); background: var(--retro-paper-muted); font-family: var(--font-mono); }
 html[data-theme="retro"] :where(.quick-view-content, .note-content-preview) .markdown-math--block { box-shadow: none; }
 html[data-theme="retro"] :where(.quick-view-content, .note-content-preview) .markdown-footnotes { border-color: var(--retro-border); color: var(--retro-muted); }

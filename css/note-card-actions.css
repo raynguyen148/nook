@@ -55,8 +55,21 @@ html .note-card .note-card__top-actions .note-card__pin-toggle {
   background: var(--surface-muted);
 }
 .note-card .note-card__more:focus-visible {
-  outline: 2px solid var(--focus-ring);
-  outline-offset: 2px;
+  outline: var(--focus-ring-width) solid var(--focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+/* With a precise pointer, the menu trigger joins the pin in appearing on
+ * hover or keyboard focus, so a resting grid stays calm. Touch keeps it. */
+@media (hover: hover) and (pointer: fine) {
+  .note-card .note-card__more {
+    opacity: 0;
+    transition: opacity var(--motion-duration-short) var(--motion-ease-out);
+  }
+  .note-card:is(:hover, :focus-within, .is-hover) .note-card__more,
+  .note-card .note-card__more[aria-expanded="true"] {
+    opacity: 1;
+  }
 }
 
 html .note-card .note-card__top-actions .note-card__pin-toggle {
@@ -199,7 +212,7 @@ html .note-card .note-card__actions[popover] > .note-card__action:is(:hover, :fo
   background: var(--surface-muted);
 }
 html .note-card .note-card__actions[popover] > .note-card__action:focus-visible {
-  outline: 2px solid var(--focus-ring);
+  outline: var(--focus-ring-width) solid var(--focus-ring);
   outline-offset: -2px;
 }
 html .note-card .note-card__actions[popover] > .note-card__action--danger {

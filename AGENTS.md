@@ -44,7 +44,7 @@ QA uses an already installed local Playwright. Keep the app openable as a static
   current tail is `mobile`, `note-typography`, `workflows`, `workspace-resize`,
   `split-resize`, `note-card-actions`, `skeleton`, then `appearance` (glass).
   Prefer the scale tokens in `css/base.css` (`--font-size-*`, `--font-weight-*`,
-  `--radius-*`, `--shadow-*`, `--control-height-*`) over new literals.
+  `--space-*`, `--radius-*`, `--shadow-*`, `--focus-ring-*`, `--control-height-*`) over new literals.
 - `js/storage.js`: IndexedDB setup, validation, normalization, legacy migration,
   note/type/tag CRUD, backup export, and backup import. It exposes the frozen
   `globalThis.PersonalNotesStorage` API.

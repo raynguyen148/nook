@@ -42,7 +42,7 @@
 .quick-view-body {
   display: grid;
   min-height: 0;
-  gap: 0.95rem;
+  gap: var(--space-4);
   overflow: auto;
   overscroll-behavior: contain;
   padding: 1.2rem 1.45rem;
@@ -86,7 +86,7 @@
   padding: 0.17rem 0.45rem;
   color: var(--tag-chip-text, #68748a);
   background: var(--tag-chip-surface, #fafbfc);
-  font-size: 0.68rem;
+  font-size: var(--font-size-2xs);
   font-weight: 640;
   line-height: 1.2;
   white-space: nowrap;
@@ -117,7 +117,7 @@
   margin: 0 0 0.55rem;
   color: #8a94a5;
   font-size: 0.66rem;
-  font-weight: 750;
+  font-weight: var(--font-weight-heavy);
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -127,7 +127,7 @@
 .quick-view-content {
   min-height: 6rem;
   color: #334155;
-  font-size: 0.95rem;
+  font-size: var(--font-size-body);
   font-weight: var(--font-weight-regular);
   line-height: 1.7;
   overflow-wrap: anywhere;
@@ -173,7 +173,7 @@
 .quick-view-content h1 {
   margin: 1.45rem 0 0.65rem;
   font-size: 1.55rem;
-  font-weight: 750;
+  font-weight: var(--font-weight-heavy);
   letter-spacing: -0.03em;
   border-bottom: 1px solid #e2e8f0;
   padding-bottom: 0.35rem;
@@ -193,7 +193,7 @@
 .quick-view-content h3 {
   margin: 1.1rem 0 0.45rem;
   font-size: 1.08rem;
-  font-weight: 650;
+  font-weight: var(--font-weight-strong);
   letter-spacing: -0.015em;
   color: #1e293b;
 }
@@ -203,7 +203,7 @@
 .quick-view-content h4 {
   margin: 0.95rem 0 0.35rem;
   font-size: 0.96rem;
-  font-weight: 650;
+  font-weight: var(--font-weight-strong);
   color: #334155;
 }
 
@@ -212,7 +212,7 @@
 .quick-view-content h5,
 .quick-view-content h6 {
   margin: 0.85rem 0 0.35rem;
-  font-size: 0.88rem;
+  font-size: var(--font-size-control);
   font-weight: var(--font-weight-semibold);
   color: #475569;
 }
@@ -246,11 +246,11 @@
 
 
 .quick-view-content blockquote {
-  border-left: 3px solid #6366f1;
+  border-left: 3px solid var(--primary-accent, #9e6b02);
   border-radius: 0 0.35rem 0.35rem 0;
   padding: 0.45rem 0.95rem;
   color: #475569;
-  background: rgb(99 102 241 / 4%);
+  background: color-mix(in srgb, var(--primary-accent, #9e6b02) 5%, transparent);
 }
 
 
@@ -306,7 +306,7 @@
 .note-content-preview .markdown-code-lang {
   color: var(--text-default);
   font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace);
-  font-size: 0.68rem;
+  font-size: var(--font-size-2xs);
   font-weight: var(--font-weight-bold);
   letter-spacing: 0.06em;
 }
@@ -618,7 +618,7 @@
 .note-content-preview .markdown-image-alt {
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
+  gap: var(--space-1-5);
   padding: 0.15rem 0.45rem;
   border-radius: 0.35rem;
   border: 1px solid var(--border-subtle);
@@ -758,7 +758,7 @@
   display: flex;
   flex-wrap: wrap;
   align-items: flex-start;
-  gap: 0.42rem;
+  gap: var(--space-1-5);
   margin-left: -1.45rem;
 }
 
@@ -818,10 +818,10 @@
 .note-content-preview .markdown-alert__title {
   display: flex;
   align-items: center;
-  gap: 0.42rem;
+  gap: var(--space-1-5);
   margin: 0 0 0.4rem;
   color: #0369a1;
-  font-size: 0.73rem;
+  font-size: var(--font-size-xs);
   font-weight: 760;
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -972,7 +972,7 @@
   margin-top: 1.15rem;
   border-top: 1px solid var(--border-subtle);
   padding-top: 0.8rem;
-  font-size: 0.82rem;
+  font-size: var(--font-size-label);
 }
 
 
@@ -981,7 +981,7 @@
 .note-content-preview .markdown-footnotes h4 {
   margin: 0 0 0.45rem;
   color: var(--text-muted);
-  font-size: 0.68rem;
+  font-size: var(--font-size-2xs);
   letter-spacing: 0.07em;
   text-transform: uppercase;
 }
@@ -1015,7 +1015,7 @@
 .quick-view-dates {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.28rem 0.75rem;
+  gap: var(--space-1) var(--space-3);
   color: #64748b;
   font-size: 0.72rem;
 }
@@ -1033,7 +1033,7 @@
   color: var(--component-text);
   background: var(--component-surface-muted);
   font-family: var(--font-mono);
-  font-size: 0.88rem;
+  font-size: var(--font-size-control);
   line-height: 1.6;
   overflow: auto;
   overflow-wrap: anywhere;

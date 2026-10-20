@@ -131,7 +131,7 @@ html[data-theme="light"] :where(.space-link, .sidebar-filter).is-active {
   border-color: var(--primary-accent-border);
   color: var(--primary-accent-text);
   background: var(--primary-accent-soft);
-  font-weight: 550;
+  font-weight: var(--font-weight-emphasis);
 }
 
 html[data-theme="light"] :where(.space-link, .sidebar-filter).is-active .filter-count {

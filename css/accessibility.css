@@ -13,8 +13,8 @@
   [role="tab"],
   [role="option"]
 ):focus-visible {
-  outline: 2px solid var(--focus-color);
-  outline-offset: 2px;
+  outline: var(--focus-ring-width) solid var(--focus-ring);
+  outline-offset: var(--focus-ring-offset);
 }
 
 
@@ -120,8 +120,8 @@ html body .note-editor-modes .note-editor-mode__button:focus-visible {
 
 
 .tag-filter-option:has(input:focus-visible) {
-  outline: 2px solid var(--focus-color);
-  outline-offset: 2px;
+  outline: var(--focus-ring-width) solid var(--focus-ring);
+  outline-offset: var(--focus-ring-offset);
 }
 
 
@@ -213,8 +213,8 @@ html[data-input-modality="keyboard"]
   .note-dialog
   #secondary-note-title-input:focus-visible {
   border-radius: var(--focus-radius) !important;
-  outline: 2px solid var(--focus-ring) !important;
-  outline-offset: 2px !important;
+  outline: var(--focus-ring-width) solid var(--focus-ring) !important;
+  outline-offset: var(--focus-ring-offset) !important;
   box-shadow: none !important;
 }
 

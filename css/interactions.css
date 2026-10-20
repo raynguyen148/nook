@@ -85,17 +85,19 @@ body {
 
 
 
+/* Keyboard rings use the theme's solid focus colour; a translucent ring
+ * fell below non-text contrast on several themes. */
 button:focus-visible,
 input:focus-visible,
 select:focus-visible,
 textarea:focus-visible {
-  outline-color: var(--primary-accent-focus);
+  outline-color: var(--focus-ring);
 }
 
 
 
 .app-dialog:focus {
-  outline: 2px solid var(--primary-accent);
+  outline: var(--focus-ring-width) solid var(--focus-ring);
   outline-offset: 0;
 }
 
@@ -178,8 +180,8 @@ textarea:focus-visible {
   min-height: var(--control-height);
   border-radius: var(--control-radius);
   padding: 0.46rem 0.82rem;
-  font-size: 0.8rem;
-  font-weight: 650;
+  font-size: var(--font-size-label);
+  font-weight: var(--font-weight-strong);
 }
 
 
@@ -646,7 +648,7 @@ textarea:focus-visible {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 0.75rem;
+  gap: var(--space-3);
 }
 
 
@@ -661,7 +663,7 @@ textarea:focus-visible {
 .note-editor-modes {
   display: inline-flex;
   align-items: center;
-  gap: 0.1rem;
+  gap: var(--space-0-5);
   border: 1px solid #e2e8f0;
   border-radius: var(--radius-pill);
   padding: 0.16rem;
@@ -683,13 +685,13 @@ textarea:focus-visible {
   height: var(--control-height);
   align-items: center;
   justify-content: center;
-  gap: 0.36rem;
+  gap: var(--space-1-5);
   border: 0;
   border-radius: var(--radius-pill);
   padding: 0 0.6rem;
   color: var(--text-muted);
   background: transparent;
-  font-size: 0.76rem;
+  font-size: var(--font-size-xs);
   font-weight: var(--font-weight-bold);
   transition:
     color var(--interaction-duration) var(--interaction-easing),
@@ -792,7 +794,7 @@ textarea:focus-visible {
   background: #fff;
   box-shadow: 0 1px 0 rgb(55 66 86 / 8%);
   font: inherit;
-  font-weight: 650;
+  font-weight: var(--font-weight-strong);
   text-align: center;
 }
 
@@ -875,7 +877,7 @@ textarea:focus-visible {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.48rem;
+  gap: var(--space-2);
   min-height: 2.65rem;
   padding: 0.28rem 0.12rem;
   border: 0;
@@ -905,7 +907,7 @@ textarea:focus-visible {
   background: transparent;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: 0.78rem;
-  font-weight: 750;
+  font-weight: var(--font-weight-heavy);
   line-height: 1;
 }
 
@@ -967,8 +969,8 @@ textarea:focus-visible {
   color: var(--text-strong);
   background: var(--surface-panel);
   box-shadow: 0 0.65rem 1.5rem rgb(27 38 58 / 12%), 0 0.15rem 0.45rem rgb(27 38 58 / 6%);
-  font-size: 0.7rem;
-  font-weight: 650;
+  font-size: var(--font-size-2xs);
+  font-weight: var(--font-weight-strong);
   line-height: 1.2;
   opacity: 0;
   pointer-events: none;
@@ -1018,7 +1020,7 @@ textarea:focus-visible {
   min-width: 0;
   min-height: 0;
   grid-template-rows: minmax(0, 1fr);
-  gap: 0.34rem;
+  gap: var(--space-1-5);
 }
 
 
@@ -1032,7 +1034,7 @@ textarea:focus-visible {
 .note-editor-pane__label {
   display: none;
   color: var(--text-muted);
-  font-size: 0.68rem;
+  font-size: var(--font-size-2xs);
   font-weight: var(--font-weight-bold);
   letter-spacing: 0.08em;
   line-height: 1.2;
@@ -1052,7 +1054,7 @@ textarea:focus-visible {
 .note-content-field.is-split .note-content-editor {
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   align-items: stretch;
-  gap: 0.7rem;
+  gap: var(--space-3);
 }
 
 
@@ -1150,8 +1152,8 @@ html body .color-picker__option:focus-visible,
 html body .note-type-picker__option:focus-visible,
 html body .view-mode-button:focus-visible,
 html body .note-markdown-help__trigger:focus-visible {
-  outline: 2px solid var(--focus-color) !important;
-  outline-offset: 2px !important;
+  outline: var(--focus-ring-width) solid var(--focus-ring) !important;
+  outline-offset: var(--focus-ring-offset) !important;
 }
 
 
@@ -1226,8 +1228,8 @@ html:not([data-input-modality="keyboard"])
 html[data-input-modality="keyboard"] body .search-field input:focus {
   border-color: var(--border-focus, var(--primary-accent)) !important;
   box-shadow: 0 0 0 3px var(--focus-ring-soft, var(--primary-accent-focus)) !important;
-  outline: 2px solid var(--focus-color) !important;
-  outline-offset: 2px !important;
+  outline: var(--focus-ring-width) solid var(--focus-ring) !important;
+  outline-offset: var(--focus-ring-offset) !important;
 }
 
 html[data-input-modality="keyboard"] body .sort-field select:focus,
@@ -1235,8 +1237,8 @@ html[data-input-modality="keyboard"] body .management-row input:focus,
 html[data-input-modality="keyboard"] body .management-search input:focus {
   border-color: transparent !important;
   box-shadow: none !important;
-  outline: 2px solid var(--focus-color) !important;
-  outline-offset: 2px !important;
+  outline: var(--focus-ring-width) solid var(--focus-ring) !important;
+  outline-offset: var(--focus-ring-offset) !important;
 }
 
 
@@ -1252,8 +1254,8 @@ html body .tag-filter-option:has(input:focus-visible) {
 
 
 html body .tag-picker:focus-within {
-  outline: 2px solid var(--focus-color);
-  outline-offset: 2px;
+  outline: var(--focus-ring-width) solid var(--focus-ring);
+  outline-offset: var(--focus-ring-offset);
 }
 
 
@@ -1315,8 +1317,8 @@ html:not([data-input-modality="keyboard"]) body .note-dialog .tag-picker:focus-w
 .color-picker__trigger:focus-visible,
 .theme-picker__trigger:focus-visible,
 .sort-field__trigger:focus-visible {
-  outline: 2px solid var(--focus-ring);
-  outline-offset: 2px;
+  outline: var(--focus-ring-width) solid var(--focus-ring);
+  outline-offset: var(--focus-ring-offset);
 }
 
 
@@ -1333,8 +1335,8 @@ html:not([data-input-modality="keyboard"]) body .note-dialog .tag-picker:focus-w
 .management-search input:focus-visible {
   border-color: var(--border-focus);
   box-shadow: 0 0 0 3px var(--focus-ring-soft);
-  outline: 2px solid var(--focus-ring);
-  outline-offset: 2px;
+  outline: var(--focus-ring-width) solid var(--focus-ring);
+  outline-offset: var(--focus-ring-offset);
 }
 
 
@@ -1373,8 +1375,8 @@ html:not([data-input-modality="keyboard"]) body .note-dialog .tag-picker:focus-w
 
 .note-card__action:focus-visible,
 .note-card__pin-toggle:focus-visible {
-  outline: 2px solid var(--focus-ring);
-  outline-offset: 2px;
+  outline: var(--focus-ring-width) solid var(--focus-ring);
+  outline-offset: var(--focus-ring-offset);
 }
 
 

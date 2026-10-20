@@ -337,7 +337,12 @@ app.css ordered layers → one active theme
 `base.css` owns the shared scale tokens. Prefer them over new literals:
 
 - Type: `--font-size-2xs|xs|label|control|body|md|dialog-title` and
-  `--font-weight-regular|medium|semibold|bold`.
+  `--font-weight-regular|medium|emphasis|semibold|strong|bold|heavy`
+  (Geist is variable, so 550/650/750 are deliberate steps).
+- Spacing: `--space-0-5|1|1-5|2|2-5|3|4|5|6|8` on a 2px rhythm; gaps use them.
+- Focus: `--focus-ring`, `--focus-ring-width`, `--focus-ring-offset`. Keyboard
+  rings stay solid; do not swap in the translucent `--primary-accent-focus`.
+- Reading: detail prose is capped by `--reading-measure` (default `80ch`).
 - Shape: `--radius-sm`, `--radius-md`, `--radius-lg` (`--radius-dialog`), and
   `--radius-pill` where pills are intended.
 - Elevation: `--shadow-xs|sm|md|lg`.
