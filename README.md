@@ -273,10 +273,11 @@ your device's system color scheme preference (Light or Dark). Hover over or keyb
 current and next theme. Auto stays selected after reload and updates when the system theme changes.
 
 In Settings → Display (Appearance on mobile), **Enable glass** turns on a fixed,
-theme-specific illustration and glass in the library, cards, and note detail together. Light has warm stone mountain layers,
-Coffee warm sepia mountain layers, Forest a pine lake, Midnight mountains and a moon, Dark a
-night woodland, Retro archival moss hill layers, and Zen a reed-lined shore. Coffee's sidebar has a small
-steaming cup; Retro's has a desk lamp and book. These simple silhouettes are subtle, single-tone
+theme-specific illustration and glass in the library, cards, and note detail together. With Nature Scenery, Light has
+warm stone mountain layers, Coffee soft highland slopes with a fruiting coffee branch, Forest a pine lake, Midnight
+mountains and a moon, Dark a night woodland, Retro a striped mid-century sun over moss hills and trees, and Zen a
+moonlit lake with misty ridges and bamboo. Coffee's sidebar has a steaming cup, Retro's a vintage keyboard, and Zen's a brushed
+ensō above balanced stones. These simple silhouettes are subtle, single-tone
 backgrounds that do not take up navigation space. Auto follows
 the Light or Dark scene. The effect is off by default. Transparency ranges from
 10–50%; higher values reveal more background. **Frost** sets how diffused the

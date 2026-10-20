@@ -405,7 +405,8 @@ so inactive theme stylesheets are not parsed or added to the live cascade.
 - `appearance.css`: optional fixed theme artwork and glass films, loaded last.
   The canonical SVGs in `images/nature/` are also encoded in CSS for
   `file://` compatibility; the appearance tests keep those copies in sync.
-  Main scenes use alpha masks tinted by each theme. Coffee and Retro have
+  Main scenes use alpha masks tinted by each theme. Coffee (steaming cup),
+  Retro (vintage keyboard), and Zen (ensō above stacked stones) have
   separate sidebar artwork: simple filled silhouettes using the same tinted
   alpha-mask treatment as other themes. These absolute background layers add
   no layout height or scrolling space and contain no outlines or shading.
