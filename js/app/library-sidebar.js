@@ -53,13 +53,14 @@
       const button = createElement("button", {
         className: `tag-chip${selected ? " is-selected" : ""}`,
         type: "button",
-        text: name,
         attributes: {
           "aria-label": `Filter by tag ${name}`,
           "aria-pressed": String(selected),
           title: `Filter by ${name}`,
         },
       });
+      // Text lives in its own box so long names can show an ellipsis.
+      button.append(createElement("span", { className: "tag-chip__label", text: name }));
       button.addEventListener("click", () => toggleTagFilter(tag.id));
       return button;
     }

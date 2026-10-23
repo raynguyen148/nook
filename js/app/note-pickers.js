@@ -269,6 +269,11 @@
       if (target && !target.disabled) target.focus({ preventScroll: true });
     }
 
+    // Suggestion text gets its own box so long names can show an ellipsis.
+    function createSuggestionLabel(text) {
+      return createElement("span", { className: "tag-suggestion__label", text });
+    }
+
     function renderSelectedNoteTags() {
       const focus = captureSelectedTagFocus(elements.selectedNoteTags);
       elements.selectedNoteTags.replaceChildren();
@@ -321,10 +326,10 @@
         const button = createElement("button", {
           className: "tag-suggestion",
           type: "button",
-          text: tagLabel(tag),
           disabled: ui.noteSaveInFlight,
           attributes: { "aria-label": `Add tag ${tagLabel(tag)}` },
         });
+        button.append(createSuggestionLabel(tagLabel(tag)));
         button.addEventListener("click", () => selectNoteTag(tag.id));
         elements.tagSuggestions.append(button);
       });
@@ -332,9 +337,9 @@
         const create = createElement("button", {
           className: "tag-suggestion tag-suggestion--create",
           type: "button",
-          text: `Create “${queryText}”`,
           disabled: ui.noteSaveInFlight,
         });
+        create.append(createSuggestionLabel(`Create “${queryText}”`));
         create.addEventListener("click", addTagFromEditor);
         elements.tagSuggestions.append(create);
       }
@@ -407,10 +412,10 @@
         const button = createElement("button", {
           className: "tag-suggestion",
           type: "button",
-          text: tagLabel(tag),
           disabled,
           attributes: { "aria-label": `Add tag ${tagLabel(tag)}` },
         });
+        button.append(createSuggestionLabel(tagLabel(tag)));
         button.addEventListener("click", () => {
           if (!isSecondaryTagBusy()) selectSecondaryNoteTag(tag.id);
         });
@@ -420,9 +425,9 @@
         const create = createElement("button", {
           className: "tag-suggestion tag-suggestion--create",
           type: "button",
-          text: `Create “${queryText}”`,
           disabled,
         });
+        create.append(createSuggestionLabel(`Create “${queryText}”`));
         create.addEventListener("click", addSecondaryTagFromEditor);
         elements.secondaryTagSuggestions.append(create);
       }

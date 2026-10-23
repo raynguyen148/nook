@@ -162,7 +162,7 @@ html[data-theme="forest"] .storage-status {
   background: var(--backup-health-surface, #e1ece1);
 }
 
-html[data-theme="forest"] .text-button,
+html[data-theme="forest"] .text-button:not(:disabled),
 html[data-theme="forest"] .active-filter-clear-all {
   color: var(--primary-accent);
 }
@@ -612,9 +612,51 @@ html[data-theme="forest"] .note-content-preview tr:nth-child(even) {
   background: #edf5ed;
 }
 
-html[data-theme="forest"] .quick-view-content .markdown-task-item > input,
-html[data-theme="forest"] .note-content-preview .markdown-task-item > input {
-  accent-color: var(--primary-accent);
+/* Callouts keep distinct semantic hues, muted toward Forest's botanical paper. */
+html[data-theme="forest"] .markdown-alert--note {
+  border: 1px solid #cfdfe2;
+  border-left: 3.5px solid #3f7389;
+  color: #1f3a44;
+  background: #eef4f5;
+}
+html[data-theme="forest"] .markdown-alert--note .markdown-alert__title {
+  color: #2d5f73;
+}
+html[data-theme="forest"] .markdown-alert--tip {
+  border: 1px solid #cde2cc;
+  border-left: 3.5px solid #2f6b4f;
+  color: #1e3a2b;
+  background: #edf5ec;
+}
+html[data-theme="forest"] .markdown-alert--tip .markdown-alert__title {
+  color: #2f6b4f;
+}
+html[data-theme="forest"] .markdown-alert--warning {
+  border: 1px solid #ecdcb8;
+  border-left: 3.5px solid #a7741c;
+  color: #4f3a10;
+  background: #fbf5e7;
+}
+html[data-theme="forest"] .markdown-alert--warning .markdown-alert__title {
+  color: #85580e;
+}
+html[data-theme="forest"] .markdown-alert--caution {
+  border: 1px solid #efd3c9;
+  border-left: 3.5px solid #a8452e;
+  color: #552016;
+  background: #faf0ec;
+}
+html[data-theme="forest"] .markdown-alert--caution .markdown-alert__title {
+  color: #8f3522;
+}
+html[data-theme="forest"] .markdown-alert--important {
+  border: 1px solid #ddd3e6;
+  border-left: 3.5px solid #6c4a86;
+  color: #3a2649;
+  background: #f3f0f6;
+}
+html[data-theme="forest"] .markdown-alert--important .markdown-alert__title {
+  color: #5c3b74;
 }
 
 html[data-theme="forest"] .app-dialog,

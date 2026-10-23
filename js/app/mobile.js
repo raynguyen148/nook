@@ -464,11 +464,7 @@ globalThis[Symbol.for("nook.app.modules")].register("mobile", (app) => {
     });
     elements.mobileFiltersClose.addEventListener("click", () => elements.mobileFilterDialog.close());
     elements.mobileFiltersDone.addEventListener("click", () => elements.mobileFilterDialog.close());
-    elements.notesList.addEventListener("click", (event) => {
-      if (!mobileQuery.matches || event.target.closest("button, a, input, select, textarea") || window.getSelection()?.toString()) return;
-      const card = event.target.closest(".note-card");
-      card?.querySelector("button.note-card__title")?.click();
-    });
+    // Card body taps are handled per card in library.js at every width.
     elements.mobileNoteActions.addEventListener("click", () => openMobileSheet(elements.mobileNoteActionsDialog));
     elements.mobileNoteActionsClose.addEventListener("click", () => elements.mobileNoteActionsDialog.close());
     elements.mobileNoteDone.addEventListener("click", () => {

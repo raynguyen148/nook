@@ -764,21 +764,49 @@
 
 
 
+/* Read-only task boxes are drawn from theme tokens: the native disabled
+   checkbox is greyed out by the browser and nearly vanishes on light paper. */
 .quick-view-content .markdown-task-item > input,
 .note-content-preview .markdown-task-item > input {
   flex: none;
+  display: inline-grid;
+  place-content: center;
   width: 0.92rem !important;
   height: 0.92rem !important;
   min-height: 0 !important;
   max-height: 0.92rem !important;
   margin: 0.32rem 0 0 0;
   padding: 0 !important;
-  border: 0 !important;
+  border: 1.5px solid color-mix(in srgb, currentColor 55%, transparent) !important;
   border-radius: 0.2rem;
+  color: inherit;
   background: transparent !important;
   box-shadow: none !important;
-  accent-color: var(--primary-accent, #6366f1);
+  opacity: 1;
+  appearance: none;
   cursor: default;
+}
+
+.quick-view-content .markdown-task-item > input:checked,
+.note-content-preview .markdown-task-item > input:checked {
+  border-color: var(--primary-accent, #6366f1) !important;
+  background: var(--primary-accent, #6366f1) !important;
+}
+
+.quick-view-content .markdown-task-item > input:checked::before,
+.note-content-preview .markdown-task-item > input:checked::before {
+  content: "";
+  width: 0.58rem;
+  height: 0.58rem;
+  background: var(--primary-button-text, #ffffff);
+  clip-path: polygon(14% 44%, 0 62%, 40% 100%, 100% 22%, 84% 6%, 39% 66%);
+}
+
+@media (forced-colors: active) {
+  .quick-view-content .markdown-task-item > input,
+  .note-content-preview .markdown-task-item > input {
+    appearance: auto;
+  }
 }
 
 
@@ -1008,6 +1036,7 @@
 .note-content-preview .markdown-footnote-backref {
   margin-left: 0.25rem;
   text-decoration: none;
+  white-space: nowrap;
 }
 
 

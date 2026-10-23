@@ -2212,7 +2212,9 @@ html[data-theme="retro"] #secondary-reader-view .note-formatting-toolbar {
 
 html[data-theme="retro"] .note-dialog .note-content-field.is-split .note-editor-pane--preview,
 html[data-theme="retro"] #secondary-reader-view #secondary-content-field.is-split .note-editor-pane--preview {
-  border-inline-start: var(--retro-border-width, 1px) solid var(--retro-border) !important;
+  /* Color only: on wide screens split-resize.css removes this edge so the
+     resize handle is the single divider, as in every other theme. */
+  border-left-color: var(--retro-border) !important;
 }
 
 /* Retro theme: editor textareas remain completely clean and never shift background/borders on focus */

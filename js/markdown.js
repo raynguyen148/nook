@@ -1368,8 +1368,9 @@
 
       while (index < lines.length) {
         const nextMarker = getListMarker(lines[index]);
-        if (nextMarker && nextMarker.indent === first.indent && nextMarker.ordered === first.ordered) break;
-        if (nextMarker && nextMarker.indent < first.indent) break;
+        // A marker at the list's own indent (or shallower) always ends the
+        // item. A different list type at the same indent starts a new list.
+        if (nextMarker && nextMarker.indent <= first.indent) break;
         if (!lines[index].trim()) {
           itemLines.push("");
           itemSourceLineNumbers.push(sourceLineAt(lines, index, context));
@@ -1889,6 +1890,10 @@
     }
     renderedItems.forEach(({ item, label }) => {
       const references = context.footnoteReferences.get(label) || [];
+      // Keep the back link on the footnote's last line, as GitHub does,
+      // instead of letting it drop below the paragraph block.
+      const lastBlock = item.lastElementChild;
+      const backrefParent = lastBlock?.tagName === "P" ? lastBlock : item;
       references.forEach((referenceId, referenceIndex) => {
         const back = createElement("a", "markdown-footnote-backref");
         back.href = `#${referenceId}`;
@@ -1897,7 +1902,7 @@
           "aria-label",
           references.length > 1 ? `Back to footnote reference ${referenceIndex + 1}` : "Back to footnote reference",
         );
-        item.append(back);
+        backrefParent.append(back);
       });
     });
     section.append(list);

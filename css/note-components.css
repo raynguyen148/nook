@@ -994,6 +994,7 @@ select::-ms-expand {
   display: grid;
   position: relative;
   height: 100%;
+  cursor: pointer;
   gap: var(--space-3);
   border: 1px solid var(--note-card-border, #e2e8f0);
   border-radius: var(--radius-card, 0.625rem);
@@ -1358,6 +1359,16 @@ select::-ms-expand {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+/* Flex containers cannot draw an ellipsis on their own text, so the label
+   box truncates while theme prefixes such as Retro's "#" stay visible. */
+.tag-chip__label,
+.tag-suggestion__label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 

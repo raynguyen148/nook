@@ -9,14 +9,6 @@
    - Syntax: High-legibility dark editor palette with blue accents
    ========================================================================== */
 
-/* Task checkboxes reset */
-html[data-theme="midnight"] .quick-view-content .markdown-task-item > input,
-html[data-theme="midnight"] .note-content-preview .markdown-task-item > input {
-  background: transparent !important;
-  box-shadow: none !important;
-  border: 0 !important;
-}
-
 html[data-theme="midnight"] {
   /* Shared metadata and menu roles; component geometry stays in its owner. */
   --tag-chip-border: #3d5a78;
@@ -169,7 +161,7 @@ html[data-theme="midnight"] .storage-status {
   background: var(--backup-health-surface, #0f1b2d);
 }
 
-html[data-theme="midnight"] .text-button {
+html[data-theme="midnight"] .text-button:not(:disabled) {
   color: var(--primary-accent);
   transition: color var(--interaction-duration) var(--motion-ease-out);
 }

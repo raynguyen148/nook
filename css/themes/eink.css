@@ -1494,10 +1494,6 @@ html[data-theme="eink"] :where(.quick-view-content, .note-content-preview) :wher
   font-weight: var(--font-weight-bold);
 }
 
-html[data-theme="eink"] :where(.quick-view-content, .note-content-preview) .markdown-task-item > input {
-  accent-color: #141414;
-}
-
 /* --------------------------------------------------------------------------
    Theme Switcher Icon Display
    -------------------------------------------------------------------------- */

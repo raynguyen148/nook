@@ -328,6 +328,19 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
     document.addEventListener("visibilitychange", refreshDates);
   }
 
+  function handleNoteCardClick(event, card, note, titleButton) {
+    if (event.defaultPrevented || event.button !== 0) return;
+    if (event.target.closest("a, button, input, label, select, textarea, [popover], .note-card__top-actions")) return;
+    // Dragging across the preview to copy text must not open the note.
+    const selection = window.getSelection?.();
+    if (selection && !selection.isCollapsed && card.contains(selection.anchorNode)) return;
+    if (card.classList.contains("note-card--selectable")) {
+      card.querySelector(".note-selection input")?.click();
+      return;
+    }
+    openQuickView(note, titleButton);
+  }
+
   function createNoteCard(note, { secondary = false, onOpen = null } = {}) {
     const type = typeFor(note.typeId);
     const isDeleted = isDeletedNote(note);
@@ -370,11 +383,13 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
     const tags = createElement("div", { className: "note-card__tags" });
     const resolvedTags = note.tagIds.map(tagFor).filter(Boolean);
     resolvedTags.forEach((tag) => {
-      tags.append(
-        (secondary || ui.trashOnly)
-          ? createElement("span", { className: "tag-chip", text: tagLabel(tag), attributes: { title: tagLabel(tag) } })
-          : makeTagButton(tag, ui.tagIds.has(tag.id)),
-      );
+      if (secondary || ui.trashOnly) {
+        const chip = createElement("span", { className: "tag-chip", attributes: { title: tagLabel(tag) } });
+        chip.append(createElement("span", { className: "tag-chip__label", text: tagLabel(tag) }));
+        tags.append(chip);
+      } else {
+        tags.append(makeTagButton(tag, ui.tagIds.has(tag.id)));
+      }
     });
     if (resolvedTags.length) {
       tags.append(
@@ -517,6 +532,9 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
     if (secondary) card.addEventListener("click", (event) => {
       if (!event.target.closest("button, .note-card__actions")) void openPickerNote("preview");
     });
+    // The whole card is a pointer target; the title stays the keyboard and
+    // screen-reader control, so the card adds no extra tab stop.
+    if (!secondary) card.addEventListener("click", (event) => handleNoteCardClick(event, card, note, titleButton));
     if (!secondary) api.decorateSelectableNoteCard?.(card, note);
     return card;
   }

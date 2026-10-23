@@ -25,7 +25,7 @@ html[data-theme="light"] {
   --split-highlight-outline: rgb(128 86 0 / 38%);
   --pinned-card-border: #d8c391;
   --pinned-card-border-hover: #c4932e;
-  --pinned-card-surface: #fffdf8;
+  --pinned-card-surface: #fcf5e0;
   --pinned-card-shadow: 0 1px 3px 0 rgb(158 107 2 / 8%), 0 1px 2px -1px rgb(158 107 2 / 8%);
   --pinned-marker-background: #f9efd5;
   --pinned-marker-border: #e6d2a2;

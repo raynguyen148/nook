@@ -9,14 +9,6 @@
    - Preset: b2D0wqNxT (Luma Style / Neutral Base / Warm Amber Theme)
    ========================================================================== */
 
-/* Task checkboxes reset */
-html[data-theme="dark"] .quick-view-content .markdown-task-item > input,
-html[data-theme="dark"] .note-content-preview .markdown-task-item > input {
-  background: transparent !important;
-  box-shadow: none !important;
-  border: 0 !important;
-}
-
 html[data-theme="dark"] {
   /* Shared metadata and menu roles; component geometry stays in its owner. */
   --tag-chip-border: #27272a;
@@ -169,7 +161,7 @@ html[data-theme="dark"] .storage-status {
   background: var(--backup-health-surface, #09090b);
 }
 
-html[data-theme="dark"] .text-button {
+html[data-theme="dark"] .text-button:not(:disabled) {
   color: var(--primary-accent);
   transition: color var(--interaction-duration) var(--motion-ease-out);
 }

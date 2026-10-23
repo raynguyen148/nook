@@ -688,7 +688,6 @@ html[data-theme="retro"] :where(.quick-view-content, .note-content-preview) .mar
 html[data-theme="retro"] :where(.quick-view-content, .note-content-preview) .markdown-footnotes h4 { color: var(--retro-ink); font-family: var(--font-display); font-style: normal; }
 html[data-theme="retro"] :where(.quick-view-content, .note-content-preview) :where(.markdown-footnote-ref, .markdown-footnote-backref) { color: var(--retro-link); font-weight: var(--font-weight-bold); }
 html[data-theme="retro"] :where(.quick-view-content, .note-content-preview) :where(.markdown-image, .markdown-image-alt) { border: var(--retro-border-width) solid var(--retro-border); color: var(--retro-muted); background: var(--retro-paper-muted); box-shadow: none; }
-html[data-theme="retro"] :where(.quick-view-content, .note-content-preview) .markdown-task-item > input { accent-color: var(--retro-accent); }
 
 /* Theme icon */
 html[data-theme="retro"] .theme-toggle__icon--retro { display: inline-flex !important; }

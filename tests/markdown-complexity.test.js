@@ -84,3 +84,42 @@ test("plain-text previews keep link labels and handle unmatched delimiters in bo
   const duration = performance.now() - startedAt;
   assert.ok(duration < 500, `plain-text conversion blocked for ${Math.round(duration)}ms`);
 });
+
+function findAll(node, tagName, found = []) {
+  if (node?.tagName === tagName) found.push(node);
+  for (const child of node?.children || []) findAll(child, tagName, found);
+  return found;
+}
+
+test("a different list type at the same indent starts a sibling list", () => {
+  const { api } = loadMarkdown();
+  const container = new NodeStub("div");
+  api.renderInto(container, "- a\n- b\n1. c\n2. d\n- e");
+  const lists = container.children.filter((child) => child.tagName === "UL" || child.tagName === "OL");
+  assert.deepEqual(lists.map((list) => list.tagName), ["UL", "OL", "UL"]);
+  assert.equal(findAll(lists[0], "OL").length, 0);
+  assert.equal(findAll(lists[0], "LI").length, 2);
+  assert.equal(findAll(lists[1], "LI").length, 2);
+});
+
+test("indented markers of another type still nest inside the item", () => {
+  const { api } = loadMarkdown();
+  const container = new NodeStub("div");
+  api.renderInto(container, "- a\n  1. b\n  2. c\n- d");
+  const lists = container.children.filter((child) => child.tagName === "UL" || child.tagName === "OL");
+  assert.deepEqual(lists.map((list) => list.tagName), ["UL"]);
+  assert.equal(findAll(lists[0], "OL").length, 1);
+  assert.equal(findAll(findAll(lists[0], "OL")[0], "LI").length, 2);
+});
+
+test("footnote back links stay inside the footnote's last paragraph", () => {
+  const { api } = loadMarkdown();
+  const container = new NodeStub("div");
+  api.renderInto(container, "Text[^1] and more[^1].\n\n[^1]: The note body.");
+  const section = findAll(container, "SECTION")[0];
+  const item = findAll(section, "LI")[0];
+  const paragraph = item.children.find((child) => child.tagName === "P");
+  const backrefs = findAll(item, "A");
+  assert.equal(backrefs.length, 2);
+  backrefs.forEach((link) => assert.ok(paragraph.children.includes(link)));
+});

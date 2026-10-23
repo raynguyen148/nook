@@ -169,8 +169,8 @@ html:not([data-theme]) .storage-status {
   background: var(--backup-health-surface, #f0e6d6);
 }
 
-html[data-theme="coffee"] .text-button,
-html:not([data-theme]) .text-button {
+html[data-theme="coffee"] .text-button:not(:disabled),
+html:not([data-theme]) .text-button:not(:disabled) {
   color: var(--primary-accent);
 }
 
@@ -1038,14 +1038,6 @@ html[data-theme="coffee"] .note-content-preview tr:nth-child(even),
 html:not([data-theme]) .quick-view-content tr:nth-child(even),
 html:not([data-theme]) .note-content-preview tr:nth-child(even) {
   background: rgba(240, 230, 214, 0.45);
-}
-
-/* Markdown Task Lists */
-html[data-theme="coffee"] .quick-view-content .markdown-task-item > input,
-html[data-theme="coffee"] .note-content-preview .markdown-task-item > input,
-html:not([data-theme]) .quick-view-content .markdown-task-item > input,
-html:not([data-theme]) .note-content-preview .markdown-task-item > input {
-  accent-color: var(--primary-accent);
 }
 
 /* --------------------------------------------------------------------------
