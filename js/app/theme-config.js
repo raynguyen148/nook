@@ -75,17 +75,23 @@
       CSS.supports("background-color", "color-mix(in srgb, white 80%, transparent)");
     document.documentElement.dataset.glass = String(value.enabled && supported);
     document.documentElement.dataset.glassFrost = normalizeGlass(value).frost;
-    // CSS applies readability floors to card and reading tints; these values
-    // retain the user's transparency range for the shared material layers.
-    // The library panel and cards run lighter than reading areas so the colour
-    // behind them shows even at the default setting.
-    document.documentElement.style.setProperty("--glass-opacity", `${78 - value.transparency * 1.4}%`);
-    document.documentElement.style.setProperty("--glass-card-opacity", `${78 - value.transparency * 1.2}%`);
-    // Reading has one film; sidebar's small labels keep a stronger tint.
-    document.documentElement.style.setProperty("--glass-reading-opacity", `${100 - value.transparency}%`);
-    document.documentElement.style.setProperty("--glass-sidebar-opacity", `${100 - value.transparency / 2}%`);
+    // Each film eases linearly from its default tint at the minimum setting to
+    // its CSS readability floor at the maximum, so every step of the slider
+    // changes something. Reading areas stop at their 84% floor.
+    const span = glassMax - glassMin;
+    const progress = Math.min(1, Math.max(0, (value.transparency - glassMin) / span));
+    /** @param {number} from @param {number} to */
+    const film = (from, to) => `${Math.round((from + (to - from) * progress) * 10) / 10}%`;
+    const style = document.documentElement.style;
+    style.setProperty("--glass-opacity", film(64, 32));
+    style.setProperty("--glass-card-opacity", film(66, 53));
+    style.setProperty("--glass-reading-opacity", film(90, 84));
+    // Mobile cards sit directly on the backdrop with a lower 72% floor.
+    style.setProperty("--glass-mobile-card-opacity", film(90, 72));
+    // Sidebar's small labels keep a stronger tint.
+    style.setProperty("--glass-sidebar-opacity", film(95, 75));
     // Preserve the existing artwork strength at 20%; 40% doubles its visibility.
-    document.documentElement.style.setProperty("--glass-reveal", String(value.transparency / 20));
+    style.setProperty("--glass-reveal", String(value.transparency / 20));
   }
 
   const glass = Object.freeze({

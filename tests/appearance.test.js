@@ -107,15 +107,31 @@ test("malformed stored preferences cannot enable the effect or escape its bounds
   for (const [value, expected] of [[-100, 10], [100, 50], [0, 10], [5, 10], [10, 10], [20, 20], [40, 40], [50, 50], [1.5, 10], [null, 10]]) {
     const { app, properties } = appearanceHarness({ stored: JSON.stringify({ enabled: true, transparency: value }) });
     assert.deepEqual(plain(app.ui.glass), { enabled: true, transparency: expected, frost: "soft" });
-    assert.equal(properties.get("--glass-opacity"), `${78 - expected * 1.4}%`);
+    assert.equal(properties.get("--glass-opacity"), `${Math.round((64 - (expected - 10) * 0.8) * 10) / 10}%`);
   }
+});
+
+test("transparency eases every film from its default to its readability floor", () => {
+  const films = ["--glass-opacity", "--glass-card-opacity", "--glass-reading-opacity", "--glass-mobile-card-opacity", "--glass-sidebar-opacity"];
+  const at = transparency => {
+    const { properties } = appearanceHarness({ stored: JSON.stringify({ enabled: true, transparency }) });
+    return films.map(name => parseFloat(properties.get(name)));
+  };
+  // Minimum keeps the long-standing default tints.
+  assert.deepEqual(at(10), [64, 66, 90, 90, 95]);
+  // Maximum lands exactly on the CSS floors (library, card, reading, mobile card).
+  assert.deepEqual(at(50), [32, 53, 84, 72, 75]);
+  // Every film keeps moving through the upper half of the slider.
+  const upper = at(40);
+  at(30).forEach((value, index) => assert.ok(value > upper[index], films[index] + " still changes above 30%"));
+  upper.forEach((value, index) => assert.ok(value > at(50)[index], films[index] + " still changes above 40%"));
 });
 
 test("runtime changes remain usable when preference reads and writes are blocked", () => {
   const { app, document, properties, elements } = appearanceHarness({ blocked: true });
   app.api.setGlass({ enabled: true, transparency: 40 });
   assert.equal(document.documentElement.dataset.glass, "true");
-  assert.equal(properties.get("--glass-opacity"), "22%");
+  assert.equal(properties.get("--glass-opacity"), "40%");
   assert.equal(properties.get("--glass-reveal"), "2");
   assert.equal(properties.get("--glass-sidebar-opacity"), "80%");
   assert.equal(elements.glassTransparency.disabled, false);
@@ -136,7 +152,7 @@ test("unsupported rendering retains the user's preference with the normal appear
 
 test("stacked library layers reveal scenery while reading retains a single protective film", () => {
   const { app, properties } = appearanceHarness();
-  for (const [transparency, card, reading] of [[10, "66%", "90%"], [20, "54%", "80%"], [40, "30%", "60%"], [50, "18%", "50%"]]) {
+  for (const [transparency, card, reading] of [[10, "66%", "90%"], [20, "62.8%", "88.5%"], [40, "56.3%", "85.5%"], [50, "53%", "84%"]]) {
     app.api.setGlass({ enabled: true, transparency });
     assert.equal(properties.get("--glass-card-opacity"), card);
     assert.equal(properties.get("--glass-reading-opacity"), reading);

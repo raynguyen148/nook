@@ -862,10 +862,10 @@ html[data-theme="eink"] {
     }
 
     @media (max-width: 820px) {
-      /* Mobile has no tinted outer panel, so cards use the reading film's
-       * opacity directly instead of the desktop two-layer composition. */
+      /* Mobile has no tinted outer panel, so cards use their own single-film
+       * opacity instead of the desktop two-layer composition. */
       html[data-glass="true"] .notes-list .note-card {
-        --glass-card-opacity: var(--glass-reading-opacity);
+        --glass-card-opacity: var(--glass-mobile-card-opacity);
         --glass-card-tint-floor: 72%;
       }
 
