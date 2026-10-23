@@ -284,9 +284,9 @@ html .note-card .note-card__actions[popover] > .note-card__action:disabled {
   .note-card__action--separated::before { background: CanvasText; }
 }
 
-/* A pinned card already has a tinted surface and border; the pin itself is a
- * quiet accent icon rather than a filled tile. Retro and Zen keep their own marker. */
-html:not([data-theme="retro"], [data-theme="eink"]) .note-card.note-card--pinned .note-card__top-actions .note-card__pin-toggle:not(:hover, :focus-visible, :active) {
+/* A pinned card already has a tinted surface and border; in every theme the pin
+ * itself is a quiet accent icon rather than a filled tile. */
+html .note-card.note-card--pinned .note-card__top-actions .note-card__pin-toggle:not(:hover, :focus-visible, :active) {
   border-color: transparent;
   color: var(--pinned-marker-color, var(--selected-text));
   background: transparent;

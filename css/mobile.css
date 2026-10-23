@@ -635,10 +635,10 @@ dialog:not([open]),
     font-size: var(--font-size-2xs);
   }
   html[data-theme="retro"] body :is(.notes-panel, .notes-list--compact) .note-card--pinned .note-card__pin-toggle {
-    border: var(--retro-border-width) solid var(--retro-border);
+    border: var(--retro-border-width) solid transparent;
     border-radius: var(--retro-radius-control);
-    background: var(--retro-red-soft);
-    color: var(--retro-red);
+    background: transparent;
+    color: var(--pinned-marker-color);
     box-shadow: none;
   }
   /* Pagination Touch Targets & Spacing */

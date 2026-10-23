@@ -85,7 +85,7 @@ html[data-theme="eink"] {
   --pinned-card-shadow: none;
   --pinned-marker-background: #141414;
   --pinned-marker-border: #141414;
-  --pinned-marker-color: #f5f2eb;
+  --pinned-marker-color: #141414;
 
   --note-card-surface: var(--eink-paper);
   --note-card-border: var(--eink-border);
@@ -676,9 +676,9 @@ html[data-theme="eink"] .note-card--pinned .note-card__pin-toggle,
 html[data-theme="eink"] .notes-list--compact .note-card--pinned .note-card__pin-toggle {
   opacity: 1 !important;
   visibility: visible !important;
-  border: 1px solid #141414 !important;
-  color: #efece4 !important;
-  background-color: #141414 !important;
+  border: 1px solid transparent !important;
+  color: var(--pinned-marker-color) !important;
+  background-color: transparent !important;
 }
 
 html[data-theme="eink"] .note-card--pinned .note-card__pin-toggle:hover:not(:disabled),
@@ -686,9 +686,9 @@ html[data-theme="eink"] .note-card--pinned .note-card__pin-toggle:focus-visible,
 html[data-theme="eink"] .note-card--pinned .note-card__pin-toggle.is-focus,
 html[data-theme="eink"] .notes-list--compact .note-card--pinned .note-card__pin-toggle:hover:not(:disabled),
 html[data-theme="eink"] .notes-list--compact .note-card--pinned .note-card__pin-toggle:focus-visible {
-  border-color: #000000 !important;
-  color: #ffffff !important;
-  background-color: #2b2b2b !important;
+  border-color: #141414 !important;
+  color: #141414 !important;
+  background-color: var(--eink-paper-hover) !important;
 }
 
 html[data-theme="eink"] .note-card__pin-toggle svg {

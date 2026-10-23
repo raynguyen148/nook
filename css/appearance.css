@@ -134,6 +134,7 @@ html[data-theme="forest"] {
   --glass-sidebar-surface: #eaf2e9;
   --glass-library-surface: #f8fbf7;
   --glass-detail-surface: #f8fbf7;
+  --glass-pinned-surface: oklch(88% 0.055 158);
   --nature-ink: #547e63;
   --nature-sidebar-strength: 0.20;
 }
@@ -178,6 +179,7 @@ html[data-theme="retro"] {
   --glass-sidebar-surface: var(--retro-sidebar);
   --glass-library-surface: var(--retro-paper);
   --glass-detail-surface: var(--retro-paper);
+  --glass-pinned-surface: oklch(88% 0.05 148);
   --nature-ink: #77785b;
   --nature-strength: 0.80;
   --nature-sidebar-strength: 0.18;
@@ -699,21 +701,14 @@ html[data-theme="eink"] {
       box-shadow: var(--glass-rim), var(--glass-elevation-raised);
     }
 
+    /* Pinned cards sit almost opaque in the theme's accent family with a strong
+     * border, so they separate from the backdrop-tinted cards around them. The
+     * pin itself stays an icon (note-card-actions.css). Themes whose mix turns
+     * grey name the surface with --glass-pinned-surface. */
     html[data-glass="true"] .notes-list .note-card.note-card--pinned {
-      --glass-card-surface: color-mix(in srgb, var(--pinned-card-surface) 85%, var(--primary-accent));
+      --glass-card-surface: var(--glass-pinned-surface, color-mix(in srgb, var(--pinned-card-surface) 85%, var(--primary-accent)));
       --glass-card-tint-floor: 94%;
       border-color: var(--pinned-card-border-hover);
-    }
-
-    html[data-glass="true"] .notes-list .note-card--pinned .note-card__pin-toggle {
-      color: var(--text-on-accent);
-      background: var(--primary-accent);
-      border-color: var(--primary-accent);
-    }
-
-    html[data-glass="true"] .notes-list .note-card--pinned .note-card__pin-toggle:is(:hover, :focus-visible):not(:disabled) {
-      background: var(--primary-accent-hover);
-      border-color: var(--primary-accent-hover);
     }
 
     html[data-glass="true"] .workspace .note-detail-surface {

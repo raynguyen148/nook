@@ -103,7 +103,7 @@ html[data-theme="retro"] {
   --pinned-card-shadow: 0 1px 3px oklch(24% 0.018 58 / 8%);
   --pinned-marker-background: var(--retro-red-soft);
   --pinned-marker-border: var(--retro-border);
-  --pinned-marker-color: var(--retro-red);
+  --pinned-marker-color: var(--retro-accent);
   --note-card-surface: var(--retro-paper);
   --note-card-border: var(--retro-border);
   --note-card-title: var(--retro-ink);
@@ -594,8 +594,8 @@ html[data-theme="retro"] .note-card--pinned .note-card__pin-toggle {
   opacity: 1;
   visibility: visible;
   color: var(--pinned-marker-color);
-  background-color: var(--pinned-marker-background);
-  border: var(--retro-border-width) solid var(--pinned-marker-border);
+  background-color: transparent;
+  border: var(--retro-border-width) solid transparent;
 }
 html[data-theme="retro"] .note-card__title { color: var(--retro-ink); font-family: var(--font-display); font-style: normal; font-weight: var(--font-weight-bold); }
 html[data-theme="retro"] .note-card__preview { font-family: var(--font-sans); }
