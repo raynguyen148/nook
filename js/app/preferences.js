@@ -182,20 +182,8 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
     const open = () => {
       if (trigger.disabled || menu.matches(":popover-open")) return;
       api.closeThemePicker();
-      const rect = trigger.getBoundingClientRect();
-      const viewport = window.visualViewport;
-      const left = viewport?.offsetLeft || 0;
-      const top = viewport?.offsetTop || 0;
-      const right = left + (viewport?.width || window.innerWidth);
-      const navigationBounds = elements.mobileNavigation?.getBoundingClientRect();
-      const bottom = navigationBounds?.height && elements.organizeDialog.contains(elements.mobileNavigation)
-        ? Math.min(top + (viewport?.height || window.innerHeight), navigationBounds.top)
-        : top + (viewport?.height || window.innerHeight);
-      menu.style.width = `${Math.min(rect.width, right - left - 16)}px`;
       menu.showPopover();
-      const bounds = menu.getBoundingClientRect();
-      menu.style.left = `${Math.max(left + 8, Math.min(rect.left, right - bounds.width - 8))}px`;
-      menu.style.top = `${Math.max(top + 8, rect.bottom + bounds.height + 8 <= bottom ? rect.bottom + 4 : rect.top - bounds.height - 4)}px`;
+      placeSettingsPopover(menu, trigger);
       trigger.setAttribute("aria-expanded", "true");
       (options.find(option => option.getAttribute("aria-selected") === "true") || options[0])?.focus({ preventScroll: true });
     };
@@ -437,33 +425,42 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
     elements.themePickerMenu.classList.remove("is-closing");
   }
 
-  function releaseThemePickerGeometry() {
+  // The menu is a native popover placed below (or above) its trigger, so it
+  // escapes the Settings panel's scroll clipping without the dialog, panel,
+  // or Display section having to give up overflow clipping of their own.
+  function placeSettingsPopover(menu, trigger) {
+    const rect = trigger.getBoundingClientRect();
+    const viewport = window.visualViewport;
+    const left = viewport?.offsetLeft || 0;
+    const top = viewport?.offsetTop || 0;
+    const right = left + (viewport?.width || window.innerWidth);
+    const navigationBounds = elements.mobileNavigation?.getBoundingClientRect();
+    const bottom = navigationBounds?.height && elements.organizeDialog.contains(elements.mobileNavigation)
+      ? Math.min(top + (viewport?.height || window.innerHeight), navigationBounds.top)
+      : top + (viewport?.height || window.innerHeight);
+    menu.style.width = `${Math.min(rect.width, right - left - 16)}px`;
+    const bounds = menu.getBoundingClientRect();
+    menu.style.left = `${Math.max(left + 8, Math.min(rect.left, right - bounds.width - 8))}px`;
+    menu.style.top = `${Math.max(top + 8, rect.bottom + bounds.height + 8 <= bottom ? rect.bottom + 4 : rect.top - bounds.height - 4)}px`;
+  }
+
+  function hideThemePickerMenu() {
     clearThemePickerClosingState();
-    elements.organizeDialog.style.removeProperty("--theme-picker-dialog-height");
-    elements.organizeDialog.style.removeProperty("--theme-picker-panel-gutter");
+    elements.themePickerMenu.hidden = true;
+    if (elements.themePickerMenu.matches(":popover-open")) elements.themePickerMenu.hidePopover();
   }
 
   function openThemePicker() {
     const isClosing = elements.themePickerMenu.classList.contains("is-closing");
     if ((!elements.themePickerMenu.hidden && !isClosing) || elements.themePickerTrigger.disabled) return;
+    // The popover would otherwise outlive a dialog that is already closed.
+    if (!elements.organizeDialog.open) return;
     clearThemePickerClosingState();
-    const panelBounds = elements.displayPanel.getBoundingClientRect();
-    const panelIntroBounds = elements.displayPanel
-      .querySelector(".organize-panel__intro")
-      ?.getBoundingClientRect();
-    const panelStyle = window.getComputedStyle(elements.displayPanel);
-    const panelScrollbarGutter = panelIntroBounds
-      ? Math.max(0, panelBounds.right - panelIntroBounds.right - parseFloat(panelStyle.paddingRight))
-      : 0;
-    elements.organizeDialog.style.setProperty(
-      "--theme-picker-dialog-height",
-      `${elements.organizeDialog.getBoundingClientRect().height}px`,
-    );
-    elements.organizeDialog.style.setProperty(
-      "--theme-picker-panel-gutter",
-      `${panelScrollbarGutter}px`,
-    );
     elements.themePickerMenu.hidden = false;
+    if ("showPopover" in elements.themePickerMenu && !elements.themePickerMenu.matches(":popover-open")) {
+      elements.themePickerMenu.showPopover();
+    }
+    placeSettingsPopover(elements.themePickerMenu, elements.themePickerTrigger);
     elements.themePicker.classList.add("is-open");
     elements.themePickerTrigger.setAttribute("aria-expanded", "true");
     window.requestAnimationFrame(() => {
@@ -474,9 +471,9 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
     });
   }
 
-  function closeThemePicker({ focusTrigger = false } = {}) {
+  function closeThemePicker({ focusTrigger = false, immediate = false } = {}) {
     if (elements.themePickerMenu.hidden) {
-      releaseThemePickerGeometry();
+      hideThemePickerMenu();
       return;
     }
     if (elements.themePickerMenu.classList.contains("is-closing")) {
@@ -486,14 +483,12 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
     elements.themePickerMenu.classList.add("is-closing");
     elements.themePicker.classList.remove("is-open");
     elements.themePickerTrigger.setAttribute("aria-expanded", "false");
-    const finishClosing = () => {
-      elements.themePickerMenu.hidden = true;
-      releaseThemePickerGeometry();
-    };
-    if (prefersReducedMotion()) finishClosing();
+    // A popover floats above a closing dialog, so it must not linger for the
+    // exit animation while the dialog itself is going.
+    if (immediate || prefersReducedMotion() || !elements.organizeDialog.open) hideThemePickerMenu();
     else {
       themePickerCloseTimer = window.setTimeout(
-        finishClosing,
+        hideThemePickerMenu,
         MOTION.short,
       );
     }

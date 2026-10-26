@@ -730,6 +730,9 @@ globalThis[Symbol.for("nook.app.modules")].register("organize", (app) => {
   }
 
   function closeOrganize() {
+    // The theme menu is a top-layer popover, so it is hidden before the dialog
+    // goes rather than waiting for the dialog's queued close event.
+    api.closeThemePicker?.({ immediate: true });
     if (elements.organizeDialog.open) elements.organizeDialog.close();
   }
 

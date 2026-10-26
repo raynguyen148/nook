@@ -748,6 +748,23 @@ form.management-row .management-row__controls--editing .color-picker__trigger {
 
 
 
+/* In Settings the menu is a native popover: it sits in the top layer and is
+ * placed from its trigger by script, so the dialog and its panel keep their
+ * own scroll clipping while it is open. */
+.theme-picker__menu[popover] {
+  position: fixed;
+  inset: auto;
+  margin: 0;
+  width: auto;
+  max-width: calc(100vw - 1rem);
+}
+
+.theme-picker__menu[popover]:not(:popover-open) {
+  display: none;
+}
+
+
+
 .theme-picker__menu:not([hidden]) {
   transition-timing-function: var(--motion-ease-out);
 }
@@ -757,12 +774,6 @@ form.management-row .management-row__controls--editing .color-picker__trigger {
 .theme-picker__menu.is-closing {
   pointer-events: none;
   transition-timing-function: var(--motion-ease-in);
-}
-
-
-
-.display-settings:has(.theme-picker__menu:not([hidden])) {
-  overflow: visible;
 }
 
 
@@ -779,27 +790,6 @@ form.management-row .management-row__controls--editing .color-picker__trigger {
 
 .shortcut-button:has(> .theme-menu:not([hidden])) .shortcut-tooltip {
   display: none;
-}
-
-
-
-@media (min-width: 621px) {
-  .organize-dialog:has(.theme-picker__menu:not([hidden])) {
-    height: var(--theme-picker-dialog-height);
-    overflow: visible;
-  }
-
-  .organize-panel:has(.theme-picker__menu:not([hidden])) {
-    overflow: visible;
-    padding-right: calc(1.25rem + var(--theme-picker-panel-gutter, 0px));
-  }
-}
-
-
-
-.organize-dialog:has(.theme-picker__menu:not([hidden])) > .dialog-header {
-  border-top-left-radius: 1.1rem;
-  border-top-right-radius: 1.1rem;
 }
 
 
@@ -1149,11 +1139,6 @@ form.management-row .management-row__controls--editing .color-picker__trigger {
 
 
 @media (max-width: 620px) {
-  .organize-dialog:has(.theme-picker__menu:not([hidden])) > .dialog-header {
-    border-top-left-radius: 0;
-    border-top-right-radius: 0;
-  }
-
   .organize-tabs {
     width: calc(100% - 2rem);
     max-width: calc(100% - 2rem);

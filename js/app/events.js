@@ -263,6 +263,12 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
     elements.themeToggle.addEventListener("focus", handleThemeTogglePreload);
     elements.themePickerMenu.addEventListener("keydown", handleThemePickerMenuKeydown);
     document.addEventListener("pointerdown", handleThemePickerDocumentPointerdown);
+    // The popover is placed from the trigger's position, so it closes rather
+    // than drifting when the panel scrolls or the viewport changes.
+    elements.displayPanel.addEventListener("scroll", (event) => {
+      if (event.target === elements.displayPanel) closeThemePicker();
+    });
+    window.addEventListener("resize", () => closeThemePicker());
     document.addEventListener("visibilitychange", refreshAutoTheme);
     window.addEventListener("focus", refreshAutoTheme);
     window.addEventListener("pageshow", refreshAutoTheme);
@@ -530,7 +536,8 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
     [elements.confirmationDialog, elements.deleteLibraryDialog, elements.organizeDialog].forEach((dialog) => {
       dialog.addEventListener("close", () => window.queueMicrotask(syncToastHost));
     });
-    elements.organizeDialog.addEventListener("close", closeThemePicker);
+    elements.organizeDialog.addEventListener("cancel", () => closeThemePicker({ immediate: true }));
+    elements.organizeDialog.addEventListener("close", () => closeThemePicker({ immediate: true }));
     elements.typesTab.addEventListener("click", () => activateManagementTab("types"));
     elements.tagsTab.addEventListener("click", () => activateManagementTab("tags"));
     elements.displayTab.addEventListener("click", () => activateManagementTab("display"));
