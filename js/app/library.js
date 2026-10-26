@@ -2,7 +2,7 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
   "use strict";
 
   const { api, elements, ui, constants } = app;
-  const { PAGE_SIZE, MOTION } = constants;
+  const { PAGE_SIZE, MOTION, PINNED_TRAY_COLLAPSED_STORAGE_KEY } = constants;
   let notesContentAnimation = null;
   let responsivePaginationFrame = 0;
   let responsivePaginationTimer = 0;
@@ -341,11 +341,14 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
     openQuickView(note, titleButton);
   }
 
-  function createNoteCard(note, { secondary = false, onOpen = null } = {}) {
+  // Inside the Pinned tray the tray itself marks the group, so those cards use
+  // the ordinary card surface instead of the per-card pinned emphasis.
+  function createNoteCard(note, { secondary = false, onOpen = null, inPinnedTray = false } = {}) {
     const type = typeFor(note.typeId);
     const isDeleted = isDeletedNote(note);
+    const pinnedEmphasis = note.isPinned && !inPinnedTray;
     const card = createElement("article", {
-      className: `note-card${secondary ? " secondary-note-card" : ""}${note.isPinned ? " note-card--pinned" : ""}`,
+      className: `note-card${secondary ? " secondary-note-card" : ""}${pinnedEmphasis ? " note-card--pinned" : ""}`,
     });
     const more = createElement("button", {
       className: "icon-button note-card__more", type: "button",
@@ -604,8 +607,9 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
     observeNoteCardTagRows();
   }
 
-  function formatNotesRange({ matchingCount, start, end, activeCollectionCount, trashOnly }) {
+  function formatNotesRange({ matchingCount, start, end, activeCollectionCount, trashOnly, collapsedPinnedCount = 0 }) {
     if (matchingCount) return `Showing ${start + 1}–${end} of ${pluralize(matchingCount, "note")}`;
+    if (collapsedPinnedCount) return `${pluralize(collapsedPinnedCount, "pinned note")} collapsed`;
     if (activeCollectionCount) return "No matching notes";
     return trashOnly ? "Trash is empty" : "0 notes";
   }
@@ -795,20 +799,27 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
     elements.sort.value = ui.sort;
     syncSortPicker();
     const matchingNotes = getVisibleNotes();
+    const pinnedCount = ui.trashOnly ? 0 : matchingNotes.filter((note) => note.isPinned).length;
+    const trayCollapsed = Boolean(ui.pinnedTrayCollapsed && pinnedCount);
+    // A collapsed tray takes its notes out of pagination, so pages fill with
+    // everything else instead of rendering short around hidden cards.
+    const pagedNotes = trayCollapsed ? matchingNotes.filter((note) => !note.isPinned) : matchingNotes;
     const pageSize = ui.pageSize || PAGE_SIZE;
-    const totalPages = Math.max(1, Math.ceil(matchingNotes.length / pageSize));
+    const totalPages = Math.max(1, Math.ceil(pagedNotes.length / pageSize));
     ui.page = Math.min(ui.page, totalPages);
     const start = (ui.page - 1) * pageSize;
-    const pageNotes = matchingNotes.slice(start, start + pageSize);
+    const pageNotes = pagedNotes.slice(start, start + pageSize);
     const end = start + pageNotes.length;
+    const showCollapsedTray = trayCollapsed && ui.page === 1;
 
     const activeCollectionCount = notesInActiveCollection().length;
     elements.notesRange.textContent = formatNotesRange({
-      matchingCount: matchingNotes.length,
+      matchingCount: pagedNotes.length,
       start,
       end,
       activeCollectionCount,
       trashOnly: ui.trashOnly,
+      collapsedPinnedCount: trayCollapsed ? pinnedCount : 0,
     });
     const hasSearchQuery = Boolean(ui.query);
     elements.clearSearch.classList.toggle("is-hidden", !hasSearchQuery);
@@ -816,7 +827,7 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
     elements.searchField.classList.toggle("has-search-query", hasSearchQuery);
     elements.notesList.setAttribute("aria-busy", "false");
 
-    if (!pageNotes.length) {
+    if (!pageNotes.length && !showCollapsedTray) {
       renderEmptyState(notesInActiveCollection().length > 0);
       renderPagination(0);
       animateNotesContent(motion);
@@ -824,31 +835,83 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
     }
 
     const fragment = document.createDocumentFragment();
-    const groupHeadings = pinnedGroupHeadings(pageNotes);
-    pageNotes.forEach((note, index) => {
-      const heading = groupHeadings.get(index);
-      if (heading) fragment.append(createNotesGroupHeading(heading));
-      fragment.append(createNoteCard(note));
-    });
+    const { pinned, rest } = splitPinnedNotes(pageNotes, ui.trashOnly);
+    const hasTray = showCollapsedTray || pinned.length > 0;
+    if (hasTray) fragment.append(createPinnedTray(pinned, { pinnedCount, collapsed: trayCollapsed }));
+    if (hasTray && rest.length) fragment.append(createNotesGroupHeading("Other notes"));
+    rest.forEach((note) => fragment.append(createNoteCard(note)));
     elements.notesList.replaceChildren(fragment);
     observeNoteCardTagRows();
-    renderPagination(totalPages);
+    renderPagination(pageNotes.length ? totalPages : 0);
     animateNotesContent(motion);
   }
 
-  // Pinned notes sort first; label the boundary so the page reads as two
-  // groups instead of a run of cards with a tiny pin glyph.
-  function pinnedGroupHeadings(pageNotes) {
-    const headings = new Map();
-    if (ui.trashOnly || !pageNotes[0]?.isPinned) return headings;
-    headings.set(0, "Pinned");
+  // Pinned notes sort first, so a page's leading run of pinned notes is the
+  // part that belongs in the Pinned tray.
+  function splitPinnedNotes(pageNotes, trashOnly) {
+    if (trashOnly) return { pinned: [], rest: pageNotes };
     const firstUnpinned = pageNotes.findIndex((note) => !note.isPinned);
-    if (firstUnpinned > 0) headings.set(firstUnpinned, "Everything else");
-    return headings;
+    const pinnedEnd = firstUnpinned < 0 ? pageNotes.length : firstUnpinned;
+    return { pinned: pageNotes.slice(0, pinnedEnd), rest: pageNotes.slice(pinnedEnd) };
   }
 
+  // The tray's tint already marks where the other notes begin, so this
+  // heading is for screen-reader heading navigation only. Being absolutely
+  // positioned, it takes no cell in the notes grid.
   function createNotesGroupHeading(text) {
-    return createElement("h3", { className: "notes-group-heading", text });
+    return createElement("h3", { className: "sr-only", text });
+  }
+
+  // One shared surface groups the pinned notes, replacing per-card accents.
+  // Its cards stay in the list's column grid so they align with the rest.
+  // The heading row is one disclosure button, so the whole row toggles.
+  function createPinnedTray(notes, { pinnedCount, collapsed }) {
+    const tray = createElement("section", {
+      className: `pinned-tray${collapsed ? " is-collapsed" : ""}`,
+      attributes: { id: "pinned-tray", "aria-labelledby": "pinned-tray-title" },
+    });
+    const title = createElement("h3", { className: "pinned-tray__title", attributes: { id: "pinned-tray-title" } });
+    const toggle = createElement("button", {
+      className: "pinned-tray__toggle",
+      type: "button",
+      attributes: {
+        "aria-expanded": String(!collapsed),
+        title: collapsed ? "Expand pinned notes" : "Collapse pinned notes",
+      },
+    });
+    const icon = createPinIcon();
+    icon.classList.add("pinned-tray__icon");
+    const chevron = createNoteCardActionIcon([["path", { d: "m6 9 6 6 6-6" }]]);
+    chevron.classList.add("pinned-tray__chevron");
+    // The visible count is a bare number; the hidden label keeps the button's
+    // accessible name readable ("Pinned, 3 notes" rather than "Pinned3").
+    // aria-expanded carries the state, so the chevron stays decorative and
+    // sits beside the label rather than across the row.
+    toggle.append(
+      icon,
+      createElement("span", { className: "pinned-tray__label", text: "Pinned" }),
+      createElement("span", { className: "pinned-tray__count", text: String(pinnedCount), attributes: { "aria-hidden": "true" } }),
+      createElement("span", { className: "sr-only", text: `, ${pluralize(pinnedCount, "note")}` }),
+      chevron,
+    );
+    toggle.addEventListener("click", togglePinnedTray);
+    title.append(toggle);
+    tray.append(title);
+    notes.forEach((note) => tray.append(createNoteCard(note, { inPinnedTray: true })));
+    return tray;
+  }
+
+  function togglePinnedTray() {
+    ui.pinnedTrayCollapsed = !ui.pinnedTrayCollapsed;
+    try {
+      window.localStorage.setItem(PINNED_TRAY_COLLAPSED_STORAGE_KEY, String(ui.pinnedTrayCollapsed));
+    } catch {
+      // The tray still toggles for this session when storage is unavailable.
+    }
+    // The tray opens at the start of the list, so both directions return there.
+    ui.page = 1;
+    renderNotes({ motion: "filter" });
+    elements.notesList.querySelector(".pinned-tray__toggle")?.focus({ preventScroll: true });
   }
 
   function syncSecondarySortPicker() { secondarySortPicker?.sync(); }

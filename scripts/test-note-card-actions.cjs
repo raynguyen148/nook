@@ -155,8 +155,13 @@ async function main() {
           const unpinned = cards.filter({ hasNot: page.locator(".note-card__pin-toggle[aria-pressed='true']") }).first();
           assert.equal(await isOpen(card), false);
           assert.equal(await card.locator(".note-card__more").isVisible(), true);
-          assert.equal(await pinOpacity(card), "1", "pinned marker always visible");
+          assert.equal(await card.evaluate(el => el.parentElement.classList.contains("pinned-tray") && !el.classList.contains("note-card--pinned")), true,
+            "pinned card sits in the Pinned tray with the ordinary card surface");
+          assert.equal(await pinOpacity(card), "0", "pinned marker hidden at rest inside the tray");
           assert.equal(await pinOpacity(unpinned), "0", "unpinned marker hidden at rest");
+          await card.hover(); await settle(page);
+          assert.equal(await pinOpacity(card), "1", "hover reveals the pinned marker");
+          await page.mouse.move(0, 899); await settle(page);
           const before = await unpinned.boundingBox();
           await unpinned.hover(); await settle(page);
           assert.equal(await pinOpacity(unpinned), "1", "hover reveals pin");

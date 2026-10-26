@@ -8,6 +8,7 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
   const THEME_STORAGE_KEY = theme.storageKey;
   const THEMES = theme.modes;
   const SIDEBAR_COLLAPSED_STORAGE_KEY = "nook:sidebar-collapsed";
+  const PINNED_TRAY_COLLAPSED_STORAGE_KEY = "nook:pinned-tray-collapsed";
   const VIEW_MODE_STORAGE_KEY = "nook:notes-view-mode";
   const NOTE_PREVIEW_LINES_STORAGE_KEY = "nook:note-preview-lines";
   const NOTE_PREVIEW_LINES_MIN = 2;
@@ -55,6 +56,7 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
     glass: theme.glass.read(),
     backgroundStyle: theme.backgroundStyle ? theme.backgroundStyle.read() : "ambient",
     sidebarCollapsed: getStoredSidebarCollapsed(),
+    pinnedTrayCollapsed: getStoredPinnedTrayCollapsed(),
     query: "",
     typeId: storedFilters.trashOnly ? "all" : storedFilters.typeId,
     tagIds: storedFilters.trashOnly ? new Set() : storedFilters.tagIds,
@@ -155,6 +157,14 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
   function getStoredSidebarCollapsed() {
     try {
       return window.localStorage.getItem(SIDEBAR_COLLAPSED_STORAGE_KEY) === "true";
+    } catch {
+      return false;
+    }
+  }
+
+  function getStoredPinnedTrayCollapsed() {
+    try {
+      return window.localStorage.getItem(PINNED_TRAY_COLLAPSED_STORAGE_KEY) === "true";
     } catch {
       return false;
     }
@@ -422,6 +432,7 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
       NOTE_DETAIL_FONT_SIZE_MAX,
       NOTE_DETAIL_FONT_SIZE_MIN,
       NOTE_DETAIL_FONT_SIZE_STORAGE_KEY,
+      PINNED_TRAY_COLLAPSED_STORAGE_KEY,
       SORT_STORAGE_KEY,
       THEME_STORAGE_KEY,
       THEMES,

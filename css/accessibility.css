@@ -311,15 +311,10 @@ html[data-input-modality="keyboard"]
     box-shadow: none !important;
   }
 
-  /* Shadows are dropped in forced colours, so hover and the pinned rule use
-   * system colours that stay visible. */
+  /* Shadows are dropped in forced colours, so hover uses a system colour
+   * that stays visible. */
   .note-card:is(:hover, .is-hover) {
     border-color: Highlight !important;
-  }
-
-  .note-card--pinned::before {
-    forced-color-adjust: none;
-    background: Highlight;
   }
 }
 

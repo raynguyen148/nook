@@ -699,8 +699,8 @@ html[data-theme="eink"] {
       box-shadow: var(--glass-rim), var(--glass-elevation-raised);
     }
 
-    /* Pinned cards share the glass surface; the Pinned heading, the leading
-     * accent rule and the pin icon mark them, with a lightly accent-tinted edge. */
+    /* Pinned cards outside the Pinned tray (Trash, the note switcher) share the
+     * glass surface; the pin icon marks them, with a lightly accent-tinted edge. */
     html[data-glass="true"] .notes-list .note-card.note-card--pinned {
       border-color: color-mix(in srgb, var(--primary-accent) 34%, var(--glass-edge-low));
     }

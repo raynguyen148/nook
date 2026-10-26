@@ -45,3 +45,42 @@ test("note range copy distinguishes empty, filtered, and Trash states", () => {
     trashOnly: false,
   }), "Showing 1–2 of 2 notes");
 });
+
+test("note range copy names a collapsed Pinned tray when nothing else matches", () => {
+  assert.equal(context.formatNotesRange({
+    matchingCount: 0,
+    start: 0,
+    end: 0,
+    activeCollectionCount: 3,
+    trashOnly: false,
+    collapsedPinnedCount: 1,
+  }), "1 pinned note collapsed");
+  assert.equal(context.formatNotesRange({
+    matchingCount: 4,
+    start: 0,
+    end: 4,
+    activeCollectionCount: 6,
+    trashOnly: false,
+    collapsedPinnedCount: 2,
+  }), "Showing 1–4 of 4 notes");
+});
+
+const splitStart = source.indexOf("  function splitPinnedNotes(");
+const splitEnd = source.indexOf("\n  function ", splitStart + 1);
+assert.ok(splitStart >= 0 && splitEnd > splitStart);
+vm.runInNewContext(source.slice(splitStart, splitEnd), context);
+
+test("the Pinned tray takes the page's leading run of pinned notes", () => {
+  const notes = [
+    { id: "a", isPinned: true },
+    { id: "b", isPinned: true },
+    { id: "c", isPinned: false },
+    { id: "d", isPinned: false },
+  ];
+  const ids = ({ pinned, rest }) => ({ pinned: [...pinned].map((note) => note.id), rest: [...rest].map((note) => note.id) });
+  assert.deepEqual(ids(context.splitPinnedNotes(notes, false)), { pinned: ["a", "b"], rest: ["c", "d"] });
+  assert.deepEqual(ids(context.splitPinnedNotes(notes.slice(0, 2), false)), { pinned: ["a", "b"], rest: [] });
+  assert.deepEqual(ids(context.splitPinnedNotes(notes.slice(2), false)), { pinned: [], rest: ["c", "d"] });
+  // Trash never shows a Pinned tray, even for notes that were pinned.
+  assert.deepEqual(ids(context.splitPinnedNotes(notes, true)), { pinned: [], rest: ["a", "b", "c", "d"] });
+});

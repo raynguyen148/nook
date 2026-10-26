@@ -715,21 +715,168 @@ select::-ms-expand {
 
 
 
-.notes-group-heading {
+/* Pinned tray: one lightly tinted surface groups the pinned notes, so the
+ * cards inside keep the ordinary card look. The tint alone marks the group;
+ * a border on top of the cards' own borders would stack boxes. The tray
+ * bleeds outward by its padding, which subgrid cancels, so its cards stay on
+ * the same columns as the cards below it. The bleed must stay within the
+ * panel's smallest padding (0.9rem), which caps the side padding at --space-3.
+ * No visible heading follows the tray, so a little extra space below it
+ * keeps the next cards from sitting tight against the tint. */
+.pinned-tray {
+  --pinned-tray-accent: var(--pinned-card-accent, var(--primary-accent));
+  --pinned-tray-pad: var(--space-3);
+  --pinned-tray-radius: var(--radius-card, var(--surface-radius));
+
   grid-column: 1 / -1;
-  margin: 0.25rem 0 -0.25rem;
-  padding-inline: 0.15rem;
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-semibold);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--muted);
+  display: grid;
+  grid-template-columns: subgrid;
+  align-items: stretch;
+  row-gap: inherit;
+  min-width: 0;
+  margin-inline: calc(-1 * var(--pinned-tray-pad));
+  margin-bottom: var(--space-2);
+  padding: 0 var(--pinned-tray-pad) var(--space-4);
+  border-radius: var(--pinned-tray-radius);
+  background: color-mix(in srgb, var(--pinned-tray-accent) 5%, transparent);
 }
 
+/* Collapsed, the tray is just its heading row. */
+.pinned-tray.is-collapsed {
+  padding-bottom: 0;
+}
 
+/* The heading row is one disclosure button that runs edge to edge, so the
+ * whole row toggles the tray rather than a small control at its end. */
+.pinned-tray__title {
+  grid-column: 1 / -1;
+  min-width: 0;
+  margin: 0 calc(-1 * var(--pinned-tray-pad));
+  font-size: var(--font-size-xs);
+  line-height: 1.2;
+}
 
-.notes-group-heading + .note-card {
-  margin-top: 0;
+.pinned-tray__toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+  min-height: 2.75rem;
+  margin: 0;
+  padding: var(--space-2) var(--pinned-tray-pad);
+  border: 0;
+  border-radius: var(--pinned-tray-radius) var(--pinned-tray-radius) 0 0;
+  color: var(--pinned-marker-color, var(--selected-text));
+  background: transparent;
+  font: inherit;
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.06em;
+  text-align: left;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background-color var(--motion-duration-micro) var(--motion-ease-out);
+}
+
+.pinned-tray.is-collapsed .pinned-tray__toggle {
+  border-radius: var(--pinned-tray-radius);
+}
+
+.pinned-tray__toggle:is(:hover, :focus-visible) {
+  background: color-mix(in srgb, var(--pinned-tray-accent) 7%, transparent);
+}
+
+/* The shared button press scales by 3%, which on a full-width row pulls
+ * both edges far away from the tray edge. Press with a deeper tint.
+ * interactions.css loads later with four pseudo-classes, so this needs five. */
+.pinned-tray .pinned-tray__title .pinned-tray__toggle:active:not(:disabled) {
+  transform: none;
+  background: color-mix(in srgb, var(--pinned-tray-accent) 11%, transparent);
+}
+
+/* The row sits flush with the tray edge, so its ring stays inside it. */
+.pinned-tray__toggle:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring);
+  outline-offset: calc(-1 * (var(--focus-ring-width) + 2px));
+}
+
+.pinned-tray__icon {
+  flex: none;
+  width: 0.875rem;
+  height: 0.875rem;
+}
+
+.pinned-tray__label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pinned-tray__count {
+  color: var(--text-muted);
+  font-weight: var(--font-weight-regular);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+}
+
+/* Disclosure convention: the chevron points right while collapsed and down
+ * while open, right beside the label it controls. */
+.pinned-tray__chevron {
+  flex: none;
+  width: 0.875rem;
+  height: 0.875rem;
+  color: var(--text-muted);
+  transform: rotate(-90deg);
+  transition: color var(--motion-duration-micro) var(--motion-ease-out),
+    transform var(--motion-duration-short) var(--motion-ease-out);
+}
+
+.pinned-tray__toggle:is(:hover, :focus-visible) .pinned-tray__chevron {
+  color: var(--text-strong);
+}
+
+.pinned-tray__toggle[aria-expanded="true"] .pinned-tray__chevron {
+  transform: none;
+}
+
+/* Inside the tray the pin stays a quiet accent icon whenever it is shown. */
+html .pinned-tray .note-card .note-card__top-actions .note-card__pin-toggle[aria-pressed="true"]:not(:hover, :focus-visible, :active) {
+  border-color: transparent;
+  color: var(--pinned-marker-color, var(--selected-text));
+  background: transparent;
+}
+
+/* Without a hover-capable pointer, pinned cards keep their pin visible so
+ * unpinning never depends on hover. */
+@media not ((hover: hover) and (pointer: fine)) {
+  html .pinned-tray .note-card .note-card__top-actions .note-card__pin-toggle {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pinned-tray__toggle,
+  .pinned-tray__chevron {
+    transition: none;
+  }
+}
+
+/* Forced colours drop the tint, so an outline keeps the group visible
+ * without changing the layout. */
+@media (forced-colors: active) {
+  .pinned-tray {
+    outline: 1px solid CanvasText;
+    outline-offset: -1px;
+  }
+
+  .pinned-tray__toggle {
+    color: ButtonText;
+  }
+
+  .pinned-tray__toggle:is(:hover, :focus-visible) {
+    color: Highlight;
+  }
 }
 
 
@@ -1045,19 +1192,6 @@ select::-ms-expand {
   box-shadow: var(--pinned-card-shadow);
 }
 
-/* The Pinned group heading already names the section, so a pinned card keeps
- * the ordinary surface and carries a short accent rule on its leading edge. */
-.note-card--pinned::before {
-  content: "";
-  position: absolute;
-  top: var(--space-4);
-  bottom: var(--space-4);
-  left: -1px;
-  width: 3px;
-  border-radius: 0 var(--radius-pill, 999px) var(--radius-pill, 999px) 0;
-  background: var(--pinned-card-accent, var(--primary-accent));
-  pointer-events: none;
-}
 
 
 
