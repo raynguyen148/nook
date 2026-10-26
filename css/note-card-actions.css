@@ -90,8 +90,10 @@ html .note-card:is(:hover, :focus-within, .note-card--pinned) .note-card__top-ac
   min-height: var(--note-card-control-size);
   padding-right: calc(var(--note-card-top-slot) + var(--space-1));
 }
+/* Block (not flex) so the ellipsis works; align-content keeps span badges centred in their min-height. */
 html .note-card .note-card__meta .type-badge {
   display: block;
+  align-content: center;
   min-width: 0;
   max-width: min(12rem, 100%);
   overflow: hidden;
