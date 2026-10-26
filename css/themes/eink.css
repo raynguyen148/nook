@@ -79,9 +79,10 @@ html[data-theme="eink"] {
   --primary-accent-shadow: none;
   --primary-button-text: #f5f2eb;
 
-  --pinned-card-border: #141414;
+  --pinned-card-border: var(--eink-border);
   --pinned-card-border-hover: #000000;
-  --pinned-card-surface: #ede8dd;
+  --pinned-card-surface: var(--note-card-surface);
+  --pinned-card-accent: #141414;
   --pinned-card-shadow: none;
   --pinned-marker-background: #141414;
   --pinned-marker-border: #141414;
@@ -655,7 +656,7 @@ html[data-theme="eink"] .note-card:hover {
 }
 
 html[data-theme="eink"] .note-card--pinned {
-  border-color: #141414;
+  border-color: var(--pinned-card-border);
   background-color: var(--pinned-card-surface);
 }
 
@@ -708,7 +709,6 @@ html[data-theme="eink"] .note-card:hover .note-card__title {
 
 html[data-theme="eink"] .note-card__preview {
   font-family: var(--font-sans);
-  color: var(--eink-ink-secondary);
   line-height: 1.55;
 }
 

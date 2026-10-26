@@ -109,9 +109,6 @@
   display: flex;
   align-items: center;
   flex: none;
-  margin-inline-end: 0.25rem;
-  padding-inline-end: 0.5rem;
-  border-inline-end: 1px solid var(--border-subtle);
 }
 
 .note-font-size-trigger {
@@ -289,14 +286,12 @@ html[data-theme="retro"] .note-font-size-popover .note-font-size-control--popove
     gap: var(--space-0-5);
   }
 
-  .note-detail-workspace.is-side-by-side #note-dialog .dialog-footer__tools > .note-detail-action-tooltip--group-start {
-    margin-inline-start: 0.25rem;
-    gap: var(--space-1);
+  .note-detail-workspace.is-side-by-side #note-dialog .dialog-footer__tools > :is(.note-detail-action-tooltip--group-start, .dialog-footer__preview-actions) {
+    gap: var(--space-0-5);
   }
 
-  .note-detail-workspace.is-side-by-side #note-dialog .note-font-size-menu {
-    margin-inline-end: 0.125rem;
-    padding-inline-end: 0.25rem;
+  .note-detail-workspace.is-side-by-side #note-dialog .dialog-footer__tools > :is(.note-detail-action-tooltip--group-start, .dialog-footer__preview-actions):not(:first-child)::before {
+    margin-inline: var(--space-1);
   }
 }
 

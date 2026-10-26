@@ -9,7 +9,7 @@
   --note-card-control-size: 2rem;
   --note-card-top-slot: calc(2 * var(--note-card-control-size) + var(--space-1));
   --note-card-menu-danger: color-mix(in srgb, var(--danger-text) 92%, var(--text-strong));
-  --note-card-date-ink: color-mix(in srgb, var(--text-muted) 65%, var(--text-default));
+  --note-card-date-ink: var(--text-muted);
   --note-card-menu-shadow: 0 var(--space-2) var(--space-4) color-mix(in srgb, var(--text-strong) 14%, transparent);
 }
 

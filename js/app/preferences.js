@@ -364,9 +364,30 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
     });
   }
 
+  // Returning focus to the toggle after a choice or Escape is programmatic, so
+  // its focus-visible tooltip stays hidden until the pointer leaves the toggle
+  // (a fresh hover may show it again) or focus moves elsewhere.
+  let themeTooltipSuppressionBound = false;
+  function suppressThemeToggleTooltip() {
+    const wrapper = elements.themeToggle?.parentElement;
+    if (!wrapper?.classList.contains("shortcut-button")) return;
+    wrapper.dataset.tooltipSuppressed = "all";
+    if (themeTooltipSuppressionBound) return;
+    themeTooltipSuppressionBound = true;
+    wrapper.addEventListener("pointerleave", () => {
+      if (wrapper.dataset.tooltipSuppressed) wrapper.dataset.tooltipSuppressed = "focus";
+    });
+    elements.themeToggle.addEventListener("blur", () => {
+      delete wrapper.dataset.tooltipSuppressed;
+    });
+  }
+
   function closeThemeMenu({ focusTrigger = false } = {}) {
     if (!elements.themeMenu || elements.themeMenu.hidden) return;
-    if (focusTrigger) elements.themeToggle.focus({ preventScroll: true });
+    if (focusTrigger) {
+      suppressThemeToggleTooltip();
+      elements.themeToggle.focus({ preventScroll: true });
+    }
     if (elements.themeMenu.classList.contains("is-closing")) return;
     elements.themeMenu.classList.add("is-closing");
     elements.themeToggle.setAttribute("aria-expanded", "false");

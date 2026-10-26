@@ -63,9 +63,10 @@ html[data-theme-mode="auto"] :is(.theme-toggle, .mobile-theme-toggle) .theme-tog
   --primary-accent-border: #f2d184;
   --primary-accent-focus: rgb(158 107 2 / 20%);
   --primary-accent-shadow: rgb(158 107 2 / 16%);
-  --pinned-card-border: #f2d184;
-  --pinned-card-border-hover: #d8c391;
-  --pinned-card-surface: #fffdf8;
+  --pinned-card-border: color-mix(in srgb, var(--primary-accent) 24%, var(--note-card-border, #e4e4e7));
+  --pinned-card-border-hover: color-mix(in srgb, var(--primary-accent) 48%, var(--note-card-border, #e4e4e7));
+  --pinned-card-surface: var(--note-card-surface, #ffffff);
+  --pinned-card-accent: var(--primary-accent);
   --pinned-card-shadow: 0 1px 3px 0 rgb(158 107 2 / 8%), 0 1px 2px -1px rgb(158 107 2 / 8%);
   --pinned-marker-background: #f9efd5;
   --pinned-marker-border: #e6d2a2;
@@ -815,6 +816,18 @@ textarea:focus-visible {
 .note-editor-mode__button:focus-visible + .shortcut-tooltip {
   opacity: 1;
   transform: translateY(0);
+  transition-delay: 0ms;
+}
+
+
+
+/* preferences.js marks the theme toggle after it returns focus from the theme
+   menu: "all" hides the tooltip outright, "focus" (after the pointer leaves)
+   only hides the focus-visible copy so a fresh hover still works. */
+.shortcut-button[data-tooltip-suppressed="all"] > .shortcut-tooltip.shortcut-tooltip,
+.shortcut-button[data-tooltip-suppressed="focus"]:not(:hover) > button:focus-visible + .shortcut-tooltip {
+  opacity: 0;
+  transform: translateY(-0.2rem);
   transition-delay: 0ms;
 }
 

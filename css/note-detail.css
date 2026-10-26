@@ -196,6 +196,26 @@
 
 
 
+/* editor.js reveals the repeated title only once the title field or Preview
+   heading scrolls out of view. Opacity keeps the label's space and its
+   aria-labelledby text. */
+.detail-commandbar__state[data-title-reveal] {
+  transition: opacity var(--motion-duration-short) var(--motion-ease-out);
+}
+
+.detail-commandbar__state[data-title-reveal="hidden"] {
+  opacity: 0;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .detail-commandbar__state[data-title-reveal] {
+    transition: none;
+  }
+}
+
+
+
 .detail-back-button {
   flex: none;
   min-height: 1.85rem;
@@ -1013,26 +1033,24 @@
 
 
 
-.note-detail-surface .dialog-footer__tools > .note-detail-action-tooltip--group-start {
+/* Footer icons read as groups: text size | copy and export | history and
+   help | Trash. Every group after the first visible one opens with the same
+   short divider; its own margins keep the spacing even on both sides, also
+   when Version history is hidden. */
+.note-detail-surface .dialog-footer__tools > :is(.note-detail-action-tooltip--group-start, .dialog-footer__preview-actions) {
   align-items: center;
-  gap: var(--space-2);
-  margin-inline-start: 0.35rem;
+  gap: var(--space-1);
 }
 
 
 
-.note-detail-surface .dialog-footer__tools > .note-detail-action-tooltip--group-start::before {
-  display: block;
-  width: 1px;
-  min-width: 1px;
-  max-width: 1px;
-  height: 1.15rem;
-  min-height: 1.15rem;
-  max-height: 1.15rem;
-  background: var(--border-subtle);
-  opacity: 0.48;
-  content: "";
+.note-detail-surface .dialog-footer__tools > :is(.note-detail-action-tooltip--group-start, .dialog-footer__preview-actions):not(:first-child)::before {
   flex: 0 0 1px;
+  width: 1px;
+  height: 1rem;
+  margin-inline: var(--space-1-5);
+  background: var(--border-subtle);
+  content: "";
 }
 
 
@@ -1237,6 +1255,25 @@
   font-size: 0.78rem;
   border-radius: 0.45rem;
   font-weight: var(--font-weight-semibold);
+}
+
+
+
+/* Done is the pane's one primary action, so it sits a step larger and
+   heavier than Return and Quick save. */
+.note-detail-surface .dialog-footer__actions .button-primary {
+  min-height: 2rem;
+  padding-inline: 1rem;
+  font-weight: var(--font-weight-strong);
+}
+
+
+
+/* Resting footer icons sit a little closer to body text than --text-muted.
+   The ID keeps this above each theme's resting colour while leaving theme
+   hover, focus, and danger states in charge. */
+#note-dialog .dialog-footer__tools :is(.icon-button, .note-save-shortcut__trigger, .note-markdown-help__trigger):not(:hover, :focus-visible, :disabled, [aria-expanded="true"]) {
+  color: color-mix(in srgb, var(--text-muted) 70%, var(--text-strong));
 }
 
 

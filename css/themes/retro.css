@@ -99,7 +99,8 @@ html[data-theme="retro"] {
   --interaction-easing: var(--retro-transition-easing);
   --pinned-card-border: var(--retro-border-strong);
   --pinned-card-border-hover: var(--retro-accent);
-  --pinned-card-surface: oklch(93.8% 0.032 82);
+  --pinned-card-surface: var(--note-card-surface);
+  --pinned-card-accent: var(--retro-accent);
   --pinned-card-shadow: 0 1px 3px oklch(24% 0.018 58 / 8%);
   --pinned-marker-background: var(--retro-red-soft);
   --pinned-marker-border: var(--retro-border);

@@ -53,9 +53,9 @@ html[data-theme="dark"] {
   --split-highlight-preview: rgb(222 157 53 / 18%);
   --split-highlight-edge: #d69836;
   --split-highlight-outline: rgb(232 200 124 / 44%);
-  --pinned-card-border: #705a2a;
+  --pinned-card-border: color-mix(in srgb, var(--primary-accent) 24%, var(--note-card-border));
   --pinned-card-border-hover: #9a7435;
-  --pinned-card-surface: #1c1a17;
+  --pinned-card-surface: var(--note-card-surface);
   --pinned-card-shadow: 0 1px 3px rgb(0 0 0 / 40%);
   --pinned-marker-background: #3b3018;
   --pinned-marker-border: #705a2a;
@@ -522,10 +522,10 @@ html[data-theme="dark"] .active-filter-clear-all {
 html[data-theme="dark"] .note-card {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
   transition:
-    transform var(--interaction-duration) var(--interaction-easing),
-    box-shadow var(--interaction-duration) var(--interaction-easing),
-    border-color var(--interaction-duration) var(--interaction-easing),
-    background-color var(--interaction-duration) var(--interaction-easing);
+    transform var(--motion-duration-micro) var(--interaction-easing),
+    box-shadow var(--motion-duration-micro) var(--interaction-easing),
+    border-color var(--motion-duration-micro) var(--interaction-easing),
+    background-color var(--motion-duration-micro) var(--interaction-easing);
 }
 
 html[data-theme="dark"] .note-card:hover,

@@ -310,6 +310,17 @@ html[data-input-modality="keyboard"]
     background: CanvasText !important;
     box-shadow: none !important;
   }
+
+  /* Shadows are dropped in forced colours, so hover and the pinned rule use
+   * system colours that stay visible. */
+  .note-card:is(:hover, .is-hover) {
+    border-color: Highlight !important;
+  }
+
+  .note-card--pinned::before {
+    forced-color-adjust: none;
+    background: Highlight;
+  }
 }
 
 
@@ -364,6 +375,11 @@ html[data-input-modality="keyboard"]
     .detail-back-button,
     .note-card
   ):active {
+    transform: none !important;
+  }
+
+  /* Card hover keeps its border and shadow change without the lift. */
+  .note-card:is(:hover, :focus-within, .is-hover) {
     transform: none !important;
   }
 }

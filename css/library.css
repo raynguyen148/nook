@@ -390,11 +390,14 @@
 
 
 
+/* A short lift: a slightly stronger accent-tinted border and a soft shadow.
+ * Reduced motion keeps the colour change without the movement. */
 .note-card:hover,
 .note-card:focus-within,
 .note-card.is-hover {
-  box-shadow: 0 8px 18px -8px rgb(15 23 42 / 0.16), 0 3px 8px -6px rgb(15 23 42 / 0.08);
-  transform: translateY(-1px);
+  border-color: var(--note-card-hover-border, color-mix(in srgb, var(--primary-accent) 34%, var(--note-card-border, #e4e4e7)));
+  box-shadow: 0 1px 2px rgb(15 23 42 / 0.06), 0 12px 24px -12px rgb(15 23 42 / 0.22);
+  transform: translateY(-2px);
 }
 
 

@@ -115,7 +115,8 @@
       const hasDownloadRequest = Boolean(health.lastDownloadRequestedAt);
       const dayLabel = `${daysSinceReference} ${daysSinceReference === 1 ? "day" : "days"}`;
       if (!hasDownloadRequest) {
-        return "Notes are stored only in this browser. No backup download has been requested yet.";
+        const reminder = daysSinceReference >= BACKUP_REMINDER_AGE_MS / 86400000 ? "; export a backup soon" : "";
+        return `Notes are stored only in this browser. No backup download has been requested yet${reminder}.`;
       }
       if (daysSinceReference === 0) {
         return "Notes are stored locally. A backup download was requested today.";
@@ -131,7 +132,9 @@
       const daysSinceReference = backupAgeInDays(health);
       const dueToAge = daysSinceReference >= BACKUP_REMINDER_AGE_MS / 86400000;
       const hasDownloadRequest = Boolean(health.lastDownloadRequestedAt);
-      const status = !hasDownloadRequest ? "never" : dueToAge ? "warning" : "good";
+      // Only an overdue reminder is poor health; a new library without a
+      // backup yet stays neutral.
+      const status = dueToAge ? "warning" : hasDownloadRequest ? "good" : "never";
       const statusClass = `status-dot--backup-${status}`;
       elements.backupHealth.dataset.state = status;
       elements.backupHealthDot.className = `status-dot ${statusClass}`;

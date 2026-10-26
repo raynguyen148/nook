@@ -134,7 +134,7 @@
   --note-title-resting-border: transparent;
   --backup-good-accent: #047857;
   --backup-warning-accent: #92400e;
-  --backup-never-accent: var(--backup-warning-accent);
+  --backup-never-accent: var(--text-muted);
   /* Type scale. Prefer these steps over one-off sizes in new rules. */
   --font-size-2xs: 0.6875rem;
   --font-size-xs: 0.75rem;
@@ -546,13 +546,10 @@ select:focus-visible {
 
 
 
-/* No backup yet is a gentle nudge for new libraries, not an error. */
+/* No backup yet is the normal state of a new library, so it stays neutral;
+   local-state.js switches to the warning state once the reminder age passes. */
 .backup-health[data-state="never"] {
   --backup-health-accent: var(--backup-never-accent);
-  --backup-health-border: color-mix(in srgb, var(--backup-health-accent) 36%, var(--component-border));
-  --backup-health-surface: color-mix(in srgb, var(--backup-health-accent) 7%, var(--component-surface));
-  --backup-health-text: var(--backup-health-accent);
-  font-weight: 560;
 }
 
 

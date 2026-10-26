@@ -413,6 +413,28 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
     elements.noteDialogTitle.classList.toggle("is-placeholder", !title);
   }
 
+  // The label repeats the title, so it stays visually hidden while the title
+  // field or Preview heading is on screen and fades in once that heading
+  // scrolls away. Opacity keeps the text available to aria-labelledby.
+  function observeNoteDialogTitleVisibility() {
+    const label = elements.noteDialogTitle;
+    const targets = [elements.noteTitle, elements.quickViewTitle].filter(Boolean);
+    if (!label || !targets.length || typeof IntersectionObserver !== "function") return;
+    const visibleTargets = new Set();
+    label.dataset.titleReveal = "hidden";
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(({ target, isIntersecting }) => {
+        if (isIntersecting) visibleTargets.add(target);
+        else visibleTargets.delete(target);
+      });
+      // A closed workspace has no rendered title; keep the label hidden then so
+      // reopening a note does not flash it before the next observation.
+      const titleRendered = targets.some((target) => target.getClientRects().length > 0);
+      label.dataset.titleReveal = titleRendered && !visibleTargets.size ? "shown" : "hidden";
+    });
+    targets.forEach((target) => observer.observe(target));
+  }
+
   function restoreStoredNoteDraft(recovery, { asNew = false } = {}) {
     const note = !asNew && recovery.draft.id ? library.notes.find((item) => item.id === recovery.draft.id && !item.deletedAt) : null;
     openNoteEditor(note || null);
@@ -762,6 +784,8 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
       }
     }
   }
+
+  observeNoteDialogTitleVisibility();
 
   Object.assign(api, {
     renderNoteMetadata,

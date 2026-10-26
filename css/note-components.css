@@ -1012,6 +1012,9 @@ select::-ms-expand {
 .note-card {
   display: grid;
   position: relative;
+  /* Cards stretch to the tallest card in their row. The content row absorbs
+   * the extra height so tags and the date stay pinned to the card bottom. */
+  grid-template-rows: 1fr auto;
   height: 100%;
   cursor: pointer;
   gap: var(--space-3);
@@ -1021,9 +1024,10 @@ select::-ms-expand {
   background: var(--note-card-surface, #fff);
   box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.05), 0 1px 2px -1px rgb(0 0 0 / 0.05);
   transition:
-    border-color var(--motion-duration-short) var(--motion-ease-out),
-    box-shadow var(--motion-duration-short) var(--motion-ease-out),
-    background-color var(--motion-duration-short) var(--motion-ease-out);
+    transform var(--motion-duration-micro) var(--motion-ease-out),
+    border-color var(--motion-duration-micro) var(--motion-ease-out),
+    box-shadow var(--motion-duration-micro) var(--motion-ease-out),
+    background-color var(--motion-duration-micro) var(--motion-ease-out);
 }
 
 
@@ -1039,6 +1043,20 @@ select::-ms-expand {
   border-top-width: 1px;
   background-color: var(--pinned-card-surface);
   box-shadow: var(--pinned-card-shadow);
+}
+
+/* The Pinned group heading already names the section, so a pinned card keeps
+ * the ordinary surface and carries a short accent rule on its leading edge. */
+.note-card--pinned::before {
+  content: "";
+  position: absolute;
+  top: var(--space-4);
+  bottom: var(--space-4);
+  left: -1px;
+  width: 3px;
+  border-radius: 0 var(--radius-pill, 999px) var(--radius-pill, 999px) 0;
+  background: var(--pinned-card-accent, var(--primary-accent));
+  pointer-events: none;
 }
 
 
@@ -1289,7 +1307,7 @@ select::-ms-expand {
   background: transparent;
   font-family: var(--font-display);
   font-size: var(--font-size-md);
-  font-weight: var(--font-weight-bold);
+  font-weight: var(--font-weight-heavy);
   letter-spacing: var(--note-card-title-letter-spacing, -0.016em);
   line-height: 1.35;
   text-align: left;
@@ -1307,7 +1325,8 @@ select::-ms-expand {
   display: -webkit-box;
   margin: var(--space-2) 0 0;
   overflow: hidden;
-  color: var(--note-card-preview, #334155);
+  /* The excerpt sits a step below the title so cards scan title-first. */
+  color: var(--note-card-excerpt, color-mix(in srgb, var(--note-card-preview, #334155) 55%, var(--note-card-muted, #64748b)));
   font-size: 0.85rem;
   line-height: 1.6;
   -webkit-box-orient: vertical;
