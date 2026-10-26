@@ -697,12 +697,17 @@
 
 
 
+/* Bottom-centre, like the mobile pill, so it never sits on the editor's
+ * primary action in the bottom-right corner. */
 .toast {
   position: fixed;
   z-index: 20;
-  right: 1.25rem;
+  left: 0;
+  right: 0;
   bottom: 1.25rem;
+  width: fit-content;
   max-width: min(calc(100% - 2.5rem), 29rem);
+  margin-inline: auto;
   border: 1px solid var(--toast-border);
   border-radius: var(--control-radius);
   padding: 0.6rem 0.72rem 0.6rem 0.64rem;
@@ -727,10 +732,17 @@
 
 .toast[popover] {
   top: auto !important;
-  right: 1.25rem !important;
+  right: 0 !important;
   bottom: 1.25rem !important;
-  left: auto !important;
-  margin: 0 !important;
+  left: 0 !important;
+  margin: 0 auto !important;
+}
+
+/* Clear the note footer while a note is open so Save & return and the
+ * side-note actions stay visible under a toast. */
+body:has(.workspace.is-note-detail-open) .toast,
+body:has(.workspace.is-note-detail-open) .toast[popover] {
+  bottom: 4.25rem !important;
 }
 
 .toast__indicator {

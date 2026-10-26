@@ -176,6 +176,11 @@
         elements.noteDetailWorkspace?.classList.remove("is-side-by-side");
         elements.workspace?.classList.remove("is-side-by-side-open");
         api.syncNoteDetailSize();
+        // Split that was parked for the Side note comes back once the room is free.
+        if (ui.primarySplitSuspended && ui.noteEditorMode === "edit" && api.isNoteEditorOpen?.()) {
+          api.setNoteEditorMode("split");
+        }
+        ui.primarySplitSuspended = false;
         disposeSecondaryEditorSession({ discardDraft: !ui.secondaryNoteDirty });
         if (restoreToggleFocus && elements.toggleDualPane?.isConnected) {
           window.requestAnimationFrame(() => elements.toggleDualPane.focus({ preventScroll: true }));
@@ -235,6 +240,7 @@
       elements.workspace?.classList.add("is-side-by-side-open");
       elements.secondarySurface?.classList.remove("is-hidden");
       api.syncNoteDetailSize();
+      ui.primarySplitSuspended = false;
       elements.toggleDualPane?.setAttribute("aria-pressed", "true");
       elements.toggleDualPane?.classList.add("is-active");
 

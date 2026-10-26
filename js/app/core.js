@@ -102,6 +102,8 @@ globalThis[Symbol.for("nook.app.modules")].register("core", (app) => {
     detailClosing: false,
     dualPaneOpen: false,
     secondaryClosing: false,
+    // Primary Split was parked as Edit because it did not fit beside the Side note.
+    primarySplitSuspended: false,
     activePane: "primary",
     secondaryNoteId: "",
     secondaryNoteTypeId: "",

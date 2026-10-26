@@ -153,12 +153,16 @@
   box-shadow: 0 1px 3px rgb(15 23 42 / 4%), 0 8px 20px -14px rgb(15 23 42 / 14%);
 }
 
-@container library (min-width: 1440px) {
+/* Column counts follow the panel width, not the viewport, so a collapsed
+ * sidebar earns another column. Comfortable cards stay at least ~340px wide. */
+@container library (min-width: 1040px) {
   .notes-list--comfortable {
     --notes-columns: 3;
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
+}
 
+@container library (min-width: 1320px) {
   .notes-list--grid {
     --notes-columns: 5;
     grid-template-columns: repeat(5, minmax(0, 1fr));

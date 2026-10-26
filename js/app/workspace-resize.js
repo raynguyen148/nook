@@ -7,14 +7,19 @@
     const EXPANSION_KEY = "nook:note-detail-expansion";
     const RATIO_KEY = "nook:note-detail-ratio";
     const PANE_MIN_WIDTH = 400;
-    const SPLIT_MIN_WIDTH = 560;
+    // A Split pane needs room for two readable columns beside a Side note.
+    const SPLIT_MIN_WIDTH = 720;
     const MIN_PANE_RATIO = 0.3;
+    const SPLIT_FIT_SETTLE_MS = 240;
+    const paneFloor = (mode) => (mode === "split" ? SPLIT_MIN_WIDTH : PANE_MIN_WIDTH);
     const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
     let expansion = readPreference(EXPANSION_KEY, 0);
     let ratio = readPreference(RATIO_KEY, 0.5);
     let drag = null;
     let layoutFrame = 0;
     let pointerFrame = 0;
+    let splitFitTimer = 0;
+    let lastSplitFitWidth = -1;
     let bound = false;
 
     function readPreference(key, fallback) {
@@ -49,8 +54,8 @@
       let min = Math.min(available, elements.noteDetailWidthGuide.getBoundingClientRect().width);
       let max = available;
       if (dual) {
-        const primaryFloor = ui.noteEditorMode === "split" ? SPLIT_MIN_WIDTH : PANE_MIN_WIDTH;
-        const secondaryFloor = ui.secondaryNoteMode === "split" ? SPLIT_MIN_WIDTH : PANE_MIN_WIDTH;
+        const primaryFloor = paneFloor(ui.noteEditorMode);
+        const secondaryFloor = paneFloor(ui.secondaryNoteMode);
         if (available >= primaryFloor + secondaryFloor) {
           min = Math.max(primaryFloor, available * MIN_PANE_RATIO);
           max = Math.min(available - secondaryFloor, available * (1 - MIN_PANE_RATIO));
@@ -60,6 +65,43 @@
       }
       const width = dual ? clamp(available * ratio, min, max) : min + (max - min) * expansion;
       return { dual, bounds, available, min, max, width };
+    }
+
+    // Split beside a Side note is only kept when both panes get their floor.
+    // The check waits for the layout to settle, because choosing Split or
+    // opening the Side note also animates the sidebar, which changes the room.
+    function scheduleSplitFitCheck() {
+      window.clearTimeout(splitFitTimer);
+      splitFitTimer = window.setTimeout(enforceSplitFit, SPLIT_FIT_SETTLE_MS);
+    }
+
+    function layoutIsSettling(available) {
+      const shellAnimating = elements.appShell?.getAnimations?.().some((animation) => animation.playState === "running");
+      const changed = available !== lastSplitFitWidth;
+      lastSplitFitWidth = available;
+      return Boolean(shellAnimating) || changed;
+    }
+
+    function enforceSplitFit() {
+      splitFitTimer = 0;
+      if (!ui.dualPaneOpen || ui.secondaryClosing) return;
+      const geometry = measureLayout();
+      if (!geometry?.dual) return;
+      // Act only on a stable measurement: two equal readings with no shell
+      // transition running. A fixed delay alone can land mid-animation.
+      if (layoutIsSettling(geometry.available)) {
+        scheduleSplitFitCheck();
+        return;
+      }
+      const fits = () => geometry.available >= paneFloor(ui.noteEditorMode) + paneFloor(ui.secondaryNoteMode);
+      if (fits()) return;
+      // Give up the Side note's Split first; the primary note is the main work.
+      if (ui.secondaryNoteMode === "split") api.setSecondaryNoteMode?.("edit");
+      if (!fits() && ui.noteEditorMode === "split") {
+        ui.primarySplitSuspended = true;
+        api.setNoteEditorMode?.("edit");
+      }
+      api.showToast?.("Not enough room for Split beside the Side note, so it switched to Edit.");
     }
 
     function syncHandle(handle, geometry, hidden = false) {
@@ -114,6 +156,7 @@
       }
       syncHandle(elements.noteResizeStart, geometry, Boolean(geometry?.dual));
       syncHandle(elements.noteResizeEnd, geometry);
+      if (geometry?.dual) scheduleSplitFitCheck();
       if (geometry) refreshContentGeometry();
     }
 
@@ -257,6 +300,9 @@
       }
     }
 
-    Object.assign(api, { bindNoteDetailResizeEvents, syncNoteDetailSize, scheduleNoteDetailSize, cancelNoteDetailResize: () => finishDrag(false) });
+    Object.assign(api, {
+      bindNoteDetailResizeEvents, syncNoteDetailSize, scheduleNoteDetailSize,
+      cancelNoteDetailResize: () => finishDrag(false),
+    });
   });
 })();
