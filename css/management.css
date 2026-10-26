@@ -15,7 +15,7 @@
 }
 
 .organize-dialog {
-  width: min(calc(100% - 2rem), 560px);
+  width: min(calc(100% - 2rem), 640px);
 }
 
 

@@ -29,6 +29,9 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
   let sidebarExpandRevealTimer = 0;
   let sidebarExpandFinishTimer = 0;
   let themePickerCloseTimer = 0;
+  let themeMenuCloseTimer = 0;
+  // Topbar theme menu options, cloned from the Settings picker on enhance.
+  let themeMenuOptions = [];
   const THEME_LABELS = Object.fromEntries(THEMES.map(mode => [mode, app.theme.describe(mode).label]));
   const THEME_STYLESHEET_FILES = Object.fromEntries(THEMES.map(mode => [mode, app.theme.describe(mode).file]));
 
@@ -313,7 +316,7 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
       ? `Auto (${THEME_LABELS[resolvedTheme]})`
       : THEME_LABELS[mode] || THEME_LABELS.light;
     elements.themePickerTrigger.setAttribute("aria-label", `Theme: ${currentLabel}. Choose a theme.`);
-    elements.themePickerOptions.forEach((option) => {
+    [...elements.themePickerOptions, ...themeMenuOptions].forEach((option) => {
       const optionTheme = option.dataset.themeOption;
       const selected = optionTheme === mode;
       option.setAttribute("aria-selected", String(selected));
@@ -328,6 +331,81 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
     elements.themeSelect.tabIndex = -1;
     elements.themeSelect.setAttribute("aria-hidden", "true");
     elements.themePickerTrigger.hidden = false;
+    buildThemeMenu();
+  }
+
+  // The topbar menu reuses the Settings picker's option markup so both lists
+  // stay identical; only the trigger and placement differ.
+  function buildThemeMenu() {
+    if (!elements.themeMenu || themeMenuOptions.length) return;
+    const options = elements.themePickerMenu.querySelector(".theme-picker__options");
+    if (!options) return;
+    elements.themeMenu.replaceChildren(options.cloneNode(true));
+    themeMenuOptions = [...elements.themeMenu.querySelectorAll("[data-theme-option]")];
+  }
+
+  function isThemeMenuOpen() {
+    return Boolean(elements.themeMenu) && !elements.themeMenu.hidden && !elements.themeMenu.classList.contains("is-closing");
+  }
+
+  function openThemeMenu() {
+    if (!elements.themeMenu || isThemeMenuOpen()) return;
+    buildThemeMenu();
+    if (themeMenuCloseTimer) {
+      window.clearTimeout(themeMenuCloseTimer);
+      themeMenuCloseTimer = 0;
+    }
+    elements.themeMenu.classList.remove("is-closing");
+    elements.themeMenu.hidden = false;
+    elements.themeToggle.setAttribute("aria-expanded", "true");
+    window.requestAnimationFrame(() => {
+      const selected = themeMenuOptions.find((option) => option.getAttribute("aria-selected") === "true");
+      (selected || themeMenuOptions[0])?.focus({ preventScroll: true });
+    });
+  }
+
+  function closeThemeMenu({ focusTrigger = false } = {}) {
+    if (!elements.themeMenu || elements.themeMenu.hidden) return;
+    if (focusTrigger) elements.themeToggle.focus({ preventScroll: true });
+    if (elements.themeMenu.classList.contains("is-closing")) return;
+    elements.themeMenu.classList.add("is-closing");
+    elements.themeToggle.setAttribute("aria-expanded", "false");
+    const finishClosing = () => {
+      themeMenuCloseTimer = 0;
+      elements.themeMenu.hidden = true;
+      elements.themeMenu.classList.remove("is-closing");
+    };
+    if (prefersReducedMotion()) finishClosing();
+    else themeMenuCloseTimer = window.setTimeout(finishClosing, MOTION.short);
+  }
+
+  function toggleThemeMenu() {
+    if (isThemeMenuOpen()) closeThemeMenu({ focusTrigger: true });
+    else openThemeMenu();
+  }
+
+  function handleThemeToggleKeydown(event) {
+    if (event.key === "Escape" && isThemeMenuOpen()) {
+      event.preventDefault();
+      event.stopPropagation();
+      closeThemeMenu({ focusTrigger: true });
+      return;
+    }
+    if (!["ArrowDown", "ArrowUp"].includes(event.key)) return;
+    event.preventDefault();
+    openThemeMenu();
+  }
+
+  function handleThemeMenuClick(event) {
+    const option = event.target.closest("[data-theme-option]");
+    if (!option || !elements.themeMenu.contains(option)) return;
+    const theme = option.dataset.themeOption;
+    closeThemeMenu({ focusTrigger: true });
+    if (THEMES.includes(theme)) setTheme(theme);
+  }
+
+  function handleThemeMenuKeydown(event) {
+    handleListboxKeydown(event, themeMenuOptions, (focusTrigger) => closeThemeMenu({ focusTrigger }));
   }
 
   function clearThemePickerClosingState() {
@@ -428,7 +506,10 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
 
   function handleThemePickerMenuPreload(event) {
     const option = event.target instanceof Element ? event.target.closest("[data-theme-option]") : null;
-    if (option && elements.themePickerMenu.contains(option)) preloadThemeMode(option.dataset.themeOption);
+    if (!option) return;
+    if (elements.themePickerMenu.contains(option) || elements.themeMenu?.contains(option)) {
+      preloadThemeMode(option.dataset.themeOption);
+    }
   }
 
   function handleThemeTogglePreload() {
@@ -443,7 +524,11 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
   }
 
   function handleThemePickerMenuKeydown(event) {
-    const options = elements.themePickerOptions;
+    handleListboxKeydown(event, elements.themePickerOptions, (focusTrigger) => closeThemePicker({ focusTrigger }));
+  }
+
+  // Shared roving-focus keyboard model for both theme listboxes.
+  function handleListboxKeydown(event, options, close) {
     const selectedIndex = options.findIndex(
       (option) => option.getAttribute("aria-selected") === "true",
     );
@@ -452,11 +537,11 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
     if (event.key === "Escape") {
       event.preventDefault();
       event.stopPropagation();
-      closeThemePicker({ focusTrigger: true });
+      close(true);
       return;
     }
     if (event.key === "Tab") {
-      closeThemePicker();
+      close(false);
       return;
     }
     if (event.key === "Enter" || event.key === " ") {
@@ -476,6 +561,8 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
 
   function handleThemePickerDocumentPointerdown(event) {
     if (!elements.themePicker.contains(event.target)) closeThemePicker();
+    const themeMenuHome = elements.themeMenu?.parentElement;
+    if (isThemeMenuOpen() && themeMenuHome && !themeMenuHome.contains(event.target)) closeThemeMenu();
   }
 
   function syncThemeUI() {
@@ -505,21 +592,19 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
     const label = THEME_LABELS[mode] || THEME_LABELS.light;
     const nextLabel = THEME_LABELS[getNextTheme(mode)];
     const currentLabel = mode === "auto" ? `Auto (${THEME_LABELS[theme]})` : label;
-    elements.themeToggle.setAttribute(
-      "aria-label",
-      `Current theme: ${currentLabel}. Switch to ${nextLabel}`,
-    );
+    elements.themeToggle.setAttribute("aria-label", `Theme: ${currentLabel}. Choose a theme.`);
     elements.themeToggle.removeAttribute("title");
     if (elements.mobileTheme) {
-      const description = elements.themeToggle.getAttribute("aria-label");
+      // The mobile button keeps cycling; the sheet's Appearance row lists every theme.
+      const description = `Current theme: ${currentLabel}. Switch to ${nextLabel}`;
       elements.mobileTheme.setAttribute("aria-label", description);
       elements.mobileTheme.title = description;
     }
     elements.themeToggleLabel.textContent = label;
     if (elements.themeToggleTooltipText) {
       elements.themeToggleTooltipText.textContent = mode === "auto"
-        ? `Auto · Follows system theme (switch to ${nextLabel})`
-        : `Theme: ${label} (switch to ${nextLabel})`;
+        ? `Auto · Follows system (${THEME_LABELS[theme]}) · T cycles`
+        : `Theme: ${label} · T cycles`;
     }
 
     const themeColorMeta = document.querySelector('meta[name="theme-color"]');
@@ -1115,6 +1200,13 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
     handleThemeTogglePreload,
     handleThemePickerMenuKeydown,
     handleThemePickerDocumentPointerdown,
+    isThemeMenuOpen,
+    openThemeMenu,
+    closeThemeMenu,
+    toggleThemeMenu,
+    handleThemeToggleKeydown,
+    handleThemeMenuClick,
+    handleThemeMenuKeydown,
     syncThemeUI,
     clearAutoThemeTimer,
     refreshAutoTheme,

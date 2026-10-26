@@ -81,9 +81,7 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
       resetNoteEditorScrollSyncTarget();
     }
     ui.noteEditorMode = mode;
-    elements.noteDialogTitle.textContent = mode === "preview"
-      ? "Preview note"
-      : elements.noteId.value ? "Edit note" : "New note";
+    syncNoteDialogTitle();
     elements.noteDialog.classList.toggle("is-split", mode === "split");
     elements.noteDialog.classList.toggle("is-preview", mode === "preview");
     elements.noteContentField.classList.toggle("is-split", mode === "split");
@@ -382,7 +380,7 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
     elements.noteContent.scrollTop = 0;
     elements.noteContentPreview.scrollTop = 0;
     elements.noteContentEditor.style.removeProperty("height");
-    elements.noteDialogTitle.textContent = note ? "Edit note" : "New note";
+    syncNoteDialogTitle();
     elements.deleteNote.classList.toggle("is-hidden", !note);
     elements.primarySwitchNote.classList.toggle("is-hidden", !note || Boolean(note.deletedAt));
     renderNoteTypeOptions(note?.typeId || storage.FALLBACK_TYPE_ID);
@@ -404,6 +402,17 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
     }
   }
 
+  // The pane label names the note being worked on; the mode is already shown
+  // by the Edit/Split/Preview controls, so it no longer repeats it.
+  function syncNoteDialogTitle() {
+    const title = elements.noteTitle.value.trim();
+    const isNew = !elements.noteId.value;
+    const label = title || (isNew ? "New note" : "Untitled note");
+    elements.noteDialogTitle.textContent = label;
+    elements.noteDialogTitle.title = title ? label : "";
+    elements.noteDialogTitle.classList.toggle("is-placeholder", !title);
+  }
+
   function restoreStoredNoteDraft(recovery, { asNew = false } = {}) {
     const note = !asNew && recovery.draft.id ? library.notes.find((item) => item.id === recovery.draft.id && !item.deletedAt) : null;
     openNoteEditor(note || null);
@@ -414,6 +423,7 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
     elements.noteContent.value = recovery.draft.content;
     ui.selectedNoteTagIds = new Set(recovery.draft.tagIds.filter((tagId) => tagFor(tagId)));
     renderNoteTypeOptions(typeId);
+    syncNoteDialogTitle();
     renderSelectedNoteTags();
     renderTagSuggestions();
     renderNoteEditorPreview();
@@ -436,6 +446,7 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
     ui.editingNoteId = note.id;
     ui.selectedNoteTagIds = new Set(note.tagIds || []);
     renderNoteTypeOptions(note.typeId || storage.FALLBACK_TYPE_ID);
+    syncNoteDialogTitle();
     renderSelectedNoteTags();
     renderTagSuggestions();
     renderNoteMetadata(note);
@@ -709,7 +720,7 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
       }
       ui.editingNoteId = savedNote.id;
       elements.primarySwitchNote.classList.remove("is-hidden");
-      elements.noteDialogTitle.textContent = "Edit note";
+      syncNoteDialogTitle();
       elements.deleteNote.classList.remove("is-hidden");
       elements.noteHistory?.classList.remove("is-hidden");
       renderNoteMetadata(savedNote);
@@ -780,6 +791,7 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
     setTagInputExpanded,
     selectNoteTag,
     addTagFromEditor,
+    syncNoteDialogTitle,
     saveNote,
     preparePrimaryNoteSwitch,
   });

@@ -824,11 +824,31 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
     }
 
     const fragment = document.createDocumentFragment();
-    pageNotes.forEach((note) => fragment.append(createNoteCard(note)));
+    const groupHeadings = pinnedGroupHeadings(pageNotes);
+    pageNotes.forEach((note, index) => {
+      const heading = groupHeadings.get(index);
+      if (heading) fragment.append(createNotesGroupHeading(heading));
+      fragment.append(createNoteCard(note));
+    });
     elements.notesList.replaceChildren(fragment);
     observeNoteCardTagRows();
     renderPagination(totalPages);
     animateNotesContent(motion);
+  }
+
+  // Pinned notes sort first; label the boundary so the page reads as two
+  // groups instead of a run of cards with a tiny pin glyph.
+  function pinnedGroupHeadings(pageNotes) {
+    const headings = new Map();
+    if (ui.trashOnly || !pageNotes[0]?.isPinned) return headings;
+    headings.set(0, "Pinned");
+    const firstUnpinned = pageNotes.findIndex((note) => !note.isPinned);
+    if (firstUnpinned > 0) headings.set(firstUnpinned, "Everything else");
+    return headings;
+  }
+
+  function createNotesGroupHeading(text) {
+    return createElement("h3", { className: "notes-group-heading", text });
   }
 
   function syncSecondarySortPicker() { secondarySortPicker?.sync(); }

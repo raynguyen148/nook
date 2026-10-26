@@ -40,6 +40,7 @@
       themeToggle: document.querySelector("#theme-toggle"),
       themeToggleLabel: document.querySelector("#theme-toggle-label"),
       themeToggleTooltipText: document.querySelector("#theme-toggle-tooltip-text"),
+      themeMenu: document.querySelector("#theme-menu"),
       organize: document.querySelector("#organize-btn"),
       import: document.querySelector("#import-btn"),
       importInput: document.querySelector("#import-input"),

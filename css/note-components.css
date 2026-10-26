@@ -715,6 +715,25 @@ select::-ms-expand {
 
 
 
+.notes-group-heading {
+  grid-column: 1 / -1;
+  margin: 0.25rem 0 -0.25rem;
+  padding-inline: 0.15rem;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+
+
+.notes-group-heading + .note-card {
+  margin-top: 0;
+}
+
+
+
 .notes-list--comfortable {
   --notes-columns: 2;
 

@@ -231,6 +231,24 @@
       tagFilterResizeObserver.observe(elements.sidebarScroll);
     }
 
+    function typeInitial(name) {
+      const first = String(name || "").trim().match(/[\p{L}\p{N}]/u);
+      return first ? first[0].toUpperCase() : "·";
+    }
+
+    function librarySummary({ allNotesCount, updatedTodayCount, todayCount }) {
+      if (allNotesCount === 0) return "No notes yet. Everything you write stays in this browser.";
+      const parts = [`${allNotesCount} ${allNotesCount === 1 ? "note" : "notes"}`];
+      if (todayCount === allNotesCount) {
+        parts.push("all created today");
+      } else {
+        if (todayCount) parts.push(`${todayCount} created today`);
+        if (updatedTodayCount) parts.push(`${updatedTodayCount} updated today`);
+      }
+      if (parts.length === 1) parts.push("stored in this browser");
+      return parts.join(" · ");
+    }
+
     function renderSidebar() {
       const mobileFilterFocus = elements.mobileFilterDialog?.open
         ? document.activeElement?.getAttribute("aria-label") : null;
@@ -260,7 +278,7 @@
       elements.notesHeading.textContent = ui.trashOnly ? "Trash" : "All notes";
       elements.notesSubtitle.textContent = ui.trashOnly
         ? "Deleted notes stay here until you restore or permanently remove them."
-        : "Browse, search, and manage your complete collection of personal notes.";
+        : librarySummary({ allNotesCount, updatedTodayCount, todayCount });
       elements.allNotesSpaceCount.textContent = allNotesCount;
       elements.allNotesSpace.title = `All notes (${allNotesCount})`;
       elements.trashSpaceCount.textContent = trashCount;
@@ -298,7 +316,10 @@
         });
         button.title = `Filter by ${type.name} (${typeCount})`;
         const label = createElement("span", { className: "sidebar-filter__label" });
-        label.append(createElement("span", { className: `type-dot type-dot--${safeTypeColor(type)}` }));
+        label.append(createElement("span", {
+          className: `type-dot type-dot--${safeTypeColor(type)}`,
+          dataset: { initial: typeInitial(type.name) },
+        }));
         label.append(document.createTextNode(type.name));
         button.append(label, createElement("span", { className: "filter-count", text: typeCount }));
         button.addEventListener("click", () => setTypeFilter(type.id));

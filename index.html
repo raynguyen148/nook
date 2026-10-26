@@ -298,9 +298,12 @@
                   id="theme-toggle"
                   class="button button-secondary theme-toggle topbar-preferences__button"
                   type="button"
-                  aria-label="Current theme: Light. Switch to Coffee theme"
+                  aria-label="Theme: Light. Choose a theme."
                   aria-describedby="theme-toggle-shortcut-tooltip"
                   aria-keyshortcuts="T"
+                  aria-haspopup="listbox"
+                  aria-expanded="false"
+                  aria-controls="theme-menu"
                 >
                   <span class="theme-toggle__icon theme-toggle__icon--sun" aria-hidden="true">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round">
@@ -363,9 +366,10 @@
                   <span id="theme-toggle-label" class="button-label">Light</span>
                 </button>
                 <span id="theme-toggle-shortcut-tooltip" class="shortcut-tooltip" role="tooltip">
-                  <span id="theme-toggle-tooltip-text">Theme: Light (switch to Coffee)</span>
+                  <span id="theme-toggle-tooltip-text">Theme: Light · Choose a theme</span>
                   <kbd>T</kbd>
                 </span>
+                <div id="theme-menu" class="theme-picker__menu theme-menu" role="listbox" aria-label="Theme" hidden></div>
               </div>
               <div id="organize-shortcut" class="shortcut-button">
                 <button id="organize-btn" class="button button-secondary topbar-preferences__button" type="button" aria-label="Settings" aria-describedby="organize-shortcut-tooltip" aria-keyshortcuts="S">

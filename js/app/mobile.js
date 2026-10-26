@@ -429,7 +429,7 @@ globalThis[Symbol.for("nook.app.modules")].register("mobile", (app) => {
         elements.mobileSettings.focus({ preventScroll: true });
       }
     });
-    elements.mobileTheme.addEventListener("click", () => elements.themeToggle.click());
+    elements.mobileTheme.addEventListener("click", () => api.setTheme(api.getNextTheme(ui.theme)));
     elements.mobileChips.addEventListener("click", (event) => {
       const button = event.target.closest("button[data-type-id]");
       if (button) api.setTypeFilter(button.dataset.typeId);

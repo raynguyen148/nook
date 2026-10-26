@@ -241,6 +241,16 @@
 
 
 
+/* A larger swatch in the type list makes colours comparable at a glance. */
+.management-row--type .management-row__main > .type-dot {
+  width: 1rem;
+  height: 1rem;
+  flex: none;
+  box-shadow: 0 0 0 2px var(--note-card-surface, var(--surface)), 0 0 0 3px var(--note-card-border);
+}
+
+
+
 .management-row--summary .tag-marker {
   box-shadow: none;
 }
@@ -340,21 +350,17 @@
 
 
 
-/* Keep row metadata in place while actions are revealed on pointer hover or
- * keyboard focus. The reserved action slot prevents the count from shifting
- * when the buttons become visible. Touch/coarse pointers keep actions visible
- * through the media rule below. */
+/* Row actions stay discoverable at rest and sharpen on pointer hover or
+ * keyboard focus, so Rename/Delete never need to be guessed at. */
 @media (hover: hover) and (pointer: fine) {
   .management-row--summary .management-row__actions {
-    opacity: 0;
-    pointer-events: none;
+    opacity: 0.72;
     transition: opacity var(--motion-duration-short) var(--motion-ease-out);
   }
 
   .management-row--summary:hover .management-row__actions,
   .management-row--summary:focus-within .management-row__actions {
     opacity: 1;
-    pointer-events: auto;
   }
 }
 
@@ -757,6 +763,22 @@ form.management-row .management-row__controls--editing .color-picker__trigger {
 
 .display-settings:has(.theme-picker__menu:not([hidden])) {
   overflow: visible;
+}
+
+
+
+/* Topbar theme menu: the same listbox as Settings, anchored under the
+ * theme button. The shortcut tooltip steps aside while the menu is open. */
+.theme-menu {
+  top: calc(100% + 0.45rem);
+  width: max-content;
+  min-width: 10.5rem;
+  max-width: min(14rem, calc(100vw - 1.5rem));
+  text-align: left;
+}
+
+.shortcut-button:has(> .theme-menu:not([hidden])) .shortcut-tooltip {
+  display: none;
 }
 
 

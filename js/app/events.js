@@ -26,6 +26,12 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
     handleThemeTogglePreload,
     handleThemePickerMenuKeydown,
     handleThemePickerDocumentPointerdown,
+    isThemeMenuOpen,
+    closeThemeMenu,
+    toggleThemeMenu,
+    handleThemeToggleKeydown,
+    handleThemeMenuClick,
+    handleThemeMenuKeydown,
     syncThemeUI,
     syncGlassUI,
     setGlass,
@@ -102,6 +108,7 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
     scheduleNoteEditorHeight,
     scheduleNoteAutoSave,
     revalidateNoteEditorField,
+    syncNoteDialogTitle,
     applyNoteFormattingShortcut,
     applyNoteFormatting,
     openNoteEditor,
@@ -240,7 +247,12 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
         setNoteDetailFontSize(event.newValue ?? NOTE_DETAIL_FONT_SIZE_DEFAULT, { persist: false });
       }
     });
-    elements.themeToggle.addEventListener("click", () => setTheme(getNextTheme(ui.theme)));
+    elements.themeToggle.addEventListener("click", toggleThemeMenu);
+    elements.themeToggle.addEventListener("keydown", handleThemeToggleKeydown);
+    elements.themeMenu?.addEventListener("click", handleThemeMenuClick);
+    elements.themeMenu?.addEventListener("keydown", handleThemeMenuKeydown);
+    elements.themeMenu?.addEventListener("pointerover", handleThemePickerMenuPreload);
+    elements.themeMenu?.addEventListener("focusin", handleThemePickerMenuPreload);
     elements.themeSelect.addEventListener("change", () => setThemePickerValue(elements.themeSelect.value));
     elements.themePickerTrigger.addEventListener("click", toggleThemePicker);
     elements.themePickerTrigger.addEventListener("keydown", handleThemePickerTriggerKeydown);
@@ -288,6 +300,7 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
     elements.noteForm.addEventListener("submit", saveNote);
     elements.noteTitle.addEventListener("input", () => {
       revalidateNoteEditorField("title");
+      syncNoteDialogTitle();
       if (ui.noteEditorMode === "preview") renderQuickView();
       scheduleNoteAutoSave();
     });
@@ -644,6 +657,11 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
       if (event.key === "Escape" && !activeModalDialog() && isQuickViewOpen()) {
         event.preventDefault();
         closeQuickView();
+        return;
+      }
+      if (event.key === "Escape" && isThemeMenuOpen()) {
+        event.preventDefault();
+        closeThemeMenu({ focusTrigger: true });
         return;
       }
       if (matchesGlobalThemeShortcut(event)) {

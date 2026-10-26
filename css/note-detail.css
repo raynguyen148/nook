@@ -189,6 +189,13 @@
 
 
 
+.detail-commandbar__state.is-placeholder {
+  font-style: italic;
+  font-weight: var(--font-weight-medium);
+}
+
+
+
 .detail-back-button {
   flex: none;
   min-height: 1.85rem;

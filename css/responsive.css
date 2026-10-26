@@ -239,11 +239,31 @@
     height: 1.1rem;
   }
 
-  .app-shell.is-sidebar-collapsed .type-dot,
-  html[data-sidebar-collapsed="true"] .app-shell .type-dot {
-    font-size: var(--font-size-md);
-    width: 0.6rem;
-    height: 0.6rem;
+  /* In the rail the dot grows into a chip showing the type's initial, so
+   * two types with similar colours remain distinguishable. */
+  .app-shell.is-sidebar-collapsed .sidebar-filter--type .type-dot,
+  html[data-sidebar-collapsed="true"] .app-shell .sidebar-filter--type .type-dot {
+    display: inline-grid;
+    place-items: center;
+    width: 1.35rem;
+    height: 1.35rem;
+    border-radius: 0.45rem;
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    line-height: 1;
+    color: #fff;
+    text-shadow: 0 1px 1px rgb(0 0 0 / 35%);
+  }
+
+  .app-shell.is-sidebar-collapsed .sidebar-filter--type .type-dot::after,
+  html[data-sidebar-collapsed="true"] .app-shell .sidebar-filter--type .type-dot::after {
+    content: attr(data-initial);
+  }
+
+  .app-shell.is-sidebar-collapsed .sidebar-filter--type :is(.type-dot--amber, .type-dot--lime, .type-dot--cyan),
+  html[data-sidebar-collapsed="true"] .app-shell .sidebar-filter--type :is(.type-dot--amber, .type-dot--lime, .type-dot--cyan) {
+    color: #1f2937;
+    text-shadow: none;
   }
 
   /* Tags cannot be meaningfully identified in the collapsed rail. */
