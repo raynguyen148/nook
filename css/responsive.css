@@ -245,14 +245,14 @@
   html[data-sidebar-collapsed="true"] .app-shell .sidebar-filter--type .type-dot {
     display: inline-grid;
     place-items: center;
-    width: 1.35rem;
-    height: 1.35rem;
+    width: 1.125rem;
+    height: 1.125rem;
     border-radius: var(--radius-pill);
-    font-size: var(--font-size-xs);
-    font-weight: var(--font-weight-bold);
+    font-size: 0.625rem;
+    font-weight: var(--font-weight-semibold);
     line-height: 1;
+    letter-spacing: 0;
     color: #fff;
-    text-shadow: 0 1px 1px rgb(0 0 0 / 35%);
   }
 
   .app-shell.is-sidebar-collapsed .sidebar-filter--type .type-dot::after,
@@ -260,10 +260,17 @@
     content: attr(data-initial);
   }
 
-  .app-shell.is-sidebar-collapsed .sidebar-filter--type :is(.type-dot--amber, .type-dot--lime, .type-dot--cyan),
-  html[data-sidebar-collapsed="true"] .app-shell .sidebar-filter--type :is(.type-dot--amber, .type-dot--lime, .type-dot--cyan) {
+  /* The shared palette's lighter hues fall below 3:1 against white, so their
+   * initials switch to dark ink. Coffee (also the default) uses deeper dyes and
+   * E-ink renders every chip black, so both keep white initials. */
+  .app-shell.is-sidebar-collapsed .sidebar-filter--type :is(.type-dot--amber, .type-dot--lime, .type-dot--cyan, .type-dot--sky, .type-dot--teal, .type-dot--emerald, .type-dot--green, .type-dot--orange),
+  html[data-sidebar-collapsed="true"] .app-shell .sidebar-filter--type :is(.type-dot--amber, .type-dot--lime, .type-dot--cyan, .type-dot--sky, .type-dot--teal, .type-dot--emerald, .type-dot--green, .type-dot--orange) {
     color: #1f2937;
-    text-shadow: none;
+  }
+
+  :is(html[data-theme="coffee"], html:not([data-theme]), html[data-theme="eink"]) .app-shell.is-sidebar-collapsed .sidebar-filter--type .type-dot,
+  :is(html[data-theme="coffee"], html:not([data-theme]), html[data-theme="eink"])[data-sidebar-collapsed="true"] .app-shell .sidebar-filter--type .type-dot {
+    color: #fff;
   }
 
   /* Tags cannot be meaningfully identified in the collapsed rail. */
