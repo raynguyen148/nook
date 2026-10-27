@@ -563,10 +563,11 @@ html[data-theme="eink"] {
         background: var(--glass-sheen);
       }
 
-      /* The band behind the pills frosts the illustration instead of hiding it.
-       * It fades out on every side, so it never reads as a rectangle. */
+      /* The band behind the pills frosts the illustration and hides the cards
+       * scrolling under it: a thin tint would only smear their text into a
+       * blurry streak. It fades out on every side, so it never reads as a rectangle. */
       html[data-glass="true"] .topbar.is-actions-pinned::after {
-        background: linear-gradient(to bottom, color-mix(in srgb, var(--surface-page) 18%, transparent) 72%, transparent);
+        background: linear-gradient(to bottom, color-mix(in srgb, var(--surface-page) 78%, transparent) 72%, transparent);
         backdrop-filter: var(--glass-frost);
         -webkit-backdrop-filter: var(--glass-frost);
         mask-image: linear-gradient(to bottom, #000 72%, transparent), linear-gradient(to right, transparent, #000 2.5rem, #000 calc(100% - 2.5rem), transparent);
