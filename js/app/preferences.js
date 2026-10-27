@@ -428,7 +428,9 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
   // The menu is a native popover placed below (or above) its trigger, so it
   // escapes the Settings panel's scroll clipping without the dialog, panel,
   // or Display section having to give up overflow clipping of their own.
-  function placeSettingsPopover(menu, trigger) {
+  // With fitContent the menu keeps its own stylesheet width when that is wider
+  // than the trigger, and then lines up with the trigger's trailing edge.
+  function placeSettingsPopover(menu, trigger, { fitContent = false } = {}) {
     const rect = trigger.getBoundingClientRect();
     const viewport = window.visualViewport;
     const left = viewport?.offsetLeft || 0;
@@ -438,9 +440,15 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
     const bottom = navigationBounds?.height && elements.organizeDialog.contains(elements.mobileNavigation)
       ? Math.min(top + (viewport?.height || window.innerHeight), navigationBounds.top)
       : top + (viewport?.height || window.innerHeight);
-    menu.style.width = `${Math.min(rect.width, right - left - 16)}px`;
+    let width = rect.width;
+    if (fitContent) {
+      menu.style.width = "";
+      width = Math.max(rect.width, menu.getBoundingClientRect().width);
+    }
+    menu.style.width = `${Math.min(width, right - left - 16)}px`;
     const bounds = menu.getBoundingClientRect();
-    menu.style.left = `${Math.max(left + 8, Math.min(rect.left, right - bounds.width - 8))}px`;
+    const preferredLeft = bounds.width > rect.width + 1 ? rect.right - bounds.width : rect.left;
+    menu.style.left = `${Math.max(left + 8, Math.min(preferredLeft, right - bounds.width - 8))}px`;
     menu.style.top = `${Math.max(top + 8, rect.bottom + bounds.height + 8 <= bottom ? rect.bottom + 4 : rect.top - bounds.height - 4)}px`;
   }
 
@@ -460,7 +468,7 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
     if ("showPopover" in elements.themePickerMenu && !elements.themePickerMenu.matches(":popover-open")) {
       elements.themePickerMenu.showPopover();
     }
-    placeSettingsPopover(elements.themePickerMenu, elements.themePickerTrigger);
+    placeSettingsPopover(elements.themePickerMenu, elements.themePickerTrigger, { fitContent: true });
     elements.themePicker.classList.add("is-open");
     elements.themePickerTrigger.setAttribute("aria-expanded", "true");
     window.requestAnimationFrame(() => {
@@ -566,13 +574,42 @@ globalThis[Symbol.for("nook.app.modules")].register("preferences", (app) => {
       return;
     }
     let nextIndex;
-    if (event.key === "ArrowDown") nextIndex = (currentIndex + 1) % options.length;
-    else if (event.key === "ArrowUp") nextIndex = (currentIndex - 1 + options.length) % options.length;
+    if (event.key === "ArrowRight") nextIndex = (currentIndex + 1) % options.length;
+    else if (event.key === "ArrowLeft") nextIndex = (currentIndex - 1 + options.length) % options.length;
+    else if (event.key === "ArrowDown") nextIndex = getListboxRowNeighbor(options, currentIndex, 1);
+    else if (event.key === "ArrowUp") nextIndex = getListboxRowNeighbor(options, currentIndex, -1);
     else if (event.key === "Home") nextIndex = 0;
     else if (event.key === "End") nextIndex = options.length - 1;
     else return;
     event.preventDefault();
     options[nextIndex].focus({ preventScroll: true });
+  }
+
+  // Options are laid out as a grid, so Up/Down move to the option in the
+  // previous/next visual row (wrapping) whose center is closest to the current
+  // one. A single column keeps the plain previous/next behavior.
+  function getListboxRowNeighbor(options, currentIndex, direction) {
+    const rows = [];
+    options.forEach((option, index) => {
+      const rect = option.getBoundingClientRect();
+      const rowTop = Math.round(rect.top);
+      let row = rows.find((candidate) => Math.abs(candidate.top - rowTop) <= 2);
+      if (!row) {
+        row = { top: rowTop, items: [] };
+        rows.push(row);
+      }
+      row.items.push({ index, center: rect.left + rect.width / 2 });
+    });
+    rows.sort((a, b) => a.top - b.top);
+    const rowIndex = rows.findIndex((row) => row.items.some((item) => item.index === currentIndex));
+    if (rowIndex < 0 || rows.length < 2) {
+      return (currentIndex + direction + options.length) % options.length;
+    }
+    const current = rows[rowIndex].items.find((item) => item.index === currentIndex);
+    const target = rows[(rowIndex + direction + rows.length) % rows.length].items;
+    return target.reduce((best, item) => (
+      Math.abs(item.center - current.center) < Math.abs(best.center - current.center) ? item : best
+    )).index;
   }
 
   function handleThemePickerDocumentPointerdown(event) {

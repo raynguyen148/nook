@@ -44,7 +44,7 @@ practice, and personal ideas in one calm, searchable local library.
 - Export and import a complete JSON backup, including version history. The local backup-health indicator reminds you when an export is missing or old.
 - Keep the primary editor and Side note as independent sessions with per-pane draft recovery and stale-write conflict handling.
 - Manage note types and tags from Settings → Organize Notes.
-- Choose Light, Coffee, Forest, Midnight, Dark, Aurora, Retro, Zen, or Auto theme, switch between Compact, Comfortable, and Grid layouts, or collapse the sidebar into an icon rail.
+- Choose Auto, Light, Zen, Coffee, Forest, Retro, Dark, Midnight, or Aurora theme, switch between Compact, Comfortable, and Grid layouts, or collapse the sidebar into an icon rail.
 - Use the full available width for the library and its toolbar, with small edge insets even on wide screens.
 - Comfortable view expands to three columns and Grid view to five columns when the library content area is at least 1,440px wide; smaller screens retain fewer columns.
 - Recover an unfinished local editor draft after an interrupted session.
@@ -268,7 +268,7 @@ has its own autosave, recovery record, conflict state, and history action.
 ### Themes
 
 Nook has a light, clean interface by default. You can use the theme button (or `T`) to cycle between nine
-modes: Light, Coffee, Forest, Midnight, Dark, Aurora, Retro, Zen, and Auto. Auto matches
+modes: Auto, Light, Zen, Coffee, Forest, Retro, Dark, Midnight, and Aurora. Auto matches
 your device's system color scheme preference (Light or Dark). Hover over or keyboard-focus the button to see the
 current and next theme. Auto stays selected after reload and updates when the system theme changes.
 

@@ -1767,13 +1767,13 @@
               <select id="theme-select" class="theme-picker__native" aria-labelledby="theme-picker-title" aria-describedby="theme-picker-help">
                 <option value="auto">Auto (follows system)</option>
                 <option value="light">Light</option>
+                <option value="eink">Zen</option>
                 <option value="coffee">Coffee</option>
                 <option value="forest">Forest</option>
-                <option value="midnight">Midnight</option>
-                <option value="dark">Dark</option>
-                <option value="aurora">Aurora</option>
                 <option value="retro">Retro</option>
-                <option value="eink">Zen</option>
+                <option value="dark">Dark</option>
+                <option value="midnight">Midnight</option>
+                <option value="aurora">Aurora</option>
               </select>
               <button
                 id="theme-picker-trigger"
@@ -1804,6 +1804,10 @@
                     <span class="theme-preview" data-theme-preview="light" aria-hidden="true"></span>
                     <span class="theme-picker__option-label">Light</span>
                   </button>
+                  <button class="theme-picker__option" type="button" role="option" aria-selected="false" data-theme-option="eink" tabindex="-1">
+                    <span class="theme-preview" data-theme-preview="eink" aria-hidden="true"></span>
+                    <span class="theme-picker__option-label">Zen</span>
+                  </button>
                   <button class="theme-picker__option" type="button" role="option" aria-selected="false" data-theme-option="coffee" tabindex="-1">
                     <span class="theme-preview" data-theme-preview="coffee" aria-hidden="true"></span>
                     <span class="theme-picker__option-label">Coffee</span>
@@ -1812,25 +1816,21 @@
                     <span class="theme-preview" data-theme-preview="forest" aria-hidden="true"></span>
                     <span class="theme-picker__option-label">Forest</span>
                   </button>
-                  <button class="theme-picker__option" type="button" role="option" aria-selected="false" data-theme-option="midnight" tabindex="-1">
-                    <span class="theme-preview" data-theme-preview="midnight" aria-hidden="true"></span>
-                    <span class="theme-picker__option-label">Midnight</span>
+                  <button class="theme-picker__option" type="button" role="option" aria-selected="false" data-theme-option="retro" tabindex="-1">
+                    <span class="theme-preview" data-theme-preview="retro" aria-hidden="true"></span>
+                    <span class="theme-picker__option-label">Retro</span>
                   </button>
                   <button class="theme-picker__option" type="button" role="option" aria-selected="false" data-theme-option="dark" tabindex="-1">
                     <span class="theme-preview" data-theme-preview="dark" aria-hidden="true"></span>
                     <span class="theme-picker__option-label">Dark</span>
                   </button>
+                  <button class="theme-picker__option" type="button" role="option" aria-selected="false" data-theme-option="midnight" tabindex="-1">
+                    <span class="theme-preview" data-theme-preview="midnight" aria-hidden="true"></span>
+                    <span class="theme-picker__option-label">Midnight</span>
+                  </button>
                   <button class="theme-picker__option" type="button" role="option" aria-selected="false" data-theme-option="aurora" tabindex="-1">
                     <span class="theme-preview" data-theme-preview="aurora" aria-hidden="true"></span>
                     <span class="theme-picker__option-label">Aurora</span>
-                  </button>
-                  <button class="theme-picker__option" type="button" role="option" aria-selected="false" data-theme-option="retro" tabindex="-1">
-                    <span class="theme-preview" data-theme-preview="retro" aria-hidden="true"></span>
-                    <span class="theme-picker__option-label">Retro</span>
-                  </button>
-                  <button class="theme-picker__option" type="button" role="option" aria-selected="false" data-theme-option="eink" tabindex="-1">
-                    <span class="theme-preview" data-theme-preview="eink" aria-hidden="true"></span>
-                    <span class="theme-picker__option-label">Zen</span>
                   </button>
                 </div>
               </div>

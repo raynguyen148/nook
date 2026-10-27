@@ -137,6 +137,11 @@
     box-shadow: none;
   }
 }
+/* The theme button stays marked while its menu is open. */
+.topbar-actions .topbar-preferences .theme-toggle[aria-expanded="true"] {
+  background: var(--selected-surface);
+  color: var(--selected-text);
+}
 @media (pointer: coarse) {
   .topbar-actions .topbar-preferences .button { width: 44px; height: 44px; }
   .topbar-actions .topbar-preferences .topbar-preferences__actions { width: auto; }

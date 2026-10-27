@@ -4,15 +4,17 @@
   // One catalogue is used before first paint and by the installed application.
   const storageKey = "nook:theme";
   const metadata = Object.freeze(Object.fromEntries(Object.entries({
+    // Display and cycle order: Auto, then light themes from neutral to tinted,
+    // then dark themes; each group fills one row of the 3 × 3 theme menu.
+    auto: { label: "Auto", file: "classic", color: "#9e6b02" },
     light: { label: "Light", file: "classic", color: "#9e6b02" },
+    eink: { label: "Zen", file: "eink", color: "#f5f2eb" },
     coffee: { label: "Coffee", file: "coffee", color: "#a35616" },
     forest: { label: "Forest", file: "forest", color: "#2f6b4f" },
-    midnight: { label: "Midnight", file: "midnight", color: "#18263f" },
-    dark: { label: "Dark", file: "dark", color: "#09090b" },
-    aurora: { label: "Aurora", file: "aurora", color: "#17142c" },
     retro: { label: "Retro", file: "retro", color: "#2f5b3e" },
-    eink: { label: "Zen", file: "eink", color: "#f5f2eb" },
-    auto: { label: "Auto", file: "classic", color: "#9e6b02" },
+    dark: { label: "Dark", file: "dark", color: "#09090b" },
+    midnight: { label: "Midnight", file: "midnight", color: "#18263f" },
+    aurora: { label: "Aurora", file: "aurora", color: "#17142c" },
   }).map(([key, value]) => [key, Object.freeze(value)])));
   const modes = Object.freeze(Object.keys(metadata));
   /** @type {Readonly<Record<string, string>>} */

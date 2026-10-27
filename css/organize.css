@@ -13,33 +13,68 @@
   --management-search-resting-shadow: 0 1px 2px rgb(0 0 0 / 4%);
   --management-row-input-resting-border: #cbd5e1;
   --management-row-input-resting-shadow: none;
+  /* Theme miniatures carry each theme's own page, sidebar, card, ink, line,
+   * accent, and rule colors, so every option previews that theme rather than
+   * the active one. */
+  --theme-swatch-light-page: #f4f4f5;
+  --theme-swatch-light-sidebar: #ffffff;
   --theme-swatch-light-paper: #ffffff;
+  --theme-swatch-light-ink: #27272a;
+  --theme-swatch-light-line: #d4d4d8;
   --theme-swatch-light-accent: #9e6b02;
   --theme-swatch-light-rule: #e4e4e7;
-  --theme-swatch-coffee-paper: #faf5ee;
+  --theme-swatch-coffee-page: #f0e7da;
+  --theme-swatch-coffee-sidebar: #faf5ee;
+  --theme-swatch-coffee-paper: #fdfbf7;
+  --theme-swatch-coffee-ink: #3b2d22;
+  --theme-swatch-coffee-line: #dccbb6;
   --theme-swatch-coffee-accent: #a35616;
   --theme-swatch-coffee-rule: #dfcdb8;
-  --theme-swatch-forest-paper: #f3f7f1;
+  --theme-swatch-forest-page: #e9f0e7;
+  --theme-swatch-forest-sidebar: #f6f9f4;
+  --theme-swatch-forest-paper: #ffffff;
+  --theme-swatch-forest-ink: #1e2d24;
+  --theme-swatch-forest-line: #c8d8cb;
   --theme-swatch-forest-accent: #2f6b4f;
   --theme-swatch-forest-rule: #c3d3c6;
-  --theme-swatch-midnight-paper: #0f1b2d;
+  --theme-swatch-midnight-page: #0c1626;
+  --theme-swatch-midnight-sidebar: #0f1b2d;
+  --theme-swatch-midnight-paper: #172a44;
+  --theme-swatch-midnight-ink: #e5efff;
+  --theme-swatch-midnight-line: #3a5577;
   --theme-swatch-midnight-accent: #4aa8ed;
   --theme-swatch-midnight-rule: #29415f;
-  --theme-swatch-dark-paper: #09090b;
+  --theme-swatch-dark-page: #09090b;
+  --theme-swatch-dark-sidebar: #111114;
+  --theme-swatch-dark-paper: #1c1c20;
+  --theme-swatch-dark-ink: #fafafa;
+  --theme-swatch-dark-line: #3f3f46;
   --theme-swatch-dark-accent: #c48828;
-  --theme-swatch-dark-rule: #27272a;
-  --theme-swatch-aurora-paper: #17142c;
+  --theme-swatch-dark-rule: #2a2a2e;
+  --theme-swatch-aurora-page: #131026;
+  --theme-swatch-aurora-sidebar: #17142c;
+  --theme-swatch-aurora-paper: #221e40;
+  --theme-swatch-aurora-ink: #edecff;
+  --theme-swatch-aurora-line: #4b4775;
   --theme-swatch-aurora-accent: #5ee5b8;
   --theme-swatch-aurora-rule: #3e3a60;
-  --theme-swatch-auto-paper: var(--theme-swatch-light-paper);
-  --theme-swatch-auto-accent: var(--theme-swatch-dark-paper);
-  --theme-swatch-auto-rule: #9aa0a6;
-  --theme-swatch-retro-paper: oklch(91.5% 0.018 78);
+  --theme-swatch-aurora-spectrum: linear-gradient(90deg, #5ee5b8, #76c7ff 45%, #bda7ff 75%, #ed9ee5);
+  --theme-swatch-retro-page: oklch(91.5% 0.018 78);
+  --theme-swatch-retro-sidebar: oklch(84.5% 0.026 78);
+  --theme-swatch-retro-paper: oklch(96.5% 0.014 78);
+  --theme-swatch-retro-ink: oklch(25% 0.014 58);
+  --theme-swatch-retro-line: oklch(78% 0.02 72);
   --theme-swatch-retro-accent: oklch(42% 0.075 151);
   --theme-swatch-retro-rule: oklch(69% 0.027 72);
-  --theme-swatch-eink-paper: #efece4;
-  --theme-swatch-eink-accent: #141414;
+  --theme-swatch-eink-page: #f5f2eb;
+  --theme-swatch-eink-sidebar: #eae5da;
+  --theme-swatch-eink-paper: #fdfcf9;
+  --theme-swatch-eink-ink: #1c1b18;
+  --theme-swatch-eink-line: #d5cfc2;
+  --theme-swatch-eink-accent: #1c1b18;
   --theme-swatch-eink-rule: #d5cfc2;
+  --theme-swatch-auto-rule: #9aa0a6;
+  --theme-picker-menu-width: 19rem;
   --theme-picker-menu-shadow: 0 0.75rem 1.75rem rgb(42 55 79 / 12%), 0 0.15rem 0.45rem rgb(42 55 79 / 6%);
 }
 
@@ -519,7 +554,7 @@ form.management-row .management-row__controls--editing .color-picker__trigger {
   gap: var(--space-2-5);
   border: 1px solid var(--note-card-border);
   border-radius: var(--control-radius);
-  padding: 0.38rem 2rem 0.38rem 0.48rem;
+  padding: 0.38rem 2rem 0.38rem 0.42rem;
   color: var(--note-card-title);
   background-color: var(--note-card-surface);
   background-image: var(--select-chevron);
@@ -536,6 +571,12 @@ form.management-row .management-row__controls--editing .color-picker__trigger {
     color var(--motion-duration-short) var(--motion-ease-out),
     background-color var(--motion-duration-short) var(--motion-ease-out),
     border-color var(--motion-duration-short) var(--motion-ease-out);
+}
+
+
+
+.theme-picker__trigger .theme-preview {
+  --theme-preview-unit: 0.16rem;
 }
 
 
@@ -576,45 +617,148 @@ form.management-row .management-row__controls--editing .color-picker__trigger {
 
 
 
+/* Theme miniature: a tiny Nook window with a sidebar (active item and three
+ * links) and one note card (title, two lines, accent tag). Every measure is a
+ * multiple of --theme-preview-unit, so one drawing serves the trigger and the
+ * menu. The ::before sidebar and ::after card read the theme's colors below. */
 .theme-preview {
-  --theme-preview-paper: var(--note-card-surface);
-  --theme-preview-accent: var(--primary-accent);
-  --theme-preview-rule: var(--note-card-border);
-  display: inline-block;
-  width: 1.75rem;
-  height: 1.75rem;
+  --theme-preview-u: var(--theme-preview-unit, 0.32rem);
+  --theme-preview-page: var(--theme-swatch-light-page);
+  --theme-preview-sidebar: var(--theme-swatch-light-sidebar);
+  --theme-preview-paper: var(--theme-swatch-light-paper);
+  --theme-preview-ink: var(--theme-swatch-light-ink);
+  --theme-preview-line: var(--theme-swatch-light-line);
+  --theme-preview-accent: var(--theme-swatch-light-accent);
+  --theme-preview-rule: var(--theme-swatch-light-rule);
+  position: relative;
+  display: block;
+  width: calc(var(--theme-preview-u) * 16);
+  height: calc(var(--theme-preview-u) * 10);
   flex: none;
   overflow: hidden;
   border: 1px solid var(--theme-preview-rule);
-  border-radius: 50%;
+  border-radius: calc(var(--theme-preview-u) * 1.5);
   box-sizing: border-box;
-  background: linear-gradient(
-    135deg,
-    var(--theme-preview-paper) 0 50%,
-    var(--theme-preview-accent) 50% 100%
+  background-color: var(--theme-preview-page);
+  background-image: var(--theme-preview-glow, none);
+  isolation: isolate;
+  transition:
+    box-shadow var(--motion-duration-short) var(--motion-ease-out),
+    transform var(--motion-duration-short) var(--motion-ease-out);
+}
+
+.theme-preview::before,
+.theme-preview::after {
+  --theme-preview-accent-fill: linear-gradient(var(--theme-preview-accent) 0 0);
+  content: "";
+  position: absolute;
+  box-sizing: border-box;
+  background-repeat: no-repeat;
+}
+
+.theme-preview::before {
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: calc(var(--theme-preview-u) * 4.6);
+  border-right: 1px solid var(--theme-preview-rule);
+  background-color: var(--theme-preview-sidebar);
+  background-image:
+    var(--theme-preview-accent-fill),
+    linear-gradient(var(--theme-preview-line) 0 0),
+    linear-gradient(var(--theme-preview-line) 0 0),
+    linear-gradient(var(--theme-preview-line) 0 0);
+  background-position:
+    calc(var(--theme-preview-u) * 0.9) calc(var(--theme-preview-u) * 2),
+    calc(var(--theme-preview-u) * 0.9) calc(var(--theme-preview-u) * 3.7),
+    calc(var(--theme-preview-u) * 0.9) calc(var(--theme-preview-u) * 5),
+    calc(var(--theme-preview-u) * 0.9) calc(var(--theme-preview-u) * 6.3);
+  background-size:
+    calc(var(--theme-preview-u) * 2.8) calc(var(--theme-preview-u) * 0.75),
+    calc(var(--theme-preview-u) * 2.4) calc(var(--theme-preview-u) * 0.5),
+    calc(var(--theme-preview-u) * 2.8) calc(var(--theme-preview-u) * 0.5),
+    calc(var(--theme-preview-u) * 1.8) calc(var(--theme-preview-u) * 0.5);
+}
+
+.theme-preview::after,
+.theme-preview[data-theme-preview="auto"]::before {
+  top: calc(var(--theme-preview-u) * 1.6);
+  bottom: auto;
+  width: calc(var(--theme-preview-u) * 8.4);
+  height: calc(var(--theme-preview-u) * 6.8);
+  border: 1px solid var(--theme-preview-rule);
+  border-radius: calc(var(--theme-preview-u) * 0.8);
+  background-color: var(--theme-preview-paper);
+  background-image:
+    linear-gradient(var(--theme-preview-ink) 0 0),
+    linear-gradient(var(--theme-preview-line) 0 0),
+    linear-gradient(var(--theme-preview-line) 0 0),
+    var(--theme-preview-accent-fill);
+  background-position:
+    calc(var(--theme-preview-u) * 0.9) calc(var(--theme-preview-u) * 1),
+    calc(var(--theme-preview-u) * 0.9) calc(var(--theme-preview-u) * 2.4),
+    calc(var(--theme-preview-u) * 0.9) calc(var(--theme-preview-u) * 3.4),
+    calc(var(--theme-preview-u) * 0.9) calc(var(--theme-preview-u) * 4.7);
+  background-size:
+    calc(var(--theme-preview-u) * 4.6) calc(var(--theme-preview-u) * 0.75),
+    calc(var(--theme-preview-u) * 6.2) calc(var(--theme-preview-u) * 0.5),
+    calc(var(--theme-preview-u) * 4.6) calc(var(--theme-preview-u) * 0.5),
+    calc(var(--theme-preview-u) * 2.4) calc(var(--theme-preview-u) * 0.85);
+  box-shadow: var(--theme-preview-card-shadow, none);
+}
+
+.theme-preview::after {
+  left: calc(var(--theme-preview-u) * 6.1);
+}
+
+
+
+/* Auto pairs a Light card with a Dark card across a split page. */
+.theme-preview[data-theme-preview="auto"] {
+  --theme-preview-rule: var(--theme-swatch-auto-rule);
+  background-image: linear-gradient(
+    90deg,
+    var(--theme-swatch-light-page) 0 50%,
+    var(--theme-swatch-dark-page) 50% 100%
   );
 }
 
-
-
-.theme-preview[data-theme-preview="auto"] {
-  --theme-preview-paper: var(--theme-swatch-auto-paper);
-  --theme-preview-accent: var(--theme-swatch-auto-accent);
-  --theme-preview-rule: var(--theme-swatch-auto-rule);
+.theme-preview[data-theme-preview="auto"]::before,
+.theme-preview[data-theme-preview="auto"]::after {
+  width: calc(var(--theme-preview-u) * 5.4);
+  background-size:
+    calc(var(--theme-preview-u) * 3) calc(var(--theme-preview-u) * 0.75),
+    calc(var(--theme-preview-u) * 3.6) calc(var(--theme-preview-u) * 0.5),
+    calc(var(--theme-preview-u) * 2.6) calc(var(--theme-preview-u) * 0.5),
+    calc(var(--theme-preview-u) * 1.8) calc(var(--theme-preview-u) * 0.85);
 }
 
-
-
-.theme-preview[data-theme-preview="light"] {
+.theme-preview[data-theme-preview="auto"]::before {
   --theme-preview-paper: var(--theme-swatch-light-paper);
+  --theme-preview-ink: var(--theme-swatch-light-ink);
+  --theme-preview-line: var(--theme-swatch-light-line);
   --theme-preview-accent: var(--theme-swatch-light-accent);
   --theme-preview-rule: var(--theme-swatch-light-rule);
+  left: calc(var(--theme-preview-u) * 1.3);
+}
+
+.theme-preview[data-theme-preview="auto"]::after {
+  --theme-preview-paper: var(--theme-swatch-dark-paper);
+  --theme-preview-ink: var(--theme-swatch-dark-ink);
+  --theme-preview-line: var(--theme-swatch-dark-line);
+  --theme-preview-accent: var(--theme-swatch-dark-accent);
+  --theme-preview-rule: var(--theme-swatch-dark-rule);
+  left: calc(var(--theme-preview-u) * 9.3);
 }
 
 
 
 .theme-preview[data-theme-preview="coffee"] {
+  --theme-preview-page: var(--theme-swatch-coffee-page);
+  --theme-preview-sidebar: var(--theme-swatch-coffee-sidebar);
   --theme-preview-paper: var(--theme-swatch-coffee-paper);
+  --theme-preview-ink: var(--theme-swatch-coffee-ink);
+  --theme-preview-line: var(--theme-swatch-coffee-line);
   --theme-preview-accent: var(--theme-swatch-coffee-accent);
   --theme-preview-rule: var(--theme-swatch-coffee-rule);
 }
@@ -622,7 +766,11 @@ form.management-row .management-row__controls--editing .color-picker__trigger {
 
 
 .theme-preview[data-theme-preview="forest"] {
+  --theme-preview-page: var(--theme-swatch-forest-page);
+  --theme-preview-sidebar: var(--theme-swatch-forest-sidebar);
   --theme-preview-paper: var(--theme-swatch-forest-paper);
+  --theme-preview-ink: var(--theme-swatch-forest-ink);
+  --theme-preview-line: var(--theme-swatch-forest-line);
   --theme-preview-accent: var(--theme-swatch-forest-accent);
   --theme-preview-rule: var(--theme-swatch-forest-rule);
 }
@@ -630,7 +778,11 @@ form.management-row .management-row__controls--editing .color-picker__trigger {
 
 
 .theme-preview[data-theme-preview="midnight"] {
+  --theme-preview-page: var(--theme-swatch-midnight-page);
+  --theme-preview-sidebar: var(--theme-swatch-midnight-sidebar);
   --theme-preview-paper: var(--theme-swatch-midnight-paper);
+  --theme-preview-ink: var(--theme-swatch-midnight-ink);
+  --theme-preview-line: var(--theme-swatch-midnight-line);
   --theme-preview-accent: var(--theme-swatch-midnight-accent);
   --theme-preview-rule: var(--theme-swatch-midnight-rule);
 }
@@ -638,34 +790,59 @@ form.management-row .management-row__controls--editing .color-picker__trigger {
 
 
 .theme-preview[data-theme-preview="dark"] {
+  --theme-preview-page: var(--theme-swatch-dark-page);
+  --theme-preview-sidebar: var(--theme-swatch-dark-sidebar);
   --theme-preview-paper: var(--theme-swatch-dark-paper);
+  --theme-preview-ink: var(--theme-swatch-dark-ink);
+  --theme-preview-line: var(--theme-swatch-dark-line);
   --theme-preview-accent: var(--theme-swatch-dark-accent);
   --theme-preview-rule: var(--theme-swatch-dark-rule);
 }
 
 
 
+/* Aurora keeps its spectrum signature on the accents and a faint glow. */
 .theme-preview[data-theme-preview="aurora"] {
+  --theme-preview-page: var(--theme-swatch-aurora-page);
+  --theme-preview-sidebar: var(--theme-swatch-aurora-sidebar);
   --theme-preview-paper: var(--theme-swatch-aurora-paper);
+  --theme-preview-ink: var(--theme-swatch-aurora-ink);
+  --theme-preview-line: var(--theme-swatch-aurora-line);
   --theme-preview-accent: var(--theme-swatch-aurora-accent);
   --theme-preview-rule: var(--theme-swatch-aurora-rule);
-  background:
-    linear-gradient(135deg, var(--theme-preview-paper) 0 50%, transparent 50% 100%),
-    linear-gradient(135deg, #5ee5b8 40%, #76c7ff 62%, #bda7ff 80%, #ed9ee5 100%);
+  --theme-preview-glow:
+    radial-gradient(70% 90% at 100% 0%, rgb(118 199 255 / 26%), transparent 70%),
+    radial-gradient(60% 80% at 60% 110%, rgb(237 158 229 / 22%), transparent 70%);
+}
+
+.theme-preview[data-theme-preview="aurora"]::before,
+.theme-preview[data-theme-preview="aurora"]::after {
+  --theme-preview-accent-fill: var(--theme-swatch-aurora-spectrum);
 }
 
 
 
+/* Retro keeps its printed, hard-offset card edge. */
 .theme-preview[data-theme-preview="retro"] {
+  --theme-preview-page: var(--theme-swatch-retro-page);
+  --theme-preview-sidebar: var(--theme-swatch-retro-sidebar);
   --theme-preview-paper: var(--theme-swatch-retro-paper);
+  --theme-preview-ink: var(--theme-swatch-retro-ink);
+  --theme-preview-line: var(--theme-swatch-retro-line);
   --theme-preview-accent: var(--theme-swatch-retro-accent);
   --theme-preview-rule: var(--theme-swatch-retro-rule);
+  --theme-preview-card-shadow:
+    calc(var(--theme-preview-u) * 0.4) calc(var(--theme-preview-u) * 0.4) 0 var(--theme-swatch-retro-rule);
 }
 
 
 
 .theme-preview[data-theme-preview="eink"] {
+  --theme-preview-page: var(--theme-swatch-eink-page);
+  --theme-preview-sidebar: var(--theme-swatch-eink-sidebar);
   --theme-preview-paper: var(--theme-swatch-eink-paper);
+  --theme-preview-ink: var(--theme-swatch-eink-ink);
+  --theme-preview-line: var(--theme-swatch-eink-line);
   --theme-preview-accent: var(--theme-swatch-eink-accent);
   --theme-preview-rule: var(--theme-swatch-eink-rule);
 }
@@ -690,15 +867,14 @@ form.management-row .management-row__controls--editing .color-picker__trigger {
 .theme-picker__label,
 .theme-picker__option-label {
   overflow: hidden;
-  color: var(--note-card-title);
+  color: inherit;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 
 
-.theme-picker__meta,
-.theme-picker__option-meta {
+.theme-picker__meta {
   overflow: hidden;
   color: var(--note-card-muted);
   font-size: 0.64rem;
@@ -710,16 +886,29 @@ form.management-row .management-row__controls--editing .color-picker__trigger {
 
 
 
+/* Each cell is one line tall, so Auto's "Follows system" stays in its
+ * accessible name; the trigger shows it visibly once Auto is chosen. */
+.theme-picker__option-meta {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+
+
 .theme-picker__menu {
   position: absolute;
   z-index: 40;
   top: calc(100% + 0.38rem);
   right: 0;
-  width: max(100%, 15rem);
-  max-width: min(16rem, calc(100vw - 1.5rem));
+  width: var(--theme-picker-menu-width);
+  max-width: calc(100vw - 1.5rem);
   overflow: hidden;
   border: 1px solid var(--note-card-border);
-  border-radius: calc(var(--control-radius) + 0.22rem);
+  border-radius: calc(var(--control-radius) + 0.25rem);
   padding: 0;
   color: var(--note-card-title);
   background: var(--note-card-surface);
@@ -736,15 +925,18 @@ form.management-row .management-row__controls--editing .color-picker__trigger {
 
 
 
+/* Nine themes fit one 3 × 3 grid, so the menu opens without scrolling. */
 .theme-picker__options {
-  max-height: min(20rem, calc(100dvh - 2rem));
+  display: grid;
+  max-height: min(26rem, calc(100dvh - 2rem));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-1);
   overflow-x: hidden;
   overflow-y: auto;
   border-radius: inherit;
-  padding: 0.38rem;
+  padding: var(--space-2);
   box-sizing: border-box;
   overscroll-behavior: contain;
-  scrollbar-gutter: stable;
 }
 
 
@@ -770,7 +962,7 @@ form.management-row .management-row__controls--editing .color-picker__trigger {
   position: fixed;
   inset: auto;
   margin: 0;
-  width: auto;
+  width: var(--theme-picker-menu-width);
   max-width: calc(100vw - 1rem);
 }
 
@@ -797,9 +989,6 @@ form.management-row .management-row__controls--editing .color-picker__trigger {
  * theme button. The shortcut tooltip steps aside while the menu is open. */
 .theme-menu {
   top: calc(100% + 0.45rem);
-  width: max-content;
-  min-width: 10.5rem;
-  max-width: min(14rem, calc(100vw - 1.5rem));
   text-align: left;
 }
 
@@ -809,27 +998,40 @@ form.management-row .management-row__controls--editing .color-picker__trigger {
 
 
 
+/* Each option is a size container so its miniature fills the cell at any
+ * menu width while keeping the drawing's proportions. */
 .theme-picker__option {
-  display: grid;
-  width: 100%;
-  min-height: 2.75rem;
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  align-items: center;
-  gap: var(--space-2-5);
+  position: relative;
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--space-1-5);
   border: 0;
-  border-radius: 0.62rem;
-  padding: 0.46rem 0.58rem;
+  border-radius: var(--radius-sm);
+  padding: var(--space-1-5) var(--space-1-5) var(--space-2);
   color: var(--note-card-title);
   background: transparent;
   font: inherit;
-  font-size: 0.78rem;
+  font-size: var(--font-size-xs);
   font-weight: var(--font-weight-semibold);
   line-height: 1.2;
-  text-align: left;
+  text-align: center;
   cursor: pointer;
+  container-type: inline-size;
   transition:
     color var(--motion-duration-short) var(--motion-ease-out),
     background-color var(--motion-duration-short) var(--motion-ease-out);
+}
+
+.theme-picker__option .theme-preview {
+  --theme-preview-unit: 0.32rem;
+}
+
+@supports (width: 1cqi) {
+  .theme-picker__option .theme-preview {
+    --theme-preview-unit: calc(100cqi / 16);
+  }
 }
 
 
@@ -844,15 +1046,40 @@ form.management-row .management-row__controls--editing .color-picker__trigger {
 .theme-picker__option[aria-selected="true"] {
   color: var(--primary-accent-text);
   background: var(--primary-accent-soft);
-  box-shadow: inset 0 0 0 1px var(--note-card-surface);
+}
+
+.theme-picker__option[aria-selected="true"] .theme-preview {
+  box-shadow:
+    0 0 0 2px var(--primary-accent-soft),
+    0 0 0 3.5px var(--primary-accent);
 }
 
 
 
+/* Selected badge: an accent disc (::before) under a masked check (::after),
+ * pinned to the miniature's top-right corner. */
+.theme-picker__option[aria-selected="true"]::before,
 .theme-picker__option[aria-selected="true"]::after {
-  content: "✓";
-  font-size: var(--font-size-label);
-  font-weight: var(--font-weight-bold);
+  content: "";
+  position: absolute;
+  z-index: 1;
+  top: calc(var(--space-1-5) + 0.28rem);
+  right: calc(var(--space-1-5) + 0.28rem);
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.theme-picker__option[aria-selected="true"]::before {
+  background: var(--primary-accent);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 22%);
+}
+
+.theme-picker__option[aria-selected="true"]::after {
+  background: var(--primary-button-text, #ffffff);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='m4.4 8.3 2.4 2.4 4.8-5.2' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 100% no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='m4.4 8.3 2.4 2.4 4.8-5.2' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 100% no-repeat;
 }
 
 
@@ -860,8 +1087,17 @@ form.management-row .management-row__controls--editing .color-picker__trigger {
 @media (hover: hover) and (pointer: fine) {
   .theme-picker__option:hover:not(:disabled):not([aria-selected="true"]) {
     color: var(--primary-accent-text);
-    background: var(--primary-accent-soft-hover);
-    box-shadow: inset 0 0 0 1px var(--note-card-surface);
+    background: color-mix(in srgb, var(--note-card-title) 6%, transparent);
+  }
+
+  .theme-picker__option:hover:not(:disabled):not([aria-selected="true"]) .theme-preview {
+    box-shadow: 0 0.3rem 0.8rem -0.25rem rgb(0 0 0 / 28%);
+  }
+}
+
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .theme-picker__option:hover:not(:disabled) .theme-preview {
+    transform: translateY(-1px);
   }
 }
 
@@ -1241,11 +1477,16 @@ form.management-row .management-row__controls--editing .color-picker__trigger {
     flex-basis: auto;
   }
 
-  .theme-picker__menu {
+  .theme-picker .theme-picker__menu:not([popover]) {
     right: auto;
     left: 0;
     width: 100%;
     max-width: none;
+  }
+
+  /* The trigger spans the row here, so the menu takes the trigger's width. */
+  .theme-picker {
+    --theme-picker-menu-width: 15rem;
   }
 
   .data-setting {
@@ -1342,6 +1583,26 @@ form.management-row .management-row__controls--editing .color-picker__trigger {
   .theme-picker__option[aria-selected="true"] {
     outline: 2px solid Highlight;
     outline-offset: -2px;
+  }
+
+  /* Miniatures are illustrations of each theme, so they keep their colors. */
+  .theme-preview {
+    forced-color-adjust: none;
+  }
+
+  .theme-picker__option[aria-selected="true"] .theme-preview {
+    box-shadow: none;
+  }
+
+  .theme-picker__option[aria-selected="true"]::before {
+    forced-color-adjust: none;
+    background: Highlight;
+    box-shadow: none;
+  }
+
+  .theme-picker__option[aria-selected="true"]::after {
+    forced-color-adjust: none;
+    background: HighlightText;
   }
 }
 
