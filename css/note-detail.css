@@ -1190,6 +1190,13 @@
   background: var(--danger-surface);
 }
 
+/* Restore is not destructive, so a note opened from Trash keeps the neutral hover. */
+.note-detail-surface .dialog-footer__tools .note-delete-button--restore:hover:not(:disabled),
+.note-detail-surface .note-delete-button--restore:hover:not(:disabled) {
+  color: var(--text-strong);
+  background: var(--surface-muted);
+}
+
 
 
 .note-detail-surface .dialog-footer__tools svg,

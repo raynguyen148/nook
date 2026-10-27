@@ -6,6 +6,9 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
   let noteEditorModeAnimation = null;
   let primaryEditorSession = null;
   let primarySaveOperation = null;
+  // Trash timestamp of the note as the editor last showed it, so a refresh can
+  // tell "opened from Trash" apart from "moved to Trash elsewhere".
+  let primaryShownDeletedAt = "";
   const primaryController = api.createPaneController({
     pane: "primary", readDraft: getNoteEditorDraftData, isActive: () => isNoteEditorOpen(),
     setStatus: setNoteSaveStatus, invoker: noteSubmitButton,
@@ -348,9 +351,40 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
         elements.noteEditorModeButtons.forEach((button) => {
           if (button.dataset.noteEditorMode !== "preview") button.disabled = true;
         });
-        elements.deleteNote.disabled = true;
       }
     }
+  }
+
+  // A note opened from Trash offers Restore in place of Move to Trash, since it
+  // is already there. The mobile action sheet reuses this button and its label.
+  function syncNoteTrashAction(note) {
+    const isDeleted = Boolean(note?.deletedAt);
+    const label = isDeleted ? "Restore note" : "Move to Trash";
+    primaryShownDeletedAt = note?.deletedAt || "";
+    const button = elements.deleteNote;
+    button.classList.toggle("is-hidden", !note);
+    button.classList.toggle("note-delete-button--restore", isDeleted);
+    button.setAttribute("aria-label", isDeleted ? "Restore note from Trash" : "Move note to Trash");
+    button.querySelector(".note-delete-button__trash-icon")?.classList.toggle("is-hidden", isDeleted);
+    button.querySelector(".note-delete-button__restore-icon")?.classList.toggle("is-hidden", !isDeleted);
+    const tooltip = document.getElementById(button.getAttribute("aria-describedby"));
+    if (tooltip) tooltip.textContent = label;
+    const mobileLabel = button.querySelector(".mobile-action-label");
+    if (mobileLabel) mobileLabel.textContent = label;
+    elements.primarySwitchNote.classList.toggle("is-hidden", !note || isDeleted);
+  }
+
+  async function restoreOpenNoteFromTrash(note) {
+    if (!note?.deletedAt || ui.noteSaveInFlight) return false;
+    const session = ui.noteEditorSession;
+    if (!(await api.restoreNoteWithFeedback(note))) return false;
+    if (!isCurrentNoteEditorSession(session) || ui.editingNoteId !== note.id) return true;
+    const restored = library.notes.find(({ id }) => id === note.id) || { ...note, deletedAt: null };
+    syncNoteTrashAction(restored);
+    renderNoteMetadata(restored);
+    syncNoteEditorControls();
+    showToast("Note restored.", "success");
+    return true;
   }
 
   function openNoteEditor(note = null, {
@@ -381,8 +415,7 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
     elements.noteContentPreview.scrollTop = 0;
     elements.noteContentEditor.style.removeProperty("height");
     syncNoteDialogTitle();
-    elements.deleteNote.classList.toggle("is-hidden", !note);
-    elements.primarySwitchNote.classList.toggle("is-hidden", !note || Boolean(note.deletedAt));
+    syncNoteTrashAction(note);
     renderNoteTypeOptions(note?.typeId || storage.FALLBACK_TYPE_ID);
     renderSelectedNoteTags();
     renderTagSuggestions();
@@ -481,8 +514,8 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
   function reconcileEditorSessionsAfterLibraryRefresh({ external = false } = {}) {
     if (primaryEditorSession && isNoteEditorOpen() && primaryEditorSession.noteId) {
       const session = primaryEditorSession;
-      const latest = library.notes.find((note) => note.id === session.noteId && !note.deletedAt);
-      if (!latest) {
+      const latest = library.notes.find((note) => note.id === session.noteId);
+      if (!latest || (latest.deletedAt && latest.deletedAt !== primaryShownDeletedAt)) {
         if (session.hasUnsavedChanges()) {
           setNoteSaveStatus("error", "Saved note changed elsewhere");
           showToast("This note changed or was removed elsewhere. Your draft was kept locally.", "error");
@@ -490,6 +523,11 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
           closeNoteEditor({ discardStoredDraft: true });
         }
       } else {
+        if (primaryShownDeletedAt && !latest.deletedAt) {
+          syncNoteTrashAction(latest);
+          renderNoteMetadata(latest);
+          syncNoteEditorControls();
+        }
         const result = session.applyExternalSnapshot(latest);
         if (result.conflict) {
           setNoteSaveStatus("error", "Newer version found");
@@ -741,9 +779,8 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
         renderSelectedNoteTags();
       }
       ui.editingNoteId = savedNote.id;
-      elements.primarySwitchNote.classList.remove("is-hidden");
       syncNoteDialogTitle();
-      elements.deleteNote.classList.remove("is-hidden");
+      syncNoteTrashAction(savedNote);
       elements.noteHistory?.classList.remove("is-hidden");
       renderNoteMetadata(savedNote);
       ui.noteEditorSnapshot = createNoteEditorDraft(savedNote);
@@ -818,5 +855,7 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
     syncNoteDialogTitle,
     saveNote,
     preparePrimaryNoteSwitch,
+    syncNoteTrashAction,
+    restoreOpenNoteFromTrash,
   });
 });

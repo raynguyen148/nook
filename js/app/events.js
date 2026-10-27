@@ -358,7 +358,8 @@ globalThis[Symbol.for("nook.app.modules")].register("events", (app) => {
     elements.quickViewHeaderToggle.addEventListener("click", toggleNotePreviewHeader);
     elements.deleteNote.addEventListener("click", () => {
       const note = library.notes.find(({ id }) => id === elements.noteId.value);
-      moveNoteToTrash(note);
+      if (note?.deletedAt) api.restoreOpenNoteFromTrash(note);
+      else moveNoteToTrash(note);
     });
     elements.copyNoteContent.addEventListener("click", copyQuickViewContent);
     elements.exportNoteMarkdown.addEventListener("click", exportCurrentNote);

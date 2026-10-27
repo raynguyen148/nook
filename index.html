@@ -1076,9 +1076,13 @@
             </div>
             <span class="note-detail-action-tooltip note-detail-action-tooltip--group-start">
               <button id="delete-note-btn" class="icon-button note-delete-button is-hidden" type="button" aria-label="Move note to Trash" aria-describedby="delete-note-tooltip">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <svg class="note-delete-button__trash-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                   <path d="M4.5 7h15M9.5 10.5v6M14.5 10.5v6M9 4.5h6l.75 2.5h-7.5L9 4.5Z" />
                   <path d="M6.5 7 7.4 20h9.2l.9-13" />
+                </svg>
+                <svg class="note-delete-button__restore-icon is-hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M5.25 8.5a7.5 7.5 0 1 1-.1 7.15" />
+                  <path d="M5.25 4.75v3.75H9" />
                 </svg>
               </button>
               <span id="delete-note-tooltip" class="note-detail-action-tooltip__content" role="tooltip">Move to Trash</span>

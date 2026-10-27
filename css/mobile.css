@@ -2052,6 +2052,21 @@ dialog:not([open]),
     border-color: var(--retro-error) !important;
     background: var(--retro-red-soft) !important;
   }
+  /* Restore (note opened from Trash) uses the neutral card, like Version History. */
+  html #mobile-note-actions-body button.note-delete-button.note-delete-button--restore {
+    border: 1px solid var(--border-subtle) !important;
+    background: var(--surface-panel) !important;
+    color: var(--text-strong) !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+  }
+  html #mobile-note-actions-body button.note-delete-button.note-delete-button--restore svg {
+    color: var(--text-strong) !important;
+    stroke: currentColor !important;
+    background: var(--surface-muted) !important;
+  }
+  html #mobile-note-actions-body button.note-delete-button.note-delete-button--restore:active {
+    background: var(--surface-muted) !important;
+  }
   /* Copy feedback icon animation */
   #mobile-note-actions-body .check-icon {
     display: none;
