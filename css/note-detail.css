@@ -1500,14 +1500,6 @@
   line-height: 1.78;
 }
 
-/* Reading prose keeps a comfortable line length on wide screens; the card
- * still scrolls full width, and wide tables keep their own scroll cue. */
-.note-detail-surface :is(#quick-view-content, #secondary-note-content) {
-  max-inline-size: var(--reading-measure, 80ch);
-}
-
-
-
 /* The timestamp row is shared visually by Edit, Split, and Preview. Keeping
  * one rhythm here prevents it from shifting or changing tone on mode switch. */
 .note-detail-surface .note-meta,
