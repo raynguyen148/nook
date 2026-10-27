@@ -602,21 +602,21 @@ dialog:not([open]),
     border-radius: var(--retro-radius-card);
   }
   html[data-theme="retro"] body :is(.notes-panel, .notes-list--compact) .note-card .tag-chip {
-    border: var(--retro-border-width) dashed var(--retro-border);
+    border: var(--retro-border-width) dashed var(--retro-border-strong);
     border-radius: var(--retro-radius-sm);
     color: var(--retro-ink);
     background: color-mix(in oklch, var(--retro-paper) 68%, transparent);
     box-shadow: var(--retro-shadow-xs);
-    font-family: var(--font-mono);
+    font-family: var(--retro-font-type, var(--font-mono));
     font-size: var(--font-size-2xs);
-    font-weight: var(--font-weight-semibold);
+    font-weight: var(--font-weight-regular);
     line-height: 1.2;
     padding: 0.15rem 0.45rem;
   }
   html[data-theme="retro"] body :is(.notes-panel, .notes-list--compact) .note-card .tag-chip::before {
     content: "#";
     margin-right: 0.08em;
-    color: var(--retro-accent);
+    color: var(--retro-rust, var(--retro-accent));
   }
   html[data-theme="retro"] body :is(.notes-panel, .notes-list--compact) .note-card .tag-chip:is(:hover, .is-selected) {
     border-color: var(--retro-accent);
@@ -632,7 +632,7 @@ dialog:not([open]),
   }
   html[data-theme="retro"] body :is(.notes-panel, .notes-list--compact) .note-card .more-tags,
   html[data-theme="retro"] body :is(.notes-panel, .notes-list--compact) .note-card .untagged {
-    font-family: var(--font-mono);
+    font-family: var(--retro-font-type, var(--font-mono));
     color: var(--retro-muted);
     font-size: var(--font-size-2xs);
   }
@@ -986,14 +986,14 @@ dialog:not([open]),
     color: var(--retro-disabled-ink);
   }
   html[data-theme="retro"] #mobile-filter-dialog .tag-filter-option {
-    border: var(--retro-border-width) dashed var(--retro-border);
+    border: var(--retro-border-width) dashed var(--retro-border-strong);
     border-radius: var(--retro-radius-sm);
     color: var(--retro-ink);
     background: color-mix(in oklch, var(--retro-paper) 68%, transparent);
     box-shadow: var(--retro-shadow-xs);
-    font-family: var(--font-mono);
+    font-family: var(--retro-font-type, var(--font-mono));
     font-size: var(--font-size-xs);
-    font-weight: var(--font-weight-semibold);
+    font-weight: var(--font-weight-regular);
   }
   html[data-theme="retro"] #mobile-filter-dialog .tag-filter-option.is-active,
   html[data-theme="retro"] #mobile-filter-dialog .tag-filter-option:has(input:checked) {
@@ -1811,15 +1811,22 @@ dialog:not([open]),
   #note-dialog .note-editor-pane--source { display: flex; flex-direction: column; flex: 1; min-height: 0; padding: 0; }
   #note-dialog .note-editor-pane__label { display: none; }
   #note-dialog #note-content { flex: 1; width: 100%; height: 100%; min-height: 8rem; max-height: none; padding: 10px 0 24px; resize: none; font-family: var(--font-sans); font-size: 16px; line-height: 1.65; letter-spacing: -0.006em; border: none; outline: none; background: transparent; }
-  html[data-theme="retro"] #note-dialog #note-content { font-family: var(--font-display); letter-spacing: -0.01em; }
+  html[data-theme="retro"] #note-dialog #note-content { font-family: var(--retro-font-type, var(--font-display)); letter-spacing: 0; }
   html[data-theme="retro"] #note-dialog .selected-tag {
-    border: var(--retro-border-width) solid var(--retro-border);
+    border: var(--retro-border-width) dashed var(--retro-border-strong);
     border-radius: var(--retro-radius-sm);
     color: var(--retro-ink);
     background: var(--retro-paper);
-    box-shadow: var(--retro-shadow-xs);
-    font-family: var(--font-mono);
-    font-weight: var(--font-weight-semibold);
+    box-shadow: none;
+    font-family: var(--retro-font-type, var(--font-mono));
+    font-weight: var(--font-weight-regular);
+  }
+  html[data-theme="retro"] #note-dialog .tag-add-button {
+    border: var(--retro-border-width) dashed var(--retro-border-strong);
+    border-radius: var(--retro-radius-sm) !important;
+    color: var(--retro-ink);
+    background: var(--retro-paper);
+    box-shadow: none;
   }
   html[data-theme="retro"] #note-dialog .selected-tag__remove {
     color: var(--retro-muted);
@@ -1838,7 +1845,7 @@ dialog:not([open]),
   }
   html[data-theme="retro"] #note-dialog .tag-suggestion {
     color: var(--retro-ink);
-    font-family: var(--font-mono);
+    font-family: var(--retro-font-type, var(--font-mono));
   }
   html[data-theme="retro"] #note-dialog .tag-suggestion:is(:hover, :focus-visible, [aria-selected="true"]) {
     color: var(--retro-accent);
@@ -3065,6 +3072,36 @@ dialog:not([open]),
   }
   html[data-theme="retro"] .confirmation-dialog .dialog-footer__actions .button {
     border-radius: var(--retro-radius-control);
+  }
+  /* Retro keeps its printed keys and held-down tape on small screens. */
+  html[data-theme="retro"] .mobile-library-header .icon-button {
+    border-color: var(--retro-border-strong);
+    border-radius: var(--retro-radius-control) !important;
+    box-shadow: var(--retro-shadow-sm);
+  }
+  html[data-theme="retro"] .mobile-editor-actions .icon-button {
+    border-color: var(--retro-border-strong);
+    border-radius: var(--retro-radius-control);
+    background: var(--retro-paper);
+    box-shadow: var(--retro-shadow-sm);
+  }
+  html[data-theme="retro"] .mobile-type-chip.is-active {
+    border-color: var(--retro-ink);
+    color: var(--retro-accent-ink);
+    background: var(--retro-accent);
+    box-shadow: var(--retro-shadow-press);
+  }
+  html[data-theme="retro"] .mobile-type-chip.is-active .mobile-type-chip__count { color: inherit; }
+  html[data-theme="retro"] #note-dialog .note-editor-modes {
+    border: var(--retro-border-width) solid var(--retro-border-strong);
+    border-radius: var(--retro-radius-control);
+    background: var(--retro-paper);
+  }
+  html[data-theme="retro"] #note-dialog .note-editor-mode__button { border-radius: var(--retro-radius-sm); }
+  html[data-theme="retro"] #note-dialog .note-editor-mode__button[aria-pressed="true"] {
+    color: var(--retro-accent-ink);
+    background: var(--retro-accent);
+    box-shadow: inset 0 2px 0 rgb(0 0 0 / 18%);
   }
 }
 

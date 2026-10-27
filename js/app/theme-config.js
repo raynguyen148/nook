@@ -11,7 +11,7 @@
     eink: { label: "Zen", file: "eink", color: "#f4f1ea" },
     coffee: { label: "Coffee", file: "coffee", color: "#a35616" },
     forest: { label: "Forest", file: "forest", color: "#2f6b4f" },
-    retro: { label: "Retro", file: "retro", color: "#2f5b3e" },
+    retro: { label: "Retro", file: "retro", color: "#1f5c5a" },
     dark: { label: "Dark", file: "dark", color: "#09090b" },
     midnight: { label: "Midnight", file: "midnight", color: "#18263f" },
     aurora: { label: "Aurora", file: "aurora", color: "#17142c" },

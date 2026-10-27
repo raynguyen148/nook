@@ -59,13 +59,16 @@
   --theme-swatch-aurora-accent: #5ee5b8;
   --theme-swatch-aurora-rule: #3e3a60;
   --theme-swatch-aurora-spectrum: linear-gradient(90deg, #5ee5b8, #76c7ff 45%, #bda7ff 75%, #ed9ee5);
-  --theme-swatch-retro-page: oklch(91.5% 0.018 78);
-  --theme-swatch-retro-sidebar: oklch(84.5% 0.026 78);
-  --theme-swatch-retro-paper: oklch(96.5% 0.014 78);
-  --theme-swatch-retro-ink: oklch(25% 0.014 58);
-  --theme-swatch-retro-line: oklch(78% 0.02 72);
-  --theme-swatch-retro-accent: oklch(42% 0.075 151);
-  --theme-swatch-retro-rule: oklch(69% 0.027 72);
+  --theme-swatch-retro-page: #ebe0c8;
+  --theme-swatch-retro-sidebar: #e2d1ae;
+  --theme-swatch-retro-paper: #fbf6ea;
+  --theme-swatch-retro-ink: #2b2118;
+  --theme-swatch-retro-line: #c9b28a;
+  --theme-swatch-retro-accent: #1f5c5a;
+  --theme-swatch-retro-rule: #8c7556;
+  --theme-swatch-retro-shadow: #c4ab7e;
+  --theme-swatch-retro-rust: #b04a26;
+  --theme-swatch-retro-mustard: #d9a227;
   --theme-swatch-eink-page: #f4f1ea;
   --theme-swatch-eink-sidebar: #eeeae1;
   --theme-swatch-eink-paper: #fbfaf6;
@@ -822,7 +825,7 @@ form.management-row .management-row__controls--editing .color-picker__trigger {
 
 
 
-/* Retro keeps its printed, hard-offset card edge. */
+/* Retro keeps its printed, hard-offset card edge under a rust, mustard, and teal stripe. */
 .theme-preview[data-theme-preview="retro"] {
   --theme-preview-page: var(--theme-swatch-retro-page);
   --theme-preview-sidebar: var(--theme-swatch-retro-sidebar);
@@ -832,7 +835,10 @@ form.management-row .management-row__controls--editing .color-picker__trigger {
   --theme-preview-accent: var(--theme-swatch-retro-accent);
   --theme-preview-rule: var(--theme-swatch-retro-rule);
   --theme-preview-card-shadow:
-    calc(var(--theme-preview-u) * 0.4) calc(var(--theme-preview-u) * 0.4) 0 var(--theme-swatch-retro-rule);
+    inset 0 calc(var(--theme-preview-u) * 0.32) 0 var(--theme-swatch-retro-rust),
+    inset 0 calc(var(--theme-preview-u) * 0.64) 0 var(--theme-swatch-retro-mustard),
+    inset 0 calc(var(--theme-preview-u) * 0.96) 0 var(--theme-swatch-retro-accent),
+    calc(var(--theme-preview-u) * 0.45) calc(var(--theme-preview-u) * 0.45) 0 var(--theme-swatch-retro-shadow);
 }
 
 
