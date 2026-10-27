@@ -8,7 +8,7 @@
     // then dark themes; each group fills one row of the 3 × 3 theme menu.
     auto: { label: "Auto", file: "classic", color: "#9e6b02" },
     light: { label: "Light", file: "classic", color: "#9e6b02" },
-    eink: { label: "Zen", file: "eink", color: "#f5f2eb" },
+    eink: { label: "Zen", file: "eink", color: "#f4f1ea" },
     coffee: { label: "Coffee", file: "coffee", color: "#a35616" },
     forest: { label: "Forest", file: "forest", color: "#2f6b4f" },
     retro: { label: "Retro", file: "retro", color: "#2f5b3e" },

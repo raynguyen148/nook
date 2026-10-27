@@ -268,10 +268,6 @@ html[data-theme="retro"] .note-font-size-popover[popover] {
   box-shadow: var(--retro-shadow-md);
 }
 
-html[data-theme="eink"] .note-font-size-popover[popover] {
-  box-shadow: none;
-}
-
 html[data-theme="retro"] .note-font-size-popover .note-font-size-control--popover {
   border: 0;
 }
