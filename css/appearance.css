@@ -778,10 +778,10 @@ html[data-theme="eink"] {
 
     @media (min-width: 821px) and (prefers-reduced-motion: no-preference) {
       html[data-glass="true"] :is(#command-dialog, #organize-dialog)[open] {
-        animation: dialog-glass-enter 240ms var(--motion-ease-out) both;
+        animation: dialog-glass-enter var(--motion-duration-dialog-enter) var(--motion-ease-out) both;
       }
       html[data-glass="true"] :is(#command-dialog, #organize-dialog)[open]::backdrop {
-        animation: command-backdrop-enter 240ms var(--motion-ease-out) both;
+        animation: command-backdrop-enter var(--motion-duration-dialog-enter) var(--motion-ease-out) both;
       }
 
       @supports (transition-behavior: allow-discrete) {
@@ -790,26 +790,27 @@ html[data-theme="eink"] {
           transform: translateY(-14px) scale(0.975);
           transform-origin: center 20%;
           transition:
-            transform 140ms var(--motion-ease-in),
-            display 140ms allow-discrete;
+            transform var(--motion-duration-dialog-exit) var(--motion-ease-in),
+            visibility var(--motion-duration-dialog-exit),
+            display var(--motion-duration-dialog-exit) allow-discrete;
         }
         html[data-glass="true"] :is(#command-dialog, #organize-dialog)[open] {
           animation: none;
           opacity: 1;
           transform: translateY(0) scale(1);
-          transition-duration: 240ms;
+          transition-duration: var(--motion-duration-dialog-enter);
           transition-timing-function: var(--motion-ease-out);
         }
         html[data-glass="true"] :is(#command-dialog, #organize-dialog)::backdrop {
           opacity: 0;
           transition:
-            opacity 140ms linear,
-            display 140ms allow-discrete;
+            opacity var(--motion-duration-dialog-exit) linear,
+            display var(--motion-duration-dialog-exit) allow-discrete;
         }
         html[data-glass="true"] :is(#command-dialog, #organize-dialog)[open]::backdrop {
           animation: none;
           opacity: 1;
-          transition-duration: 240ms;
+          transition-duration: var(--motion-duration-dialog-enter);
           transition-timing-function: var(--motion-ease-out);
         }
         @starting-style {

@@ -792,7 +792,7 @@ dialog:not([open]),
     transform: translateY(100%); opacity: 0;
     pointer-events: none;
     visibility: hidden;
-    transition: transform var(--motion-duration-medium) var(--motion-ease-out), opacity var(--motion-duration-short) var(--motion-ease-out), display var(--motion-duration-medium) allow-discrete, overlay var(--motion-duration-medium) allow-discrete;
+    transition: transform var(--motion-duration-medium) var(--motion-ease-out), opacity var(--motion-duration-short) var(--motion-ease-out), visibility var(--motion-duration-medium), display var(--motion-duration-medium) allow-discrete, overlay var(--motion-duration-medium) allow-discrete;
   }
   .mobile-sheet {
     display: flex; flex-direction: column; gap: 0; position: fixed; inset: auto 0 var(--mobile-keyboard-offset, 0px);
@@ -2873,10 +2873,11 @@ dialog:not([open]),
     visibility: hidden;
     transform: translate(-50%, calc(-50% + 0.35rem)) scale(0.985);
     transition:
-      opacity var(--motion-duration-short) var(--motion-ease-in),
-      transform var(--motion-duration-short) var(--motion-ease-in),
-      display var(--motion-duration-short) allow-discrete,
-      overlay var(--motion-duration-short) allow-discrete;
+      opacity var(--motion-duration-dialog-exit) var(--motion-ease-in),
+      transform var(--motion-duration-dialog-exit) var(--motion-ease-in),
+      visibility var(--motion-duration-dialog-exit),
+      display var(--motion-duration-dialog-exit) allow-discrete,
+      overlay var(--motion-duration-dialog-exit) allow-discrete;
   }
   .app-dialog.confirmation-dialog[open],
   .confirmation-dialog[open] {
@@ -2885,7 +2886,7 @@ dialog:not([open]),
     pointer-events: auto !important;
     visibility: visible !important;
     transform: translate(-50%, -50%) scale(1);
-    transition-duration: var(--motion-duration-medium);
+    transition-duration: var(--motion-duration-dialog-enter);
     transition-timing-function: var(--motion-ease-out);
   }
   @starting-style {
@@ -2902,14 +2903,14 @@ dialog:not([open]),
     background: rgba(15, 23, 42, 0.45);
     opacity: 0;
     transition:
-      opacity var(--motion-duration-short) var(--motion-ease-in),
-      display var(--motion-duration-short) allow-discrete,
-      overlay var(--motion-duration-short) allow-discrete;
+      opacity var(--motion-duration-dialog-exit) linear,
+      display var(--motion-duration-dialog-exit) allow-discrete,
+      overlay var(--motion-duration-dialog-exit) allow-discrete;
   }
   .app-dialog.confirmation-dialog[open]::backdrop,
   .confirmation-dialog[open]::backdrop {
     opacity: 1;
-    transition-duration: var(--motion-duration-medium);
+    transition-duration: var(--motion-duration-dialog-enter);
     transition-timing-function: var(--motion-ease-out);
   }
   @starting-style {

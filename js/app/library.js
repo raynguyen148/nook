@@ -4,6 +4,12 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
   const { api, elements, ui, constants } = app;
   const { PAGE_SIZE, MOTION, PINNED_TRAY_COLLAPSED_STORAGE_KEY } = constants;
   let notesContentAnimation = null;
+  let noteCardLayoutAnimations = [];
+  let pinnedTrayAnimation = null;
+  let pinnedTraySequence = 0;
+  // Page turns replace the whole set, and the tray animates its own height,
+  // so neither wants cards gliding between positions.
+  const LAYOUT_MOTION_SKIP = new Set(["page-next", "page-previous", "pinned-tray"]);
   let responsivePaginationFrame = 0;
   let responsivePaginationTimer = 0;
   let responsivePaginationPending = false;
@@ -349,6 +355,7 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
     const pinnedEmphasis = note.isPinned && !inPinnedTray;
     const card = createElement("article", {
       className: `note-card${secondary ? " secondary-note-card" : ""}${pinnedEmphasis ? " note-card--pinned" : ""}`,
+      dataset: { noteId: note.id },
     });
     const more = createElement("button", {
       className: "icon-button note-card__more", type: "button",
@@ -626,11 +633,78 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
     return items;
   }
 
+  function prefersReducedMotion() {
+    return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  }
+
+  // Card positions relative to the list, keyed by note id, for FLIP motion.
+  function measureNoteCardLayout() {
+    const listRect = elements.notesList.getBoundingClientRect();
+    const layout = new Map();
+    elements.notesList.querySelectorAll(".note-card[data-note-id]").forEach((card) => {
+      const rect = card.getBoundingClientRect();
+      if (!rect.width || !rect.height) return;
+      layout.set(card.dataset.noteId, { card, top: rect.top - listRect.top, left: rect.left - listRect.left });
+    });
+    return layout;
+  }
+
+  function captureNoteCardLayout(motion) {
+    if (LAYOUT_MOTION_SKIP.has(motion) || prefersReducedMotion()) return null;
+    if (typeof elements.notesList.animate !== "function") return null;
+    const layout = measureNoteCardLayout();
+    return layout.size ? layout : null;
+  }
+
+  // Which cards moved or entered between two layouts. Sub-pixel drift from
+  // text reflow is not a move.
+  function diffNoteCardLayout(previousLayout, currentLayout) {
+    const changes = [];
+    currentLayout.forEach((rect, id) => {
+      const previous = previousLayout.get(id);
+      if (!previous) {
+        changes.push({ id, kind: "enter" });
+        return;
+      }
+      const dx = previous.left - rect.left;
+      const dy = previous.top - rect.top;
+      if (Math.abs(dx) < 1 && Math.abs(dy) < 1) return;
+      changes.push({ id, kind: "move", dx, dy });
+    });
+    return changes;
+  }
+
+  // FLIP: after a re-render, cards glide from where they were to where they
+  // are now and new cards ease in, so pinning, trashing, and sorting read as
+  // movement rather than a flash. Returns false when nothing changed place,
+  // so the caller can fall back to the list-level fade.
+  function animateNoteCardLayout(previousLayout) {
+    if (!previousLayout) return false;
+    const currentLayout = measureNoteCardLayout();
+    const changes = diffNoteCardLayout(previousLayout, currentLayout);
+    if (!changes.length) return false;
+    noteCardLayoutAnimations.forEach((animation) => animation.cancel());
+    noteCardLayoutAnimations = changes.map(({ id, kind, dx, dy }) => {
+      const { card } = currentLayout.get(id);
+      if (kind === "move") {
+        return card.animate(
+          [{ transform: `translate(${dx}px, ${dy}px)` }, { transform: "none" }],
+          { duration: MOTION.medium, easing: MOTION.easeOut },
+        );
+      }
+      return card.animate(
+        [{ opacity: 0, transform: "translateY(6px)" }, { opacity: 1, transform: "none" }],
+        { duration: MOTION.short, easing: MOTION.easeOut },
+      );
+    });
+    return true;
+  }
+
   function animateNotesContent(motion) {
-    if (!motion || motion === "none") return;
+    if (!motion || motion === "none" || motion === "pinned-tray") return;
     notesContentAnimation?.cancel();
 
-    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const reducedMotion = prefersReducedMotion();
     const isPagination = motion.startsWith("page-");
     const offset = motion === "page-next" ? 8 : motion === "page-previous" ? -8 : 0;
 
@@ -792,6 +866,7 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
   }
 
   function renderNotes({ motion = "none" } = {}) {
+    const previousLayout = captureNoteCardLayout(motion);
     api.syncBulkSelection?.();
     api.syncMobileLibrary?.();
     syncViewModeUI();
@@ -830,7 +905,7 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
     if (!pageNotes.length && !showCollapsedTray) {
       renderEmptyState(notesInActiveCollection().length > 0);
       renderPagination(0);
-      animateNotesContent(motion);
+      if (!animateNoteCardLayout(previousLayout)) animateNotesContent(motion);
       return;
     }
 
@@ -843,7 +918,7 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
     elements.notesList.replaceChildren(fragment);
     observeNoteCardTagRows();
     renderPagination(pageNotes.length ? totalPages : 0);
-    animateNotesContent(motion);
+    if (!animateNoteCardLayout(previousLayout)) animateNotesContent(motion);
   }
 
   // Pinned notes sort first, so a page's leading run of pinned notes is the
@@ -902,16 +977,85 @@ globalThis[Symbol.for("nook.app.modules")].register("library", (app) => {
   }
 
   function togglePinnedTray() {
-    ui.pinnedTrayCollapsed = !ui.pinnedTrayCollapsed;
+    const collapsing = !ui.pinnedTrayCollapsed;
+    ui.pinnedTrayCollapsed = collapsing;
     try {
-      window.localStorage.setItem(PINNED_TRAY_COLLAPSED_STORAGE_KEY, String(ui.pinnedTrayCollapsed));
+      window.localStorage.setItem(PINNED_TRAY_COLLAPSED_STORAGE_KEY, String(collapsing));
     } catch {
       // The tray still toggles for this session when storage is unavailable.
     }
     // The tray opens at the start of the list, so both directions return there.
     ui.page = 1;
-    renderNotes({ motion: "filter" });
+    pinnedTraySequence += 1;
+    pinnedTrayAnimation?.cancel();
+    pinnedTrayAnimation = null;
+    const tray = elements.notesList.querySelector(".pinned-tray");
+    const animated = Boolean(tray) && !prefersReducedMotion() && typeof tray.animate === "function";
+    if (animated && collapsing) {
+      collapsePinnedTray(tray);
+      return;
+    }
+    renderNotes({ motion: animated ? "pinned-tray" : "filter" });
+    if (animated) expandPinnedTray();
+    focusPinnedTrayToggle();
+  }
+
+  function focusPinnedTrayToggle() {
     elements.notesList.querySelector(".pinned-tray__toggle")?.focus({ preventScroll: true });
+  }
+
+  // Collapsing shrinks the tray already on screen down to its heading row
+  // while its cards fade, then renders the collapsed list, which lands on
+  // the same layout the animation ended on.
+  function collapsePinnedTray(tray) {
+    const sequence = pinnedTraySequence;
+    const fromHeight = tray.offsetHeight;
+    tray.classList.add("is-collapsed", "is-resizing");
+    tray.querySelector(".pinned-tray__toggle")?.setAttribute("aria-expanded", "false");
+    const toHeight = tray.querySelector(".pinned-tray__title")?.offsetHeight ?? 0;
+    tray.querySelectorAll(".note-card").forEach((card) => {
+      card.animate([{ opacity: 1 }, { opacity: 0 }], { duration: MOTION.micro, easing: MOTION.easeIn, fill: "forwards" });
+    });
+    // The final frame holds until the collapsed list replaces this node, so
+    // the tray never snaps back to full height in between.
+    const animation = tray.animate(
+      [{ height: `${fromHeight}px` }, { height: `${toHeight}px` }],
+      { duration: MOTION.medium, easing: MOTION.easeOut, fill: "forwards" },
+    );
+    pinnedTrayAnimation = animation;
+    animation.finished.then(() => {
+      if (sequence !== pinnedTraySequence) return;
+      pinnedTrayAnimation = null;
+      renderNotes({ motion: "pinned-tray" });
+      focusPinnedTrayToggle();
+    }, () => {});
+  }
+
+  // Expanding renders the open tray first, then grows it from its heading
+  // row so the pinned cards are revealed rather than popped in.
+  function expandPinnedTray() {
+    const tray = elements.notesList.querySelector(".pinned-tray");
+    if (!tray || tray.classList.contains("is-collapsed")) return;
+    const toHeight = tray.offsetHeight;
+    const fromHeight = tray.querySelector(".pinned-tray__title")?.offsetHeight ?? 0;
+    if (!toHeight || fromHeight >= toHeight) return;
+    tray.classList.add("is-resizing");
+    tray.querySelector(".pinned-tray__chevron")?.animate(
+      [{ transform: "rotate(-90deg)" }, { transform: "none" }],
+      { duration: MOTION.short, easing: MOTION.easeOut },
+    );
+    tray.querySelectorAll(".note-card").forEach((card) => {
+      card.animate([{ opacity: 0 }, { opacity: 1 }], { duration: MOTION.medium, easing: MOTION.easeOut });
+    });
+    const animation = tray.animate(
+      [{ height: `${fromHeight}px` }, { height: `${toHeight}px` }],
+      { duration: MOTION.medium, easing: MOTION.easeOut },
+    );
+    pinnedTrayAnimation = animation;
+    animation.finished.catch(() => {}).finally(() => {
+      tray.classList.remove("is-resizing");
+      if (pinnedTrayAnimation === animation) pinnedTrayAnimation = null;
+    });
   }
 
   function syncSecondarySortPicker() { secondarySortPicker?.sync(); }

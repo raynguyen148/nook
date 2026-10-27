@@ -70,10 +70,10 @@
 
 @media (min-width: 821px) and (prefers-reduced-motion: no-preference) {
   :is(#organize-dialog, .organize-dialog)[open] {
-    animation: organize-dialog-enter 240ms var(--motion-ease-out) both;
+    animation: organize-dialog-enter var(--motion-duration-dialog-enter) var(--motion-ease-out) both;
   }
   :is(#organize-dialog, .organize-dialog)[open]::backdrop {
-    animation: organize-backdrop-enter 240ms var(--motion-ease-out) both;
+    animation: organize-backdrop-enter var(--motion-duration-dialog-enter) var(--motion-ease-out) both;
   }
 
   /* Native discrete transitions where supported (Safari 17.4+, Chrome, Firefox) */
@@ -83,27 +83,28 @@
       transform: translateY(-14px) scale(0.975);
       transform-origin: center 20%;
       transition:
-        opacity 140ms var(--motion-ease-in),
-        transform 140ms var(--motion-ease-in),
-        display 140ms allow-discrete;
+        opacity var(--motion-duration-dialog-exit) var(--motion-ease-in),
+        transform var(--motion-duration-dialog-exit) var(--motion-ease-in),
+        visibility var(--motion-duration-dialog-exit),
+        display var(--motion-duration-dialog-exit) allow-discrete;
     }
     :is(#organize-dialog, .organize-dialog)[open] {
       animation: none;
       opacity: 1;
       transform: translateY(0) scale(1);
-      transition-duration: 240ms;
+      transition-duration: var(--motion-duration-dialog-enter);
       transition-timing-function: var(--motion-ease-out);
     }
     :is(#organize-dialog, .organize-dialog)::backdrop {
       opacity: 0;
       transition:
-        opacity 140ms linear,
-        display 140ms allow-discrete;
+        opacity var(--motion-duration-dialog-exit) linear,
+        display var(--motion-duration-dialog-exit) allow-discrete;
     }
     :is(#organize-dialog, .organize-dialog)[open]::backdrop {
       animation: none;
       opacity: 1;
-      transition-duration: 240ms;
+      transition-duration: var(--motion-duration-dialog-enter);
       transition-timing-function: var(--motion-ease-out);
     }
     @starting-style {

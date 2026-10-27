@@ -71,10 +71,10 @@ html .workflow-dialog.command-dialog::backdrop {
 
 @media (prefers-reduced-motion: no-preference) {
   .command-dialog[open] {
-    animation: command-dialog-enter 240ms var(--motion-ease-out) both;
+    animation: command-dialog-enter var(--motion-duration-dialog-enter) var(--motion-ease-out) both;
   }
   .command-dialog[open]::backdrop {
-    animation: command-backdrop-enter 240ms var(--motion-ease-out) both;
+    animation: command-backdrop-enter var(--motion-duration-dialog-enter) var(--motion-ease-out) both;
   }
 
   /* Native discrete transitions where supported (Safari 17.4+, Chrome, Firefox) */
@@ -84,27 +84,28 @@ html .workflow-dialog.command-dialog::backdrop {
       transform: translateY(-14px) scale(0.975);
       transform-origin: center 20%;
       transition:
-        opacity 140ms var(--motion-ease-in),
-        transform 140ms var(--motion-ease-in),
-        display 140ms allow-discrete;
+        opacity var(--motion-duration-dialog-exit) var(--motion-ease-in),
+        transform var(--motion-duration-dialog-exit) var(--motion-ease-in),
+        visibility var(--motion-duration-dialog-exit),
+        display var(--motion-duration-dialog-exit) allow-discrete;
     }
     .command-dialog[open] {
       animation: none;
       opacity: 1;
       transform: translateY(0) scale(1);
-      transition-duration: 240ms;
+      transition-duration: var(--motion-duration-dialog-enter);
       transition-timing-function: var(--motion-ease-out);
     }
     .command-dialog::backdrop {
       opacity: 0;
       transition:
-        opacity 140ms linear,
-        display 140ms allow-discrete;
+        opacity var(--motion-duration-dialog-exit) linear,
+        display var(--motion-duration-dialog-exit) allow-discrete;
     }
     .command-dialog[open]::backdrop {
       animation: none;
       opacity: 1;
-      transition-duration: 240ms;
+      transition-duration: var(--motion-duration-dialog-enter);
       transition-timing-function: var(--motion-ease-out);
     }
     @starting-style {

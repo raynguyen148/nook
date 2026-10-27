@@ -84,3 +84,29 @@ test("the Pinned tray takes the page's leading run of pinned notes", () => {
   // Trash never shows a Pinned tray, even for notes that were pinned.
   assert.deepEqual(ids(context.splitPinnedNotes(notes, true)), { pinned: [], rest: ["a", "b", "c", "d"] });
 });
+
+const layoutStart = source.indexOf("  function diffNoteCardLayout(");
+const layoutEnd = source.indexOf("\n  function ", layoutStart + 1);
+assert.ok(layoutStart >= 0 && layoutEnd > layoutStart);
+const layoutContext = {};
+vm.runInNewContext(source.slice(layoutStart, layoutEnd), layoutContext);
+
+test("card layout diff reports moved and entered cards and ignores sub-pixel drift", () => {
+  const previous = new Map([
+    ["a", { top: 0, left: 0 }],
+    ["b", { top: 120, left: 0 }],
+    ["c", { top: 240, left: 0 }],
+  ]);
+  const current = new Map([
+    ["b", { top: 0, left: 0 }],
+    ["a", { top: 120.4, left: 0.6 }],
+    ["d", { top: 240, left: 0 }],
+  ]);
+  // Objects cross the vm realm, so compare structure rather than prototypes.
+  assert.deepEqual(JSON.parse(JSON.stringify(layoutContext.diffNoteCardLayout(previous, current))), [
+    { id: "b", kind: "move", dx: 0, dy: 120 },
+    { id: "a", kind: "move", dx: -0.6, dy: -120.4 },
+    { id: "d", kind: "enter" },
+  ]);
+  assert.equal(layoutContext.diffNoteCardLayout(previous, new Map([["a", { top: 0.2, left: 0 }]])).length, 0);
+});

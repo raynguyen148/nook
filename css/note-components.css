@@ -746,6 +746,11 @@ select::-ms-expand {
   padding-bottom: 0;
 }
 
+/* While the tray grows or shrinks, its cards stay clipped to the moving edge. */
+.pinned-tray.is-resizing {
+  overflow: hidden;
+}
+
 /* The heading row is one disclosure button that runs edge to edge, so the
  * whole row toggles the tray rather than a small control at its end. */
 .pinned-tray__title {
@@ -2063,12 +2068,17 @@ html .note-card.note-card--pinned[data-state="success"] {
   background: #fff;
   box-shadow: 0 24px 70px rgb(23 30 56 / 22%);
   opacity: 0;
-  transform: translateY(0.35rem) scale(0.985);
+  /* Same entrance as Quick actions and Settings, so every modal shares one
+   * voice. Closed dialogs are forced hidden, so visibility rides the exit
+   * transition; otherwise the closing frames would never be seen. */
+  transform: translateY(-14px) scale(0.975);
+  transform-origin: center 20%;
   transition:
-    opacity var(--motion-duration-short) var(--motion-ease-in),
-    transform var(--motion-duration-short) var(--motion-ease-in),
-    display var(--motion-duration-short) allow-discrete,
-    overlay var(--motion-duration-short) allow-discrete;
+    opacity var(--motion-duration-dialog-exit) var(--motion-ease-in),
+    transform var(--motion-duration-dialog-exit) var(--motion-ease-in),
+    visibility var(--motion-duration-dialog-exit),
+    display var(--motion-duration-dialog-exit) allow-discrete,
+    overlay var(--motion-duration-dialog-exit) allow-discrete;
 }
 
 
@@ -2078,9 +2088,9 @@ html .note-card.note-card--pinned[data-state="success"] {
   backdrop-filter: blur(2px);
   opacity: 0;
   transition:
-    opacity var(--motion-duration-short) var(--motion-ease-in),
-    display var(--motion-duration-short) allow-discrete,
-    overlay var(--motion-duration-short) allow-discrete;
+    opacity var(--motion-duration-dialog-exit) linear,
+    display var(--motion-duration-dialog-exit) allow-discrete,
+    overlay var(--motion-duration-dialog-exit) allow-discrete;
 }
 
 
@@ -2088,7 +2098,7 @@ html .note-card.note-card--pinned[data-state="success"] {
 .app-dialog[open] {
   opacity: 1;
   transform: translateY(0) scale(1);
-  transition-duration: var(--motion-duration-medium);
+  transition-duration: var(--motion-duration-dialog-enter);
   transition-timing-function: var(--motion-ease-out);
 }
 
@@ -2096,7 +2106,7 @@ html .note-card.note-card--pinned[data-state="success"] {
 
 .app-dialog[open]::backdrop {
   opacity: 1;
-  transition-duration: var(--motion-duration-medium);
+  transition-duration: var(--motion-duration-dialog-enter);
   transition-timing-function: var(--motion-ease-out);
 }
 
@@ -2105,7 +2115,7 @@ html .note-card.note-card--pinned[data-state="success"] {
 @starting-style {
   .app-dialog[open] {
     opacity: 0;
-    transform: translateY(0.35rem) scale(0.985);
+    transform: translateY(-14px) scale(0.975);
   }
 
   .app-dialog[open]::backdrop {
