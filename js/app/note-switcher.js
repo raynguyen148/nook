@@ -152,14 +152,17 @@
       return true;
     }
 
-    function resetPaneNotePicker(pane) {
+    // `keepView` leaves the picker on screen while its pane animates away, so
+    // the empty reader never flashes behind it.
+    function resetPaneNotePicker(pane, { keepView = false } = {}) {
       const picker = pickers[pane];
       ++picker.sequence;
       ui.notePickers[pane].open = false;
       setPickerBusy(pane, false);
+      picker.trigger.setAttribute("aria-expanded", "false");
+      if (keepView) return;
       picker.view.classList.add("is-hidden");
       picker.reader.classList.remove("is-hidden");
-      picker.trigger.setAttribute("aria-expanded", "false");
     }
 
     function cancelPaneNotePicker(pane, { restoreFocus = true, resumeAutoSave = true } = {}) {

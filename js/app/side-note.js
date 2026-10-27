@@ -133,7 +133,7 @@
 
     async function closeDualPane(options = {}) {
       dualPaneOperationSequence += 1;
-      api.resetPaneNotePicker?.("secondary");
+      api.resetPaneNotePicker?.("secondary", { keepView: true });
       const immediate = Boolean(options && typeof options === "object" && options.immediate);
       const restoreToggleFocus = !immediate && Boolean(elements.secondarySurface?.contains(document.activeElement));
 
@@ -172,6 +172,7 @@
         ui.secondaryScrollSyncResetFrame = 0;
         ui.secondaryNotePreviewHeaderCollapsed = false;
         syncSecondaryNotePreviewHeader();
+        api.resetPaneNotePicker?.("secondary");
         elements.secondarySurface?.classList.add("is-hidden");
         elements.noteDetailWorkspace?.classList.remove("is-side-by-side");
         elements.workspace?.classList.remove("is-side-by-side-open");
