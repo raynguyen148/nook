@@ -978,7 +978,7 @@ html .pinned-tray .note-card .note-card__top-actions .note-card__pin-toggle[aria
   }
 
   .notes-list--compact .note-card__title:hover {
-    color: var(--primary-accent-strong, #4338ca);
+    color: var(--primary-accent-strong, #805600);
   }
 
   /* 3. Tags: dedicated fixed column for metadata categorization */

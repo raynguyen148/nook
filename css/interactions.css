@@ -58,6 +58,9 @@ html[data-theme-mode="auto"] :is(.theme-toggle, .mobile-theme-toggle) .theme-tog
 :root {
   --primary-accent: #9e6b02;
   --primary-accent-hover: #805600;
+  /* Resolves on the root element, so it follows each theme's hover accent
+   * unless a theme sets its own value. */
+  --primary-accent-strong: var(--primary-accent-hover);
   --primary-accent-text: #805600;
   --primary-accent-soft: #fdf5db;
   --primary-accent-soft-hover: #fcebc2;
@@ -1173,9 +1176,11 @@ html body .note-markdown-help__trigger:focus-visible {
 
 
 /* Compact form controls use the shared keyboard ring only. Their focused
- * border and glow otherwise create a second visible outline. */
+ * border and glow otherwise create a second visible outline. The glass
+ * switch is a checkbox that draws its own track, so the text-field focus
+ * states below skip checkboxes; it still receives the keyboard ring above. */
 html body .sort-field select:focus-visible,
-html body .management-row input:focus-visible,
+html body .management-row input:not([type="checkbox"]):focus-visible,
 html body .management-search input:focus-visible {
   border-color: transparent !important;
   box-shadow: none !important;
@@ -1210,7 +1215,7 @@ html:not([data-input-modality="keyboard"]) body .management-search input:focus {
 
 
 
-html:not([data-input-modality="keyboard"]) body .management-row input:focus {
+html:not([data-input-modality="keyboard"]) body .management-row input:not([type="checkbox"]):focus {
   border-color: var(--management-row-input-resting-border) !important;
   background-color: var(--form-control-resting-background) !important;
   box-shadow: var(--management-row-input-resting-shadow) !important;
@@ -1247,7 +1252,7 @@ html[data-input-modality="keyboard"] body .search-field input:focus {
 }
 
 html[data-input-modality="keyboard"] body .sort-field select:focus,
-html[data-input-modality="keyboard"] body .management-row input:focus,
+html[data-input-modality="keyboard"] body .management-row input:not([type="checkbox"]):focus,
 html[data-input-modality="keyboard"] body .management-search input:focus {
   border-color: transparent !important;
   box-shadow: none !important;
