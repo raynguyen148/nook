@@ -9,7 +9,7 @@
     auto: { label: "Auto", file: "classic", color: "#9e6b02" },
     light: { label: "Light", file: "classic", color: "#9e6b02" },
     eink: { label: "Zen", file: "eink", color: "#f4f1ea" },
-    coffee: { label: "Coffee", file: "coffee", color: "#a35616" },
+    coffee: { label: "Coffee", file: "coffee", color: "#2b1f18" },
     forest: { label: "Forest", file: "forest", color: "#2f6b4f" },
     retro: { label: "Retro", file: "retro", color: "#1f5c5a" },
     dark: { label: "Dark", file: "dark", color: "#09090b" },

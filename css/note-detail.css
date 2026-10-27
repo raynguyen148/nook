@@ -2377,7 +2377,7 @@ html[data-theme="coffee"] .note-secondary-surface #secondary-note-title-input {
   border: 0 !important;
   border-radius: 0 !important;
   padding: 0 !important;
-  color: #2b1704 !important;
+  color: #2e211a !important;
   background: transparent !important;
   background-color: transparent !important;
   box-shadow: none !important;
@@ -2395,13 +2395,13 @@ html[data-theme="coffee"] .note-secondary-surface #secondary-note-title-input:fo
 }
 
 html[data-theme="coffee"] #secondary-reader-view .note-formatting-toolbar {
-  border-color: #d8cfc4 !important;
-  border-bottom-color: #d8cfc4 !important;
+  border-color: #e2d3c1 !important;
+  border-bottom-color: #e2d3c1 !important;
 }
 
 html[data-theme="coffee"] .note-dialog .note-content-field.is-split .note-editor-pane--preview,
 html[data-theme="coffee"] #secondary-reader-view #secondary-content-field.is-split .note-editor-pane--preview {
-  border-left-color: #d8cfc4 !important;
+  border-left-color: #e2d3c1 !important;
 }
 
 /* E-ink theme refinements */

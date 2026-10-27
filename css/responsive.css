@@ -261,15 +261,15 @@
   }
 
   /* The shared palette's lighter hues fall below 3:1 against white, so their
-   * initials switch to dark ink. Coffee (also the default) uses deeper dyes and
-   * Zen uses deep natural pigments, so both keep white initials. */
+   * initials switch to dark ink. The default theme and Zen use deeper pigments,
+   * so both keep white initials; Coffee writes its own chalk-board initials. */
   .app-shell.is-sidebar-collapsed .sidebar-filter--type :is(.type-dot--amber, .type-dot--lime, .type-dot--cyan, .type-dot--sky, .type-dot--teal, .type-dot--emerald, .type-dot--green, .type-dot--orange),
   html[data-sidebar-collapsed="true"] .app-shell .sidebar-filter--type :is(.type-dot--amber, .type-dot--lime, .type-dot--cyan, .type-dot--sky, .type-dot--teal, .type-dot--emerald, .type-dot--green, .type-dot--orange) {
     color: #1f2937;
   }
 
-  :is(html[data-theme="coffee"], html:not([data-theme]), html[data-theme="eink"]) .app-shell.is-sidebar-collapsed .sidebar-filter--type .type-dot,
-  :is(html[data-theme="coffee"], html:not([data-theme]), html[data-theme="eink"])[data-sidebar-collapsed="true"] .app-shell .sidebar-filter--type .type-dot {
+  :is(html:not([data-theme]), html[data-theme="eink"]) .app-shell.is-sidebar-collapsed .sidebar-filter--type .type-dot,
+  :is(html:not([data-theme]), html[data-theme="eink"])[data-sidebar-collapsed="true"] .app-shell .sidebar-filter--type .type-dot {
     color: #fff;
   }
 

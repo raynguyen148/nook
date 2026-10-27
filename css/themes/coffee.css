@@ -1,1311 +1,1366 @@
-/* ==========================================================================
-   Nook - Theme: Coffee (Hallmark Masterwork / Artisan Stationery)
-   - Canvas: Warm Antique Parchment (#f5efe6)
-   - Surfaces: Milled Cotton Paper (#fdfbf7)
-   - Sidebar: Warm Ivory Linen (#faf5ee)
-   - Inks: Deep Espresso Walnut (#261e18), Umber Sepia (#5e4d41), Hazelnut (#8c7766)
-   - Anchor: Craftsman Terracotta Amber (#a35616)
-   - Category Palette: Natural Botanical / Artisan Stationery Dyes
-   - Typography: Shared Inter system stack
-   ========================================================================== */
+/* Hallmark · genre: editorial · macrostructure: preserved Nook workspace
+ * theme: neighbourhood slow-bar café · tone: warm, unhurried, lamp-lit · anchor hue: caramel
+ * signatures: dark wooden menu board, latte paper under a
+ * reading lamp, cup-ring stains on pinned notes, coffee-bean rules, a steaming
+ * mug for empty states, espresso code blocks
+ * contrast: ink 14+, muted 5.2+ on canvas, caramel 5.2+ on foam, board 6+ · fonts: Vietnamese-safe
+ */
+/* Nook - Coffee theme: a quiet café table with a wooden menu board beside it. */
 
-html[data-theme="coffee"],
-html:not([data-theme]) {
-  /* Shared metadata and menu roles; component geometry stays in its owner. */
-  --tag-chip-border: #e5dacb;
-  --tag-chip-text: #5e4d41;
-  --tag-chip-surface: #f0e6d6;
-  --picker-menu-border: #d8ccbd;
-  --picker-menu-surface: #fdfbf7;
-  --picker-menu-shadow: 0 8px 24px rgba(65, 45, 25, 0.12);
-  --tag-menu-border: var(--picker-menu-border);
-  --tag-menu-surface: var(--picker-menu-surface);
-  --tag-menu-shadow: var(--picker-menu-shadow);
+html[data-theme="coffee"] {
+  color-scheme: light;
+  accent-color: #9a5523;
+  /* Display and reading faces carry full Vietnamese coverage on macOS; the
+   * fallbacks are the closest humanist faces shipped on Windows and Linux. */
+  --font-sans: Seravek, "Gill Sans Nova", Ubuntu, Calibri, "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-display: Cochin, Charter, "Bitstream Charter", Georgia, "Times New Roman", serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  --coffee-font-read: Charter, "Bitstream Charter", "Sitka Text", Cambria, Georgia, serif;
 
-  --theme-surface-page: #f5efe6;
-  --theme-danger-border: #e1b9b2;
-  --backup-good-accent: #2f7a4b;
-  --backup-warning-accent: #975207;
-  --management-search-resting-border: #d8ccbd;
-  --management-search-resting-shadow: 0 1px 2px rgb(0 0 0 / 4%);
-  --management-row-input-resting-border: #d8ccbd;
+  /* Table, tray, and cups */
+  --coffee-canvas: #ede2d3;
+  --coffee-tray: #f6eee3;
+  --coffee-paper: #fbf7f1;
+  --coffee-foam: #fffdf9;
+  --coffee-chrome: #f7f0e6;
+  --coffee-actions: #f5ede2;
+  --coffee-latte: #f1e7da;
+  --coffee-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .3 0 0 0 0 .19 0 0 0 0 .1 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' opacity='.12' filter='url%28%23g%29'/%3E%3C/svg%3E");
+  /* A pendant lamp warms the top right; the far corner falls into shade. */
+  --coffee-lamp:
+    radial-gradient(70rem 42rem at 92% -12%, rgb(255 228 190 / 70%), transparent 68%),
+    radial-gradient(56rem 38rem at -8% 112%, rgb(160 98 48 / 9%), transparent 72%);
+
+  /* Ink */
+  --coffee-ink: #2e211a;
+  --coffee-ink-soft: #5a4335;
+  --coffee-muted: #6f5847;
+  --coffee-border: #e2d3c1;
+  --coffee-border-hover: #d6c1a8;
+  --coffee-border-input: #dccab4;
+  --coffee-border-strong: #c9b298;
+  --coffee-disabled-surface: #f1e9de;
+  --coffee-disabled-ink: #a08c7a;
+
+  /* Caramel leads; crema and the mug glaze support it. */
+  --coffee-accent: #9a5523;
+  --coffee-accent-hover: #824519;
+  --coffee-accent-text: #8c4b1c;
+  --coffee-accent-soft: #f3e1cc;
+  --coffee-accent-soft-hover: #ecd3b8;
+  --coffee-accent-border: #dcb894;
+  --coffee-cream: #fffaf3;
+  --coffee-crema: #f3d9ae;
+  --coffee-mug: #b07443;
+
+  /* Café garnishes for states and callouts */
+  --coffee-matcha: #506b3a;
+  --coffee-matcha-soft: #e5ebd8;
+  --coffee-matcha-border: #bfcca8;
+  --coffee-honey: #8a5a12;
+  --coffee-honey-soft: #f6e7c8;
+  --coffee-honey-border: #e3c88f;
+  --coffee-berry: #a03a2c;
+  --coffee-berry-soft: #f6dfd9;
+  --coffee-berry-border: #e5b5aa;
+  --coffee-blueberry: #4a6a85;
+  --coffee-plum: #6b4a7a;
+  --coffee-overlay: rgb(43 31 24 / 38%);
+
+  /* The menu board: dark stained wood written on in chalk */
+  --coffee-board: #2b1f18;
+  --coffee-board-raised: #362820;
+  --coffee-board-hover: #43332a;
+  --coffee-board-edge: #1f1611;
+  --coffee-board-ink: #f3e8da;
+  --coffee-board-ink-soft: #dccbb7;
+  --coffee-board-muted: #b59c84;
+  --coffee-board-line: rgb(243 232 218 / 12%);
+  --coffee-board-line-strong: rgb(243 232 218 / 24%);
+  --coffee-board-wash: rgb(243 232 218 / 6%);
+  --coffee-board-caramel: #e0a066;
+  --coffee-board-caramel-text: #e8b07c;
+  --coffee-board-caramel-hover: #f0bd8c;
+  --coffee-board-chalk: #e3cfb4;
+  --coffee-board-lamp:
+    radial-gradient(120% 60% at 50% -8%, rgb(255 210 150 / 9%), transparent 70%),
+    radial-gradient(80% 50% at 100% 105%, rgb(224 160 102 / 6%), transparent 70%);
+  --coffee-wood: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='w'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.7 .014' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .95 0 0 0 0 .9 0 0 0 0 .84 0 0 0 .6 0'/%3E%3C/filter%3E%3Cfilter id='s'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .95 0 0 0 0 .9 0 0 0 0 .84 0 0 0 .6 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' opacity='.07' filter='url%28%23w%29'/%3E%3Crect width='100%25' height='100%25' opacity='.05' filter='url%28%23s%29'/%3E%3C/svg%3E");
+  --coffee-cup: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64' fill='none' stroke='%23f3e8da' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cg opacity='.1'%3E%3Cpath d='M24 6c-3 4 3 7 0 11M32 3c-3 4 3 7 0 11M40 6c-3 4 3 7 0 11'/%3E%3Cpath d='M12 24h36v8c0 11-8 18-18 18S12 43 12 32z'/%3E%3Cpath d='M48 28h3a6 6 0 0 1 0 12h-4'/%3E%3Cpath d='M8 55c5 3.5 39 3.5 44 0'/%3E%3C/g%3E%3C/svg%3E");
+
+  /* Small ornaments: a roasted bean, a cup ring, and steam */
+  --coffee-bean: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 28'%3E%3Cellipse cx='10' cy='14' rx='8.5' ry='12.5' fill='%239a5523'/%3E%3Cpath d='M10 2.5c-3 4-3 8 0 11.5s3 7.5 0 11.5' fill='none' stroke='%23fbf7f1' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E");
+  --coffee-ring: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cfilter id='d'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.035' numOctaves='2' seed='7'/%3E%3CfeDisplacementMap in='SourceGraphic' scale='5'/%3E%3C/filter%3E%3Cg fill='none' stroke='%238a4b1f' filter='url%28%23d%29'%3E%3Ccircle cx='50' cy='50' r='42' fill='%238a4b1f' fill-opacity='.035' stroke-width='3' stroke-opacity='.16'/%3E%3Ccircle cx='50' cy='50' r='38.5' stroke-width='1' stroke-opacity='.08'/%3E%3Cpath d='M15 31a41 41 0 0 1 29-21' stroke-width='5' stroke-linecap='round' stroke-opacity='.07'/%3E%3C/g%3E%3C/svg%3E");
+  --coffee-steam: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 36' fill='none' stroke='%23b08462' stroke-width='1.6' stroke-linecap='round'%3E%3Cpath d='M12 34c-4-5-4-9 0-14s4-9 0-14' opacity='.55'/%3E%3Cpath d='M20 30c-4-5-4-9 0-14s4-9 0-13' opacity='.8'/%3E%3Cpath d='M28 34c-4-5-4-9 0-14s4-9 0-14' opacity='.55'/%3E%3C/svg%3E");
+
+  /* Espresso for code */
+  --coffee-code-surface: #2a1e17;
+  --coffee-code-header: #33251c;
+  --coffee-code-text: #f1e4d3;
+  --coffee-code-muted: #b9a28c;
+  --coffee-token-keyword: #f0a868;
+  --coffee-token-string: #c8d39a;
+  --coffee-token-function: #f2c879;
+  --coffee-token-number: #f5b78f;
+  --coffee-token-boolean: #f09a7c;
+  --coffee-token-comment: #ae9783;
+  --coffee-token-property: #e6b79a;
+  --coffee-token-type: #a9c8c0;
+
+  /* Shape: soft ceramic radii and diffuse, lamp-cast shadows */
+  --coffee-radius-sm: 6px;
+  --coffee-radius-control: 10px;
+  --coffee-radius-card: 14px;
+  --coffee-radius-dialog: 18px;
+  --coffee-shadow-xs: 0 1px 2px rgb(62 39 25 / 6%);
+  --coffee-shadow-sm: 0 1px 2px rgb(62 39 25 / 6%), 0 4px 12px -8px rgb(62 39 25 / 18%);
+  --coffee-shadow-md: 0 1px 2px rgb(62 39 25 / 6%), 0 10px 28px -14px rgb(62 39 25 / 28%);
+  --coffee-shadow-lg: 0 2px 6px rgb(62 39 25 / 8%), 0 28px 60px -24px rgb(62 39 25 / 42%);
+  --coffee-shadow-hover: 0 2px 4px rgb(62 39 25 / 6%), 0 16px 32px -16px rgb(62 39 25 / 34%);
+  --coffee-icon-stroke-width: 1.7;
+  --coffee-transition-duration: 220ms;
+  --coffee-transition-easing: cubic-bezier(0.22, 1, 0.36, 1);
+  --coffee-type: var(--coffee-ink-soft);
+  --coffee-type-board: var(--coffee-board-ink-soft);
+
+  /* Shared app tokens */
+  --control-radius: var(--coffee-radius-control);
+  --surface-radius: var(--coffee-radius-card);
+  --shadow-xs: var(--coffee-shadow-xs);
+  --shadow-sm: var(--coffee-shadow-sm);
+  --shadow-md: var(--coffee-shadow-md);
+  --shadow-lg: var(--coffee-shadow-lg);
+  --theme-surface-page: var(--coffee-canvas);
+  --theme-border-strong: var(--coffee-border-strong);
+  --theme-danger-border: var(--coffee-berry-border);
+  --brand-mark-start: #c7834a;
+  --brand-mark-mid: #a8622c;
+  --brand-mark-end: #7d4219;
+  --picker-menu-border: var(--coffee-border-input);
+  --picker-menu-surface: var(--coffee-foam);
+  --picker-menu-text: var(--coffee-ink);
+  --picker-menu-shadow: var(--coffee-shadow-md);
+  --tag-menu-border: var(--coffee-border-input);
+  --tag-menu-surface: var(--coffee-foam);
+  --tag-menu-shadow: var(--coffee-shadow-md);
+  --tag-chip-border: var(--coffee-border);
+  --tag-chip-text: var(--coffee-ink-soft);
+  --tag-chip-surface: var(--coffee-paper);
+  --theme-picker-menu-shadow: var(--coffee-shadow-md);
+  --select-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='m4 6 4 4 4-4' stroke='%236f5847' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  --management-search-resting-border: var(--coffee-border-input);
+  --management-search-resting-shadow: none;
+  --management-row-input-resting-border: var(--coffee-border-input);
   --management-row-input-resting-shadow: none;
-  --form-control-resting-background: #fdfbf7;
-  /* Hallmark Craftsman Amber Anchor (<5% surface ratio) */
-  --primary-accent: #a35616;
-  --primary-accent-hover: #88430a;
-  --primary-accent-text: #88430a;
-  --primary-accent-soft: #fcf4e8;
-  --primary-accent-soft-hover: #f7e8d4;
-  --primary-accent-border: #edd5bc;
-  --primary-accent-focus: rgba(163, 86, 22, 0.24);
-  --primary-accent-shadow: rgba(163, 86, 22, 0.18);
-  --split-highlight-source: rgb(194 112 47 / 29%);
-  --split-highlight-preview: rgb(194 112 47 / 14%);
-  --split-highlight-edge: #a35616;
-  --split-highlight-outline: rgb(136 67 10 / 38%);
-  --pinned-card-border: color-mix(in srgb, var(--primary-accent) 24%, var(--note-card-border));
-  --pinned-card-border-hover: #ad6229;
-  --pinned-card-surface: var(--note-card-surface);
-  --pinned-card-shadow: 0 1px 2px rgba(65, 45, 25, 0.05);
-  --pinned-marker-background: #f0dfcd;
-  --pinned-marker-border: #d7b089;
-  --pinned-marker-color: #7c3906;
-  --note-card-surface: #fdfbf7;
-  --note-card-border: #e5dacb;
-  --note-card-title: #261e18;
-  --note-card-title-letter-spacing: -0.015em;
-  --note-card-preview: #5e4d41;
-  --note-card-muted: #6f5d4e;
-  --note-card-action: #8c7766;
-  --note-card-action-hover: #261e18;
-  --note-card-action-hover-surface: #f0e6d6;
-  --note-card-action-danger: #a83232;
-  --note-card-action-danger-surface: #fbf0ee;
-  --primary-button-text: #ffffff;
-  --focus-color: var(--primary-accent);
-  --focus-radius: 0.5rem;
-  --interaction-duration: 180ms;
-  --interaction-easing: cubic-bezier(0.16, 1, 0.3, 1);
-  --toast-surface: #261e18;
-  --toast-border: #4a3b2c;
-  --toast-text: #fdfbf7;
-  --toast-status-surface: #3c3025;
-  --toast-status-icon: #edd5bc;
-  --toast-action: #edd5bc;
-  --toast-action-hover: #ffffff;
-  --toast-focus: #f2c48e;
-  --toast-shadow: 0 8px 24px rgb(40 25 15 / 22%);
-  --toast-error-surface: #261e18;
-  --toast-error-border: #734745;
-  --toast-error-text: #fdfbf7;
-  --toast-error-status-surface: #4a2b2a;
-  --toast-error-status-icon: #f3c0b7;
-  --toast-error-action: #f1b7ad;
-  --toast-error-action-hover: #fff1ec;
-  --toast-error-focus: #f3b8ae;
+  --form-control-resting-background: var(--coffee-foam);
+  --note-title-resting-border: var(--coffee-border);
+  --primary-accent: var(--coffee-accent);
+  --primary-accent-hover: var(--coffee-accent-hover);
+  --primary-accent-strong: var(--coffee-accent-hover);
+  --primary-accent-text: var(--coffee-accent-text);
+  --primary-accent-soft: var(--coffee-accent-soft);
+  --primary-accent-soft-hover: var(--coffee-accent-soft-hover);
+  --primary-accent-border: var(--coffee-accent-border);
+  --primary-accent-focus: rgb(154 85 35 / 22%);
+  --primary-accent-shadow: rgb(154 85 35 / 20%);
+  --split-highlight-source: rgb(214 150 70 / 30%);
+  --split-highlight-preview: rgb(214 150 70 / 16%);
+  --split-highlight-edge: #b06a32;
+  --split-highlight-outline: rgb(130 69 25 / 40%);
+  --primary-button-text: var(--coffee-cream);
+  --focus-color: var(--coffee-accent);
+  --focus-radius: var(--coffee-radius-control);
+  --interaction-duration: var(--coffee-transition-duration);
+  --interaction-easing: var(--coffee-transition-easing);
+  --skeleton-base: #efe4d6;
+  --skeleton-shine: #f8f1e7;
+  --pinned-card-border: #d9bf9f;
+  --pinned-card-border-hover: #b9875a;
+  --pinned-card-surface: var(--coffee-foam);
+  --pinned-card-accent: var(--coffee-accent);
+  --pinned-card-shadow: var(--coffee-shadow-sm);
+  --pinned-marker-background: var(--coffee-accent-soft);
+  --pinned-marker-border: var(--coffee-accent-border);
+  --pinned-marker-color: var(--coffee-accent-text);
+  --note-card-surface: var(--coffee-foam);
+  --note-card-hover-surface: var(--coffee-foam);
+  --note-card-border: var(--coffee-border);
+  --note-card-hover-border: var(--coffee-border-hover);
+  --note-card-title: var(--coffee-ink);
+  --note-card-title-letter-spacing: 0;
+  --note-card-preview: var(--coffee-ink-soft);
+  --note-card-muted: var(--coffee-muted);
+  --note-card-actions-border: var(--coffee-border);
+  --note-card-actions-surface: var(--coffee-actions);
+  --note-card-action: var(--coffee-ink-soft);
+  --note-card-action-hover: var(--coffee-accent-text);
+  --note-card-action-hover-surface: var(--coffee-accent-soft);
+  --note-card-action-danger: var(--coffee-berry);
+  --note-card-action-danger-surface: var(--coffee-berry-soft);
+  --note-card-action-disabled: var(--coffee-disabled-ink);
+  --status-success-text: var(--coffee-matcha);
+  --status-success-surface: var(--coffee-matcha-soft);
+  --status-success-border: var(--coffee-matcha-border);
+  --status-warning-text: var(--coffee-honey);
+  --status-warning-surface: var(--coffee-honey-soft);
+  --status-warning-border: var(--coffee-honey-border);
+  --status-error-text: var(--coffee-berry);
+  --status-error-surface: var(--coffee-berry-soft);
+  --status-error-border: var(--coffee-berry-border);
+  --backup-good-accent: var(--coffee-matcha);
+  --backup-warning-accent: var(--coffee-honey);
+  --backup-never-accent: var(--coffee-accent);
+  --detail-type-chip-border: var(--coffee-border-input);
+  --detail-type-chip-color: var(--coffee-ink-soft);
+  --detail-type-chip-background: var(--coffee-foam);
 
-  /* Fallback for uncolored type chips */
-  --detail-type-chip-border: #d8ccbd;
-  --detail-type-chip-color: #5e4d41;
-  --detail-type-chip-background: #fdfbf7;
+  /* Toasts arrive like an espresso on a saucer. */
+  --toast-surface: var(--coffee-board);
+  --toast-border: var(--coffee-board-edge);
+  --toast-text: var(--coffee-board-ink);
+  --toast-status-surface: rgb(224 160 102 / 18%);
+  --toast-status-icon: var(--coffee-board-caramel-text);
+  --toast-action: var(--coffee-board-caramel-text);
+  --toast-action-hover: var(--coffee-cream);
+  --toast-focus: var(--coffee-board-caramel-text);
+  --toast-shadow: 0 2px 6px rgb(43 31 24 / 16%), 0 18px 36px -18px rgb(43 31 24 / 50%);
+  --toast-error-surface: #4a221b;
+  --toast-error-border: #5e2b22;
+  --toast-error-text: var(--coffee-board-ink);
+  --toast-error-status-surface: rgb(243 232 218 / 12%);
+  --toast-error-status-icon: #f4c4b8;
+  --toast-error-action: #f8cfa6;
+  --toast-error-action-hover: var(--coffee-cream);
+  --toast-error-focus: #f8cfa6;
 
-  background: #f5efe6;
-  color: #261e18;
+  color: var(--coffee-ink);
+  background-color: var(--coffee-canvas);
+  background-image: var(--coffee-lamp), var(--coffee-grain);
+  background-repeat: no-repeat, no-repeat, repeat;
 }
 
-html[data-theme="coffee"] body,
-html:not([data-theme]) body {
-  background: #f5efe6;
-  color: #261e18;
+html[data-theme="coffee"] body {
+  color: var(--coffee-ink);
+  background-color: var(--coffee-canvas);
+  background-image: var(--coffee-lamp), var(--coffee-grain);
+  background-repeat: no-repeat, no-repeat, repeat;
   font-family: var(--font-sans);
 }
 
-/* Smooth selection & scrollbars */
-html[data-theme="coffee"] ::selection {
-  background: #edd5bc;
-  color: #452608;
-}
+html[data-theme="coffee"] ::selection { color: var(--coffee-ink); background: #ecd2ad; }
+html[data-theme="coffee"] * { scrollbar-color: #cfb89d transparent; }
 
-html[data-theme="coffee"] * {
-  scrollbar-color: #d6c8b4 transparent;
-}
-
-/* --------------------------------------------------------------------------
-   Sidebar (Warm Ivory Linen)
-   -------------------------------------------------------------------------- */
-html[data-theme="coffee"] .sidebar,
-html:not([data-theme]) .sidebar {
-  border-color: #e5dacb;
-  background: #faf5ee;
-  box-shadow: 0 4px 24px -2px rgba(65, 45, 25, 0.05), 0 2px 8px -1px rgba(65, 45, 25, 0.03);
-}
-
-html[data-theme="coffee"] .sidebar-toggle-btn,
-html:not([data-theme]) .sidebar-toggle-btn,
-html[data-theme="coffee"] .quick-view-header-toggle,
-html:not([data-theme]) .quick-view-header-toggle {
-  border-color: #e5dacb;
-  color: var(--text-muted);
-  background: #f5efe6;
-}
-
-html[data-theme="coffee"] .sidebar-toggle-btn:hover,
-html:not([data-theme]) .sidebar-toggle-btn:hover,
-html[data-theme="coffee"] .quick-view-header-toggle:hover,
-html:not([data-theme]) .quick-view-header-toggle:hover {
-  color: #261e18;
-  background: #ebe1d2;
-  border-color: #d6c8b4;
-}
-
-html[data-theme="coffee"] .brand strong,
-html:not([data-theme]) .brand strong {
+html[data-theme="coffee"] :where(.brand strong, .topbar h1, .notes-panel__heading h2, .quick-view-document-header h1, .dialog-header h2, .empty-state h3, .startup-error h1) {
+  color: var(--coffee-ink);
   font-family: var(--font-display);
-  letter-spacing: -0.015em;
-  color: #261e18;
+  font-style: normal;
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0;
 }
 
-html[data-theme="coffee"] .brand small,
-html:not([data-theme]) .brand small {
-  color: var(--text-muted);
-  font-weight: var(--font-weight-semibold);
+html[data-theme="coffee"] :where(button, input, select) {
+  font-family: var(--font-sans);
+  letter-spacing: 0;
+}
+
+html[data-theme="coffee"] textarea {
+  font-family: var(--coffee-font-read);
+  font-weight: var(--font-weight-regular);
+  letter-spacing: 0;
+}
+
+html[data-theme="coffee"] :where(.storage-status, .filter-count, .results-meta, .note-card__meta, .note-card__date, .quick-view-meta, .quick-view-context, .quick-view-content-label, .quick-view-dates, .note-editor-stats, .note-save-status, .dialog-footer__stats, .management-row__default, .usage-count, .detail-commandbar__state) {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+}
+
+html[data-theme="coffee"] :where(.eyebrow, .subtitle, .brand small, .filter-help, .filter-count, .results-meta, .note-card__meta, .quick-view-meta, .dialog-description, .organize-panel__count) { color: var(--coffee-muted); }
+
+html[data-theme="coffee"] :where(.filter-heading, .filter-section-title h2) {
+  color: var(--coffee-muted);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.12em;
+}
+
+/* The tagline reads like the café's hand-lettered subtitle. */
+html[data-theme="coffee"] .brand small {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: var(--font-weight-regular);
   letter-spacing: 0.01em;
 }
 
-html[data-theme="coffee"] .filter-heading,
-html[data-theme="coffee"] .filter-section-title h2,
-html:not([data-theme]) .filter-heading,
-html:not([data-theme]) .filter-section-title h2 {
-  color: var(--text-muted);
-  font-weight: var(--font-weight-bold);
-  letter-spacing: 0.06em;
-}
-
-html[data-theme="coffee"] .storage-status,
-html:not([data-theme]) .storage-status {
-  border-color: var(--backup-health-border, #e5dacb);
-  color: var(--backup-health-text, #5e4d41);
-  background: var(--backup-health-surface, #f0e6d6);
-}
-
-html[data-theme="coffee"] .text-button:not(:disabled),
-html:not([data-theme]) .text-button:not(:disabled) {
-  color: var(--primary-accent);
-}
-
-html[data-theme="coffee"] .text-button:hover:not(:disabled),
-html:not([data-theme]) .text-button:hover:not(:disabled) {
-  color: var(--primary-accent-hover);
-}
-
-html[data-theme="coffee"] .space-link:hover,
-html[data-theme="coffee"] .sidebar-filter:hover,
-html:not([data-theme]) .space-link:hover,
-html:not([data-theme]) .sidebar-filter:hover {
-  background: #f0e6d6;
-  color: #261e18;
-}
-
-html[data-theme="coffee"] .space-link.is-active,
-html[data-theme="coffee"] .sidebar-filter.is-active,
-html:not([data-theme]) .space-link.is-active,
-html:not([data-theme]) .sidebar-filter.is-active {
-  background: var(--primary-accent-soft);
-  color: var(--primary-accent-text);
-  border-color: var(--primary-accent-border);
-}
-
-html[data-theme="coffee"] .space-link.is-active .filter-count,
-html[data-theme="coffee"] .sidebar-filter.is-active .filter-count,
-html:not([data-theme]) .space-link.is-active .filter-count,
-html:not([data-theme]) .sidebar-filter.is-active .filter-count {
-  color: var(--primary-accent-text);
-}
-
-html[data-theme="coffee"] .space-link--trash.is-active,
-html:not([data-theme]) .space-link--trash.is-active {
-  border-color: #e6b8b5;
-  color: #9c3832;
-  background: #fbf0ef;
-}
-
-html[data-theme="coffee"] .space-link--trash.is-active .filter-count,
-html:not([data-theme]) .space-link--trash.is-active .filter-count {
-  color: #9c3832;
-}
-
-/* Type filters keep their own quiet tint rather than inheriting the global
- * Coffee accent. This mirrors Midnight's type-aware active state while
- * preserving Coffee's warm, low-contrast paper palette. */
-html[data-theme="coffee"] .sidebar-filter--type.is-active,
-html:not([data-theme]) .sidebar-filter--type.is-active {
-  border-color: var(--filter-type-border);
-  color: var(--filter-type-text);
-  background: var(--filter-type-background);
-}
-
-html[data-theme="coffee"] .sidebar-filter--type.is-active .filter-count,
-html:not([data-theme]) .sidebar-filter--type.is-active .filter-count {
-  color: inherit;
-}
-
-html[data-theme="coffee"] .active-filter-pill--type,
-html:not([data-theme]) .active-filter-pill--type {
-  border-color: var(--filter-type-border);
-  color: var(--filter-type-text);
-  background: var(--filter-type-background);
-}
-
-html[data-theme="coffee"] .sidebar-filter--indigo, html[data-theme="coffee"] .active-filter-pill--type-indigo,
-html:not([data-theme]) .sidebar-filter--indigo, html:not([data-theme]) .active-filter-pill--type-indigo { --filter-type-border: #d4cdea; --filter-type-text: #5c4c91; --filter-type-background: #f4f1fb; }
-html[data-theme="coffee"] .sidebar-filter--blue, html[data-theme="coffee"] .active-filter-pill--type-blue,
-html:not([data-theme]) .sidebar-filter--blue, html:not([data-theme]) .active-filter-pill--type-blue { --filter-type-border: #c8d9e9; --filter-type-text: #35668a; --filter-type-background: #eff6fb; }
-html[data-theme="coffee"] .sidebar-filter--sky, html[data-theme="coffee"] .active-filter-pill--type-sky,
-html:not([data-theme]) .sidebar-filter--sky, html:not([data-theme]) .active-filter-pill--type-sky { --filter-type-border: #c3dde7; --filter-type-text: #2f7182; --filter-type-background: #eef7f9; }
-html[data-theme="coffee"] .sidebar-filter--cyan, html[data-theme="coffee"] .active-filter-pill--type-cyan,
-html:not([data-theme]) .sidebar-filter--cyan, html:not([data-theme]) .active-filter-pill--type-cyan { --filter-type-border: #c0e0df; --filter-type-text: #28747a; --filter-type-background: #edf8f7; }
-html[data-theme="coffee"] .sidebar-filter--teal, html[data-theme="coffee"] .active-filter-pill--type-teal,
-html:not([data-theme]) .sidebar-filter--teal, html:not([data-theme]) .active-filter-pill--type-teal { --filter-type-border: #bfdfd5; --filter-type-text: #276e61; --filter-type-background: #ecf7f2; }
-html[data-theme="coffee"] .sidebar-filter--emerald, html[data-theme="coffee"] .active-filter-pill--type-emerald,
-html:not([data-theme]) .sidebar-filter--emerald, html:not([data-theme]) .active-filter-pill--type-emerald { --filter-type-border: #c1e0d0; --filter-type-text: #2a7155; --filter-type-background: #edf7f0; }
-html[data-theme="coffee"] .sidebar-filter--green, html[data-theme="coffee"] .active-filter-pill--type-green,
-html:not([data-theme]) .sidebar-filter--green, html:not([data-theme]) .active-filter-pill--type-green { --filter-type-border: #c9dfc0; --filter-type-text: #42723b; --filter-type-background: #f0f7eb; }
-html[data-theme="coffee"] .sidebar-filter--lime, html[data-theme="coffee"] .active-filter-pill--type-lime,
-html:not([data-theme]) .sidebar-filter--lime, html:not([data-theme]) .active-filter-pill--type-lime { --filter-type-border: #d9e2b8; --filter-type-text: #667c26; --filter-type-background: #f6f9eb; }
-html[data-theme="coffee"] .sidebar-filter--amber, html[data-theme="coffee"] .active-filter-pill--type-amber,
-html:not([data-theme]) .sidebar-filter--amber, html:not([data-theme]) .active-filter-pill--type-amber { --filter-type-border: #ecd5a7; --filter-type-text: #885b17; --filter-type-background: #fff6e3; }
-html[data-theme="coffee"] .sidebar-filter--orange, html[data-theme="coffee"] .active-filter-pill--type-orange,
-html:not([data-theme]) .sidebar-filter--orange, html:not([data-theme]) .active-filter-pill--type-orange { --filter-type-border: #edcfb5; --filter-type-text: #92531e; --filter-type-background: #fff3e9; }
-html[data-theme="coffee"] .sidebar-filter--red, html[data-theme="coffee"] .active-filter-pill--type-red,
-html:not([data-theme]) .sidebar-filter--red, html:not([data-theme]) .active-filter-pill--type-red { --filter-type-border: #ecc7c6; --filter-type-text: #943f44; --filter-type-background: #fff1f0; }
-html[data-theme="coffee"] .sidebar-filter--rose, html[data-theme="coffee"] .active-filter-pill--type-rose,
-html:not([data-theme]) .sidebar-filter--rose, html:not([data-theme]) .active-filter-pill--type-rose { --filter-type-border: #edc8d1; --filter-type-text: #994459; --filter-type-background: #fff1f4; }
-html[data-theme="coffee"] .sidebar-filter--pink, html[data-theme="coffee"] .active-filter-pill--type-pink,
-html:not([data-theme]) .sidebar-filter--pink, html:not([data-theme]) .active-filter-pill--type-pink { --filter-type-border: #edcadb; --filter-type-text: #98476f; --filter-type-background: #fff1f7; }
-html[data-theme="coffee"] .sidebar-filter--violet, html[data-theme="coffee"] .active-filter-pill--type-violet,
-html:not([data-theme]) .sidebar-filter--violet, html:not([data-theme]) .active-filter-pill--type-violet { --filter-type-border: #dbceeb; --filter-type-text: #6a4c97; --filter-type-background: #f6f1fc; }
-html[data-theme="coffee"] .sidebar-filter--purple, html[data-theme="coffee"] .active-filter-pill--type-purple,
-html:not([data-theme]) .sidebar-filter--purple, html:not([data-theme]) .active-filter-pill--type-purple { --filter-type-border: #e0cae9; --filter-type-text: #76478d; --filter-type-background: #faf1fa; }
-html[data-theme="coffee"] .sidebar-filter--slate, html[data-theme="coffee"] .active-filter-pill--type-slate,
-html:not([data-theme]) .sidebar-filter--slate, html:not([data-theme]) .active-filter-pill--type-slate { --filter-type-border: #d8dce1; --filter-type-text: #606a76; --filter-type-background: #f4f6f7; }
-
 /* --------------------------------------------------------------------------
-   Sidebar Tag Filters (Cohesive with Note Card .tag-chip style)
+   Sidebar: the café's menu board, dark stained wood with cream lettering
    -------------------------------------------------------------------------- */
-html[data-theme="coffee"] .tag-filter-option,
-html:not([data-theme]) .tag-filter-option {
-  background: #f0e6d6;
-  border: 1px solid #e5dacb;
-  color: #5e4d41;
-  border-radius: 5px;
-  transition: color var(--interaction-duration) var(--interaction-easing), background-color var(--interaction-duration) var(--interaction-easing), border-color var(--interaction-duration) var(--interaction-easing);
+html[data-theme="coffee"] .sidebar {
+  /* Shared tokens flip to chalk-on-wood inside the board. The light
+   * --coffee-* tokens are never redefined here, so tooltips stay light. */
+  --text-strong: var(--coffee-board-ink);
+  --text-default: var(--coffee-board-ink-soft);
+  --text-muted: var(--coffee-board-muted);
+  --surface-panel: var(--coffee-board-raised);
+  --surface-muted: var(--coffee-board-wash);
+  --surface-raised: var(--coffee-board-raised);
+  --border-subtle: var(--coffee-board-line);
+  --border-strong: var(--coffee-board-line-strong);
+  --border-focus: var(--coffee-board-caramel);
+  --component-surface: var(--coffee-board-raised);
+  --component-surface-muted: var(--coffee-board-wash);
+  --component-text: var(--coffee-board-ink-soft);
+  --component-text-muted: var(--coffee-board-muted);
+  --component-border: var(--coffee-board-line);
+  --component-border-strong: var(--coffee-board-line-strong);
+  --component-focus: var(--coffee-board-caramel-text);
+  --component-selected: rgb(224 160 102 / 16%);
+  --selected-surface: rgb(224 160 102 / 16%);
+  --selected-surface-hover: rgb(224 160 102 / 22%);
+  --selected-text: var(--coffee-board-ink);
+  --selected-border: rgb(224 160 102 / 40%);
+  --primary-accent: var(--coffee-board-caramel);
+  --primary-accent-hover: var(--coffee-board-caramel-hover);
+  --primary-accent-strong: var(--coffee-board-caramel-hover);
+  --primary-accent-text: var(--coffee-board-caramel-text);
+  --primary-accent-soft: rgb(224 160 102 / 16%);
+  --primary-accent-soft-hover: rgb(224 160 102 / 24%);
+  --primary-accent-border: rgb(224 160 102 / 42%);
+  --primary-accent-focus: rgb(232 176 124 / 30%);
+  --focus-color: var(--coffee-board-caramel-text);
+  --focus-ring: var(--coffee-board-caramel-text);
+  --focus-ring-soft: rgb(232 176 124 / 30%);
+  --skeleton-base: rgb(243 232 218 / 9%);
+  --skeleton-shine: rgb(243 232 218 / 17%);
+  --glass-secondary-ink: #e3d3bf;
+  --nature-ink: var(--coffee-board-chalk);
+  --backup-good-accent: #a9c28a;
+  --backup-warning-accent: #f0c98a;
+  --backup-never-accent: var(--coffee-board-caramel);
+
+  border: 1px solid var(--coffee-board-edge);
+  border-radius: var(--coffee-radius-dialog);
+  color: var(--coffee-board-ink);
+  background-color: var(--coffee-board);
+  background-image: var(--coffee-cup), var(--coffee-board-lamp), var(--coffee-wood);
+  background-repeat: no-repeat, no-repeat, no-repeat, repeat;
+  background-position: right 1.25rem bottom 1.1rem, 0 0, 0 0, 0 0;
+  background-size: 6.5rem, 100% 100%, 100% 100%, 220px 220px;
+  box-shadow: 0 2px 6px rgb(43 31 24 / 18%), 0 18px 40px -20px rgb(43 31 24 / 55%);
 }
 
-html[data-theme="coffee"] .tag-filter-option .filter-count,
-html:not([data-theme]) .tag-filter-option .filter-count {
-  color: var(--text-muted);
+/* The chalk cup drawing needs the full board; the narrow rail keeps the wood. */
+html[data-theme="coffee"] .app-shell:is(.is-sidebar-collapsed, .is-sidebar-collapsing, .is-sidebar-expanding) .sidebar,
+html[data-theme="coffee"][data-sidebar-collapsed="true"] .app-shell .sidebar {
+  background-image: none, var(--coffee-board-lamp), var(--coffee-wood);
 }
 
-html[data-theme="coffee"] .tag-filter-option:hover,
-html:not([data-theme]) .tag-filter-option:hover {
-  background: #ebe1d2;
-  border-color: #d8ccbd;
-  color: #261e18;
+/* Glass paints its own film and silhouette over the board. */
+html[data-theme="coffee"][data-glass="true"] .app-shell .sidebar { background-image: none; }
+
+html[data-theme="coffee"] :is(.sidebar, .sidebar *) { scrollbar-color: rgb(243 232 218 / 22%) transparent; }
+html[data-theme="coffee"] .brand-mark { filter: none; }
+html[data-theme="coffee"] .sidebar .brand strong { color: var(--coffee-board-ink); }
+html[data-theme="coffee"] .sidebar :where(.brand small, .filter-help, .filter-count, .sidebar-empty) { color: var(--coffee-board-muted); }
+html[data-theme="coffee"] .sidebar .space-navigation { border-bottom: 1px dashed rgb(243 232 218 / 16%); }
+
+/* Section names are set like a printed menu board: small, widely spaced capitals. */
+html[data-theme="coffee"] .sidebar .filter-heading { letter-spacing: 0; text-transform: none; }
+
+html[data-theme="coffee"] .sidebar :where(.filter-heading > span, .filter-section-title h2) {
+  color: var(--coffee-board-muted);
+  font-family: var(--font-sans);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
 }
 
-html[data-theme="coffee"] .tag-filter-option:hover .filter-count,
-html:not([data-theme]) .tag-filter-option:hover .filter-count {
-  color: #5e4d41;
+html[data-theme="coffee"] .sidebar .text-button { color: var(--coffee-board-caramel-text); }
+html[data-theme="coffee"] .sidebar .text-button:is(:hover, :focus-visible):not(:disabled) { color: var(--coffee-board-caramel-hover); }
+
+html[data-theme="coffee"] :where(.sidebar-toggle-btn, .quick-view-header-toggle) {
+  border: 1px solid var(--coffee-border);
+  color: var(--coffee-muted);
+  background: var(--coffee-foam);
+  box-shadow: none;
 }
 
-html[data-theme="coffee"] .tag-filter-option:has(input:checked),
-html[data-theme="coffee"] .tag-filter-option.is-active,
-html:not([data-theme]) .tag-filter-option:has(input:checked),
-html:not([data-theme]) .tag-filter-option.is-active {
-  background: var(--primary-accent-soft);
-  color: var(--primary-accent-text);
-  border-color: var(--primary-accent-border);
+/* Expanded only; the collapsed rail's accent-token toggle outranks this. */
+html[data-theme="coffee"] .sidebar :where(.sidebar-toggle-btn) {
+  border-color: var(--coffee-board-line);
+  color: var(--coffee-board-muted);
+  background: var(--coffee-board-raised);
 }
 
-html[data-theme="coffee"] .tag-filter-option:has(input:checked) .filter-count,
-html[data-theme="coffee"] .tag-filter-option.is-active .filter-count,
-html:not([data-theme]) .tag-filter-option:has(input:checked) .filter-count,
-html:not([data-theme]) .tag-filter-option.is-active .filter-count {
-  color: var(--primary-accent-text);
+html[data-theme="coffee"] .sidebar :where(.sidebar-toggle-btn):hover {
+  border-color: var(--coffee-board-line-strong);
+  color: var(--coffee-board-ink);
+  background: var(--coffee-board-hover);
 }
 
-/* --------------------------------------------------------------------------
-   Masthead & Topbar
-   -------------------------------------------------------------------------- */
-html[data-theme="coffee"] .topbar h1,
-html:not([data-theme]) .topbar h1 {
-  font-family: var(--font-display);
-  font-weight: var(--font-weight-bold);
-  letter-spacing: -0.025em;
-  color: #261e18;
+/* Backup status is a small order ticket; the mobile sheet shows it on paper. */
+html[data-theme="coffee"] .storage-status {
+  border: 1px solid var(--backup-health-border, var(--coffee-border));
+  border-radius: var(--radius-pill);
+  color: var(--backup-health-text, var(--coffee-ink-soft));
+  background: var(--backup-health-surface, var(--coffee-paper));
+  box-shadow: none;
 }
 
-html[data-theme="coffee"] .eyebrow,
-html:not([data-theme]) .eyebrow {
-  color: var(--primary-accent);
-  font-weight: var(--font-weight-bold);
-  letter-spacing: 0.08em;
+html[data-theme="coffee"] .sidebar .storage-status {
+  border-color: var(--backup-health-border, rgb(243 232 218 / 14%));
+  color: var(--backup-health-text, var(--coffee-board-ink-soft));
+  background: var(--backup-health-surface, rgb(243 232 218 / 5%));
 }
 
-html[data-theme="coffee"] .subtitle,
-html:not([data-theme]) .subtitle {
-  color: #5e4d41;
-}
-
-/* --------------------------------------------------------------------------
-   Notes Panel Container (Artisan Warm Writing Tray)
-   -------------------------------------------------------------------------- */
-html[data-theme="coffee"] .notes-panel,
-html:not([data-theme]) .notes-panel {
-  background: #faf6f0;
-  border: 1px solid #e5dacb;
-  border-radius: var(--radius-lg);
-  box-shadow: 0 4px 24px -2px rgba(65, 45, 25, 0.05), 0 2px 8px -1px rgba(65, 45, 25, 0.03);
-}
-
-html[data-theme="coffee"] .notes-panel__heading h2,
-html:not([data-theme]) .notes-panel__heading h2 {
-  font-family: var(--font-display);
-  font-weight: var(--font-weight-bold);
-  letter-spacing: -0.02em;
-  color: #261e18;
-}
-
-html[data-theme="coffee"] .notes-count,
-html:not([data-theme]) .notes-count {
-  background: #ebe1d2;
-  border-color: #d8ccbd;
-  color: #5e4d41;
-}
-
-/* --------------------------------------------------------------------------
-   Search & Toolbar (Floating Warm Panel inside Tray)
-   -------------------------------------------------------------------------- */
-html[data-theme="coffee"] .toolbar,
-html:not([data-theme]) .toolbar {
-  background: #f4ece1;
-  border-color: #e5dacb;
-  border-radius: 10px;
-  box-shadow: 0 1px 2px rgba(65, 45, 25, 0.03);
-}
-
-html[data-theme="coffee"] .toolbar.is-pinned,
-html:not([data-theme]) .toolbar.is-pinned {
-  background: rgba(250, 245, 238, 0.96);
-  border-color: #e5dacb;
-  box-shadow: 0 12px 28px rgba(65, 45, 25, 0.12);
-  backdrop-filter: blur(8px);
-}
-
-html[data-theme="coffee"] .search-field input:focus,
-html:not([data-theme]) .search-field input:focus {
-  border-color: var(--primary-accent) !important;
-  box-shadow: 0 0 0 3px var(--primary-accent-focus) !important;
-  outline: none !important;
-}
-
-html[data-theme="coffee"] .search-field input,
-html:not([data-theme]) .search-field input {
-  border-color: #d8ccbd;
-  background-color: #fdfbf7;
-  color: #261e18;
-  box-shadow: 0 1px 2px rgba(65, 45, 25, 0.05);
-}
-
-html[data-theme="coffee"] .search-field input::placeholder,
-html:not([data-theme]) .search-field input::placeholder {
-  color: var(--text-muted);
-}
-
-/* Search shortcut ⌘ F without cold blue borders */
-html[data-theme="coffee"] .search-shortcut,
-html:not([data-theme]) .search-shortcut {
-  background: #ebe1d2;
-  border-color: #d8ccbd;
-  color: #5e4d41;
-}
-
-html[data-theme="coffee"] .search-shortcut kbd,
-html:not([data-theme]) .search-shortcut kbd {
-  background: transparent !important;
-  border: 0 !important;
-  box-shadow: none !important;
-  color: #261e18 !important;
-  font-weight: var(--font-weight-bold);
-}
-
-html[data-theme="coffee"] .sort-field select,
-html:not([data-theme]) .sort-field select {
-  border-color: #d8ccbd;
-  background-color: #fdfbf7;
-  color: #261e18;
-}
-
-/* Segmented View Mode Control */
-html[data-theme="coffee"] .view-mode-control__choices,
-html[data-theme="coffee"] .note-editor-modes,
-html:not([data-theme]) .view-mode-control__choices,
-html:not([data-theme]) .note-editor-modes {
-  background: #fdfbf7;
-  border-color: #d8ccbd;
-}
-
-html[data-theme="coffee"] .view-mode-button,
-html[data-theme="coffee"] .note-editor-mode__button,
-html:not([data-theme]) .view-mode-button,
-html:not([data-theme]) .note-editor-mode__button {
-  color: var(--text-muted);
-  background: transparent;
+/* Rows on paper (the mobile filter sheet) */
+html[data-theme="coffee"] :where(.space-link, .sidebar-filter) {
+  border-radius: var(--coffee-radius-control);
+  color: var(--coffee-ink-soft);
+  font-weight: var(--font-weight-medium);
   transition:
-    color var(--interaction-duration) var(--interaction-easing),
-    background-color var(--interaction-duration) var(--interaction-easing),
-    transform var(--motion-duration-micro) var(--motion-ease-out);
+    color var(--coffee-transition-duration) var(--coffee-transition-easing),
+    background-color var(--coffee-transition-duration) var(--coffee-transition-easing),
+    box-shadow var(--coffee-transition-duration) var(--coffee-transition-easing),
+    transform var(--coffee-transition-duration) var(--coffee-transition-easing);
 }
 
-html[data-theme="coffee"] .view-mode-choice + .view-mode-choice .view-mode-button,
-html:not([data-theme]) .view-mode-choice + .view-mode-choice .view-mode-button,
-html[data-theme="coffee"] .view-mode-button + .view-mode-button,
-html:not([data-theme]) .view-mode-button + .view-mode-button {
-  border-left-color: #e5dacb;
+html[data-theme="coffee"] :where(.space-link, .sidebar-filter):hover { border-color: transparent; color: var(--coffee-ink); background: var(--coffee-latte); }
+
+html[data-theme="coffee"] :where(.space-link, .sidebar-filter):is(.is-active, [aria-pressed="true"]) {
+  color: var(--coffee-accent-text);
+  background: var(--coffee-accent-soft);
+  font-weight: var(--font-weight-semibold);
 }
 
-html[data-theme="coffee"] .view-mode-button:hover:not(.is-active),
-html[data-theme="coffee"] .note-editor-mode__button:hover:not([aria-pressed="true"]),
-html:not([data-theme]) .view-mode-button:hover:not(.is-active),
-html:not([data-theme]) .note-editor-mode__button:hover:not([aria-pressed="true"]) {
-  background: #f5efe6;
-  color: #261e18;
+html[data-theme="coffee"] :where(.space-link, .sidebar-filter):is(.is-active, [aria-pressed="true"]) :is(.filter-count, svg) { color: inherit; }
+html[data-theme="coffee"] :where(.space-link, .sidebar-filter):is(.is-active, [aria-pressed="true"]):hover { background: var(--coffee-accent-soft-hover); }
+html[data-theme="coffee"] .space-link--trash:is(.is-active, [aria-pressed="true"]) { color: var(--coffee-berry); background: var(--coffee-berry-soft); }
+
+/* Rows on the board: chalk text; the current place rests on a soft wash of
+ * milk foam, with its icon and count picked out in caramel. */
+html[data-theme="coffee"] .sidebar :where(.space-link, .sidebar-filter) { border-color: transparent; color: var(--coffee-board-ink-soft); }
+html[data-theme="coffee"] .sidebar :where(.space-link, .sidebar-filter):hover { border-color: transparent; color: var(--coffee-board-ink); background: rgb(243 232 218 / 6%); }
+
+html[data-theme="coffee"] .sidebar :where(.space-link, .sidebar-filter):is(.is-active, [aria-pressed="true"]) {
+  border-color: transparent;
+  color: #fffaf2;
+  background: rgb(243 232 218 / 11%);
+  box-shadow: inset 0 1px 0 rgb(255 248 236 / 5%);
 }
 
-html[data-theme="coffee"] .view-mode-button.is-active,
-html[data-theme="coffee"] .view-mode-button[aria-pressed="true"],
-html[data-theme="coffee"] .note-editor-mode__button[aria-pressed="true"],
-html:not([data-theme]) .view-mode-button.is-active,
-html:not([data-theme]) .view-mode-button[aria-pressed="true"],
-html:not([data-theme]) .note-editor-mode__button[aria-pressed="true"] {
-  background: #ebe1d2 !important;
-  color: #261e18 !important;
+html[data-theme="coffee"] .sidebar :where(.space-link, .sidebar-filter):is(.is-active, [aria-pressed="true"]) :is(.filter-count, svg, .sidebar-filter__icon) { color: var(--coffee-board-caramel-text); }
+html[data-theme="coffee"] .sidebar :where(.space-link, .sidebar-filter):is(.is-active, [aria-pressed="true"]):hover { background: rgb(243 232 218 / 14%); }
+
+html[data-theme="coffee"] .sidebar .space-link--trash:is(.is-active, [aria-pressed="true"]) {
+  color: #f4c4b8;
+  background: rgb(238 154 138 / 13%);
 }
 
-html[data-theme="coffee"] .results-meta,
-html:not([data-theme]) .results-meta {
-  color: var(--text-muted);
+html[data-theme="coffee"] .sidebar .space-link--trash:is(.is-active, [aria-pressed="true"]) :is(.filter-count, svg) { color: inherit; }
+html[data-theme="coffee"] .sidebar .space-link--trash:is(.is-active, [aria-pressed="true"]):hover { background: rgb(238 154 138 / 18%); }
+
+/* Glass lays its own sheen over the same foam wash. The shared glass edge is
+ * bright enough to read as an outline on dark wood, so it stays faint here. */
+html[data-theme="coffee"][data-glass="true"] .sidebar :is(.space-link, .sidebar-filter):is(.is-active, [aria-pressed="true"]) {
+  border-color: transparent;
+  background: var(--glass-sheen, none), rgb(243 232 218 / 13%);
+  box-shadow: inset 0 1px 0 rgb(255 248 236 / 6%);
 }
 
-/* Active Filters */
-html[data-theme="coffee"] .active-filter-pill,
-html:not([data-theme]) .active-filter-pill {
-  border: 1px solid var(--primary-accent-border);
-  background: var(--primary-accent-soft);
-  color: var(--primary-accent-text);
+html[data-theme="coffee"][data-glass="true"] .sidebar .space-link--trash:is(.is-active, [aria-pressed="true"]) {
+  background: var(--glass-sheen, none), rgb(238 154 138 / 15%);
 }
 
-html[data-theme="coffee"] .active-filter-pill__clear,
-html:not([data-theme]) .active-filter-pill__clear {
-  color: var(--primary-accent-text);
+/* Note types are café dyes: a deep tone on paper, a light tone in chalk. */
+html[data-theme="coffee"] :is(.type-dot--indigo, .type-badge--indigo, .sidebar-filter--indigo, .active-filter-pill--type-indigo) { --coffee-type: #46508a; --coffee-type-board: #a9b0e8; }
+html[data-theme="coffee"] :is(.type-dot--blue, .type-badge--blue, .sidebar-filter--blue, .active-filter-pill--type-blue) { --coffee-type: #2f5d85; --coffee-type-board: #9cc0e6; }
+html[data-theme="coffee"] :is(.type-dot--sky, .type-badge--sky, .sidebar-filter--sky, .active-filter-pill--type-sky) { --coffee-type: #2c6585; --coffee-type-board: #95cbe6; }
+html[data-theme="coffee"] :is(.type-dot--cyan, .type-badge--cyan, .sidebar-filter--cyan, .active-filter-pill--type-cyan) { --coffee-type: #22686c; --coffee-type-board: #8fd0d4; }
+html[data-theme="coffee"] :is(.type-dot--teal, .type-badge--teal, .sidebar-filter--teal, .active-filter-pill--type-teal) { --coffee-type: #23655c; --coffee-type-board: #8ccfbf; }
+html[data-theme="coffee"] :is(.type-dot--emerald, .type-badge--emerald, .sidebar-filter--emerald, .active-filter-pill--type-emerald) { --coffee-type: #2f6a4c; --coffee-type-board: #93d0a8; }
+html[data-theme="coffee"] :is(.type-dot--green, .type-badge--green, .sidebar-filter--green, .active-filter-pill--type-green) { --coffee-type: #4c6a32; --coffee-type-board: #a8cf8f; }
+html[data-theme="coffee"] :is(.type-dot--lime, .type-badge--lime, .sidebar-filter--lime, .active-filter-pill--type-lime) { --coffee-type: #5c6322; --coffee-type-board: #c7d27f; }
+html[data-theme="coffee"] :is(.type-dot--amber, .type-badge--amber, .sidebar-filter--amber, .active-filter-pill--type-amber) { --coffee-type: #87590f; --coffee-type-board: #ebc46f; }
+html[data-theme="coffee"] :is(.type-dot--orange, .type-badge--orange, .sidebar-filter--orange, .active-filter-pill--type-orange) { --coffee-type: #9a4f1d; --coffee-type-board: #eea676; }
+html[data-theme="coffee"] :is(.type-dot--red, .type-badge--red, .sidebar-filter--red, .active-filter-pill--type-red) { --coffee-type: #a03a2c; --coffee-type-board: #ee9a8a; }
+html[data-theme="coffee"] :is(.type-dot--rose, .type-badge--rose, .sidebar-filter--rose, .active-filter-pill--type-rose) { --coffee-type: #983a50; --coffee-type-board: #eda0b0; }
+html[data-theme="coffee"] :is(.type-dot--pink, .type-badge--pink, .sidebar-filter--pink, .active-filter-pill--type-pink) { --coffee-type: #94406a; --coffee-type-board: #eda5c8; }
+html[data-theme="coffee"] :is(.type-dot--violet, .type-badge--violet, .sidebar-filter--violet, .active-filter-pill--type-violet) { --coffee-type: #634a8c; --coffee-type-board: #bba6e6; }
+html[data-theme="coffee"] :is(.type-dot--purple, .type-badge--purple, .sidebar-filter--purple, .active-filter-pill--type-purple) { --coffee-type: #723f7a; --coffee-type-board: #cfa3dc; }
+html[data-theme="coffee"] :is(.type-dot--slate, .type-badge--slate, .sidebar-filter--slate, .active-filter-pill--type-slate) { --coffee-type: #5b5148; --coffee-type-board: #b9b0a6; }
+
+html[data-theme="coffee"] :is(.type-badge, .sidebar-filter--type, .active-filter-pill--type) {
+  --filter-type-border: color-mix(in srgb, var(--coffee-type) 28%, transparent);
+  --filter-type-text: var(--coffee-type);
+  --filter-type-background: color-mix(in srgb, var(--coffee-type) 10%, var(--coffee-foam));
+  --detail-type-chip-border: color-mix(in srgb, var(--coffee-type) 28%, transparent);
+  --detail-type-chip-color: var(--coffee-type);
+  --detail-type-chip-background: color-mix(in srgb, var(--coffee-type) 10%, var(--coffee-foam));
 }
 
-html[data-theme="coffee"] .active-filter-pill__clear:hover,
-html:not([data-theme]) .active-filter-pill__clear:hover {
-  background: var(--primary-accent-soft-hover);
+html[data-theme="coffee"] .type-dot { background: var(--coffee-type); box-shadow: none; }
+html[data-theme="coffee"] .sidebar .type-dot { background: var(--coffee-type-board); }
+
+html[data-theme="coffee"] .sidebar-filter--type:is(.is-active, [aria-pressed="true"]) {
+  color: var(--coffee-type);
+  background: color-mix(in srgb, var(--coffee-type) 10%, var(--coffee-foam));
 }
 
-/* Keep type pills aligned with their selected sidebar filters. */
-html[data-theme="coffee"] .active-filter-pill.active-filter-pill--type,
-html:not([data-theme]) .active-filter-pill.active-filter-pill--type {
-  border-color: var(--filter-type-border);
-  color: var(--filter-type-text);
-  background: var(--filter-type-background);
+html[data-theme="coffee"] .sidebar .sidebar-filter--type:is(.is-active, [aria-pressed="true"]) {
+  color: #fffaf2;
+  background: color-mix(in srgb, var(--coffee-type-board) 14%, transparent);
 }
 
-html[data-theme="coffee"] .active-filter-clear-all,
-html:not([data-theme]) .active-filter-clear-all {
-  color: var(--primary-accent);
+html[data-theme="coffee"] .sidebar .sidebar-filter--type:is(.is-active, [aria-pressed="true"]) .filter-count { color: var(--coffee-type-board); }
+html[data-theme="coffee"] .sidebar .sidebar-filter--type:is(.is-active, [aria-pressed="true"]):hover { background: color-mix(in srgb, var(--coffee-type-board) 20%, transparent); }
+
+html[data-theme="coffee"][data-glass="true"] .sidebar .sidebar-filter--type:is(.is-active, [aria-pressed="true"]) {
+  background: var(--glass-sheen, none), color-mix(in srgb, var(--coffee-type-board) 16%, transparent);
 }
 
-/* --------------------------------------------------------------------------
-   Cards & Note List (Milled Cotton Paper Sheet)
-   -------------------------------------------------------------------------- */
-html[data-theme="coffee"] .note-card,
-html:not([data-theme]) .note-card {
-  border-radius: var(--radius-card, 0.625rem);
-  box-shadow: 0 1px 3px rgba(65, 45, 25, 0.04), 0 3px 8px rgba(65, 45, 25, 0.02);
-  transition:
-    transform var(--motion-duration-micro) var(--interaction-easing),
-    box-shadow var(--motion-duration-micro) var(--interaction-easing),
-    border-color var(--motion-duration-micro) var(--interaction-easing),
-    background-color var(--motion-duration-micro) var(--interaction-easing);
-}
+/* The collapsed rail grows type dots into initial chips: light dye discs
+ * written in board-dark ink, with a chalk ring around the current one. */
+@media (min-width: 821px) {
+  html[data-theme="coffee"] .app-shell.is-sidebar-collapsed .sidebar-filter--type .type-dot,
+  html[data-theme="coffee"][data-sidebar-collapsed="true"] .app-shell .sidebar-filter--type .type-dot {
+    color: var(--coffee-board);
+    background: var(--coffee-type-board);
+    box-shadow: none;
+    font-family: var(--font-sans);
+    font-weight: var(--font-weight-bold);
+  }
 
-html[data-theme="coffee"] .note-card:hover,
-html:not([data-theme]) .note-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 18px rgba(65, 45, 25, 0.08), 0 2px 6px rgba(65, 45, 25, 0.04);
-  border-color: #d6c8b4;
-}
-
-html[data-theme="coffee"] .note-card--pinned,
-html:not([data-theme]) .note-card--pinned {
-  border-color: var(--pinned-card-border);
-  background: var(--pinned-card-surface);
-  box-shadow: var(--pinned-card-shadow);
-  transform: none;
-}
-
-@media (hover: hover) and (pointer: fine) {
-  html[data-theme="coffee"] .note-card--pinned:hover,
-  html[data-theme="coffee"] .note-card--pinned.is-hover,
-  html:not([data-theme]) .note-card--pinned:hover,
-  html:not([data-theme]) .note-card--pinned.is-hover {
-    border-color: var(--pinned-card-border-hover);
+  html[data-theme="coffee"] .app-shell.is-sidebar-collapsed .sidebar-filter--type:is(.is-active, [aria-pressed="true"]) .type-dot,
+  html[data-theme="coffee"][data-sidebar-collapsed="true"] .app-shell .sidebar-filter--type:is(.is-active, [aria-pressed="true"]) .type-dot {
+    box-shadow: 0 0 0 2px var(--coffee-board), 0 0 0 3.5px var(--coffee-type-board);
   }
 }
 
-html[data-theme="coffee"] .note-card__title,
-html:not([data-theme]) .note-card__title {
-  transition: color var(--interaction-duration) var(--motion-ease-out);
+/* Tags are little paper pills with a caramel number sign. */
+html[data-theme="coffee"] :where(.tag-filter-option, .tag-chip, .selected-tag, .quick-view-tag, .tag-add-button),
+html[data-theme="coffee"] .note-card .tag-chip {
+  border: 1px solid var(--coffee-border);
+  border-radius: var(--radius-pill);
+  color: var(--coffee-ink-soft);
+  background: var(--coffee-paper);
+  box-shadow: none;
+  font-weight: var(--font-weight-medium);
+  transition:
+    color var(--coffee-transition-duration) var(--coffee-transition-easing),
+    background-color var(--coffee-transition-duration) var(--coffee-transition-easing),
+    border-color var(--coffee-transition-duration) var(--coffee-transition-easing);
 }
 
-html[data-theme="coffee"] .note-card:hover .note-card__title,
-html:not([data-theme]) .note-card:hover .note-card__title {
-  color: var(--primary-accent);
-}
-
-html[data-theme="coffee"] .note-card__footer,
-html:not([data-theme]) .note-card__footer {
-  border-top-color: #eee4d5;
-}
-
-html[data-theme="coffee"] .tag-chip,
-html[data-theme="coffee"] .note-tag-chip,
-html[data-theme="coffee"] .selected-tag,
-html:not([data-theme]) .tag-chip,
-html:not([data-theme]) .note-tag-chip,
-html:not([data-theme]) .selected-tag {
-  border-radius: 5px;
-}
-
-html[data-theme="coffee"] .tag-chip:hover,
-html:not([data-theme]) .tag-chip:hover {
-  background: var(--primary-accent-soft);
-  color: var(--primary-accent-text);
-  border-color: var(--primary-accent-border);
-}
-
-/* --------------------------------------------------------------------------
-   Pagination (Warm Artisan Controls)
-   -------------------------------------------------------------------------- */
-html[data-theme="coffee"] .pagination-button,
-html:not([data-theme]) .pagination-button {
-  color: #5e4d41;
-  border-radius: 6px;
-}
-
-html[data-theme="coffee"] .pagination-button:hover:not(:disabled),
-html:not([data-theme]) .pagination-button:hover:not(:disabled) {
-  background: #ebe1d2;
-  border-color: #d8ccbd;
-  color: #261e18;
-}
-
-html[data-theme="coffee"] .pagination-button.is-active,
-html:not([data-theme]) .pagination-button.is-active {
-  background: var(--primary-accent-soft);
-  border-color: var(--primary-accent-border);
-  color: var(--primary-accent-text);
-  font-weight: var(--font-weight-bold);
-}
-
-html[data-theme="coffee"] .pagination-button:disabled,
-html:not([data-theme]) .pagination-button:disabled {
-  color: #bfaea0;
-}
-
-html[data-theme="coffee"] .pagination-ellipsis,
-html:not([data-theme]) .pagination-ellipsis {
-  color: var(--text-muted);
-}
-
-/* --------------------------------------------------------------------------
-   Buttons & Interactive Elements (Tactile Craftsman)
-   -------------------------------------------------------------------------- */
-html[data-theme="coffee"] .button-primary,
-html:not([data-theme]) .button-primary {
-  background: var(--primary-accent);
-  color: #ffffff;
-  border-radius: 6px;
+html[data-theme="coffee"] :where(.tag-filter-option__name, .tag-chip)::before,
+html[data-theme="coffee"] .note-card .tag-chip::before,
+html[data-theme="coffee"] :is(.note-dialog .selected-tag > span:first-child, .note-detail-surface .quick-view-tag)::before {
+  content: "#";
+  margin-right: 0.08em;
+  color: var(--coffee-accent);
   font-weight: var(--font-weight-semibold);
-  box-shadow: 0 2px 6px rgba(163, 86, 22, 0.22);
-  transition: color var(--interaction-duration) var(--interaction-easing), background-color var(--interaction-duration) var(--interaction-easing), border-color var(--interaction-duration) var(--interaction-easing), box-shadow var(--interaction-duration) var(--interaction-easing), transform var(--motion-duration-micro) var(--motion-ease-out);
 }
 
-html[data-theme="coffee"] .button-primary:hover:not(:disabled),
-html:not([data-theme]) .button-primary:hover:not(:disabled) {
-  background: var(--primary-accent-hover);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 14px rgba(163, 86, 22, 0.32);
+html[data-theme="coffee"] .tag-filter-option .filter-count { color: var(--coffee-muted); }
+
+html[data-theme="coffee"] .tag-filter-option:is(:has(input:checked), .is-active),
+html[data-theme="coffee"] .tag-chip.is-selected,
+html[data-theme="coffee"] .note-card .tag-chip.is-selected {
+  border-color: var(--coffee-accent-border);
+  color: var(--coffee-accent-text);
+  background: var(--coffee-accent-soft);
 }
 
-html[data-theme="coffee"] .button-secondary,
-html:not([data-theme]) .button-secondary {
-  border-color: #d8ccbd;
-  background: #fdfbf7;
-  color: #261e18;
-  box-shadow: 0 1px 2px rgba(65, 45, 25, 0.04);
+html[data-theme="coffee"] .tag-filter-option:is(:has(input:checked), .is-active) .filter-count { color: var(--coffee-accent-text); }
+html[data-theme="coffee"] .tag-filter-option:has(input:focus-visible) { outline: 2px solid var(--coffee-accent); outline-offset: 2px; }
+
+/* On the board, tags are chalk outlines; a chosen one is filled with caramel. */
+html[data-theme="coffee"] .sidebar :where(.tag-filter-option) {
+  border-color: rgb(243 232 218 / 18%);
+  color: var(--coffee-board-ink-soft);
+  background: rgb(243 232 218 / 5%);
 }
 
-html[data-theme="coffee"] .button-secondary:hover:not(:disabled),
-html:not([data-theme]) .button-secondary:hover:not(:disabled) {
-  background: #f0e6d6;
-  border-color: #c4b39b;
+html[data-theme="coffee"] .sidebar .tag-filter-option__name::before { color: var(--coffee-board-caramel-text); }
+html[data-theme="coffee"] .sidebar .tag-filter-option .filter-count { color: var(--coffee-board-muted); }
+
+html[data-theme="coffee"] .sidebar :where(.tag-filter-option):hover {
+  border-color: rgb(243 232 218 / 32%);
+  color: var(--coffee-board-ink);
+  background: rgb(243 232 218 / 10%);
 }
 
-html[data-theme="coffee"] .button-danger,
-html:not([data-theme]) .button-danger {
-  color: #a83232;
-  background: #fbf0ee;
-  border-color: #f2d2cd;
+html[data-theme="coffee"] .sidebar .tag-filter-option:is(:has(input:checked), .is-active) {
+  border-color: transparent;
+  color: var(--coffee-board);
+  background: var(--coffee-board-caramel);
 }
 
-html[data-theme="coffee"] .button-danger:hover:not(:disabled),
-html:not([data-theme]) .button-danger:hover:not(:disabled) {
-  background: #a83232;
-  color: #ffffff;
-  border-color: #a83232;
+html[data-theme="coffee"] .sidebar .tag-filter-option:is(:has(input:checked), .is-active) .filter-count,
+html[data-theme="coffee"] .sidebar .tag-filter-option:is(:has(input:checked), .is-active) .tag-filter-option__name::before { color: #3d2a1d; }
+html[data-theme="coffee"] .sidebar .tag-filter-option:is(:has(input:checked), .is-active):hover { background: var(--coffee-board-caramel-hover); }
+html[data-theme="coffee"] .sidebar .tag-filter-option:has(input:focus-visible) { outline-color: var(--coffee-board-caramel-text); }
+
+html[data-theme="coffee"] .notes-list--compact .note-card__tags .tag-chip {
+  min-height: 1.3rem;
+  padding-block: 0.1rem;
+  padding-inline: 0.42rem;
+  font-size: 0.65rem;
+}
+
+html[data-theme="coffee"] .notes-list--compact .note-card__tags .more-tags { font-size: 0.65rem; color: var(--coffee-muted); }
+
+/* Type badges are soft dyed pills led by a dot of their colour. */
+html[data-theme="coffee"] .type-badge,
+html[data-theme="coffee"] .note-card .type-badge,
+html[data-theme="coffee"] .active-filter-pill.active-filter-pill--type,
+html[data-theme="coffee"] :is(.note-dialog, .note-detail-surface, .note-secondary-surface) .note-type-picker__trigger {
+  border: 1px solid color-mix(in srgb, var(--coffee-type) 28%, transparent);
+  border-radius: var(--radius-pill);
+  color: var(--coffee-type);
+  background-color: color-mix(in srgb, var(--coffee-type) 10%, var(--coffee-foam));
+  box-shadow: none;
+  font-family: var(--font-sans);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.01em;
+  text-transform: none;
+}
+
+html[data-theme="coffee"] .type-badge:not(.note-type-picker__trigger) {
+  padding-inline: 0.5rem 0.6rem;
+  font-size: 0.68rem;
+  vertical-align: middle;
+}
+
+/* Inline-block, because card badges are blocks so their names can ellipsize. */
+html[data-theme="coffee"] :is(.type-badge:not(.note-type-picker__trigger), .active-filter-pill--type)::before {
+  content: "";
+  display: inline-block;
+  flex: none;
+  margin-inline-end: 0.32rem;
+  vertical-align: 0.06em;
+  width: 0.42rem;
+  height: 0.42rem;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+/* The filter pill already spaces its children with a gap. */
+html[data-theme="coffee"] .active-filter-pill.active-filter-pill--type::before { margin-inline-end: 0; }
+
+html[data-theme="coffee"] .notes-list--compact .type-badge {
+  min-height: 1.25rem;
+  padding: 0.08rem 0.45rem;
+  font-size: 0.62rem;
+}
+
+html[data-theme="coffee"] .type-badge--filter:focus-visible {
+  outline: 2px solid var(--coffee-type);
+  outline-offset: var(--focus-ring-offset);
+}
+
+/* The editor's type picker keeps its chevron and shows its own dot. */
+html[data-theme="coffee"] :is(.note-dialog, .note-detail-surface, .note-secondary-surface) .note-type-picker__trigger {
+  cursor: pointer;
+  transition:
+    background-color var(--coffee-transition-duration) var(--coffee-transition-easing),
+    border-color var(--coffee-transition-duration) var(--coffee-transition-easing);
+}
+
+html[data-theme="coffee"] :is(.note-dialog, .note-detail-surface, .note-secondary-surface) .note-type-picker__trigger .type-dot {
+  display: inline-block;
+  flex: none;
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+html[data-theme="coffee"] :is(.note-dialog, .note-detail-surface, .note-secondary-surface) .note-type-picker__trigger:hover,
+html[data-theme="coffee"] :is(.note-dialog, .note-detail-surface, .note-secondary-surface) .note-type-picker__trigger[aria-expanded="true"] {
+  border-color: color-mix(in srgb, var(--coffee-type) 55%, transparent);
+  background-color: color-mix(in srgb, var(--coffee-type) 16%, var(--coffee-foam));
+}
+
+html[data-theme="coffee"] :is(.note-dialog, .note-detail-surface, .note-secondary-surface) .note-type-picker__trigger:focus-visible {
+  outline: 2px solid var(--coffee-type);
+  outline-offset: var(--focus-ring-offset);
+}
+
+html[data-theme="coffee"] .active-filter-pill.active-filter-pill--type .active-filter-pill__clear {
+  color: var(--coffee-type);
+  transition:
+    color var(--coffee-transition-duration) var(--coffee-transition-easing),
+    background-color var(--coffee-transition-duration) var(--coffee-transition-easing);
+}
+
+html[data-theme="coffee"] .active-filter-pill.active-filter-pill--type .active-filter-pill__clear:hover { background: color-mix(in srgb, var(--coffee-type) 14%, transparent); }
+html[data-theme="coffee"] .active-filter-pill.active-filter-pill--type .active-filter-pill__clear:focus-visible { outline: 2px solid var(--coffee-type); outline-offset: 1px; }
+
+html[data-theme="coffee"] :where(.more-tags, .untagged),
+html[data-theme="coffee"] .note-card :where(.more-tags, .untagged) { color: var(--coffee-muted); }
+
+html[data-theme="coffee"] :where(.active-filter-pill, .notes-count, .usage-count, .management-row__default) {
+  border: 1px solid var(--coffee-border);
+  border-radius: var(--radius-pill);
+  color: var(--coffee-ink-soft);
+  background: var(--coffee-latte);
+  box-shadow: none;
+  font-weight: var(--font-weight-semibold);
+}
+
+html[data-theme="coffee"] :where(.notes-count, .active-filter-pill.is-active) { background: var(--coffee-foam); }
+html[data-theme="coffee"] :where(.text-button, .active-filter-clear-all, .active-filter-pill__clear) { color: var(--coffee-accent-text); font-weight: var(--font-weight-semibold); text-decoration-color: currentColor; }
+
+/* --------------------------------------------------------------------------
+   Library: a wooden tray of notes under the lamp
+   -------------------------------------------------------------------------- */
+html[data-theme="coffee"] .notes-panel {
+  border: 1px solid var(--coffee-border);
+  border-radius: var(--coffee-radius-dialog);
+  color: var(--coffee-ink);
+  background: var(--coffee-tray);
+  box-shadow: var(--coffee-shadow-sm);
+}
+
+html[data-theme="coffee"] .notes-panel__heading { border-bottom-color: var(--coffee-border); }
+
+html[data-theme="coffee"] :where(.toolbar, .topbar-actions.is-pinned) {
+  border: 1px solid var(--coffee-border);
+  border-radius: var(--coffee-radius-card);
+  background: var(--coffee-foam);
+  box-shadow: var(--coffee-shadow-xs);
+}
+
+/* Inputs, menus, and segmented controls */
+html[data-theme="coffee"] :where(input:not([type]), input[type="text"], input[type="search"]:not(#command-search), input[type="email"], input[type="url"], textarea, select, .color-picker__trigger) {
+  border: 1px solid var(--coffee-border-input) !important;
+  border-radius: var(--coffee-radius-control) !important;
+  color: var(--coffee-ink) !important;
+  background-color: var(--coffee-foam) !important;
+  box-shadow: inset 0 1px 2px rgb(62 39 25 / 5%) !important;
+}
+
+html[data-theme="coffee"] :where(input, textarea)::placeholder { color: var(--coffee-muted); opacity: 1; }
+
+html[data-theme="coffee"] :where(input:not([type]), input[type="text"], input[type="search"]:not(#command-search), input[type="email"], input[type="url"], textarea, select, .color-picker__trigger):is(:focus, :focus-visible),
+html[data-theme="coffee"] .tag-picker:focus-within {
+  border-color: var(--coffee-accent) !important;
+  outline: 2px solid transparent !important;
+  background-color: var(--coffee-foam) !important;
+  box-shadow: 0 0 0 3px rgb(154 85 35 / 20%) !important;
+}
+
+html[data-theme="coffee"] :where(input, textarea, select):disabled { border-color: var(--coffee-border) !important; color: var(--coffee-disabled-ink) !important; background: var(--coffee-disabled-surface) !important; box-shadow: none !important; }
+html[data-theme="coffee"] :where(input, textarea):invalid { border-color: var(--coffee-berry) !important; }
+html[data-theme="coffee"] :where(.field-error, .note-save-status.is-error) { color: var(--coffee-berry); font-weight: var(--font-weight-semibold); }
+
+html[data-theme="coffee"] .clear-search {
+  border: 1px solid var(--coffee-accent-border);
+  border-radius: var(--radius-pill);
+  color: var(--coffee-accent-text);
+  background: var(--coffee-accent-soft);
+  box-shadow: none;
+}
+
+html[data-theme="coffee"] .clear-search:focus-visible { outline: 2px solid var(--coffee-accent); outline-offset: var(--focus-ring-offset); }
+html[data-theme="coffee"] .search-icon { color: var(--coffee-muted); text-shadow: none; }
+
+html[data-theme="coffee"] .sort-field__trigger {
+  border: 1px solid var(--coffee-border-input);
+  border-radius: var(--coffee-radius-control);
+  color: var(--coffee-ink);
+  background-color: var(--coffee-foam);
+  box-shadow: var(--coffee-shadow-xs);
+}
+
+/* Segmented controls are a latte-coloured track holding a foam pill. */
+html[data-theme="coffee"] :where(.view-mode-control__choices, .note-editor-modes) {
+  border: 1px solid var(--coffee-border);
+  border-radius: var(--coffee-radius-control);
+  background: var(--coffee-latte);
+  box-shadow: inset 0 1px 2px rgb(62 39 25 / 6%);
+}
+
+html[data-theme="coffee"] :where(.view-mode-button, .note-editor-mode__button) {
+  border-radius: 8px;
+  color: var(--coffee-muted);
+  background: transparent;
+  transition:
+    color var(--coffee-transition-duration) var(--coffee-transition-easing),
+    background-color var(--coffee-transition-duration) var(--coffee-transition-easing),
+    box-shadow var(--coffee-transition-duration) var(--coffee-transition-easing);
+}
+
+html[data-theme="coffee"] .view-mode-choice + .view-mode-choice .view-mode-button,
+html[data-theme="coffee"] .view-mode-button + .view-mode-button { border-left-color: transparent; }
+
+html[data-theme="coffee"] :is(.view-mode-button.is-active, .view-mode-button[aria-pressed="true"], .note-editor-mode__button[aria-pressed="true"]) {
+  color: var(--coffee-accent-text);
+  background: var(--coffee-foam);
+  box-shadow: 0 0 0 1px var(--coffee-border), var(--coffee-shadow-xs);
+}
+
+html[data-theme="coffee"] :where(.sort-field__menu, .tag-suggestions, .note-type-picker__menu, .color-picker__menu) {
+  border: 1px solid var(--coffee-border-input);
+  border-radius: 12px;
+  color: var(--coffee-ink);
+  background: var(--coffee-foam);
+  box-shadow: var(--coffee-shadow-md);
+}
+
+/* The card More menu is a top-layer popover styled after this file loads. */
+html[data-theme="coffee"] .note-card .note-card__actions[popover] {
+  border: 1px solid var(--coffee-border-input);
+  border-radius: 12px;
+  background: var(--coffee-foam);
+  box-shadow: var(--coffee-shadow-md);
+}
+
+html[data-theme="coffee"] .note-card .note-card__actions[popover] > .note-card__action:not(.note-card__action--danger):is(:hover, :focus-visible):not(:disabled) {
+  color: var(--coffee-accent-text);
+  background: var(--coffee-accent-soft);
+}
+
+html[data-theme="coffee"] :where(.sort-field__option, .tag-suggestion, .note-type-picker__option, .color-picker__option) { border-radius: 8px; color: var(--coffee-ink); }
+html[data-theme="coffee"] :where(.sort-field__option, .tag-suggestion, .note-type-picker__option, .color-picker__option):is(:hover, :focus-visible),
+html[data-theme="coffee"] :where(.sort-field__option, .tag-suggestion, .note-type-picker__option, .color-picker__option)[aria-selected="true"] { outline: none; color: var(--coffee-accent-text); background: var(--coffee-accent-soft); }
+
+/* --------------------------------------------------------------------------
+   Buttons: glazed caramel and cream ceramic that lift softly
+   -------------------------------------------------------------------------- */
+html[data-theme="coffee"] :where(.button-primary, .button-secondary, .button-danger, .icon-button, .mobile-filter-toggle) {
+  border: 1px solid var(--coffee-border-input);
+  border-radius: var(--coffee-radius-control);
+  color: var(--coffee-ink);
+  box-shadow: none;
+  font-weight: var(--font-weight-semibold);
+  transition:
+    color var(--coffee-transition-duration) var(--coffee-transition-easing),
+    background-color var(--coffee-transition-duration) var(--coffee-transition-easing),
+    border-color var(--coffee-transition-duration) var(--coffee-transition-easing),
+    box-shadow var(--coffee-transition-duration) var(--coffee-transition-easing),
+    transform var(--coffee-transition-duration) var(--coffee-transition-easing);
+}
+
+html[data-theme="coffee"] .button-primary {
+  border-color: #7d4219;
+  color: var(--coffee-cream);
+  background: linear-gradient(180deg, #a65f2a, #8f4d1d) #9a5523;
+  box-shadow: inset 0 1px 0 rgb(255 236 210 / 22%), 0 1px 2px rgb(62 39 25 / 18%), 0 6px 14px -8px rgb(154 85 35 / 55%);
+}
+
+html[data-theme="coffee"] .button-secondary { background: var(--coffee-foam); box-shadow: var(--coffee-shadow-xs); }
+html[data-theme="coffee"] :where(.icon-button, .mobile-filter-toggle) { background: var(--coffee-foam); }
+
+html[data-theme="coffee"] .button-danger {
+  border-color: #84301f;
+  color: var(--coffee-cream);
+  background: linear-gradient(180deg, #ad4434, #96362a) #a03a2c;
+  box-shadow: inset 0 1px 0 rgb(255 226 216 / 20%), 0 1px 2px rgb(62 39 25 / 18%);
+}
+
+html[data-theme="coffee"] .topbar-actions .theme-toggle:not(.topbar-preferences__button) { border-radius: var(--coffee-radius-control); padding-inline: 0.82rem; }
+html[data-theme="coffee"] .topbar-actions .theme-toggle__icon { width: 1.05rem; height: 1.05rem; }
+
+html[data-theme="coffee"] :where(.button-primary, .button-secondary, .button-danger, .icon-button, .mobile-filter-toggle):focus-visible,
+html[data-theme="coffee"] :where(.pagination-button, .note-card__action, .note-formatting-tool__button):focus-visible { outline: 2px solid var(--coffee-accent); outline-offset: var(--focus-ring-offset); }
+
+html[data-theme="coffee"] :where(.button-primary, .button-secondary, .button-danger, .icon-button, .mobile-filter-toggle):active:not(:disabled) { transform: translateY(1px); }
+html[data-theme="coffee"] :where(.button-primary, .button-danger):active:not(:disabled) { box-shadow: inset 0 2px 3px rgb(43 31 24 / 22%); }
+html[data-theme="coffee"] :where(.button-primary, .button-secondary, .button-danger, .icon-button, .mobile-filter-toggle):disabled { border-color: var(--coffee-border); color: var(--coffee-disabled-ink); background: var(--coffee-disabled-surface); box-shadow: none; transform: none; }
+
+html[data-theme="coffee"] :where(.pagination-button, .note-card__action, .note-formatting-tool__button) { border: 1px solid transparent; border-radius: var(--coffee-radius-control); color: var(--coffee-ink-soft); background: transparent; }
+html[data-theme="coffee"] .pagination-button.is-active { border-color: #7d4219; color: var(--coffee-cream); background: var(--coffee-accent); box-shadow: var(--coffee-shadow-xs); }
+html[data-theme="coffee"] :where(.pagination-button:disabled, .pagination-ellipsis) { color: var(--coffee-disabled-ink); }
+html[data-theme="coffee"] :is(.note-card__action--danger, .note-card__action--permanent):is(:hover, :focus-visible):not(:disabled) { border-color: var(--coffee-berry-border); color: var(--coffee-berry); background: var(--coffee-berry-soft); }
+html[data-theme="coffee"] .note-card__action--restore:is(:hover, :focus-visible) { border-color: var(--coffee-accent-border); color: var(--coffee-accent-text); background: var(--coffee-accent-soft); }
+
+/* Note Detail footer utilities stay unboxed until touched. */
+html[data-theme="coffee"] .note-detail-surface .dialog-footer__tools :where(.icon-button, .note-delete-button, .note-save-shortcut__trigger, .note-markdown-help__trigger),
+html[data-theme="coffee"] .note-detail-surface .dialog-footer__preview-actions :where(.icon-button, .note-delete-button, .note-save-shortcut__trigger, .note-markdown-help__trigger) {
+  border: 1px solid transparent;
+  border-radius: var(--coffee-radius-control);
+  color: var(--coffee-ink-soft);
+  background: transparent;
+  box-shadow: none;
+}
+
+html[data-theme="coffee"] .note-detail-surface .dialog-footer__tools :where(.icon-button, .note-delete-button, .note-save-shortcut__trigger, .note-markdown-help__trigger):focus-visible,
+html[data-theme="coffee"] .note-detail-surface .dialog-footer__preview-actions :where(.icon-button, .note-delete-button, .note-save-shortcut__trigger, .note-markdown-help__trigger):focus-visible {
+  outline: 2px solid var(--coffee-accent);
+  outline-offset: var(--focus-ring-offset);
+  color: var(--coffee-accent-text);
+  background: var(--coffee-accent-soft);
+}
+
+html[data-theme="coffee"] .note-detail-surface .dialog-footer__tools :where(.icon-button, .note-delete-button, .note-save-shortcut__trigger, .note-markdown-help__trigger):active:not(:disabled),
+html[data-theme="coffee"] .note-detail-surface .dialog-footer__preview-actions :where(.icon-button, .note-delete-button, .note-save-shortcut__trigger, .note-markdown-help__trigger):active:not(:disabled) {
+  color: var(--coffee-accent-text);
+  background: var(--coffee-accent-soft);
+  transform: none;
+  box-shadow: none;
+}
+
+html[data-theme="coffee"] .note-detail-surface .dialog-footer__tools :where(.icon-button, .note-delete-button):disabled,
+html[data-theme="coffee"] .note-detail-surface .dialog-footer__preview-actions :where(.icon-button, .note-delete-button):disabled {
+  border-color: transparent;
+  color: var(--coffee-disabled-ink);
+  background: transparent;
+  box-shadow: none;
+}
+
+html[data-theme="coffee"] :where(button svg, .note-save-status__icon, .empty-state__icon svg, .toast__indicator svg) {
+  stroke-width: var(--coffee-icon-stroke-width);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  shape-rendering: geometricPrecision;
 }
 
 /* --------------------------------------------------------------------------
-   Detail Workspace & Note Editor (Literary Reading Experience)
+   Note cards: foam cards; pinned ones carry the ring a cup left behind
    -------------------------------------------------------------------------- */
-html[data-theme="coffee"] .note-detail-surface,
-html:not([data-theme]) .note-detail-surface {
-  border-color: #d8ccbd;
-  background: #fdfbf7;
-  box-shadow: 0 8px 26px -3px rgba(65, 45, 25, 0.10);
+html[data-theme="coffee"] .note-card {
+  border: 1px solid var(--coffee-border);
+  border-radius: var(--coffee-radius-card);
+  color: var(--coffee-ink);
+  background-color: var(--coffee-foam);
+  box-shadow: var(--coffee-shadow-sm);
+  transition:
+    border-color var(--coffee-transition-duration) var(--coffee-transition-easing),
+    background-color var(--coffee-transition-duration) var(--coffee-transition-easing),
+    box-shadow var(--coffee-transition-duration) var(--coffee-transition-easing),
+    transform var(--coffee-transition-duration) var(--coffee-transition-easing);
 }
 
-html[data-theme="coffee"] .detail-commandbar,
-html:not([data-theme]) .detail-commandbar {
-  border-bottom-color: #e5dacb;
-  background: #fdfbf7;
+html[data-theme="coffee"] .note-card:focus-within {
+  border-color: var(--coffee-border-hover);
+  box-shadow: var(--coffee-shadow-sm), 0 0 0 3px rgb(154 85 35 / 12%);
 }
 
-html[data-theme="coffee"] .detail-commandbar__state,
-html:not([data-theme]) .detail-commandbar__state {
+html[data-theme="coffee"] .note-card__title {
+  color: var(--coffee-ink);
   font-family: var(--font-display);
-  color: #261e18;
-}
-
-/* Note save status indicators */
-html[data-theme="coffee"] .detail-commandbar__info .note-save-status.is-saved,
-html:not([data-theme]) .detail-commandbar__info .note-save-status.is-saved {
-  color: #2d6b41;
-}
-
-html[data-theme="coffee"] .detail-commandbar__info .note-save-status.is-new,
-html:not([data-theme]) .detail-commandbar__info .note-save-status.is-new {
-  color: var(--text-muted);
-}
-
-html[data-theme="coffee"] .detail-commandbar__info .note-save-status.is-saving,
-html:not([data-theme]) .detail-commandbar__info .note-save-status.is-saving {
-  color: var(--primary-accent-text);
-  background: var(--primary-accent-soft);
-  border-color: var(--primary-accent-border);
-}
-
-html[data-theme="coffee"] .detail-commandbar__info .note-save-status.is-dirty,
-html:not([data-theme]) .detail-commandbar__info .note-save-status.is-dirty {
-  color: #9c5c16;
-  background: #fdf6ec;
-  border-color: #f2dec5;
-}
-
-html[data-theme="coffee"] .detail-commandbar__info .note-save-status.is-error,
-html:not([data-theme]) .detail-commandbar__info .note-save-status.is-error {
-  color: #9c3224;
-  background: #fbf0ee;
-  border-color: #f2d2cd;
-}
-
-html[data-theme="coffee"] input[type="text"],
-html[data-theme="coffee"] input[type="search"],
-html[data-theme="coffee"] select,
-html[data-theme="coffee"] textarea,
-html:not([data-theme]) input[type="text"],
-html:not([data-theme]) input[type="search"],
-html:not([data-theme]) select,
-html:not([data-theme]) textarea {
-  background-color: #fdfbf7;
-  border-color: #d8ccbd;
-  color: #261e18;
-}
-
-html[data-theme="coffee"] input::placeholder,
-html[data-theme="coffee"] textarea::placeholder,
-html:not([data-theme]) input::placeholder,
-html:not([data-theme]) textarea::placeholder {
-  color: var(--text-muted);
-}
-
-html[data-theme="coffee"] .field--title input,
-html:not([data-theme]) .field--title input {
-  font-family: var(--font-display);
+  font-style: normal;
   font-weight: var(--font-weight-bold);
-  letter-spacing: -0.02em;
-  color: #261e18;
+  letter-spacing: 0;
+}
+
+html[data-theme="coffee"] .note-card__preview { color: var(--coffee-ink-soft); }
+html[data-theme="coffee"] .note-card__date { color: var(--coffee-muted); }
+html[data-theme="coffee"] .note-card__footer { border-top-color: #efe5d8; }
+
+html[data-theme="coffee"] .note-card--pinned {
+  border-color: var(--pinned-card-border);
+  background-color: var(--pinned-card-surface);
+  box-shadow: var(--pinned-card-shadow);
+}
+
+html[data-theme="coffee"] .note-card--pinned .note-card__pin-toggle {
+  opacity: 1;
+  visibility: visible;
+  border: 1px solid transparent;
+  color: var(--pinned-marker-color);
   background-color: transparent;
-  border-color: transparent;
 }
 
-html[data-theme="coffee"] .field--title input:focus-visible,
-html:not([data-theme]) .field--title input:focus-visible {
-  background-color: #fdfbf7;
-  border-color: var(--primary-accent);
+/* A faint coffee ring, cut off by the card's corner. */
+html[data-theme="coffee"] :is(.pinned-tray .note-card, .note-card--pinned) {
+  background-image: var(--coffee-ring);
+  background-repeat: no-repeat;
+  background-position: right -1.1rem bottom -1.3rem;
+  background-size: 5.6rem;
 }
 
-html[data-theme="coffee"] .note-formatting-toolbar,
-html:not([data-theme]) .note-formatting-toolbar {
-  background: #f0e6d6;
-  border-color: #d8ccbd;
+html[data-theme="coffee"] .notes-list--compact :is(.pinned-tray .note-card, .note-card--pinned) { background-size: 3.6rem; }
+
+html[data-theme="coffee"] .pinned-tray {
+  border: 1px dashed color-mix(in srgb, var(--coffee-accent) 32%, var(--coffee-border));
+  border-radius: var(--coffee-radius-card);
+  background: rgb(154 85 35 / 4%);
 }
 
-html[data-theme="coffee"] .note-formatting-tool__button:hover,
-html:not([data-theme]) .note-formatting-tool__button:hover {
-  background: #fdfbf7;
-  color: #261e18;
+html[data-theme="coffee"] .pinned-tray__toggle { color: var(--coffee-accent-text); font-weight: var(--font-weight-semibold); }
+html[data-theme="coffee"] .pinned-tray__count { color: var(--coffee-muted); }
+
+html[data-theme="coffee"] mark.search-highlight {
+  border: 0;
+  border-radius: 3px;
+  padding-inline: 0.1em;
+  color: var(--coffee-ink);
+  background: var(--coffee-crema);
+  box-shadow: none;
 }
 
-html[data-theme="coffee"] #note-content,
-html:not([data-theme]) #note-content {
-  background: #fdfbf7;
-  border-color: #d8ccbd;
-  color: #261e18;
+/* --------------------------------------------------------------------------
+   Dialogs and the note detail sheet
+   -------------------------------------------------------------------------- */
+html[data-theme="coffee"] :where(.app-dialog, .note-detail-surface) {
+  border: 1px solid var(--coffee-border);
+  border-radius: var(--coffee-radius-dialog);
+  color: var(--coffee-ink);
+  background: var(--coffee-foam);
+  box-shadow: var(--coffee-shadow-lg);
+}
+
+html[data-theme="coffee"] .note-detail-surface { box-shadow: var(--coffee-shadow-md); }
+
+html[data-theme="coffee"] .app-dialog::backdrop {
+  background: var(--coffee-overlay);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+
+html[data-theme="coffee"] :where(.detail-commandbar, .dialog-header, .dialog-footer, .note-formatting-toolbar, .organize-tabs) { border-color: var(--coffee-border); background: var(--coffee-chrome); }
+
+html[data-theme="coffee"] .note-detail-surface .dialog-header,
+html[data-theme="coffee"] .note-detail-surface .dialog-footer {
+  border-color: var(--coffee-border);
+  border-radius: 0;
+  background: var(--coffee-chrome);
+}
+
+html[data-theme="coffee"] .confirmation-dialog__body p { color: var(--coffee-ink-soft); }
+
+html[data-theme="coffee"] #note-title { border: 0 !important; border-bottom: 1px solid var(--coffee-border) !important; border-radius: 0 !important; padding-inline: 0; color: var(--coffee-ink) !important; background: transparent !important; box-shadow: none !important; font-family: var(--font-display); font-style: normal; font-weight: var(--font-weight-bold); }
+html[data-theme="coffee"] #note-title:focus-visible { border-bottom-color: var(--coffee-accent) !important; outline: 2px solid transparent !important; box-shadow: 0 2px 0 -1px var(--coffee-accent) !important; }
+html[data-theme="coffee"] .note-secondary-surface :is(.field--title input, #secondary-note-title-input) { font-family: var(--font-display); font-style: normal; font-weight: var(--font-weight-bold); }
+
+html[data-theme="coffee"] .note-formatting-toolbar { border: 1px solid var(--coffee-border); border-radius: var(--coffee-radius-control); box-shadow: none; }
+html[data-theme="coffee"] .note-formatting-tool__button:is(:hover, :focus-visible) { border-color: var(--coffee-accent-border); color: var(--coffee-accent-text); background: var(--coffee-accent-soft); }
+
+html[data-theme="coffee"] .note-dialog #note-content,
+html[data-theme="coffee"] .note-secondary-surface #secondary-note-content-editor { font-family: var(--coffee-font-read); line-height: 1.7; }
+
+html[data-theme="coffee"] :where(.note-save-status.is-saved) { color: var(--coffee-matcha); }
+html[data-theme="coffee"] :where(.note-save-status.is-new) { color: var(--coffee-muted); }
+html[data-theme="coffee"] .note-save-status.is-saving { color: var(--coffee-accent-text); }
+html[data-theme="coffee"] .note-save-status.is-dirty { color: var(--coffee-honey); }
+
+/* In the command bar each save state is a small order ticket. */
+html[data-theme="coffee"] .detail-commandbar__info .note-save-status.is-saved { color: var(--coffee-matcha); }
+html[data-theme="coffee"] .detail-commandbar__info .note-save-status.is-new { color: var(--coffee-muted); }
+html[data-theme="coffee"] .detail-commandbar__info .note-save-status.is-saving { border-color: var(--coffee-accent-border); color: var(--coffee-accent-text); background: var(--coffee-accent-soft); }
+html[data-theme="coffee"] .detail-commandbar__info .note-save-status.is-dirty { border-color: var(--coffee-honey-border); color: var(--coffee-honey); background: var(--coffee-honey-soft); }
+html[data-theme="coffee"] .detail-commandbar__info .note-save-status.is-error { border-color: var(--coffee-berry-border); color: var(--coffee-berry); background: var(--coffee-berry-soft); }
+
+html[data-theme="coffee"] :where(.shortcut-tooltip, .note-save-shortcut__tooltip, .note-markdown-help__tooltip, .note-detail-action-tooltip__content, .note-formatting-tool__tooltip) {
+  border: 1px solid var(--coffee-border-input);
+  border-radius: 8px;
+  color: var(--coffee-ink);
+  background: var(--coffee-foam);
+  box-shadow: var(--coffee-shadow-md);
+}
+
+html[data-theme="coffee"] kbd {
+  border: 1px solid var(--coffee-border-hover);
+  border-radius: var(--coffee-radius-sm);
+  color: var(--coffee-ink);
+  background: var(--coffee-chrome);
+  box-shadow: 0 1px 0 var(--coffee-border-hover);
   font-family: var(--font-sans);
+  font-weight: var(--font-weight-semibold);
 }
 
-html[data-theme="coffee"] #note-content:focus,
-html:not([data-theme]) #note-content:focus {
-  border-color: var(--primary-accent);
+html[data-theme="coffee"] .search-shortcut { border: 1px solid var(--coffee-border-hover); color: var(--coffee-ink-soft); background: var(--coffee-chrome); box-shadow: 0 1px 0 var(--coffee-border-hover); }
+html[data-theme="coffee"] .search-shortcut kbd { min-width: 0; border: 0; border-radius: 0; padding: 0; color: inherit; background: transparent; box-shadow: none; font: inherit; }
+
+/* Settings tabs and the frost choice share the latte track. */
+html[data-theme="coffee"] .organize-tabs { border: 1px solid var(--coffee-border); border-radius: var(--coffee-radius-control); background: var(--coffee-latte); box-shadow: inset 0 1px 2px rgb(62 39 25 / 6%); }
+html[data-theme="coffee"] .organize-tab { border-radius: 8px; color: var(--coffee-muted); background: transparent; }
+html[data-theme="coffee"] .organize-tab.is-active { color: var(--coffee-accent-text); background: var(--coffee-foam); box-shadow: 0 0 0 1px var(--coffee-border), var(--coffee-shadow-xs); }
+html[data-theme="coffee"] .organize-tab:focus-visible { outline: 2px solid var(--coffee-accent); outline-offset: 2px; }
+html[data-theme="coffee"] .glass-frost-control__choices { border: 1px solid var(--coffee-border); border-radius: var(--coffee-radius-control); background: var(--coffee-latte); }
+html[data-theme="coffee"] .glass-frost-choice span { border-radius: 8px; }
+
+@media (forced-colors: none) {
+  html[data-theme="coffee"] .glass-frost-choice input:checked + span { color: var(--coffee-accent-text); background: var(--coffee-foam); box-shadow: 0 0 0 1px var(--coffee-border), var(--coffee-shadow-xs); }
 }
 
-html[data-theme="coffee"] .dialog-footer,
-html:not([data-theme]) .dialog-footer {
-  background: #f0e6d6;
-  border-top-color: #d8ccbd;
+html[data-theme="coffee"] :where(.management-create-row, .management-list) { border: 1px solid var(--coffee-border); border-radius: var(--coffee-radius-card); color: var(--coffee-ink); background: var(--coffee-paper); box-shadow: none; }
+html[data-theme="coffee"] .management-row { border-color: var(--coffee-border); color: var(--coffee-ink); background: transparent; }
+html[data-theme="coffee"] .management-row__name { color: var(--coffee-ink); }
+html[data-theme="coffee"] .startup-error { border-color: var(--coffee-berry-border); color: var(--coffee-ink); background: var(--coffee-berry-soft); box-shadow: var(--coffee-shadow-md); }
+
+/* --------------------------------------------------------------------------
+   Empty states: a warm mug, still steaming
+   -------------------------------------------------------------------------- */
+html[data-theme="coffee"] :where(.empty-state, .management-empty) { color: var(--coffee-muted); }
+
+html[data-theme="coffee"] .empty-state {
+  border: 1px dashed var(--coffee-border-hover);
+  border-radius: var(--coffee-radius-dialog);
+  background: rgb(255 253 249 / 55%);
 }
 
-html[data-theme="coffee"] .note-detail-surface .dialog-footer,
-html:not([data-theme]) .note-detail-surface .dialog-footer {
-  border-top-color: #e5dacb;
-  background: #fdfbf7;
+html[data-theme="coffee"] .empty-state__icon {
+  position: relative;
+  left: -0.3rem;
+  width: 3.4rem;
+  height: 3.1rem;
+  margin: 1.4rem 0 1rem;
+  border: 2px solid var(--coffee-mug);
+  border-radius: 0.45rem 0.45rem 1.15rem 1.15rem;
+  color: var(--coffee-accent-text);
+  background: var(--coffee-accent-soft);
+  box-shadow: inset 0 0.42rem 0 var(--coffee-crema), 0 8px 18px -10px rgb(62 39 25 / 40%);
 }
 
-html[data-theme="coffee"] .quick-view-document-header h1,
-html:not([data-theme]) .quick-view-document-header h1 {
+html[data-theme="coffee"] .empty-state__icon svg { width: 1.35rem; height: 1.35rem; margin-top: 0.3rem; }
+
+/* The handle */
+html[data-theme="coffee"] .empty-state__icon::after {
+  content: "";
+  position: absolute;
+  top: 0.62rem;
+  right: -0.72rem;
+  width: 0.6rem;
+  height: 1.25rem;
+  border: 2px solid var(--coffee-mug);
+  border-left: 0;
+  border-radius: 0 0.7rem 0.7rem 0;
+}
+
+/* The steam */
+html[data-theme="coffee"] .empty-state__icon::before {
+  content: "";
+  position: absolute;
+  bottom: calc(100% + 0.2rem);
+  left: 50%;
+  width: 1.6rem;
+  height: 1.45rem;
+  translate: -50% 0;
+  background: var(--coffee-steam) center / contain no-repeat;
+  transform-origin: 50% 100%;
+  animation: nook-coffee-steam 3.8s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes nook-coffee-steam {
+  0%, 100% { opacity: 0.45; transform: translateY(2px) scaleY(0.94); }
+  50% { opacity: 0.9; transform: translateY(-3px) scaleY(1.04); }
+}
+
+/* --------------------------------------------------------------------------
+   Markdown preview: a well-set café menu and an espresso for code
+   -------------------------------------------------------------------------- */
+html[data-theme="coffee"] :where(.quick-view-content, .note-content-preview) {
+  color: var(--coffee-ink);
+  background: var(--coffee-foam);
+  font-family: var(--coffee-font-read);
+  line-height: 1.7;
+}
+
+html[data-theme="coffee"] :where(.quick-view-content, .note-content-preview) :where(h1, h2, h3, h4, h5, h6) {
+  color: var(--coffee-ink);
   font-family: var(--font-display);
+  font-style: normal;
   font-weight: var(--font-weight-bold);
-  letter-spacing: -0.025em;
-  color: #261e18;
+  letter-spacing: 0;
+  line-height: 1.25;
 }
 
-html[data-theme="coffee"] .quick-view-content,
-html[data-theme="coffee"] .note-content-preview,
-html:not([data-theme]) .quick-view-content,
-html:not([data-theme]) .note-content-preview {
-  color: #261e18;
+/* The first heading is underlined with a short caramel stroke. */
+html[data-theme="coffee"] :where(.quick-view-content, .note-content-preview) h1 {
+  border-bottom: 0;
+  padding-bottom: 0.5rem;
+  background: linear-gradient(90deg, var(--coffee-accent), #c98a4f) left bottom / 2.75rem 3px no-repeat;
 }
 
-html[data-theme="coffee"] .quick-view-content h1,
-html[data-theme="coffee"] .quick-view-content h2,
-html[data-theme="coffee"] .quick-view-content h3,
-html[data-theme="coffee"] .note-content-preview h1,
-html[data-theme="coffee"] .note-content-preview h2,
-html[data-theme="coffee"] .note-content-preview h3,
-html:not([data-theme]) .quick-view-content h1,
-html:not([data-theme]) .quick-view-content h2,
-html:not([data-theme]) .quick-view-content h3,
-html:not([data-theme]) .note-content-preview h1,
-html:not([data-theme]) .note-content-preview h2,
-html:not([data-theme]) .note-content-preview h3 {
-  font-family: var(--font-display);
-  letter-spacing: -0.02em;
-  color: #261e18;
+html[data-theme="coffee"] :where(.quick-view-content, .note-content-preview) :where(h5, h6) {
+  color: var(--coffee-ink-soft);
+  font-family: var(--font-sans);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 }
 
-html[data-theme="coffee"] .quick-view-content blockquote,
-html[data-theme="coffee"] .note-content-preview blockquote,
-html:not([data-theme]) .quick-view-content blockquote,
-html:not([data-theme]) .note-content-preview blockquote {
-  border-left-color: var(--primary-accent);
-  background: #faf3e6;
-  color: #3d2f24;
+html[data-theme="coffee"] :where(.quick-view-content, .note-content-preview) :where(ul, ol) > li::marker { color: var(--coffee-accent); }
+html[data-theme="coffee"] :where(.quick-view-content, .note-content-preview) ol > li::marker { font-family: var(--font-display); font-weight: var(--font-weight-bold); }
+
+html[data-theme="coffee"] :where(.quick-view-content, .note-content-preview) a {
+  color: var(--coffee-accent-text);
+  text-decoration-color: color-mix(in srgb, var(--coffee-accent) 40%, transparent);
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.2em;
+}
+
+html[data-theme="coffee"] :where(.quick-view-content, .note-content-preview) a:hover { color: var(--coffee-accent-hover); text-decoration-color: currentColor; }
+
+html[data-theme="coffee"] :where(.quick-view-content, .note-content-preview) code:not(pre code) {
+  border: 1px solid #ead8c3;
+  border-radius: var(--coffee-radius-sm);
+  color: #7d3f17;
+  background: #f3e6d6;
+  font-family: var(--font-mono);
+  font-weight: var(--font-weight-medium);
+}
+
+html[data-theme="coffee"] :where(.quick-view-content, .note-content-preview) pre {
+  border: 1px solid var(--coffee-board-edge);
+  border-radius: 12px;
+  color: var(--coffee-code-text);
+  background: var(--coffee-code-surface);
+  box-shadow: var(--coffee-shadow-md);
+}
+
+html[data-theme="coffee"] :where(.quick-view-content, .note-content-preview) pre code {
+  border: 0;
+  color: var(--coffee-code-text);
+  background: transparent;
+  box-shadow: none;
+  font-family: var(--font-mono);
+}
+
+html[data-theme="coffee"] :where(.quick-view-content, .note-content-preview) .markdown-code-header { border-bottom-color: rgb(185 162 140 / 22%); color: var(--coffee-code-text); background: var(--coffee-code-header); }
+html[data-theme="coffee"] :where(.quick-view-content, .note-content-preview) .markdown-code-lang { color: var(--coffee-code-muted); letter-spacing: 0.08em; text-transform: uppercase; }
+html[data-theme="coffee"] :where(.quick-view-content, .note-content-preview) .markdown-code-copy-btn { border: 1px solid rgb(185 162 140 / 40%); border-radius: var(--coffee-radius-sm); color: var(--coffee-code-text); background: transparent; }
+html[data-theme="coffee"] :where(.quick-view-content, .note-content-preview) .markdown-code-copy-btn:is(:hover, :focus-visible) { outline: none; border-color: var(--coffee-board-caramel); color: var(--coffee-code-surface); background: var(--coffee-board-caramel); }
+html[data-theme="coffee"] :where(.quick-view-content, .note-content-preview) .markdown-code-copy-btn.is-copied { border-color: var(--coffee-token-string); color: var(--coffee-code-surface); background: var(--coffee-token-string); }
+
+html[data-theme="coffee"] .token-keyword { color: var(--coffee-token-keyword); font-weight: var(--font-weight-semibold); }
+html[data-theme="coffee"] .token-string { color: var(--coffee-token-string); }
+html[data-theme="coffee"] .token-function { color: var(--coffee-token-function); }
+html[data-theme="coffee"] .token-number { color: var(--coffee-token-number); }
+html[data-theme="coffee"] .token-boolean { color: var(--coffee-token-boolean); font-weight: var(--font-weight-semibold); }
+html[data-theme="coffee"] .token-comment { color: var(--coffee-token-comment); font-style: italic; }
+html[data-theme="coffee"] .token-operator { color: var(--coffee-code-text); }
+html[data-theme="coffee"] :where(.token-property, .token-tag) { color: var(--coffee-token-property); }
+html[data-theme="coffee"] .token-type { color: var(--coffee-token-type); }
+html[data-theme="coffee"] .token-punctuation { color: var(--coffee-code-muted); }
+
+/* Quotes are set like a line chalked under the menu. */
+html[data-theme="coffee"] :where(.quick-view-content, .note-content-preview) blockquote {
+  position: relative;
+  border: 0;
+  border-inline-start: 3px solid var(--coffee-accent);
+  border-radius: 0 12px 12px 0;
+  padding: 0.6rem 1rem 0.6rem 2.7rem;
+  color: var(--coffee-ink-soft);
+  background: #f6ede1;
+  box-shadow: none;
   font-style: italic;
 }
 
-html[data-theme="coffee"] .quick-view-content code:not(pre code),
-html[data-theme="coffee"] .note-content-preview code:not(pre code),
-html:not([data-theme]) .quick-view-content code:not(pre code),
-html:not([data-theme]) .note-content-preview code:not(pre code) {
-  font-family: var(--font-mono);
-  background: #f7ede0;
-  color: #88430a;
-  border-color: #edd5bc;
-}
-
-/* --------------------------------------------------------------------------
-   Markdown Code Blocks & Syntax (Coffee palette; shared geometry)
-   -------------------------------------------------------------------------- */
-html[data-theme="coffee"] .quick-view-content pre,
-html[data-theme="coffee"] .note-content-preview pre,
-html:not([data-theme]) .quick-view-content pre,
-html:not([data-theme]) .note-content-preview pre {
-  background: #211c18;
-  border-color: #4b392d;
-  box-shadow: 0 2px 8px -2px rgb(35 25 15 / 12%);
-}
-
-html[data-theme="coffee"] .quick-view-content pre code,
-html[data-theme="coffee"] .note-content-preview pre code,
-html:not([data-theme]) .quick-view-content pre code,
-html:not([data-theme]) .note-content-preview pre code {
-  color: #ede2d3;
-}
-
-html[data-theme="coffee"] .quick-view-content .markdown-code-header,
-html[data-theme="coffee"] .note-content-preview .markdown-code-header,
-html:not([data-theme]) .quick-view-content .markdown-code-header,
-html:not([data-theme]) .note-content-preview .markdown-code-header {
-  background: #33271f;
-  border-bottom-color: #4b392d;
-}
-
-html[data-theme="coffee"] .quick-view-content .markdown-code-lang,
-html[data-theme="coffee"] .note-content-preview .markdown-code-lang,
-html:not([data-theme]) .quick-view-content .markdown-code-lang,
-html:not([data-theme]) .note-content-preview .markdown-code-lang {
-  color: #c8aa8d;
-}
-
-html[data-theme="coffee"] .quick-view-content .markdown-code-copy-btn,
-html[data-theme="coffee"] .note-content-preview .markdown-code-copy-btn,
-html:not([data-theme]) .quick-view-content .markdown-code-copy-btn,
-html:not([data-theme]) .note-content-preview .markdown-code-copy-btn {
-  background: #453428;
-  color: #d8ccbd;
-  border-color: #68503d;
-}
-
-html[data-theme="coffee"] .quick-view-content .markdown-code-copy-btn:hover,
-html[data-theme="coffee"] .note-content-preview .markdown-code-copy-btn:hover,
-html:not([data-theme]) .quick-view-content .markdown-code-copy-btn:hover,
-html:not([data-theme]) .note-content-preview .markdown-code-copy-btn:hover {
-  background: #574131;
-  border-color: #84654c;
-  color: #fff8ee;
-}
-
-html[data-theme="coffee"] .quick-view-content .markdown-code-copy-btn.is-copied,
-html[data-theme="coffee"] .note-content-preview .markdown-code-copy-btn.is-copied,
-html:not([data-theme]) .quick-view-content .markdown-code-copy-btn.is-copied,
-html:not([data-theme]) .note-content-preview .markdown-code-copy-btn.is-copied {
-  background: #384334;
-  border-color: #607b5d;
-  color: #cbe1b9;
-}
-
-/* Coffee syntax highlighting */
-html[data-theme="coffee"] .token-keyword,
-html:not([data-theme]) .token-keyword { color: #f2994a; font-weight: var(--font-weight-semibold); }
-html[data-theme="coffee"] .token-string,
-html:not([data-theme]) .token-string { color: #a9c676; }
-html[data-theme="coffee"] .token-comment,
-html:not([data-theme]) .token-comment { color: #a99583; font-style: italic; }
-html[data-theme="coffee"] .token-number,
-html:not([data-theme]) .token-number { color: #d4a373; }
-html[data-theme="coffee"] .token-function,
-html:not([data-theme]) .token-function { color: #f4c478; }
-html[data-theme="coffee"] .token-boolean,
-html:not([data-theme]) .token-boolean { color: #f29b62; font-weight: var(--font-weight-semibold); }
-html[data-theme="coffee"] .token-operator,
-html:not([data-theme]) .token-operator { color: #c8aa8d; }
-html[data-theme="coffee"] .token-property,
-html[data-theme="coffee"] .token-tag,
-html:not([data-theme]) .token-property,
-html:not([data-theme]) .token-tag { color: #e39a8f; }
-html[data-theme="coffee"] .token-type,
-html:not([data-theme]) .token-type { color: #8fc2a1; }
-html[data-theme="coffee"] .token-punctuation,
-html:not([data-theme]) .token-punctuation { color: #b8aba0; }
-
-/* --------------------------------------------------------------------------
-   Markdown Callout Alerts (Harmonious Tinted Cream Bases)
-   -------------------------------------------------------------------------- */
-html[data-theme="coffee"] .markdown-alert,
-html:not([data-theme]) .markdown-alert {
-  border-radius: 8px;
-}
-
-/* Note Alert */
-html[data-theme="coffee"] .markdown-alert--note,
-html:not([data-theme]) .markdown-alert--note {
-  background: #f0f4f8;
-  border: 1px solid #d4e0eb;
-  border-left: 3.5px solid #486f96;
-  color: #243e58;
-}
-html[data-theme="coffee"] .markdown-alert--note .markdown-alert__title,
-html:not([data-theme]) .markdown-alert--note .markdown-alert__title {
-  color: #2d557c;
-}
-
-/* Tip Alert */
-html[data-theme="coffee"] .markdown-alert--tip,
-html:not([data-theme]) .markdown-alert--tip {
-  background: #f1f7f2;
-  border: 1px solid #d2e4d5;
-  border-left: 3.5px solid #3d7950;
-  color: #224a30;
-}
-html[data-theme="coffee"] .markdown-alert--tip .markdown-alert__title,
-html:not([data-theme]) .markdown-alert--tip .markdown-alert__title {
-  color: #2d6b41;
-}
-
-/* Warning Alert */
-html[data-theme="coffee"] .markdown-alert--warning,
-html:not([data-theme]) .markdown-alert--warning {
-  background: #fdf6ec;
-  border: 1px solid #f2dec5;
-  border-left: 3.5px solid #b87020;
-  color: #5e3608;
-}
-html[data-theme="coffee"] .markdown-alert--warning .markdown-alert__title,
-html:not([data-theme]) .markdown-alert--warning .markdown-alert__title {
-  color: #9c5c16;
-}
-
-/* Caution Alert */
-html[data-theme="coffee"] .markdown-alert--caution,
-html:not([data-theme]) .markdown-alert--caution {
-  background: #fbf0ee;
-  border: 1px solid #f2d2cd;
-  border-left: 3.5px solid #b33e2f;
-  color: #5c1b12;
-}
-html[data-theme="coffee"] .markdown-alert--caution .markdown-alert__title,
-html:not([data-theme]) .markdown-alert--caution .markdown-alert__title {
-  color: #9c3224;
-}
-
-/* Important Alert */
-html[data-theme="coffee"] .markdown-alert--important,
-html:not([data-theme]) .markdown-alert--important {
-  background: #f6f0f8;
-  border: 1px solid #e5d4ea;
-  border-left: 3.5px solid #7a4387;
-  color: #431f4c;
-}
-html[data-theme="coffee"] .markdown-alert--important .markdown-alert__title,
-html:not([data-theme]) .markdown-alert--important .markdown-alert__title {
-  color: #6d367a;
-}
-
-/* --------------------------------------------------------------------------
-   Markdown Tables & Dividers
-   -------------------------------------------------------------------------- */
-html[data-theme="coffee"] .quick-view-content hr,
-html[data-theme="coffee"] .note-content-preview hr,
-html:not([data-theme]) .quick-view-content hr,
-html:not([data-theme]) .note-content-preview hr {
-  border-top-color: #d8ccbd;
-}
-
-html[data-theme="coffee"] .quick-view-content table,
-html[data-theme="coffee"] .note-content-preview table,
-html:not([data-theme]) .quick-view-content table,
-html:not([data-theme]) .note-content-preview table {
-  border-color: #d8ccbd;
-}
-
-html[data-theme="coffee"] .quick-view-content th,
-html[data-theme="coffee"] .note-content-preview th,
-html:not([data-theme]) .quick-view-content th,
-html:not([data-theme]) .note-content-preview th {
-  background: #f0e6d6;
-  color: #261e18;
-  border-bottom: 2px solid #d8ccbd;
+html[data-theme="coffee"] :where(.quick-view-content, .note-content-preview) blockquote::before {
+  content: "\201C";
+  position: absolute;
+  top: 0.08em;
+  left: 0.6rem;
+  color: var(--coffee-accent);
   font-family: var(--font-display);
+  font-size: 2.6em;
+  font-style: normal;
+  line-height: 1;
 }
 
-html[data-theme="coffee"] .quick-view-content td,
-html[data-theme="coffee"] .note-content-preview td,
-html:not([data-theme]) .quick-view-content td,
-html:not([data-theme]) .note-content-preview td {
-  border-bottom-color: #e5dacb;
-  color: #261e18;
-}
+html[data-theme="coffee"] :where(.quick-view-content, .note-content-preview) .markdown-table-wrapper { border: 1px solid var(--coffee-border); border-radius: 12px; background: var(--coffee-foam); box-shadow: var(--coffee-shadow-xs); }
+html[data-theme="coffee"] :where(.quick-view-content, .note-content-preview) .markdown-table :where(th, td) { border-color: var(--coffee-border); }
+html[data-theme="coffee"] :where(.quick-view-content, .note-content-preview) .markdown-table td { font-variant-numeric: lining-nums tabular-nums; }
 
-html[data-theme="coffee"] .quick-view-content tr:nth-child(even),
-html[data-theme="coffee"] .note-content-preview tr:nth-child(even),
-html:not([data-theme]) .quick-view-content tr:nth-child(even),
-html:not([data-theme]) .note-content-preview tr:nth-child(even) {
-  background: rgba(240, 230, 214, 0.45);
-}
-
-/* --------------------------------------------------------------------------
-   Botanical Artisan Category Badges (Warm Stationery Natural Dyes)
-   -------------------------------------------------------------------------- */
-html[data-theme="coffee"] .type-badge--indigo  { --detail-type-chip-border: #d4daf0; --detail-type-chip-color: #2e3b6e; --detail-type-chip-background: #f2f4fc; }
-html[data-theme="coffee"] .type-badge--blue    { --detail-type-chip-border: #cddff0; --detail-type-chip-color: #23517d; --detail-type-chip-background: #f0f6fc; }
-html[data-theme="coffee"] .type-badge--sky     { --detail-type-chip-border: #cbe3f0; --detail-type-chip-color: #19587a; --detail-type-chip-background: #eff7fc; }
-html[data-theme="coffee"] .type-badge--cyan    { --detail-type-chip-border: #c2e5e8; --detail-type-chip-color: #165e69; --detail-type-chip-background: #effafb; }
-html[data-theme="coffee"] .type-badge--teal    { --detail-type-chip-border: #c4e5e0; --detail-type-chip-color: #1a5d54; --detail-type-chip-background: #eff9f7; }
-html[data-theme="coffee"] .type-badge--emerald { --detail-type-chip-border: #c6e5d2; --detail-type-chip-color: #1b5e38; --detail-type-chip-background: #eff9f3; }
-html[data-theme="coffee"] .type-badge--green   { --detail-type-chip-border: #cde4cf; --detail-type-chip-color: #245e2c; --detail-type-chip-background: #f1f8f2; }
-html[data-theme="coffee"] .type-badge--lime    { --detail-type-chip-border: #dce4be; --detail-type-chip-color: #4b5f16; --detail-type-chip-background: #f7faee; }
-html[data-theme="coffee"] .type-badge--amber   { --detail-type-chip-border: #f4dfc2; --detail-type-chip-color: #8c4c0b; --detail-type-chip-background: #fdf7ee; }
-html[data-theme="coffee"] .type-badge--orange  { --detail-type-chip-border: #f6d8c4; --detail-type-chip-color: #993f12; --detail-type-chip-background: #fdf5ef; }
-html[data-theme="coffee"] .type-badge--red     { --detail-type-chip-border: #f5d0d0; --detail-type-chip-color: #8f2424; --detail-type-chip-background: #fdf2f2; }
-html[data-theme="coffee"] .type-badge--rose    { --detail-type-chip-border: #f6d2dc; --detail-type-chip-color: #8f2845; --detail-type-chip-background: #fdf2f5; }
-html[data-theme="coffee"] .type-badge--pink    { --detail-type-chip-border: #f5d1e6; --detail-type-chip-color: #8c2662; --detail-type-chip-background: #fdf2f8; }
-html[data-theme="coffee"] .type-badge--violet  { --detail-type-chip-border: #ded2f5; --detail-type-chip-color: #55288a; --detail-type-chip-background: #f8f3fd; }
-html[data-theme="coffee"] .type-badge--purple  { --detail-type-chip-border: #eed2f5; --detail-type-chip-color: #68297d; --detail-type-chip-background: #fbf3fd; }
-html[data-theme="coffee"] .type-badge--slate   { --detail-type-chip-border: #ded2c5; --detail-type-chip-color: #4a3e35; --detail-type-chip-background: #f5efe7; }
-
-/* Type dots with rich botanical pigments */
-html[data-theme="coffee"] .type-dot--indigo,
-html[data-theme="coffee"] .type-badge--indigo .type-dot,
-html:not([data-theme]) .type-dot--indigo,
-html:not([data-theme]) .type-badge--indigo .type-dot  { background: #3c4b82; }
-
-html[data-theme="coffee"] .type-dot--blue,
-html:not([data-theme]) .type-dot--blue    { background: #2e6294; }
-
-html[data-theme="coffee"] .type-dot--sky,
-html:not([data-theme]) .type-dot--sky     { background: #226f99; }
-
-html[data-theme="coffee"] .type-dot--cyan,
-html:not([data-theme]) .type-dot--cyan    { background: #1e7582; }
-
-html[data-theme="coffee"] .type-dot--teal,
-html:not([data-theme]) .type-dot--teal    { background: #237469; }
-
-html[data-theme="coffee"] .type-dot--emerald,
-html:not([data-theme]) .type-dot--emerald { background: #227646; }
-
-html[data-theme="coffee"] .type-dot--green,
-html:not([data-theme]) .type-dot--green   { background: #2d7337; }
-
-html[data-theme="coffee"] .type-dot--lime,
-html:not([data-theme]) .type-dot--lime    { background: #5c741c; }
-
-html[data-theme="coffee"] .type-dot--amber,
-html:not([data-theme]) .type-dot--amber   { background: #a35d14; }
-
-html[data-theme="coffee"] .type-dot--orange,
-html:not([data-theme]) .type-dot--orange  { background: #b04e1b; }
-
-html[data-theme="coffee"] .type-dot--red,
-html:not([data-theme]) .type-dot--red     { background: #a83232; }
-
-html[data-theme="coffee"] .type-dot--rose,
-html:not([data-theme]) .type-dot--rose    { background: #a83655; }
-
-html[data-theme="coffee"] .type-dot--pink,
-html:not([data-theme]) .type-dot--pink    { background: #a63478; }
-
-html[data-theme="coffee"] .type-dot--violet,
-html:not([data-theme]) .type-dot--violet  { background: #6838a1; }
-
-html[data-theme="coffee"] .type-dot--purple,
-html:not([data-theme]) .type-dot--purple  { background: #7b3793; }
-
-html[data-theme="coffee"] .type-dot--slate,
-html:not([data-theme]) .type-dot--slate   { background: #5e5146; }
-
-/* --------------------------------------------------------------------------
-   Keyboard Shortcuts & Tooltips (<kbd>)
-   -------------------------------------------------------------------------- */
-html[data-theme="coffee"] .shortcut-tooltip,
-html[data-theme="coffee"] .note-detail-action-tooltip__content,
-html:not([data-theme]) .shortcut-tooltip,
-html:not([data-theme]) .note-detail-action-tooltip__content {
-  background: #fdfbf7;
-  border-color: #d8ccbd;
-  color: #5e4d41;
-  box-shadow: 0 0.65rem 1.6rem rgba(65, 45, 25, 0.12);
-}
-
-html[data-theme="coffee"] kbd,
-html[data-theme="coffee"] .shortcut-tooltip kbd,
-html:not([data-theme]) kbd,
-html:not([data-theme]) .shortcut-tooltip kbd {
-  background: #ebe1d2;
-  border: 1px solid #d6c8b4;
-  border-bottom: 2px solid #c4b39b;
-  color: #3d2f24;
-  box-shadow: 0 1px 0 rgba(65, 45, 25, 0.05);
-}
-
-/* --------------------------------------------------------------------------
-   Empty States
-   -------------------------------------------------------------------------- */
-html[data-theme="coffee"] .empty-state,
-html:not([data-theme]) .empty-state {
-  border-color: #e0d4c3;
-  color: #7a6857;
-  background: #faf5ed;
-  border-radius: 12px;
-}
-
-html[data-theme="coffee"] .empty-state h3,
-html:not([data-theme]) .empty-state h3 {
-  font-family: var(--font-display);
-  color: #261e18;
-}
-
-html[data-theme="coffee"] .empty-state p,
-html:not([data-theme]) .empty-state p {
-  color: #5e4d41;
-}
-
-/* --------------------------------------------------------------------------
-   Tag Picker & Tag Add Button
-   -------------------------------------------------------------------------- */
-html[data-theme="coffee"] .note-dialog .tag-picker,
-html:not([data-theme]) .note-dialog .tag-picker {
-  border-color: transparent;
-  background: transparent;
-}
-
-html[data-theme="coffee"] .tag-add-button,
-html:not([data-theme]) .tag-add-button {
-  background: #ebe1d2;
-  border-color: #d8ccbd;
-  color: #4a3c31;
+html[data-theme="coffee"] :where(.quick-view-content, .note-content-preview) .markdown-table th {
+  color: var(--coffee-ink);
+  background: var(--coffee-latte);
+  font-family: var(--font-sans);
+  font-style: normal;
   font-weight: var(--font-weight-semibold);
-  transition: color var(--interaction-duration) var(--interaction-easing), background-color var(--interaction-duration) var(--interaction-easing), border-color var(--interaction-duration) var(--interaction-easing), transform var(--motion-duration-micro) var(--motion-ease-out);
 }
 
-html[data-theme="coffee"] .tag-add-button:hover:not(:disabled),
-html:not([data-theme]) .tag-add-button:hover:not(:disabled) {
-  background: var(--primary-accent-soft);
-  border-color: var(--primary-accent-border);
-  color: var(--primary-accent-text);
-  transform: scale(1.05);
+html[data-theme="coffee"] :where(.quick-view-content, .note-content-preview) .markdown-table tbody tr:nth-child(even) { background: #fdf8f2; }
+
+/* A single roasted bean sits in the middle of the horizontal rule. */
+html[data-theme="coffee"] :where(.quick-view-content, .note-content-preview) hr {
+  overflow: visible;
+  height: auto;
+  margin-block: 1.6rem;
+  border: 0;
+  background:
+    linear-gradient(var(--coffee-border-strong), var(--coffee-border-strong)) left center / calc(50% - 1.4rem) 1px no-repeat,
+    linear-gradient(var(--coffee-border-strong), var(--coffee-border-strong)) right center / calc(50% - 1.4rem) 1px no-repeat;
+  line-height: 1;
+  text-align: center;
 }
 
-
-
-html[data-theme="coffee"] .tag-suggestion:hover,
-html[data-theme="coffee"] .tag-suggestion.is-selected,
-html:not([data-theme]) .tag-suggestion:hover,
-html:not([data-theme]) .tag-suggestion.is-selected {
-  background: #f0e6d6;
-  color: #261e18;
+html[data-theme="coffee"] :where(.quick-view-content, .note-content-preview) hr::before {
+  content: "";
+  display: inline-block;
+  width: 0.62rem;
+  height: 0.88rem;
+  vertical-align: middle;
+  rotate: 24deg;
+  background: var(--coffee-bean) center / contain no-repeat;
 }
 
-/* --------------------------------------------------------------------------
-   Dialogs (Modal & Settings Polish)
-   -------------------------------------------------------------------------- */
-html[data-theme="coffee"] .app-dialog,
-html:not([data-theme]) .app-dialog {
-  border-color: #d8ccbd;
-  background: #fdfbf7;
-  box-shadow: 0 12px 36px rgba(65, 45, 25, 0.15);
+html[data-theme="coffee"] :where(.quick-view-content, .note-content-preview) .markdown-alert { border: 1px solid var(--coffee-border); border-inline-start: 4px solid var(--coffee-blueberry); border-radius: 4px 12px 12px 4px; color: var(--coffee-ink); background: var(--coffee-paper); box-shadow: none; }
+html[data-theme="coffee"] :where(.quick-view-content, .note-content-preview) .markdown-alert--note { border-inline-start-color: var(--coffee-blueberry); }
+html[data-theme="coffee"] :where(.quick-view-content, .note-content-preview) .markdown-alert--tip { border-inline-start-color: var(--coffee-matcha); }
+html[data-theme="coffee"] :where(.quick-view-content, .note-content-preview) .markdown-alert--warning { border-inline-start-color: #c08a2a; }
+html[data-theme="coffee"] :where(.quick-view-content, .note-content-preview) .markdown-alert--caution { border-inline-start-color: var(--coffee-berry); }
+html[data-theme="coffee"] :where(.quick-view-content, .note-content-preview) .markdown-alert--important { border-inline-start-color: var(--coffee-plum); }
+html[data-theme="coffee"] :where(.quick-view-content, .note-content-preview) .markdown-alert__title { color: var(--coffee-blueberry); font-family: var(--font-sans); font-style: normal; font-weight: var(--font-weight-semibold); }
+html[data-theme="coffee"] :where(.quick-view-content, .note-content-preview) .markdown-alert--tip .markdown-alert__title { color: var(--coffee-matcha); }
+html[data-theme="coffee"] :where(.quick-view-content, .note-content-preview) .markdown-alert--warning .markdown-alert__title { color: var(--coffee-honey); }
+html[data-theme="coffee"] :where(.quick-view-content, .note-content-preview) .markdown-alert--caution .markdown-alert__title { color: var(--coffee-berry); }
+html[data-theme="coffee"] :where(.quick-view-content, .note-content-preview) .markdown-alert--important .markdown-alert__title { color: var(--coffee-plum); }
+
+html[data-theme="coffee"] :where(.quick-view-content, .note-content-preview) .markdown-details { border: 1px solid var(--coffee-border); border-radius: 12px; color: var(--coffee-ink); background: var(--coffee-paper); box-shadow: none; }
+html[data-theme="coffee"] :where(.quick-view-content, .note-content-preview) .markdown-details summary { color: var(--coffee-ink); font-family: var(--font-display); font-style: normal; font-weight: var(--font-weight-bold); }
+html[data-theme="coffee"] :where(.quick-view-content, .note-content-preview) .markdown-details summary:focus-visible { outline: 2px solid var(--coffee-accent); outline-offset: var(--focus-ring-offset); background: var(--coffee-accent-soft); }
+html[data-theme="coffee"] :where(.quick-view-content, .note-content-preview) .markdown-math { border: 1px solid var(--coffee-border); color: var(--coffee-ink); background: var(--coffee-paper); font-family: var(--font-mono); }
+html[data-theme="coffee"] :where(.quick-view-content, .note-content-preview) .markdown-math--block { box-shadow: none; }
+html[data-theme="coffee"] :where(.quick-view-content, .note-content-preview) .markdown-footnotes { border-color: var(--coffee-border); color: var(--coffee-muted); }
+html[data-theme="coffee"] :where(.quick-view-content, .note-content-preview) .markdown-footnotes h4 { color: var(--coffee-ink); font-family: var(--font-display); font-style: normal; }
+html[data-theme="coffee"] :where(.quick-view-content, .note-content-preview) :where(.markdown-footnote-ref, .markdown-footnote-backref) { color: var(--coffee-accent-text); font-weight: var(--font-weight-semibold); }
+html[data-theme="coffee"] :where(.quick-view-content, .note-content-preview) :where(.markdown-image, .markdown-image-alt) { border: 1px dashed var(--coffee-border-hover); border-radius: var(--coffee-radius-control); color: var(--coffee-muted); background: var(--coffee-paper); box-shadow: none; }
+
+/* Theme icon */
+html[data-theme="coffee"] .theme-toggle__icon--coffee { display: inline-flex !important; }
+html[data-theme="coffee"] :where(.theme-toggle__icon--sun, .theme-toggle__icon--forest, .theme-toggle__icon--midnight, .theme-toggle__icon--moon, .theme-toggle__icon--auto, .theme-toggle__icon--aurora, .theme-toggle__icon--retro, .theme-toggle__icon--eink) { display: none !important; }
+
+@media (hover: hover) and (pointer: fine) {
+  html[data-theme="coffee"] :where(.icon-button, .mobile-filter-toggle, .quick-view-header-toggle):hover:not(:disabled) { border-color: var(--coffee-border-hover); color: var(--coffee-ink); background: var(--coffee-paper); box-shadow: var(--coffee-shadow-xs); }
+  html[data-theme="coffee"] :where(.button-primary, .button-danger, .button-secondary):hover:not(:disabled):not(:active) { transform: translateY(-1px); }
+  html[data-theme="coffee"] .button-primary:hover:not(:disabled) { background: linear-gradient(180deg, #9a5523, #824519) #8c4b1c; box-shadow: inset 0 1px 0 rgb(255 236 210 / 22%), 0 2px 4px rgb(62 39 25 / 16%), 0 10px 20px -10px rgb(154 85 35 / 60%); }
+  html[data-theme="coffee"] .button-danger:hover:not(:disabled) { background: linear-gradient(180deg, #a03a2c, #873024) #943528; }
+  html[data-theme="coffee"] .button-secondary:hover:not(:disabled) { border-color: var(--coffee-border-strong); background: var(--coffee-foam); box-shadow: var(--coffee-shadow-sm); }
+  html[data-theme="coffee"] :where(.tag-filter-option, .tag-chip, .tag-add-button):hover { border-color: var(--coffee-border-strong); color: var(--coffee-ink); background: var(--coffee-foam); }
+  html[data-theme="coffee"] .tag-filter-option:is(:has(input:checked), .is-active):hover,
+  html[data-theme="coffee"] .tag-chip.is-selected:hover { border-color: var(--coffee-accent); background: var(--coffee-accent-soft-hover); }
+  html[data-theme="coffee"] .note-card:hover { transform: translateY(-2px); border-color: var(--coffee-border-hover); background-color: var(--coffee-foam); box-shadow: var(--coffee-shadow-hover); }
+  html[data-theme="coffee"] .note-card--pinned:is(:hover, .is-hover) { border-color: var(--pinned-card-border-hover); }
+  html[data-theme="coffee"] :where(.view-mode-button, .note-editor-mode__button):hover:not(.is-active, [aria-pressed="true"]) { color: var(--coffee-ink); background: rgb(255 253 249 / 60%); }
+  html[data-theme="coffee"] :where(.pagination-button, .note-card__action, .note-card__pin-toggle, .note-formatting-tool__button):hover:not(:disabled) { border-color: var(--coffee-accent-border); color: var(--coffee-accent-text); background: var(--coffee-accent-soft); box-shadow: none; }
+  html[data-theme="coffee"] .pagination-button.is-active:hover { color: var(--coffee-cream); background: var(--coffee-accent-hover); }
+  html[data-theme="coffee"] :where(.text-button, .active-filter-clear-all, .active-filter-pill__clear):hover:not(:disabled) { color: var(--coffee-accent-hover); background: var(--coffee-accent-soft); }
+  html[data-theme="coffee"] .sidebar .text-button:hover:not(:disabled) { background: rgb(224 160 102 / 14%); }
+  html[data-theme="coffee"] .note-card .type-badge--filter:hover { background-color: color-mix(in srgb, var(--coffee-type) 16%, var(--coffee-foam)); }
+  html[data-theme="coffee"] .note-detail-surface .dialog-footer__tools :where(.icon-button, .note-save-shortcut__trigger, .note-markdown-help__trigger):hover:not(:disabled),
+  html[data-theme="coffee"] .note-detail-surface .dialog-footer__preview-actions :where(.icon-button, .note-save-shortcut__trigger, .note-markdown-help__trigger):hover:not(:disabled) { border-color: transparent; color: var(--coffee-accent-text); background: var(--coffee-accent-soft); box-shadow: none; }
+  html[data-theme="coffee"] .note-detail-surface .dialog-footer__tools .note-delete-button:hover:not(:disabled),
+  html[data-theme="coffee"] .note-detail-surface .dialog-footer__preview-actions .note-delete-button:hover:not(:disabled) { border-color: transparent; color: var(--coffee-berry); background: var(--coffee-berry-soft); box-shadow: none; }
 }
 
-html[data-theme="coffee"] .app-dialog::backdrop,
-html:not([data-theme]) .app-dialog::backdrop {
-  background: rgba(35, 26, 18, 0.45);
-  backdrop-filter: blur(3px);
+@media (prefers-reduced-motion: reduce) {
+  html[data-theme="coffee"] { --coffee-transition-duration: 0ms; }
+  html[data-theme="coffee"] :where(.note-card, button) { transform: none !important; }
+  html[data-theme="coffee"] .empty-state__icon::before { animation: none; opacity: 0.7; }
 }
 
-html[data-theme="coffee"] .confirmation-dialog__body p,
-html:not([data-theme]) .confirmation-dialog__body p {
-  color: #5e4d41;
+@media (max-width: 620px) {
+  html[data-theme="coffee"] :where(.app-dialog, .note-detail-surface) {
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  html[data-theme="coffee"] .organize-tabs { max-width: calc(100% - 2rem); }
 }
 
-html[data-theme="coffee"] .dialog-header,
-html:not([data-theme]) .dialog-header {
-  border-bottom-color: #e5dacb;
-}
-
-html[data-theme="coffee"] .dialog-header h2,
-html:not([data-theme]) .dialog-header h2 {
-  font-family: var(--font-display);
-  letter-spacing: -0.015em;
-  color: #261e18;
-}
-
-html[data-theme="coffee"] .organize-tabs,
-html:not([data-theme]) .organize-tabs {
-  background: #f0e6d6;
-  border-bottom-color: #d8ccbd;
-}
-
-html[data-theme="coffee"] .organize-tab,
-html:not([data-theme]) .organize-tab {
-  color: #5e4d41;
-}
-
-html[data-theme="coffee"] .organize-tab.is-active,
-html:not([data-theme]) .organize-tab.is-active {
-  color: var(--primary-accent-text);
-  border-bottom-color: var(--primary-accent);
-}
-
-html[data-theme="coffee"] .management-search input,
-html:not([data-theme]) .management-search input {
-  background: #fdfbf7;
-  border-color: #d8ccbd;
-  color: #261e18;
-}
-
-html[data-theme="coffee"] .management-list,
-html:not([data-theme]) .management-list {
-  background: #fdfbf7;
-  border-color: #d8ccbd;
-}
-
-html[data-theme="coffee"] .management-row,
-html:not([data-theme]) .management-row {
-  border-bottom-color: #e5dacb;
-}
-
-html[data-theme="coffee"] .management-row__name,
-html:not([data-theme]) .management-row__name {
-  color: #261e18;
-}
-
-/* Usage counts and Default badge */
-html[data-theme="coffee"] .usage-count,
-html:not([data-theme]) .usage-count {
-  background: #ebe1d2;
-  color: #5e4d41;
-}
-
-html[data-theme="coffee"] .management-row__default,
-html:not([data-theme]) .management-row__default {
-  background: #ebe1d2;
-  border: 1px solid #d8ccbd;
-  color: #5e4d41;
-}
-
-html[data-theme="coffee"] .management-create-row,
-html:not([data-theme]) .management-create-row {
-  border-color: #d8ccbd;
-  background: #faf5ee;
-}
-
-
-
-html[data-theme="coffee"] .note-type-picker__option:hover,
-html[data-theme="coffee"] .note-type-picker__option[aria-selected="true"],
-html:not([data-theme]) .note-type-picker__option:hover,
-html:not([data-theme]) .note-type-picker__option[aria-selected="true"] {
-  background: #f0e6d6;
-  color: #261e18;
-}
-
-/* --------------------------------------------------------------------------
-   Coffee Theme Toggle Icon (Only Journal/Book displays in Coffee Mode)
-   -------------------------------------------------------------------------- */
-html[data-theme="coffee"] .theme-toggle__icon--coffee,
-html:not([data-theme]) .theme-toggle__icon--coffee {
-  display: inline-flex !important;
-}
-
-html[data-theme="coffee"] .theme-toggle__icon--sun,
-html[data-theme="coffee"] .theme-toggle__icon--moon,
-html:not([data-theme]) .theme-toggle__icon--sun,
-html:not([data-theme]) .theme-toggle__icon--moon {
-  display: none !important;
+@media (forced-colors: active) {
+  html[data-theme="coffee"] :where(.tag-filter-option, .tag-chip, .button, .icon-button, .note-card, .app-dialog, .type-badge) { border-color: ButtonText; box-shadow: none; }
+  html[data-theme="coffee"] :is(.sidebar, .pinned-tray .note-card, .note-card--pinned) { background-image: none; box-shadow: none; }
+  html[data-theme="coffee"] :is(.type-badge:not(.note-type-picker__trigger), .active-filter-pill--type)::before { background: CanvasText; }
+  html[data-theme="coffee"] .empty-state__icon { border-color: CanvasText; box-shadow: none; }
+  html[data-theme="coffee"] .empty-state__icon::before,
+  html[data-theme="coffee"] .empty-state__icon::after { content: none; }
+  html[data-theme="coffee"] :where(.quick-view-content, .note-content-preview) h1 { background: none; }
+  html[data-theme="coffee"] :where(.quick-view-content, .note-content-preview) hr { background: none; border-top: 1px solid CanvasText; }
+  html[data-theme="coffee"] :where(.quick-view-content, .note-content-preview) hr::before { content: none; }
 }
