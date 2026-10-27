@@ -29,7 +29,7 @@ test("active CSS stays below the all-theme parse cost", () => {
     (total, file) => total + fs.statSync(path.join(root, "css", file)).size,
     fs.statSync(path.join(root, "css/app.css")).size + fs.statSync(path.join(root, "css/mobile.css")).size,
   );
-  const activeThemeBytes = ["classic", "coffee", "forest", "midnight", "dark", "retro", "eink"]
+  const activeThemeBytes = ["classic", "coffee", "forest", "midnight", "dark", "aurora", "retro", "eink"]
     .map((theme) => fs.statSync(path.join(root, `css/themes/${theme}.css`)).size);
   const maximumActiveBytes = sharedBytes + Math.max(...activeThemeBytes);
   const allThemeBytes = activeThemeBytes.reduce((total, size) => total + size, sharedBytes);

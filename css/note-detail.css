@@ -2129,11 +2129,13 @@
   margin-top: auto;
 }
 
-/* Dark & Midnight theme refinements */
+/* Dark, Midnight & Aurora theme refinements */
 html[data-theme="dark"] .note-editor-mode--side-note,
 html[data-theme="midnight"] .note-editor-mode--side-note,
+html[data-theme="aurora"] .note-editor-mode--side-note,
 html[data-theme="dark"] .note-editor-mode--compare,
-html[data-theme="midnight"] .note-editor-mode--compare {
+html[data-theme="midnight"] .note-editor-mode--compare,
+html[data-theme="aurora"] .note-editor-mode--compare {
   border-left-color: rgba(255, 255, 255, 0.12);
 }
 
@@ -2209,6 +2211,47 @@ html[data-theme="midnight"] #secondary-reader-view .note-formatting-toolbar {
 
 html[data-theme="midnight"] #secondary-reader-view #secondary-content-field.is-split .note-editor-pane--preview {
   border-left-color: #29415f !important;
+}
+
+/* Aurora theme refinements */
+html[data-theme="aurora"] .secondary-commandbar {
+  border-bottom-color: #322e51;
+}
+
+html[data-theme="aurora"] .note-secondary-surface .field--title input,
+html[data-theme="aurora"] .note-secondary-surface #secondary-note-title-input {
+  border: 0 !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  color: #edecff !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="aurora"] .note-secondary-surface .field--title input:focus,
+html[data-theme="aurora"] .note-secondary-surface .field--title input:focus-visible,
+html[data-theme="aurora"] .note-secondary-surface #secondary-note-title-input:focus,
+html[data-theme="aurora"] .note-secondary-surface #secondary-note-title-input:focus-visible {
+  border: 0 !important;
+  outline: none !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="aurora"] .note-secondary-surface #secondary-note-content-editor,
+html[data-theme="aurora"] .note-secondary-surface #secondary-split-preview {
+  color: #e6e6f2;
+}
+
+html[data-theme="aurora"] #secondary-reader-view .note-formatting-toolbar {
+  border-color: #322e51 !important;
+  border-bottom-color: #322e51 !important;
+}
+
+html[data-theme="aurora"] #secondary-reader-view #secondary-content-field.is-split .note-editor-pane--preview {
+  border-left-color: #3e3a60 !important;
 }
 
 /* Forest theme refinements */

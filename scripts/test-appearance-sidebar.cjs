@@ -40,7 +40,7 @@ async function main() {
     for (let i = 0; i < 40; i++)
       demo.data.tags.push({ ...tag, id: `tag-scroll-${i}`, name: `Example long tag ${i}`, normalizedName: `example long tag ${i}` });
     await page.evaluate(async (d) => { await PersonalNotesStorage.importBackup(d); localStorage.setItem("nook:onboarding-dismissed", "1"); localStorage.setItem("nook:glass", JSON.stringify({ enabled: true, transparency: 40 })); }, demo);
-    for (const theme of ["light", "coffee", "forest", "midnight", "dark", "retro", "eink"]) {
+    for (const theme of ["light", "coffee", "forest", "midnight", "dark", "aurora", "retro", "eink"]) {
       await page.setViewportSize({ width: 1440, height: 900 });
       await page.evaluate(t => localStorage.setItem("nook:theme", t), theme);
       await page.reload();

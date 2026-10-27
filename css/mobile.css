@@ -573,13 +573,15 @@ dialog:not([open]),
     transform: scale(0.92);
   }
   html[data-theme="dark"] .notes-panel.is-trash-view .note-card__action--restore,
-  html[data-theme="midnight"] .notes-panel.is-trash-view .note-card__action--restore {
+  html[data-theme="midnight"] .notes-panel.is-trash-view .note-card__action--restore,
+  html[data-theme="aurora"] .notes-panel.is-trash-view .note-card__action--restore {
     background: rgba(16, 185, 129, 0.15);
     border-color: rgba(52, 211, 153, 0.3);
     color: #6ee7b7;
   }
   html[data-theme="dark"] .notes-panel.is-trash-view .note-card__action--permanent,
-  html[data-theme="midnight"] .notes-panel.is-trash-view .note-card__action--permanent {
+  html[data-theme="midnight"] .notes-panel.is-trash-view .note-card__action--permanent,
+  html[data-theme="aurora"] .notes-panel.is-trash-view .note-card__action--permanent {
     background: rgba(239, 68, 68, 0.15);
     border-color: rgba(248, 113, 113, 0.3);
     color: #fca5a5;
@@ -969,7 +971,8 @@ dialog:not([open]),
     transform: scale(0.97);
   }
   html[data-theme="dark"] .mobile-sheet__footer,
-  html[data-theme="midnight"] .mobile-sheet__footer {
+  html[data-theme="midnight"] .mobile-sheet__footer,
+  html[data-theme="aurora"] .mobile-sheet__footer {
     box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.25);
   }
   html[data-theme="retro"] #mobile-reset-filters {
@@ -1091,15 +1094,18 @@ dialog:not([open]),
     background: rgba(239, 68, 68, 0.12);
   }
   html[data-theme="dark"] .mobile-card-action-item--danger,
-  html[data-theme="midnight"] .mobile-card-action-item--danger {
+  html[data-theme="midnight"] .mobile-card-action-item--danger,
+  html[data-theme="aurora"] .mobile-card-action-item--danger {
     color: #f87171;
     border-color: rgba(248, 113, 113, 0.28);
     background: rgba(248, 113, 113, 0.08);
   }
   html[data-theme="dark"] .mobile-card-action-item--danger svg,
   html[data-theme="midnight"] .mobile-card-action-item--danger svg,
+  html[data-theme="aurora"] .mobile-card-action-item--danger svg,
   html[data-theme="dark"] .mobile-card-action-item--danger .mobile-card-action-item__icon,
-  html[data-theme="midnight"] .mobile-card-action-item--danger .mobile-card-action-item__icon {
+  html[data-theme="midnight"] .mobile-card-action-item--danger .mobile-card-action-item__icon,
+  html[data-theme="aurora"] .mobile-card-action-item--danger .mobile-card-action-item__icon {
     color: #f87171;
     stroke: #f87171;
   }
@@ -1533,24 +1539,28 @@ dialog:not([open]),
     stroke: currentColor;
   }
   html[data-theme="dark"] #note-dialog .note-save-status.is-saved,
-  html[data-theme="midnight"] #note-dialog .note-save-status.is-saved {
+  html[data-theme="midnight"] #note-dialog .note-save-status.is-saved,
+  html[data-theme="aurora"] #note-dialog .note-save-status.is-saved {
     color: #34d399;
     background: rgba(16, 185, 129, 0.12);
     border-color: rgba(16, 185, 129, 0.25);
   }
   html[data-theme="dark"] #note-dialog .note-save-status.is-saved .note-save-status__icon,
-  html[data-theme="midnight"] #note-dialog .note-save-status.is-saved .note-save-status__icon {
+  html[data-theme="midnight"] #note-dialog .note-save-status.is-saved .note-save-status__icon,
+  html[data-theme="aurora"] #note-dialog .note-save-status.is-saved .note-save-status__icon {
     color: #34d399;
     stroke: #34d399;
   }
   html[data-theme="dark"] #note-dialog .note-save-status.is-saving,
-  html[data-theme="midnight"] #note-dialog .note-save-status.is-saving {
+  html[data-theme="midnight"] #note-dialog .note-save-status.is-saving,
+  html[data-theme="aurora"] #note-dialog .note-save-status.is-saving {
     color: var(--selected-text);
     background: var(--selected-surface);
     border-color: var(--selected-border);
   }
   html[data-theme="dark"] #note-dialog .note-save-status.is-dirty,
-  html[data-theme="midnight"] #note-dialog .note-save-status.is-dirty {
+  html[data-theme="midnight"] #note-dialog .note-save-status.is-dirty,
+  html[data-theme="aurora"] #note-dialog .note-save-status.is-dirty {
     color: #fcd34d;
     background: rgba(245, 158, 11, 0.12);
     border-color: rgba(245, 158, 11, 0.25);
@@ -2036,13 +2046,15 @@ dialog:not([open]),
     background: rgba(239, 68, 68, 0.12) !important;
   }
   html[data-theme="dark"] #mobile-note-actions-body .note-delete-button,
-  html[data-theme="midnight"] #mobile-note-actions-body .note-delete-button {
+  html[data-theme="midnight"] #mobile-note-actions-body .note-delete-button,
+  html[data-theme="aurora"] #mobile-note-actions-body .note-delete-button {
     color: #f87171 !important;
     border-color: rgba(248, 113, 113, 0.28) !important;
     background: rgba(248, 113, 113, 0.08) !important;
   }
   html[data-theme="dark"] #mobile-note-actions-body .note-delete-button svg,
-  html[data-theme="midnight"] #mobile-note-actions-body .note-delete-button svg {
+  html[data-theme="midnight"] #mobile-note-actions-body .note-delete-button svg,
+  html[data-theme="aurora"] #mobile-note-actions-body .note-delete-button svg {
     color: #f87171 !important;
     stroke: #f87171 !important;
     background: rgba(248, 113, 113, 0.15) !important;
@@ -2625,12 +2637,14 @@ dialog:not([open]),
     border-radius: var(--radius-pill);
   }
   html[data-theme="dark"] #organize-dialog .data-setting--danger,
-  html[data-theme="midnight"] #organize-dialog .data-setting--danger {
+  html[data-theme="midnight"] #organize-dialog .data-setting--danger,
+  html[data-theme="aurora"] #organize-dialog .data-setting--danger {
     border-color: rgba(248, 113, 113, 0.28) !important;
     background: rgba(248, 113, 113, 0.06) !important;
   }
   html[data-theme="dark"] #organize-dialog .data-setting--danger h3,
-  html[data-theme="midnight"] #organize-dialog .data-setting--danger h3 {
+  html[data-theme="midnight"] #organize-dialog .data-setting--danger h3,
+  html[data-theme="aurora"] #organize-dialog .data-setting--danger h3 {
     color: #f87171 !important;
   }
   #organize-dialog .shortcut-settings {

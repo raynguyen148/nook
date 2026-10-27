@@ -9,6 +9,7 @@
     forest: { label: "Forest", file: "forest", color: "#2f6b4f" },
     midnight: { label: "Midnight", file: "midnight", color: "#18263f" },
     dark: { label: "Dark", file: "dark", color: "#09090b" },
+    aurora: { label: "Aurora", file: "aurora", color: "#17142c" },
     retro: { label: "Retro", file: "retro", color: "#2f5b3e" },
     eink: { label: "Zen", file: "eink", color: "#f5f2eb" },
     auto: { label: "Auto", file: "classic", color: "#9e6b02" },

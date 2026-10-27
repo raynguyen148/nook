@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="1600" height="900">
+  <defs>
+    <linearGradient id="a-base" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#080716"/>
+      <stop offset="45%" stop-color="#13102b"/>
+      <stop offset="100%" stop-color="#1f1745"/>
+    </linearGradient>
+    <linearGradient id="a-mint" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#5ee5b8" stop-opacity="0.92"/>
+      <stop offset="30%" stop-color="#3fd9a8" stop-opacity="0.55"/>
+      <stop offset="70%" stop-color="#2bb3c9" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#2bb3c9" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="a-violet" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#bda7ff" stop-opacity="0.78"/>
+      <stop offset="45%" stop-color="#7b6cff" stop-opacity="0.32"/>
+      <stop offset="100%" stop-color="#5a4fd0" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="a-sky" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#76c7ff" stop-opacity="0"/>
+      <stop offset="50%" stop-color="#76c7ff" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#bda7ff" stop-opacity="0"/>
+    </linearGradient>
+    <radialGradient id="a-glow-pink" cx="86%" cy="86%" r="48%">
+      <stop offset="0%" stop-color="#ed9ee5" stop-opacity="0.6"/>
+      <stop offset="55%" stop-color="#a8479c" stop-opacity="0.22"/>
+      <stop offset="100%" stop-color="#1f1745" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="a-glow-mint" cx="18%" cy="62%" r="46%">
+      <stop offset="0%" stop-color="#3fd9a8" stop-opacity="0.42"/>
+      <stop offset="60%" stop-color="#1fa58a" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#080716" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <!-- Polar Night Canvas -->
+  <rect width="1600" height="900" fill="url(#a-base)"/>
+  <rect width="1600" height="900" fill="url(#a-glow-mint)"/>
+  <rect width="1600" height="900" fill="url(#a-glow-pink)"/>
+  <!-- High Violet Curtain -->
+  <path d="M-60 170 C260 50 560 220 900 150 C1180 92 1420 40 1660 96 L1660 -40 L-60 -40 Z" fill="url(#a-violet)"/>
+  <!-- Mint Aurora Curtain -->
+  <path d="M-60 120 C300 -20 620 220 940 120 C1200 40 1420 -60 1660 40 L1660 230 C1420 150 1220 300 960 360 C640 430 300 330 -60 470 Z" fill="url(#a-mint)"/>
+  <!-- Sky Thread -->
+  <path d="M-60 476 C300 340 640 440 960 366 C1220 306 1420 156 1660 236 L1660 252 C1420 178 1220 330 960 388 C640 460 300 366 -60 500 Z" fill="url(#a-sky)"/>
+  <!-- Fjord Horizon -->
+  <path d="M0 760 L150 690 L260 730 L420 640 L560 720 L720 660 L880 740 L1040 620 L1180 700 L1320 650 L1460 720 L1600 680 L1600 900 L0 900 Z" fill="#0a0920" fill-opacity="0.72"/>
+</svg>

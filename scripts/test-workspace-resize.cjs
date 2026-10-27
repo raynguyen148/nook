@@ -184,7 +184,7 @@ async function main() {
     passed.push("Opening Quick actions during a drag cancels resizing and lets Escape close the modal");
 
     const matrix = await setup(2560);
-    for (const theme of ["light", "coffee", "forest", "midnight", "dark", "retro", "eink"]) {
+    for (const theme of ["light", "coffee", "forest", "midnight", "dark", "aurora", "retro", "eink"]) {
       await matrix.evaluate((theme) => localStorage.setItem("nook:theme", theme), theme);
       await matrix.reload(); await ready(matrix);
       await matrix.getByRole("button", { name: "Open note: Reading notes", exact: true }).click(); await settle(matrix);

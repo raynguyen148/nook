@@ -360,7 +360,8 @@ Shared tag/picker/menu colors use role tokens (`--tag-chip-*`, `--tag-option-*`,
 `--empty-tag-*`, `--picker-menu-*`, `--tag-menu-*`). Component owners provide
 fallbacks; themes supply their palettes. Common type/color menu geometry
 belongs in `management.css`. Retro and Zen have intentional typography,
-shape, and state differences; preserve them when consolidating other themes.
+shape, and state differences, and Aurora has a closing gradient signature
+layer; preserve them when consolidating other themes.
 
 Search all definitions of a selector/property before moving or overriding it.
 Preserve cascade order. Fix the owning rule rather than appending a competing

@@ -145,7 +145,7 @@ async function main() {
     // The primary preference remains independent even when the narrower pane clamps it.
     const preference = await page.evaluate(() => Number(localStorage.getItem("nook:split-ratio:primary")) * 100);
     closeTo(preference, primaryRatio);
-    for (const theme of ["light", "coffee", "forest", "midnight", "dark", "retro", "eink"]) {
+    for (const theme of ["light", "coffee", "forest", "midnight", "dark", "aurora", "retro", "eink"]) {
       await page.evaluate(theme => {
         localStorage.setItem("nook:theme", theme);
         localStorage.setItem("nook:glass", JSON.stringify({ enabled: true, transparency: 50 }));

@@ -44,7 +44,7 @@ practice, and personal ideas in one calm, searchable local library.
 - Export and import a complete JSON backup, including version history. The local backup-health indicator reminds you when an export is missing or old.
 - Keep the primary editor and Side note as independent sessions with per-pane draft recovery and stale-write conflict handling.
 - Manage note types and tags from Settings → Organize Notes.
-- Choose Light, Coffee, Forest, Midnight, Dark, Retro, Zen, or Auto theme, switch between Compact, Comfortable, and Grid layouts, or collapse the sidebar into an icon rail.
+- Choose Light, Coffee, Forest, Midnight, Dark, Aurora, Retro, Zen, or Auto theme, switch between Compact, Comfortable, and Grid layouts, or collapse the sidebar into an icon rail.
 - Use the full available width for the library and its toolbar, with small edge insets even on wide screens.
 - Comfortable view expands to three columns and Grid view to five columns when the library content area is at least 1,440px wide; smaller screens retain fewer columns.
 - Recover an unfinished local editor draft after an interrupted session.
@@ -267,15 +267,15 @@ has its own autosave, recovery record, conflict state, and history action.
 
 ### Themes
 
-Nook has a light, clean interface by default. You can use the theme button (or `T`) to cycle between eight
-modes: Light, Coffee, Forest, Midnight, Dark, Retro, Zen, and Auto. Auto matches
+Nook has a light, clean interface by default. You can use the theme button (or `T`) to cycle between nine
+modes: Light, Coffee, Forest, Midnight, Dark, Aurora, Retro, Zen, and Auto. Auto matches
 your device's system color scheme preference (Light or Dark). Hover over or keyboard-focus the button to see the
 current and next theme. Auto stays selected after reload and updates when the system theme changes.
 
 In Settings → Display (Appearance on mobile), **Enable glass** turns on a fixed,
 theme-specific illustration and glass in the library, cards, and note detail together. With Nature Scenery, Light has
 warm stone mountain layers, Coffee soft highland slopes with a fruiting coffee branch, Forest a pine lake, Midnight
-mountains and a moon, Dark a night woodland, Retro a striped mid-century sun over moss hills and trees, and Zen a
+mountains and a moon, Dark a night woodland, Aurora folded curtains of northern light over a fjord and pine shore, Retro a striped mid-century sun over moss hills and trees, and Zen a
 moonlit lake with misty ridges and bamboo. Coffee's sidebar has a steaming cup, Retro's a vintage keyboard, and Zen's a brushed
 ensō above balanced stones. These simple silhouettes are subtle, single-tone
 backgrounds that do not take up navigation space. Auto follows
@@ -289,7 +289,7 @@ to the normal appearance. Glass uses softly diffused Ambient colors, illuminated
 edges and directional reflections, with deeper shadows on focused cards. Ambient
 glass draws each theme's backdrop as layered satin folds: soft tonal gradients, a thin lit
 edge on each crest, fine threads fanning from it, and a faint halo around the light source.
-A few static colour glows sit above it (theme-specific in Light and Midnight, accent-derived
+A few static colour glows sit above it (theme-specific in Light, Midnight, and Aurora, accent-derived
 elsewhere) so the frost has something to diffuse; Nature retains its crisp silhouettes
 without either. Light and dark themes have separate reflection
 strengths. On desktop the library panel and cards run lighter than reading areas so the

@@ -158,7 +158,7 @@ async function main() {
       localStorage.setItem("nook:onboarding-dismissed", "1");
     }, fixture);
     await page.reload(); await ready();
-    const themes = (process.env.NOOK_UI_THEMES ?? "light,coffee,forest,midnight,dark,retro,eink").split(",").filter(Boolean);
+    const themes = (process.env.NOOK_UI_THEMES ?? "light,coffee,forest,midnight,dark,aurora,retro,eink").split(",").filter(Boolean);
     for (const theme of themes) {
       await page.evaluate(value => localStorage.setItem("nook:theme", value), theme);
       await page.reload(); await ready();

@@ -453,7 +453,7 @@ tint from 66–53% (`applyGlass` writes `78 − 1.4t` and `78 − 1.2t`; the CSS
 and dialog panes 88%. Mobile cards have no panel behind them and keep a 72% floor; pinned cards
 use 94%. Sidebar tint ranges from 95–75%.
 Ambient glass also adds a static `body::after` layer of three soft glows, coloured by
-`--glass-orb-a/b/c` (explicit palettes in Light and Midnight, derived from the accent for the
+`--glass-orb-a/b/c` (explicit palettes in Light, Midnight, and Aurora, derived from the accent for the
 other themes). Its opacity follows `--glass-reveal` and Nature scenery does not use it. The
 artwork, glows, and tints were audited together: render the theme's SVG, blur it like the
 film, add the glows, then the panel and card tints, and measure card text over the whole
@@ -485,7 +485,10 @@ and `--tag-menu-border/surface/shadow`. Default fallbacks stay in the component
 owner. Coffee, Forest, Dark, and Midnight supply palette values rather than
 repeating the same color selectors. `management.css` owns common type/color
 menu geometry; the component rules retain only their differences. Retro and
-Zen keep their intentional typography, shapes, and state overrides. This is
+Zen keep their intentional typography, shapes, and state overrides. Aurora
+ends its theme file with a signature layer (starfield and glow backdrop,
+gradient wordmark, primary buttons, pinned crest, and card hover edge) with
+reduced-motion and forced-colors fallbacks. This is
 a focused consolidation, not a claim that every historic theme override has
 been removed.
 

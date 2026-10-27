@@ -385,7 +385,7 @@ async function main() {
       assert.equal(overflow, false, `workflow overflow at ${width}px`);
       await page.locator('#template-dialog [data-close-workflow]').first().click();
     }
-    for (const theme of ["light", "coffee", "forest", "midnight", "dark", "retro", "eink"]) {
+    for (const theme of ["light", "coffee", "forest", "midnight", "dark", "aurora", "retro", "eink"]) {
       await page.evaluate((value) => { localStorage.setItem("nook:theme", value); }, theme);
       await reload();
       await commands("Draft Recovery", "Draft Recovery");

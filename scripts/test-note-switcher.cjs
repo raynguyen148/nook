@@ -374,7 +374,7 @@ async function main() {
       });
       await PersonalNotesStorage.setNotePinned(note.id, true);
     });
-    for (const theme of ["light", "coffee", "forest", "midnight", "dark", "retro", "eink"]) {
+    for (const theme of ["light", "coffee", "forest", "midnight", "dark", "aurora", "retro", "eink"]) {
       await matrix.page.evaluate((value) => localStorage.setItem("nook:theme", value), theme);
       await matrix.page.reload(); await ready(matrix.page);
       await matrix.page.getByRole("button", { name: "Open note: Alpha", exact: true }).click();

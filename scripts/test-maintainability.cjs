@@ -98,7 +98,7 @@ async function main() {
 
     const themeIcons = await newPage({ viewport: { width: 375, height: 812 } });
     const iconModes = [["light", "sun"], ["coffee", "coffee"], ["forest", "forest"], ["midnight", "midnight"],
-      ["dark", "moon"], ["retro", "retro"], ["eink", "eink"], ["auto", "auto"]];
+      ["dark", "moon"], ["aurora", "aurora"], ["retro", "retro"], ["eink", "eink"], ["auto", "auto"]];
     async function assertThemeIcon(mode, icon) {
       await themeIcons.waitForFunction(({ mode, icon }) => {
         const visible = (id) => [...document.querySelectorAll(`${id} .theme-toggle__icon`)]
@@ -344,7 +344,7 @@ async function main() {
     passed.push("More menu remains clickable in the last row of long desktop and mobile catalogues");
     await desktop.context().close();
 
-    for (const theme of ["light", "coffee", "forest", "dark", "midnight", "retro", "eink"]) {
+    for (const theme of ["light", "coffee", "forest", "dark", "midnight", "aurora", "retro", "eink"]) {
       const page = await newPage(); await seed(page);
       await page.evaluate((theme) => localStorage.setItem("nook:theme", theme), theme);
       await page.reload(); await ready(page);

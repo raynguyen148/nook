@@ -141,7 +141,7 @@ async function main() {
   }
   try {
     const page = await setup();
-    for (const theme of ["light", "coffee", "forest", "midnight", "dark", "retro", "eink"]) {
+    for (const theme of ["light", "coffee", "forest", "midnight", "dark", "aurora", "retro", "eink"]) {
       await page.evaluate(theme => localStorage.setItem("nook:theme", theme), theme);
       await page.reload(); await ready(page);
       for (const layout of ["comfortable", "compact", "grid"]) {
