@@ -486,7 +486,7 @@ owner. Coffee, Forest, Dark, and Midnight supply palette values rather than
 repeating the same color selectors. `management.css` owns common type/color
 menu geometry; the component rules retain only their differences. Retro and
 Zen keep their intentional typography, shapes, and state overrides. Aurora
-ends its theme file with a signature layer (starfield and glow backdrop,
+ends its theme file with a signature layer (aurora glow backdrop,
 gradient wordmark, primary buttons, pinned crest, and card hover edge) with
 reduced-motion and forced-colors fallbacks. This is
 a focused consolidation, not a claim that every historic theme override has
