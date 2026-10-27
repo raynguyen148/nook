@@ -730,7 +730,10 @@
     visibility 0s linear var(--motion-duration-short);
 }
 
+/* Popovers default to overflow: auto; a toast never scrolls, so keep the action's
+ * hit area from ever producing a scrollbar. */
 .toast[popover] {
+  overflow: visible;
   top: auto !important;
   right: 0 !important;
   bottom: 1.25rem !important;
@@ -816,13 +819,16 @@ body:has(.workspace.is-note-detail-open) .toast[popover] {
   transition-delay: 0s;
 }
 
+/* The visible pill matches the status indicator's height, so a toast with an
+ * action is as tall as one without; ::before stretches the touch target over
+ * the toast's vertical padding (about 44px) without spilling past its edge. */
 .toast__action {
   position: relative;
-  min-height: 2.75rem;
+  min-height: 1.5rem;
   flex: none;
   border: 0;
   border-radius: var(--focus-radius);
-  padding: 0.25rem 0.375rem;
+  padding: 0 0.375rem;
   color: var(--toast-action);
   background: transparent;
   display: inline-flex;
@@ -838,6 +844,12 @@ body:has(.workspace.is-note-detail-open) .toast[popover] {
     color var(--motion-duration-short) var(--motion-ease-out),
     background-color var(--motion-duration-short) var(--motion-ease-out),
     transform var(--motion-duration-micro) var(--motion-ease-out);
+}
+
+.toast__action::before {
+  content: "";
+  position: absolute;
+  inset: -0.6rem 0;
 }
 
 @media (hover: hover) {
