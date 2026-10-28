@@ -1,143 +1,232 @@
 /* ==========================================================================
-   Nook - Theme: Light (Shadcn Luma Style)
-   Clean Neutral base with Geist typography & warm gold primary accent
-   Preset: b2D0wqNxT (Luma Style / Neutral Base / Warm Gold Theme)
+   Nook - Theme: Light (Paper & Honey)
+   The default light theme, also used by Auto in light mode: warm paper
+   neutrals, graphite ink, hairline stone borders and one honey accent kept for
+   actions and selection. CSS-only, with local Geist typography.
    ========================================================================== */
 
 :root,
 html[data-theme="light"] {
-  --theme-surface-page: #fafafa;
-  --theme-danger-border: #fecaca;
-  --form-control-resting-background: #ffffff;
+  color-scheme: light;
+
+  /* Paper and stone neutrals. One warm family replaces the mixed slate/zinc
+   * literals inherited from shared layers. */
+  --light-canvas: #f6f5f2;
+  --light-sidebar: #fbfaf8;
+  --light-paper: #ffffff;
+  --light-well: #f5f4f0;
+  --light-hover: #f0eee9;
+  --light-pressed: #e9e6df;
+  --light-line: #e8e5df;
+  --light-line-input: #dfdbd3;
+  --light-line-strong: #d1ccc2;
+  --light-ink: #1c1a17;
+  --light-ink-2: #44403b;
+  --light-ink-3: #6f6a63;
+  --light-ink-4: #8f897f;
+  --light-shade: 41 37 31;
+
+  --theme-surface-page: var(--light-canvas);
+  --theme-border-strong: var(--light-line-strong);
+  --theme-danger-border: #f1cdc6;
+  --form-control-resting-background: var(--light-paper);
+  --management-search-resting-border: var(--light-line-input);
+  --management-search-resting-shadow: var(--shadow-xs);
+  --management-row-input-resting-border: var(--light-line-input);
+  --management-row-input-resting-shadow: none;
   --font-sans: "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
   --font-display: "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
-  --primary-accent: #9e6b02;
-  --primary-accent-hover: #805600;
-  --primary-accent-text: #805600;
-  --primary-accent-soft: #fdf5db;
-  --primary-accent-soft-hover: #fcebc2;
-  --primary-accent-border: #f2d184;
-  --primary-accent-focus: rgb(158 107 2 / 24%);
-  --primary-accent-shadow: rgb(158 107 2 / 20%);
-  --split-highlight-source: rgb(208 151 29 / 30%);
-  --split-highlight-preview: rgb(208 151 29 / 14%);
-  --split-highlight-edge: #9e6b02;
-  --split-highlight-outline: rgb(128 86 0 / 38%);
-  --pinned-card-border: color-mix(in srgb, var(--primary-accent) 24%, var(--note-card-border));
-  --pinned-card-border-hover: #c4932e;
+  --select-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='m4 6 4 4 4-4' stroke='%236f6a63' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+
+  /* Warm, low shadows: depth comes from hairlines first, shade second. */
+  --shadow-xs: 0 1px 2px rgb(var(--light-shade) / 5%);
+  --shadow-sm: 0 1px 3px rgb(var(--light-shade) / 6%);
+  --shadow-md: 0 1px 2px rgb(var(--light-shade) / 4%), 0 4px 12px -4px rgb(var(--light-shade) / 8%);
+  --shadow-lg: 0 1px 2px rgb(var(--light-shade) / 4%), 0 12px 32px -16px rgb(var(--light-shade) / 14%);
+
+  /* Honey anchor: reserved for actions, selection and focus. */
+  --primary-accent: #9c6410;
+  --primary-accent-hover: #85540c;
+  --primary-accent-text: #84530b;
+  --primary-accent-soft: #faf3e5;
+  --primary-accent-soft-hover: #f5e9d0;
+  --primary-accent-border: #ead7ae;
+  --primary-accent-focus: rgb(156 100 16 / 22%);
+  --primary-accent-shadow: rgb(156 100 16 / 18%);
+  --split-highlight-source: rgb(214 158 46 / 28%);
+  --split-highlight-preview: rgb(214 158 46 / 13%);
+  --split-highlight-edge: #9c6410;
+  --split-highlight-outline: rgb(132 83 11 / 36%);
+
+  --pinned-card-accent: var(--primary-accent);
+  --pinned-card-border: color-mix(in srgb, var(--primary-accent) 20%, var(--note-card-border));
+  --pinned-card-border-hover: color-mix(in srgb, var(--primary-accent) 42%, var(--note-card-border));
   --pinned-card-surface: var(--note-card-surface);
-  --pinned-card-shadow: 0 1px 3px 0 rgb(158 107 2 / 8%), 0 1px 2px -1px rgb(158 107 2 / 8%);
-  --pinned-marker-background: #f9efd5;
-  --pinned-marker-border: #e6d2a2;
-  --pinned-marker-color: #805600;
-  --note-card-surface: #ffffff;
-  --note-card-border: #e4e4e7;
-  --note-card-title: #18181b;
+  --pinned-card-shadow: var(--shadow-xs);
+  --pinned-marker-background: #f8efdc;
+  --pinned-marker-border: #e7d3a7;
+  --pinned-marker-color: #84530b;
+
+  --note-card-surface: var(--light-paper);
+  --note-card-border: var(--light-line);
+  --note-card-hover-border: color-mix(in srgb, var(--primary-accent) 30%, var(--light-line));
+  --note-card-title: var(--light-ink);
   --note-card-title-letter-spacing: -0.015em;
-  --note-card-preview: #3f3f46;
-  --note-card-muted: #71717a;
-  --note-card-actions-border: #e4e4e7;
-  --note-card-actions-surface: #fafafa;
-  --note-card-action: #71717a;
+  --note-card-preview: var(--light-ink-2);
+  --note-card-muted: var(--light-ink-3);
+  --note-card-actions-border: var(--light-line);
+  --note-card-actions-surface: var(--light-well);
+  --note-card-action: var(--light-ink-3);
   --note-card-action-hover: var(--primary-accent-text);
   --note-card-action-hover-surface: var(--primary-accent-soft);
-  --note-card-action-danger: #b91c1c;
-  --note-card-action-danger-surface: #fef2f2;
-  --note-card-action-disabled: #d4d4d8;
+  --note-card-action-danger: #b3332a;
+  --note-card-action-danger-surface: #fdf2f0;
+  --note-card-action-disabled: #cdc8bf;
+
+  --tag-chip-border: #e6e2db;
+  --tag-chip-text: #57524b;
+  --tag-chip-surface: var(--light-canvas);
+  --picker-menu-border: var(--light-line);
+  --picker-menu-surface: var(--light-paper);
+  --picker-menu-text: var(--light-ink);
+  --picker-menu-shadow: 0 2px 6px rgb(var(--light-shade) / 5%), 0 16px 36px -12px rgb(var(--light-shade) / 18%);
+
   --primary-button-text: #ffffff;
   --focus-color: var(--primary-accent);
   --focus-radius: 0.625rem;
   --interaction-duration: 160ms;
   --interaction-easing: cubic-bezier(0.16, 1, 0.3, 1);
-  --toast-surface: #ffffff;
-  --toast-border: #e4e4e7;
-  --toast-text: #18181b;
-  --toast-status-surface: #fdf5db;
-  --toast-status-icon: #9e6b02;
-  --toast-action: #9e6b02;
-  --toast-action-hover: #805600;
-  --toast-focus: #9e6b02;
-  --toast-shadow: 0 10px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
-  --toast-error-surface: #fef2f2;
-  --toast-error-border: #fecaca;
-  --toast-error-text: #991b1b;
-  --toast-error-status-surface: #fee2e2;
-  --toast-error-status-icon: #dc2626;
-  --toast-error-action: #dc2626;
-  --toast-error-action-hover: #b91c1c;
-  --toast-error-focus: #dc2626;
+
+  --toast-surface: var(--light-paper);
+  --toast-border: var(--light-line);
+  --toast-text: var(--light-ink);
+  --toast-status-surface: var(--primary-accent-soft);
+  --toast-status-icon: var(--primary-accent);
+  --toast-action: var(--primary-accent-text);
+  --toast-action-hover: #6b4308;
+  --toast-focus: var(--primary-accent);
+  --toast-shadow: 0 2px 6px rgb(var(--light-shade) / 6%), 0 18px 40px -14px rgb(var(--light-shade) / 24%);
+  --toast-error-surface: #fdf4f2;
+  --toast-error-border: #f1d0ca;
+  --toast-error-text: #8f2a20;
+  --toast-error-status-surface: #fbe3df;
+  --toast-error-status-icon: #c0392b;
+  --toast-error-action: #b3332a;
+  --toast-error-action-hover: #8f2a20;
+  --toast-error-focus: #c0392b;
 }
 
 html[data-theme="light"] {
-  background: #fafafa;
-  color: #18181b;
+  background: var(--light-canvas);
+  color: var(--light-ink);
 }
 
 html[data-theme="light"] body {
-  background: #fafafa;
-  color: #18181b;
+  background: var(--light-canvas);
+  color: var(--light-ink);
   font-family: var(--font-sans);
 }
 
-html[data-theme="light"] ::selection {
-  color: #805600;
-  background: #fcebc2;
+html[data-theme="light"] :where(h1) {
+  color: var(--light-ink);
 }
 
+html[data-theme="light"] ::selection {
+  color: var(--light-ink);
+  background: #f2e2bf;
+}
+
+html[data-theme="light"] * {
+  scrollbar-color: #d6d1c8 transparent;
+}
+
+/* --------------------------------------------------------------------------
+   Sidebar and navigation
+   -------------------------------------------------------------------------- */
 html[data-theme="light"] .sidebar {
-  border-color: #e4e4e7;
-  background: #fafafa;
+  border-color: var(--light-line);
+  background: var(--light-sidebar);
+  box-shadow: var(--shadow-xs);
 }
 
 html[data-theme="light"] .sidebar-toggle-btn,
 html[data-theme="light"] .quick-view-header-toggle {
-  border-color: #e4e4e7;
-  color: #71717a;
-  background: #ffffff;
+  border-color: var(--light-line);
+  color: var(--light-ink-3);
+  background: var(--light-paper);
 }
 
 html[data-theme="light"] .sidebar-toggle-btn:hover,
 html[data-theme="light"] .quick-view-header-toggle:hover {
-  color: #18181b;
-  background: #f4f4f5;
-  border-color: #d4d4d8;
+  border-color: var(--light-line-strong);
+  color: var(--light-ink);
+  background: var(--light-hover);
 }
 
-html[data-theme="light"] .brand strong {
+html[data-theme="light"] .brand strong,
+html[data-theme="light"] .topbar h1,
+html[data-theme="light"] .notes-panel__heading h2,
+html[data-theme="light"] .quick-view-document-header h1 {
+  color: var(--light-ink);
   font-family: var(--font-display);
-  color: #18181b;
+  letter-spacing: -0.02em;
+}
+
+/* The library heading reads as a title in ink; Trash keeps its danger tone. */
+html[data-theme="light"] .notes-panel:not(.is-trash-view) #notes-heading {
+  color: var(--light-ink);
 }
 
 html[data-theme="light"] .brand small,
 html[data-theme="light"] .filter-heading,
-html[data-theme="light"] .filter-section-title h2 {
-  color: #71717a;
+html[data-theme="light"] .filter-section-title h2,
+html[data-theme="light"] .subtitle,
+html[data-theme="light"] .results-meta {
+  color: var(--light-ink-3);
 }
 
 html[data-theme="light"] .storage-status {
-  border-color: var(--backup-health-border, #e4e4e7);
-  color: var(--backup-health-text, #3f3f46);
-  background: var(--backup-health-surface, #ffffff);
+  border-color: var(--backup-health-border, var(--light-line));
+  color: var(--backup-health-text, var(--light-ink-2));
+  background: var(--backup-health-surface, var(--light-paper));
 }
 
-/* Selected navigation items reserve a transparent border so active states do
- * not shift. Global filters use the Light accent; note types reuse the same
- * color-aware border, text, and surface tokens as their active filter pill. */
+html[data-theme="light"] .space-navigation {
+  border-bottom-color: var(--light-line);
+}
+
+/* Navigation rows reserve a transparent border so selection never shifts. */
 html[data-theme="light"] :where(.space-link, .sidebar-filter) {
   border: 1px solid transparent;
+  color: var(--light-ink-2);
+}
+
+html[data-theme="light"] :where(.space-link, .sidebar-filter):hover {
+  border-color: transparent;
+  color: var(--light-ink);
+  background: var(--light-hover);
+}
+
+html[data-theme="light"] :where(.space-link, .sidebar-filter) .sidebar-filter__icon {
+  color: var(--light-ink-3);
 }
 
 html[data-theme="light"] :where(.space-link, .sidebar-filter).is-active {
-  border-color: var(--primary-accent-border);
+  border-color: color-mix(in srgb, var(--primary-accent) 18%, transparent);
   color: var(--primary-accent-text);
   background: var(--primary-accent-soft);
   font-weight: var(--font-weight-emphasis);
+}
+
+html[data-theme="light"] :where(.space-link, .sidebar-filter).is-active .sidebar-filter__icon {
+  color: var(--primary-accent);
 }
 
 html[data-theme="light"] :where(.space-link, .sidebar-filter).is-active .filter-count {
   color: var(--selected-text);
 }
 
+/* Note types keep their own colour family when selected. */
 html[data-theme="light"] .sidebar-filter--type.is-active {
   border-color: var(--filter-type-border, var(--primary-accent-border));
   color: var(--filter-type-text, var(--primary-accent-text));
@@ -149,24 +238,158 @@ html[data-theme="light"] .sidebar-filter--type.is-active .filter-count {
 }
 
 html[data-theme="light"] .space-link--trash.is-active {
-  border-color: #fecdd3;
-  color: #a94352;
-  background: #fff1f3;
+  border-color: #f2d3cd;
+  color: #a33a30;
+  background: #fdf3f1;
 }
 
-html[data-theme="light"] .topbar h1 {
-  font-family: var(--font-display);
-  color: #18181b;
+html[data-theme="light"] .space-link--trash.is-active .sidebar-filter__icon {
+  color: currentColor;
 }
 
-html[data-theme="light"] .search-field input {
-  border-color: var(--note-card-border, #e4e4e7);
+/* The fallback General type reads as warm stone instead of blue slate. */
+html[data-theme="light"] .type-dot--slate {
+  background: #8a847b;
+}
+
+html[data-theme="light"] .type-badge--slate,
+html[data-theme="light"] .active-filter-pill--type-slate {
+  --detail-type-chip-border: #dcd7ce;
+  --detail-type-chip-color: #4a453f;
+  --detail-type-chip-background: #f7f6f3;
+}
+
+html[data-theme="light"] .type-badge--slate {
+  border-color: #dcd7ce;
+  color: #4a453f;
+  background: #f7f6f3;
+}
+
+html[data-theme="light"] .sidebar-filter--slate,
+html[data-theme="light"] .active-filter-pill--type-slate {
+  --filter-type-border: #dcd7ce;
+  --filter-type-text: #4f4a43;
+  --filter-type-background: #f3f1ed;
+}
+
+html[data-theme="light"] .tag-filter-option {
+  border-color: #e6e2db;
+  color: #57524b;
+  background: var(--light-paper);
+}
+
+html[data-theme="light"] .tag-filter-option:hover {
+  border-color: var(--light-line-strong);
+  color: var(--light-ink);
+  background: var(--light-hover);
+}
+
+/* --------------------------------------------------------------------------
+   Library chrome: panel, toolbar, segmented controls
+   -------------------------------------------------------------------------- */
+html[data-theme="light"] .notes-panel {
+  border-color: var(--light-line);
+  background: var(--light-paper);
+  box-shadow: var(--shadow-lg);
+}
+
+html[data-theme="light"] :where(.search-field input) {
+  border-color: var(--light-line-input);
   box-shadow: var(--form-control-resting-shadow);
+}
+
+html[data-theme="light"] .clear-search:hover {
+  color: var(--light-ink);
+  background: var(--light-hover);
 }
 
 html[data-theme="light"]:not([data-input-modality="keyboard"]) body .search-field input:focus {
   border-color: var(--primary-accent) !important;
   box-shadow: 0 0 0 3px var(--primary-accent-focus) !important;
+}
+
+/* Placeholders stay quiet but keep 4.5:1 on white fields; ink-4 is for icons. */
+html[data-theme="light"] :is(input, textarea)::placeholder {
+  color: #7a746c;
+}
+
+html[data-theme="light"] .search-icon {
+  color: var(--light-ink-4);
+}
+
+html[data-theme="light"] .sort-field__trigger {
+  border-color: var(--light-line-input);
+}
+
+html[data-theme="light"] .sort-field select {
+  color: var(--light-ink-2);
+}
+
+/* Same specificity as the shared resting rule, so shared focus rules still win. */
+html[data-theme="light"] :where(.field, .create-row, .management-row, .management-search) :where(input, select, textarea) {
+  border-color: var(--light-line-input);
+  color: var(--light-ink);
+}
+
+html[data-theme="light"] .search-shortcut,
+html[data-theme="light"] .usage-count {
+  border-color: #e6e2db;
+  color: var(--light-ink-3);
+  background: var(--light-well);
+}
+
+html[data-theme="light"] .view-mode-control__choices,
+html[data-theme="light"] .note-editor-modes {
+  border-color: var(--light-line);
+  background: var(--light-well);
+  box-shadow: none;
+}
+
+html[data-theme="light"] .view-mode-button,
+html[data-theme="light"] .note-editor-mode__button {
+  color: var(--light-ink-3);
+  background: transparent;
+}
+
+html[data-theme="light"] .view-mode-button:hover:not(.is-active, [aria-pressed="true"]),
+html[data-theme="light"] .note-editor-mode__button:hover:not([aria-pressed="true"], :disabled) {
+  color: var(--light-ink);
+  background: rgb(var(--light-shade) / 5%);
+}
+
+/* Selected segments rise as a paper thumb; the icon carries the accent. */
+html[data-theme="light"] .view-mode-button.is-active,
+html[data-theme="light"] .view-mode-button[aria-pressed="true"],
+html[data-theme="light"] .note-editor-mode__button[aria-pressed="true"] {
+  color: var(--light-ink);
+  background: var(--light-paper);
+  box-shadow: 0 0 0 1px rgb(var(--light-shade) / 6%), 0 1px 3px rgb(var(--light-shade) / 10%);
+}
+
+html[data-theme="light"] :is(.view-mode-button.is-active, .view-mode-button[aria-pressed="true"], .note-editor-mode__button[aria-pressed="true"]) svg {
+  color: var(--primary-accent);
+}
+
+html[data-theme="light"] .view-mode-choice + .view-mode-choice .view-mode-button,
+html[data-theme="light"] .view-mode-button + .view-mode-button {
+  border-left-color: var(--light-line);
+}
+
+/* --------------------------------------------------------------------------
+   Cards, chips, pagination and buttons
+   -------------------------------------------------------------------------- */
+html[data-theme="light"] .note-card {
+  box-shadow: var(--shadow-xs);
+}
+
+html[data-theme="light"] .note-card:hover,
+html[data-theme="light"] .note-card:focus-within,
+html[data-theme="light"] .note-card.is-hover {
+  box-shadow: 0 1px 2px rgb(var(--light-shade) / 5%), 0 12px 28px -14px rgb(var(--light-shade) / 22%);
+}
+
+html[data-theme="light"] .note-card:hover .note-card__title {
+  color: var(--primary-accent-text);
 }
 
 html[data-theme="light"] .note-card--pinned {
@@ -188,13 +411,322 @@ html[data-theme="light"] .note-card--pinned:focus-within:not(:hover) {
   }
 }
 
-html[data-theme="light"] .note-card:hover .note-card__title {
-  color: var(--primary-accent);
+/* A faint honey wash with a hairline edge keeps pinned notes grouped without
+ * turning the tray beige. */
+html[data-theme="light"] .pinned-tray {
+  background: color-mix(in srgb, var(--pinned-tray-accent) 3.5%, var(--light-paper));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--pinned-tray-accent) 10%, transparent);
 }
 
-html[data-theme="light"] .quick-view-document-header h1 {
-  font-family: var(--font-display);
-  color: #18181b;
+html[data-theme="light"] .tag-chip:hover,
+html[data-theme="light"] .tag-chip.is-selected,
+html[data-theme="light"] .selected-tag:hover {
+  border-color: var(--light-line-strong);
+  color: var(--light-ink);
+  background: var(--light-hover);
+}
+
+html[data-theme="light"] .note-card--pinned .note-card__pin-toggle {
+  border-color: var(--pinned-marker-border);
+  color: var(--pinned-marker-color);
+  background: var(--pinned-marker-background);
+}
+
+html[data-theme="light"] .pagination-button {
+  border-color: var(--light-line);
+  color: var(--light-ink-3);
+}
+
+html[data-theme="light"] .pagination-button:hover:not(:disabled) {
+  border-color: var(--light-line-strong);
+  color: var(--light-ink);
+  background: var(--light-hover);
+}
+
+html[data-theme="light"] .pagination-button.is-active {
+  border-color: var(--primary-accent-border);
+  color: var(--primary-accent-text);
+  background: var(--primary-accent-soft);
+}
+
+/* Primary actions: flat honey with a soft top light and a warm contact shadow. */
+html[data-theme="light"] .button-primary {
+  border-color: #8f5c0f;
+  color: var(--primary-button-text);
+  background: var(--primary-accent);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 14%), 0 1px 2px rgb(92 58 8 / 20%), 0 4px 10px -4px rgb(156 100 16 / 40%);
+}
+
+html[data-theme="light"] .button-primary:hover:not(:disabled) {
+  border-color: #774b0a;
+  background: var(--primary-accent-hover);
+}
+
+html[data-theme="light"] .button-secondary {
+  border-color: var(--light-line-input);
+  color: var(--light-ink-2);
+  background: var(--light-paper);
+}
+
+html[data-theme="light"] .button-secondary:hover:not(:disabled) {
+  border-color: var(--light-line-strong);
+  color: var(--light-ink);
+  background: var(--light-hover);
+}
+
+html[data-theme="light"] .button-danger {
+  border-color: #f1cdc6;
+  color: #a33a30;
+  background: #fdf3f1;
+}
+
+html[data-theme="light"] .button-danger:hover:not(:disabled) {
+  border-color: #e3a79c;
+  color: #86271e;
+  background: #fbe6e2;
+}
+
+/* --------------------------------------------------------------------------
+   Detail view and Markdown
+   -------------------------------------------------------------------------- */
+/* Editor chrome: labels, title, formatting tools and tag controls. Resting
+ * overrides use :where() so shared hover and focus rules keep winning. */
+html[data-theme="light"] :where(.field) {
+  color: var(--light-ink-2);
+}
+
+html[data-theme="light"] :is(.note-dialog, .note-secondary-surface) .field--title input,
+html[data-theme="light"] .note-secondary-surface #secondary-note-title-input {
+  color: var(--light-ink);
+}
+
+html[data-theme="light"] .note-formatting-tool__button {
+  color: var(--light-ink-3);
+}
+
+html[data-theme="light"] :where(.tag-add-button) {
+  border-color: var(--light-line);
+  background: var(--light-paper);
+}
+
+html[data-theme="light"] .tag-add-button:hover:not(:disabled) {
+  border-color: var(--light-line-strong);
+  color: var(--light-ink);
+  background: var(--light-hover);
+}
+
+html[data-theme="light"] :where(.selected-tag button) {
+  color: var(--light-ink-4);
+}
+
+html[data-theme="light"] .quick-view-content,
+html[data-theme="light"] .note-content-preview {
+  border-color: var(--light-line);
+  color: var(--light-ink-2);
+}
+
+html[data-theme="light"] :is(.quick-view-content, .note-content-preview) :is(h1, h2) {
+  color: var(--light-ink);
+}
+
+html[data-theme="light"] :is(.quick-view-content, .note-content-preview) h1 {
+  border-bottom-color: var(--light-line);
+}
+
+html[data-theme="light"] :is(.quick-view-content, .note-content-preview) h3 {
+  color: #2a2723;
+}
+
+html[data-theme="light"] :is(.quick-view-content, .note-content-preview) h4 {
+  color: var(--light-ink-2);
+}
+
+html[data-theme="light"] :is(.quick-view-content, .note-content-preview) :is(h5, h6),
+html[data-theme="light"] .quick-view-dates {
+  color: var(--light-ink-3);
+}
+
+html[data-theme="light"] :is(.quick-view-content, .note-content-preview) a {
+  color: var(--primary-accent-text);
+  text-decoration-color: color-mix(in srgb, var(--primary-accent) 45%, transparent);
+  text-underline-offset: 0.2em;
+}
+
+html[data-theme="light"] :is(.quick-view-content, .note-content-preview) a:hover {
+  color: #6b4308;
+  text-decoration-color: currentColor;
+}
+
+html[data-theme="light"] :is(.quick-view-content, .note-content-preview) blockquote {
+  border-left-color: color-mix(in srgb, var(--primary-accent) 55%, var(--light-line));
+  color: #57524b;
+  background: #faf9f6;
+}
+
+html[data-theme="light"] :is(.quick-view-content, .note-content-preview) hr {
+  border-top-color: var(--light-line);
+}
+
+html[data-theme="light"] :is(.quick-view-content, .note-content-preview) code:not(pre code) {
+  border: 1px solid #e6e2db;
+  color: #3a2f22;
+  background: #f5f3ef;
+}
+
+html[data-theme="light"] :is(.quick-view-content, .note-content-preview) pre {
+  border-color: var(--light-line);
+  background: #fbfaf8;
+  box-shadow: none;
+}
+
+html[data-theme="light"] :is(.quick-view-content, .note-content-preview) pre code {
+  color: #2a2723;
+}
+
+html[data-theme="light"] :is(.quick-view-content, .note-content-preview) .markdown-code-header {
+  border-bottom-color: var(--light-line);
+  background: var(--light-well);
+}
+
+html[data-theme="light"] :is(.quick-view-content, .note-content-preview) .markdown-code-lang {
+  color: var(--light-ink-3);
+}
+
+html[data-theme="light"] :is(.quick-view-content, .note-content-preview) .markdown-code-copy-btn {
+  border-color: var(--light-line-input);
+  color: var(--light-ink-3);
+  background: var(--light-paper);
+}
+
+html[data-theme="light"] :is(.quick-view-content, .note-content-preview) .markdown-code-copy-btn:hover {
+  border-color: var(--light-line-strong);
+  color: var(--light-ink);
+  background: var(--light-canvas);
+}
+
+/* Syntax: muted ink-on-paper hues, each at least 4.5:1 on the code surface. */
+html[data-theme="light"] .token-keyword { color: #94357f; }
+html[data-theme="light"] .token-string { color: #2f7234; }
+html[data-theme="light"] .token-function { color: #285f9e; }
+html[data-theme="light"] .token-number { color: #9a4f0b; }
+html[data-theme="light"] .token-boolean { color: #a8461c; }
+html[data-theme="light"] .token-comment { color: #77716a; font-style: italic; }
+html[data-theme="light"] .token-operator,
+html[data-theme="light"] .token-punctuation { color: #6a655e; }
+html[data-theme="light"] .token-property,
+html[data-theme="light"] .token-tag { color: #a7323f; }
+html[data-theme="light"] .token-type { color: #1d736b; }
+
+html[data-theme="light"] :is(.quick-view-content, .note-content-preview) .markdown-table-wrapper,
+html[data-theme="light"] :is(.quick-view-content, .note-content-preview) .markdown-table :is(th, td) {
+  border-color: var(--light-line);
+}
+
+html[data-theme="light"] :is(.quick-view-content, .note-content-preview) .markdown-table th {
+  background: #f8f7f4;
+  font-weight: var(--font-weight-semibold);
+}
+
+html[data-theme="light"] :is(.quick-view-content, .note-content-preview) .markdown-table tbody tr:nth-child(even) {
+  background: #fcfbfa;
+}
+
+/* Callouts keep distinct semantic hues, softened to sit on warm paper. */
+html[data-theme="light"] .markdown-alert--note { border-color: #d6e2ee; border-left-color: #3a6fb0; color: #243549; background: #f4f7fb; }
+html[data-theme="light"] .markdown-alert--note .markdown-alert__title { color: #2c5f9e; }
+html[data-theme="light"] .markdown-alert--tip { border-color: #d3e5d6; border-left-color: #2f7d4c; color: #213a2a; background: #f3f8f4; }
+html[data-theme="light"] .markdown-alert--tip .markdown-alert__title { color: #286c41; }
+html[data-theme="light"] .markdown-alert--warning { border-color: #eedcb6; border-left-color: #b7791f; color: #46340f; background: #fcf7ed; }
+html[data-theme="light"] .markdown-alert--warning .markdown-alert__title { color: #8a580c; }
+html[data-theme="light"] .markdown-alert--caution { border-color: #f0d2cc; border-left-color: #bd4330; color: #4f201a; background: #fdf4f2; }
+html[data-theme="light"] .markdown-alert--caution .markdown-alert__title { color: #a3372a; }
+html[data-theme="light"] .markdown-alert--important { border-color: #e0d7ec; border-left-color: #7650a6; color: #352648; background: #f8f5fb; }
+html[data-theme="light"] .markdown-alert--important .markdown-alert__title { color: #643f94; }
+
+/* --------------------------------------------------------------------------
+   Dialogs, settings and overlays
+   -------------------------------------------------------------------------- */
+html[data-theme="light"] .app-dialog {
+  border-color: var(--light-line);
+  color: var(--light-ink);
+  box-shadow: 0 2px 8px rgb(var(--light-shade) / 6%), 0 28px 64px -20px rgb(var(--light-shade) / 28%);
+}
+
+html[data-theme="light"] .app-dialog::backdrop,
+html[data-theme="light"] .workflow-dialog::backdrop {
+  background: rgb(28 25 20 / 30%);
+  backdrop-filter: blur(2px);
+}
+
+html[data-theme="light"] {
+  --mobile-sheet-backdrop: rgb(28 25 20 / 40%);
+}
+
+html[data-theme="light"] .dialog-header,
+html[data-theme="light"] .management-row {
+  border-color: var(--light-line);
+}
+
+html[data-theme="light"] .dialog-header h2,
+html[data-theme="light"] .management-row__name,
+html[data-theme="light"] .empty-state h3 {
+  color: var(--light-ink);
+}
+
+html[data-theme="light"] .management-list {
+  border-color: var(--light-line);
+}
+
+html[data-theme="light"] .management-create-row {
+  border-color: var(--light-line);
+  background: var(--light-sidebar);
+}
+
+html[data-theme="light"] .tag-marker {
+  background: #a39d93;
+  box-shadow: 0 0 0 3px var(--light-well);
+}
+
+html[data-theme="light"] .management-row__default {
+  border-color: #e6e2db;
+  color: var(--light-ink-3);
+  background: var(--light-well);
+}
+
+html[data-theme="light"] .organize-tabs {
+  background: var(--light-well);
+  box-shadow: inset 0 0 0 1px var(--light-line);
+}
+
+html[data-theme="light"] .organize-tab:hover:not(.is-active) {
+  color: var(--light-ink);
+}
+
+html[data-theme="light"] .organize-tab.is-active {
+  color: var(--light-ink);
+  background: var(--light-paper);
+  box-shadow: 0 0 0 1px rgb(var(--light-shade) / 6%), 0 1px 3px rgb(var(--light-shade) / 10%);
+}
+
+html[data-theme="light"] .shortcut-tooltip,
+html[data-theme="light"] .note-save-shortcut__tooltip,
+html[data-theme="light"] .note-markdown-help__tooltip,
+html[data-theme="light"] .note-detail-action-tooltip__content,
+html[data-theme="light"] .note-formatting-tool__tooltip {
+  border-color: var(--light-line);
+  color: var(--light-ink-2);
+  background: var(--light-paper);
+  box-shadow: 0 2px 6px rgb(var(--light-shade) / 6%), 0 12px 28px -10px rgb(var(--light-shade) / 18%);
+}
+
+html[data-theme="light"] .shortcut-tooltip kbd,
+html[data-theme="light"] .note-save-shortcut kbd,
+html[data-theme="light"] .command-dialog__help kbd {
+  border-color: #e3dfd8;
+  border-bottom-color: #d6d1c8;
+  color: var(--light-ink-2);
+  background: var(--light-sidebar);
+  box-shadow: 0 1px 0 rgb(var(--light-shade) / 6%);
 }
 
 /* Light Theme Toggle Icon */

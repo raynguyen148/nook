@@ -16,13 +16,13 @@
   /* Theme miniatures carry each theme's own page, sidebar, card, ink, line,
    * accent, and rule colors, so every option previews that theme rather than
    * the active one. */
-  --theme-swatch-light-page: #f4f4f5;
-  --theme-swatch-light-sidebar: #ffffff;
+  --theme-swatch-light-page: #f6f5f2;
+  --theme-swatch-light-sidebar: #fbfaf8;
   --theme-swatch-light-paper: #ffffff;
-  --theme-swatch-light-ink: #27272a;
-  --theme-swatch-light-line: #d4d4d8;
-  --theme-swatch-light-accent: #9e6b02;
-  --theme-swatch-light-rule: #e4e4e7;
+  --theme-swatch-light-ink: #1c1a17;
+  --theme-swatch-light-line: #d1ccc2;
+  --theme-swatch-light-accent: #9c6410;
+  --theme-swatch-light-rule: #e8e5df;
   --theme-swatch-coffee-page: #ede2d3;
   --theme-swatch-coffee-sidebar: #2b1f18;
   --theme-swatch-coffee-paper: #fffdf9;

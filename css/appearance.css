@@ -109,6 +109,9 @@ html[data-glass-frost="frosted"] {
 }
 
 html[data-theme="light"] {
+  --glass-sidebar-surface: #fbfaf8;
+  --glass-library-surface: #ffffff;
+  --glass-detail-surface: #ffffff;
   --glass-orb-a: #ff9468;
   --glass-orb-b: #7aa6ff;
   --glass-orb-c: #ffcf6a;

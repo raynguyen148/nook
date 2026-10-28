@@ -738,6 +738,13 @@
 
 
 
+.quick-view-content .markdown-table [data-align="left"],
+.note-content-preview .markdown-table [data-align="left"] {
+  text-align: left;
+}
+
+
+
 .quick-view-content .markdown-table [data-align="center"],
 .note-content-preview .markdown-table [data-align="center"] {
   text-align: center;
