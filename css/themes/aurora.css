@@ -1,204 +1,351 @@
-/* ==========================================================================
-   Nook - Theme: Aurora
-   - Canvas: Polar Night Indigo (#17142c)
-   - Surfaces: Raised Dusk (#1f1c3a), Card Hover (#2d2a4b)
-   - Sidebar: Deep Night (#120f25)
-   - Inks: Moonlit Lavender (#cfcee9), Headings (#edecff), Muted (#a5a4c6)
-   - Hairlines: Dusk Violet (#322e51 - #555279)
-   - Anchor: Luminous Mint (#5ee5b8) with an aurora gradient signature
-     (mint -> sky -> violet -> pink) reserved for brand and focal details
-   - Syntax: Aurora-band editor palette tuned for dark surfaces
-   ========================================================================== */
+/* Hallmark · genre: nocturne · macrostructure: preserved Nook workspace
+ * theme: a polar night under living northern lights · tone: hushed, cool, softly alive · anchor hue: aurora mint
+ * signatures: an aurora curtain over the sidebar, two slow curtains swaying
+ * over the library, a drifting spectrum wordmark, auroral-ray type marks, a
+ * spectrum crest on pinned notes and hover edges, a ribbon rule, a polar-sky
+ * window for empty states, aurora-lit code
+ * contrast: ink 11.7+, quiet ink 4.7+ on every surface and under the curtains, mint text 9.8+, type chips 6.3+, syntax 5.6+ on code · fonts: system, Vietnamese-safe
+ */
+/* Nook - Aurora theme: violet-indigo night neutrals, starlight ink and one
+ * mint accent for actions, selection and focus. The full spectrum (mint, sky,
+ * violet, pink) is kept for focal details only: the wordmark, primary
+ * actions, active navigation, pinned crests, hover edges and Markdown rules.
+ * Depth comes from small lightness steps and soft glows. CSS-only. */
 
 html[data-theme="aurora"] {
+  color-scheme: dark;
+  accent-color: #5ee5b8;
+
+  /* Night neutrals, each surface one quiet step above the one beneath it:
+   * canvas < well < sidebar < paper < card < overlay < hover < raised. */
+  --aurora-canvas: #120f25;
+  --aurora-well: #141129;
+  --aurora-sidebar: #100d22;
+  --aurora-paper: #17142e;
+  --aurora-card: #1d1a38;
+  --aurora-card-hover: #221e40;
+  --aurora-overlay: #231f42;
+  --aurora-hover: #28234b;
+  --aurora-raised: #2e2955;
+  --aurora-pressed: #352f60;
+  --aurora-line: #2a2549;
+  --aurora-line-input: #37315b;
+  --aurora-line-strong: #4b4479;
+  /* Ink: 1 for titles, 2 for reading text, 3 for quiet text (at least 4.7:1
+   * on every surface above), 4 for icons and disabled marks only. */
+  --aurora-ink: #f0eeff;
+  --aurora-ink-2: #cfcbe8;
+  --aurora-ink-3: #a29ec6;
+  --aurora-ink-4: #77729f;
+  --aurora-shade: 4 2 14;
+  --aurora-danger: #f5a3ad;
+  --aurora-danger-soft: rgb(240 110 130 / 14%);
+
+  /* The spectrum: ornaments, the primary gradient and focal details. */
+  --aurora-mint: #5ee5b8;
+  --aurora-sky: #6fc8f7;
+  --aurora-violet: #b6a0ff;
+  --aurora-pink: #f09fd9;
+  --aurora-spectrum: linear-gradient(115deg, var(--aurora-mint) 0%, var(--aurora-sky) 36%, var(--aurora-violet) 68%, var(--aurora-pink) 100%);
+  --aurora-edge: linear-gradient(115deg, rgb(94 229 184 / 75%), rgb(111 200 247 / 60%) 40%, rgb(182 160 255 / 60%) 70%, rgb(240 159 217 / 70%));
+  --aurora-crest-line: linear-gradient(90deg, transparent 4%, rgb(94 229 184 / 85%) 22%, rgb(111 200 247 / 80%) 50%, rgb(182 160 255 / 80%) 78%, transparent 96%);
+  --aurora-crest-glow: radial-gradient(60% 2.75rem at 50% 0, rgb(94 229 184 / 8%), transparent);
+
+  /* Polar sky: mint light low in the west, a violet hush in the east. */
+  --aurora-night:
+    radial-gradient(60rem 30rem at 12% -10%, rgb(94 229 184 / 7%), transparent 70%),
+    radial-gradient(56rem 32rem at 92% -14%, rgb(182 160 255 / 9%), transparent 72%);
+  --aurora-dusk: linear-gradient(180deg, #15112e 0%, var(--aurora-sidebar) 40%, #0d0b1c 100%);
+
+  /* Ornaments: a tiling aurora curtain of faint rays, a spectral ribbon for
+   * rules, and a mountain ridge for the empty-state window. */
+  --aurora-curtain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 320 200'%3E%3Cdefs%3E%3ClinearGradient id='a' gradientUnits='userSpaceOnUse' x1='0' y1='160' x2='0' y2='8'%3E%3Cstop offset='0' stop-color='%235ee5b8' stop-opacity='.12'/%3E%3Cstop offset='.2' stop-color='%235ee5b8' stop-opacity='.085'/%3E%3Cstop offset='.48' stop-color='%236fc8f7' stop-opacity='.05'/%3E%3Cstop offset='.78' stop-color='%23b6a0ff' stop-opacity='.03'/%3E%3Cstop offset='1' stop-color='%23f09fd9' stop-opacity='0'/%3E%3C/linearGradient%3E%3ClinearGradient id='b' gradientUnits='userSpaceOnUse' x1='0' y1='104' x2='0' y2='0'%3E%3Cstop offset='0' stop-color='%236fc8f7' stop-opacity='.08'/%3E%3Cstop offset='.45' stop-color='%23b6a0ff' stop-opacity='.05'/%3E%3Cstop offset='1' stop-color='%23f09fd9' stop-opacity='0'/%3E%3C/linearGradient%3E%3Cpattern id='r' width='16' height='200' patternUnits='userSpaceOnUse'%3E%3Crect width='16' height='200' fill='%23fff' opacity='.42'/%3E%3Crect x='1' width='1.6' height='200' fill='%23fff'/%3E%3Crect x='4.4' width='.8' height='200' fill='%23fff' opacity='.6'/%3E%3Crect x='7' width='2.4' height='200' fill='%23fff' opacity='.85'/%3E%3Crect x='11' width='.7' height='200' fill='%23fff' opacity='.5'/%3E%3Crect x='13.2' width='1.3' height='200' fill='%23fff' opacity='.9'/%3E%3C/pattern%3E%3Cmask id='m'%3E%3Crect width='320' height='200' fill='url%28%23r%29'/%3E%3C/mask%3E%3Cfilter id='f' x='-5%25' y='-60%25' width='110%25' height='220%25'%3E%3CfeGaussianBlur stdDeviation='1.8'/%3E%3C/filter%3E%3C/defs%3E%3Cg mask='url%28%23m%29'%3E%3Cpath fill='url%28%23b%29' d='M0 92C24 80 70 104 112 94S190 64 236 80S296 104 320 92V0H0Z'/%3E%3Cpath fill='url%28%23a%29' d='M0 140C30 124 78 160 120 146S196 108 238 126S290 156 320 140V0H0Z'/%3E%3C/g%3E%3Cg fill='none' filter='url%28%23f%29' stroke-linecap='round'%3E%3Cpath stroke='%238fd2fb' stroke-opacity='.08' stroke-width='2' d='M0 92C24 80 70 104 112 94S190 64 236 80S296 104 320 92'/%3E%3Cpath stroke='%237cf0c6' stroke-opacity='.11' stroke-width='3' d='M0 140C30 124 78 160 120 146S196 108 238 126S290 156 320 140'/%3E%3C/g%3E%3C/svg%3E");
+  --aurora-rule: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 56 16'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='0'%3E%3Cstop offset='0' stop-color='%235ee5b8' stop-opacity='0'/%3E%3Cstop offset='.22' stop-color='%235ee5b8'/%3E%3Cstop offset='.5' stop-color='%236fc8f7'/%3E%3Cstop offset='.78' stop-color='%23b6a0ff'/%3E%3Cstop offset='1' stop-color='%23f09fd9' stop-opacity='0'/%3E%3C/linearGradient%3E%3Cfilter id='f' x='-10%25' y='-80%25' width='120%25' height='260%25'%3E%3CfeGaussianBlur stdDeviation='1.4'/%3E%3C/filter%3E%3C/defs%3E%3Cpath d='M2 10C10 4 17 13 26 8S41 3 54 7' fill='none' stroke='url%28%23g%29' stroke-width='3' stroke-linecap='round' opacity='.45' filter='url%28%23f%29'/%3E%3Cpath d='M2 10C10 4 17 13 26 8S41 3 54 7' fill='none' stroke='url%28%23g%29' stroke-width='1.4' stroke-linecap='round'/%3E%3C/svg%3E");
+  --aurora-ridge: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 20' preserveAspectRatio='none'%3E%3Cpath fill='%230b0a1d' d='M0 12L7 7L12 10L20 3L27 9L33 6L40 11L47 5L55 10L64 7V20H0Z'/%3E%3Cpath fill='none' stroke='%235ee5b8' stroke-opacity='.28' stroke-width='.6' d='M0 12L7 7L12 10L20 3L27 9L33 6L40 11L47 5L55 10L64 7'/%3E%3C/svg%3E");
+
+  --theme-surface-page: var(--aurora-canvas);
+  --theme-border-strong: var(--aurora-line-strong);
+  --theme-danger-border: rgb(245 163 173 / 30%);
+  --form-control-resting-background: var(--aurora-well);
+  --management-search-resting-border: var(--aurora-line-input);
+  --management-search-resting-shadow: none;
+  --management-row-input-resting-border: var(--aurora-line-input);
+  --management-row-input-resting-shadow: none;
+  --select-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='m4 6 4 4 4-4' stroke='%23a29ec6' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+
+  /* Shadows stay low and violet-black; hairlines and small glows do the rest. */
+  --shadow-xs: 0 1px 2px rgb(var(--aurora-shade) / 30%);
+  --shadow-sm: 0 1px 3px rgb(var(--aurora-shade) / 36%);
+  --shadow-md: 0 1px 2px rgb(var(--aurora-shade) / 26%), 0 6px 16px -6px rgb(var(--aurora-shade) / 50%);
+  --shadow-lg: 0 1px 2px rgb(var(--aurora-shade) / 26%), 0 18px 40px -18px rgb(var(--aurora-shade) / 66%);
+
+  /* Aurora mint: reserved for actions, selection and focus. */
+  --primary-accent: #5ee5b8;
+  --primary-accent-hover: #82efc9;
+  --primary-accent-text: #9af2d2;
+  --primary-accent-strong: var(--primary-accent-text);
+  --primary-accent-soft: rgb(94 229 184 / 12%);
+  --primary-accent-soft-hover: rgb(94 229 184 / 18%);
+  --primary-accent-border: rgb(94 229 184 / 30%);
+  --primary-accent-focus: rgb(94 229 184 / 28%);
+  --primary-accent-shadow: rgb(var(--aurora-shade) / 42%);
+  --split-highlight-source: rgb(94 229 184 / 26%);
+  --split-highlight-preview: rgb(94 229 184 / 13%);
+  --split-highlight-edge: var(--primary-accent);
+  --split-highlight-outline: rgb(154 242 210 / 40%);
+
+  --pinned-card-accent: var(--primary-accent);
+  --pinned-card-border: color-mix(in srgb, var(--primary-accent) 22%, var(--note-card-border));
+  --pinned-card-border-hover: color-mix(in srgb, var(--primary-accent) 44%, var(--note-card-border));
+  --pinned-card-surface: var(--note-card-surface);
+  --pinned-card-shadow: var(--shadow-xs);
+  --pinned-marker-background: #1d3140;
+  --pinned-marker-border: #2f5a5a;
+  --pinned-marker-color: var(--primary-accent-text);
+
+  --note-card-surface: var(--aurora-card);
+  --note-card-hover-surface: var(--aurora-card-hover);
+  --note-card-border: var(--aurora-line);
+  --note-card-hover-border: color-mix(in srgb, var(--primary-accent) 34%, var(--aurora-line));
+  --note-card-title: var(--aurora-ink);
+  --note-card-title-letter-spacing: -0.015em;
+  --note-card-preview: var(--aurora-ink-2);
+  --note-card-muted: var(--aurora-ink-3);
+  --note-card-actions-border: var(--aurora-line);
+  --note-card-actions-surface: var(--aurora-well);
+  --note-card-action: var(--aurora-ink-3);
+  --note-card-action-hover: var(--primary-accent-text);
+  --note-card-action-hover-surface: var(--primary-accent-soft);
+  --note-card-action-danger: var(--aurora-danger);
+  --note-card-action-danger-surface: var(--aurora-danger-soft);
+  --note-card-action-disabled: #534d7c;
+
+  /* Status roles default to light colours in base.css; Aurora supplies its own. */
+  --status-success-text: #8fe3b6;
+  --status-success-surface: rgb(143 227 182 / 12%);
+  --status-success-border: rgb(143 227 182 / 28%);
+  --status-warning-text: #f1cb7a;
+  --status-warning-surface: rgb(241 203 122 / 12%);
+  --status-warning-border: rgb(241 203 122 / 28%);
+  --status-error-text: var(--aurora-danger);
+  --status-error-surface: rgb(245 163 173 / 12%);
+  --status-error-border: rgb(245 163 173 / 28%);
+  --backup-good-accent: var(--status-success-text);
+  --backup-warning-accent: var(--status-warning-text);
+  --backup-never-accent: var(--primary-accent-text);
+
   /* Shared metadata and menu roles; component geometry stays in its owner. */
-  --tag-chip-border: #555279;
-  --tag-chip-text: #cfcee9;
-  --tag-chip-surface: #17142c;
+  --tag-chip-border: #312c56;
+  --tag-chip-text: var(--aurora-ink-2);
+  --tag-chip-surface: var(--aurora-well);
   --tag-option-border: var(--tag-chip-border);
   --tag-option-text: var(--tag-chip-text);
   --tag-option-surface: var(--tag-chip-surface);
   --empty-tag-border: var(--tag-chip-border);
   --empty-tag-text: var(--tag-chip-text);
   --empty-tag-surface: var(--tag-chip-surface);
-  --picker-menu-border: #555279;
-  --picker-menu-surface: #1f1c3a;
-  --picker-menu-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  --picker-menu-border: var(--aurora-line-input);
+  --picker-menu-surface: var(--aurora-overlay);
+  --picker-menu-text: var(--aurora-ink);
+  --picker-menu-shadow: 0 2px 6px rgb(var(--aurora-shade) / 32%), 0 18px 40px -12px rgb(var(--aurora-shade) / 66%);
+  --theme-picker-menu-shadow: var(--picker-menu-shadow);
   --tag-menu-border: var(--picker-menu-border);
   --tag-menu-surface: var(--picker-menu-surface);
   --tag-menu-shadow: var(--picker-menu-shadow);
+  --skeleton-base: rgb(240 238 255 / 6%);
+  --skeleton-shine: rgb(240 238 255 / 11%);
 
-  color-scheme: dark;
-  --theme-surface-page: #17142c;
-  --theme-danger-border: rgb(239 68 68 / 38%);
-  --backup-good-accent: #4ade80;
-  --backup-warning-accent: #fbbf24;
-  background: #17142c;
-  color: #cfcee9;
-  --management-search-resting-border: #555279;
-  --management-search-resting-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
-  --management-row-input-resting-border: #555279;
-  --management-row-input-resting-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
-  --form-control-resting-background: #17142c;
+  /* Fallback for uncolored type chips. */
+  --detail-type-chip-border: var(--aurora-line-input);
+  --detail-type-chip-color: var(--aurora-ink-2);
+  --detail-type-chip-background: var(--aurora-card);
 
-  /* Luminous Mint anchor (<5% surface ratio) */
-  --primary-accent: #5ee5b8;
-  --primary-accent-hover: #86f2cb;
-  --primary-accent-text: #aaf6d8;
-  --primary-accent-soft: rgba(94, 229, 184, 0.12);
-  --primary-accent-soft-hover: rgba(94, 229, 184, 0.2);
-  --primary-accent-border: rgba(94, 229, 184, 0.3);
-  --primary-accent-focus: rgba(94, 229, 184, 0.25);
-  --primary-accent-shadow: rgba(0, 0, 0, 0.3);
-  --split-highlight-source: rgb(94 229 184 / 34%);
-  --split-highlight-preview: rgb(94 229 184 / 18%);
-  --split-highlight-edge: #86f2cb;
-  --split-highlight-outline: rgb(134 242 203 / 48%);
-  --pinned-card-border: color-mix(in srgb, var(--primary-accent) 24%, var(--note-card-border));
-  --pinned-card-border-hover: #37a17f;
-  --pinned-card-surface: var(--note-card-surface);
-  --pinned-card-shadow: 0 1px 2px rgb(0 0 0 / 28%);
-  --pinned-marker-background: #0f3c2d;
-  --pinned-marker-border: #26735a;
-  --pinned-marker-color: #a2f2d3;
-  --note-card-surface: #1f1c3a;
-  --note-card-border: #3e3a60;
-  --note-card-title: #edecff;
-  --note-card-title-letter-spacing: -0.015em;
-  --note-card-preview: #cfcee9;
-  --note-card-muted: #a5a4c6;
-  --note-card-actions-border: #3e3a60;
-  --note-card-actions-surface: #17142c;
-  --note-card-action: #a5a4c6;
-  --note-card-action-hover: var(--primary-accent-text);
-  --note-card-action-hover-surface: var(--primary-accent-soft);
-  --note-card-action-danger: #fca5a5;
-  --note-card-action-danger-surface: rgba(239, 68, 68, 0.15);
-  --note-card-action-disabled: #77759d;
-  --primary-button-text: #120f25;
+  --primary-button-text: #0f0c22;
   --focus-color: var(--primary-accent);
-  --focus-radius: 0.5rem;
-  --interaction-duration: 180ms;
+  --focus-radius: 0.625rem;
+  --interaction-duration: 160ms;
   --interaction-easing: cubic-bezier(0.16, 1, 0.3, 1);
-  --toast-surface: #242044;
-  --toast-border: #514e77;
-  --toast-text: #efefff;
-  --toast-status-surface: #0b3f2f;
-  --toast-status-icon: #bef7e0;
-  --toast-action: #bef7e0;
-  --toast-action-hover: #e3fcf1;
-  --toast-focus: #bef7e0;
-  --toast-shadow: 0 10px 24px rgb(0 0 0 / 38%);
-  --toast-error-surface: #2b2020;
-  --toast-error-border: #5f3e3c;
-  --toast-error-text: #f3d6d2;
-  --toast-error-status-surface: #432a2a;
-  --toast-error-status-icon: #f0a5a0;
-  --toast-error-action: #f3c2bc;
-  --toast-error-action-hover: #ffe1da;
-  --toast-error-focus: #f3c2bc;
 
-  /* Fallback for uncolored type chips */
-  --detail-type-chip-border: #555279;
-  --detail-type-chip-color: #cfcee9;
-  --detail-type-chip-background: #1f1c3a;
+  --toast-surface: var(--aurora-overlay);
+  --toast-border: var(--aurora-line-input);
+  --toast-text: var(--aurora-ink);
+  --toast-status-surface: var(--primary-accent-soft);
+  --toast-status-icon: var(--primary-accent);
+  --toast-action: var(--primary-accent-text);
+  --toast-action-hover: #c2f8e4;
+  --toast-focus: var(--primary-accent);
+  --toast-shadow: 0 2px 6px rgb(var(--aurora-shade) / 32%), 0 18px 40px -14px rgb(var(--aurora-shade) / 70%);
+  --toast-error-surface: #2a1830;
+  --toast-error-border: #5a2f48;
+  --toast-error-text: #fad2da;
+  --toast-error-status-surface: #3e2038;
+  --toast-error-status-icon: var(--aurora-danger);
+  --toast-error-action: var(--aurora-danger);
+  --toast-error-action-hover: #f9c6cf;
+  --toast-error-focus: var(--aurora-danger);
 
-  --select-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='m4 6 4 4 4-4' stroke='%23a5a4c6' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  --mobile-sheet-backdrop: rgb(5 3 16 / 62%);
+
+  /* Logo tile follows the aurora band, deep enough for its white mark. */
+  --brand-mark-start: #1fa58a;
+  --brand-mark-mid: #5b4fd0;
+  --brand-mark-end: #a8479c;
+
+  color: var(--aurora-ink);
+  background-color: var(--aurora-canvas);
+  background-image: var(--aurora-night);
+  background-repeat: no-repeat;
 }
 
 html[data-theme="aurora"] body {
-  background: #17142c;
-  color: #cfcee9;
+  color: var(--aurora-ink);
+  background-color: var(--aurora-canvas);
+  background-image: var(--aurora-night);
+  background-repeat: no-repeat;
 }
 
-/* Smooth selection & scrollbars */
 html[data-theme="aurora"] ::selection {
-  background: rgba(189, 167, 255, 0.34);
-  color: #ffffff;
+  color: var(--aurora-ink);
+  background: rgb(182 160 255 / 34%);
 }
 
 html[data-theme="aurora"] * {
-  scrollbar-color: #555279 transparent;
+  scrollbar-color: #3a3466 transparent;
 }
 
 /* --------------------------------------------------------------------------
-   Sidebar (Deep Night #120f25)
+   Sidebar: an aurora curtain hanging over a dusk-to-night sky
    -------------------------------------------------------------------------- */
 html[data-theme="aurora"] .sidebar {
-  border-color: #322e51;
-  background: #120f25;
-  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.25);
+  border-color: var(--aurora-line);
+  background-color: var(--aurora-sidebar);
+  background-image: var(--aurora-curtain), var(--aurora-dusk);
+  background-repeat: repeat-x, no-repeat;
+  background-position: left -3rem top 0, 0 0;
+  background-size: 22rem auto, 100% 100%;
+  box-shadow: var(--shadow-sm), inset 0 1px 0 rgb(240 238 255 / 3%);
+}
+
+/* The curtain needs the full sidebar; the narrow rail keeps the dusk. */
+html[data-theme="aurora"] .app-shell:is(.is-sidebar-collapsed, .is-sidebar-collapsing, .is-sidebar-expanding) .sidebar,
+html[data-theme="aurora"][data-sidebar-collapsed="true"] .app-shell .sidebar {
+  background-image: none, var(--aurora-dusk);
+}
+
+/* Glass paints its own film and scene over the sidebar. */
+html[data-theme="aurora"][data-glass="true"] .app-shell .sidebar {
+  background-image: none;
 }
 
 html[data-theme="aurora"] .sidebar-toggle-btn,
 html[data-theme="aurora"] .quick-view-header-toggle {
-  border-color: #3e3a60;
-  color: #a5a4c6;
-  background: #1c1838;
-  transition: color var(--interaction-duration) var(--interaction-easing), background-color var(--interaction-duration) var(--interaction-easing), border-color var(--interaction-duration) var(--interaction-easing), opacity var(--interaction-duration) var(--interaction-easing);
+  border-color: var(--aurora-line);
+  color: var(--aurora-ink-3);
+  background: var(--aurora-card);
 }
 
 html[data-theme="aurora"] .sidebar-toggle-btn:hover,
 html[data-theme="aurora"] .quick-view-header-toggle:hover {
-  color: #e6e6ff;
-  background: #363356;
-  border-color: #605d86;
+  border-color: var(--aurora-line-strong);
+  color: var(--aurora-ink);
+  background: var(--aurora-hover);
 }
 
+/* The wordmark carries the whole spectrum and drifts slowly through it. */
 html[data-theme="aurora"] .brand strong {
-  letter-spacing: -0.015em;
-  color: #edecff;
+  color: var(--aurora-ink);
+  background: var(--aurora-spectrum);
+  background-size: 220% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: -0.02em;
+  animation: nook-aurora-drift 14s ease-in-out infinite alternate;
+}
+
+@keyframes nook-aurora-drift {
+  from { background-position: 0% 50%; }
+  to { background-position: 100% 50%; }
+}
+
+/* A faint mint halo lifts the logo tile off the night sky. */
+html[data-theme="aurora"] .brand-mark {
+  filter: drop-shadow(0 0 0.55rem rgb(94 229 184 / 26%));
+}
+
+/* The library heading reads as a title in ink; Trash keeps its danger tone. */
+html[data-theme="aurora"] .notes-panel:not(.is-trash-view) #notes-heading {
+  color: var(--aurora-ink);
 }
 
 html[data-theme="aurora"] .brand small,
 html[data-theme="aurora"] .filter-heading,
-html[data-theme="aurora"] .filter-section-title h2 {
-  color: #a5a4c6;
+html[data-theme="aurora"] .filter-section-title h2,
+html[data-theme="aurora"] .subtitle,
+html[data-theme="aurora"] .results-meta {
+  color: var(--aurora-ink-3);
 }
 
 html[data-theme="aurora"] .storage-status {
-  border-color: var(--backup-health-border, #322e51);
-  color: var(--backup-health-text, #cfcee9);
-  background: var(--backup-health-surface, #17142c);
+  border-color: var(--backup-health-border, var(--aurora-line));
+  color: var(--backup-health-text, var(--aurora-ink-2));
+  background: var(--backup-health-surface, var(--aurora-paper));
 }
 
 html[data-theme="aurora"] .text-button:not(:disabled) {
-  color: var(--primary-accent);
-  transition: color var(--interaction-duration) var(--motion-ease-out);
+  color: var(--primary-accent-text);
 }
 
 html[data-theme="aurora"] .text-button:hover:not(:disabled) {
-  color: var(--primary-accent-hover);
+  color: var(--toast-action-hover);
 }
 
+html[data-theme="aurora"] .space-navigation,
+html[data-theme="aurora"] .notes-panel__heading {
+  border-color: var(--aurora-line);
+}
+
+/* Navigation rows reserve a transparent border so selection never shifts. */
 html[data-theme="aurora"] .sidebar-filter,
 html[data-theme="aurora"] .space-link {
-  color: #cfcee9;
-  transition: color var(--interaction-duration) var(--interaction-easing), background-color var(--interaction-duration) var(--interaction-easing), border-color var(--interaction-duration) var(--interaction-easing);
+  border-color: transparent;
+  color: var(--aurora-ink-2);
 }
 
 html[data-theme="aurora"] .sidebar-filter:hover,
 html[data-theme="aurora"] .space-link:hover {
-  color: #edecff;
-  background: #1f1c3a;
-  border-color: #4b486e;
+  border-color: transparent;
+  color: var(--aurora-ink);
+  background: rgb(240 238 255 / 5.5%);
+}
+
+html[data-theme="aurora"] :is(.space-link, .sidebar-filter) .sidebar-filter__icon {
+  color: var(--aurora-ink-3);
 }
 
 html[data-theme="aurora"] .sidebar-filter.is-active,
 html[data-theme="aurora"] .space-link.is-active {
-  border-color: var(--primary-accent-border);
+  border-color: color-mix(in srgb, var(--primary-accent) 22%, transparent);
   color: var(--primary-accent-text);
   background: var(--primary-accent-soft);
+  box-shadow: inset 0 1px 0 rgb(240 238 255 / 4%);
+  font-weight: var(--font-weight-emphasis);
 }
 
-html[data-theme="aurora"] .space-link--trash.is-active {
-  border-color: rgba(244, 63, 94, 0.35);
-  color: #fecdd3;
-  background: rgba(225, 29, 72, 0.15);
+/* Active navigation carries a slim mint-to-violet aurora rail. */
+html[data-theme="aurora"] .space-link.is-active:not(.space-link--trash),
+html[data-theme="aurora"] .sidebar-filter.is-active:not(.sidebar-filter--type) {
+  background:
+    linear-gradient(180deg, var(--aurora-mint), var(--aurora-violet)) left center / 3px 58% no-repeat,
+    var(--primary-accent-soft);
+}
+
+html[data-theme="aurora"] :is(.space-link, .sidebar-filter).is-active .sidebar-filter__icon {
+  color: var(--primary-accent);
 }
 
 html[data-theme="aurora"] .filter-count {
-  color: #a5a4c6;
+  color: var(--aurora-ink-3);
 }
 
 html[data-theme="aurora"] .sidebar-filter.is-active .filter-count,
@@ -206,38 +353,37 @@ html[data-theme="aurora"] .space-link.is-active .filter-count {
   color: var(--primary-accent-text);
 }
 
+html[data-theme="aurora"] .space-link--trash.is-active {
+  border-color: rgb(245 163 173 / 26%);
+  color: #f8bcc4;
+  background: rgb(240 110 130 / 12%);
+}
+
+html[data-theme="aurora"] .space-link--trash.is-active :is(.sidebar-filter__icon, .filter-count) {
+  color: currentColor;
+}
+
 html[data-theme="aurora"] .filter-help,
 html[data-theme="aurora"] .sidebar-empty {
-  color: #8a88ae;
+  color: var(--aurora-ink-3);
 }
 
-html[data-theme="aurora"] .space-navigation,
-html[data-theme="aurora"] .notes-panel__heading {
-  border-color: #322e51;
-}
-
-/* --------------------------------------------------------------------------
-   Sidebar Tag Filters
-   -------------------------------------------------------------------------- */
+/* Tag filters: faint chips in the night sky; selection takes the accent. */
 html[data-theme="aurora"] .tag-filter-option {
-  border-color: #3e3a60;
-  color: #cfcee9;
-  background: #17142c;
-  transition: color var(--interaction-duration) var(--interaction-easing), background-color var(--interaction-duration) var(--interaction-easing), border-color var(--interaction-duration) var(--interaction-easing);
+  border-color: var(--tag-chip-border);
+  color: var(--aurora-ink-2);
+  background: var(--aurora-paper);
 }
 
 html[data-theme="aurora"] .tag-filter-option:hover {
-  border-color: #605d86;
-  color: #edecff;
-  background: #2d2a4b;
+  border-color: var(--aurora-line-strong);
+  color: var(--aurora-ink);
+  background: var(--aurora-hover);
 }
 
-html[data-theme="aurora"] .tag-filter-option .filter-count {
-  color: #9997be;
-}
-
+html[data-theme="aurora"] .tag-filter-option .filter-count,
 html[data-theme="aurora"] .tag-filter-option:hover .filter-count {
-  color: #b5b4d1;
+  color: var(--aurora-ink-3);
 }
 
 html[data-theme="aurora"] .tag-filter-option:has(input:checked),
@@ -249,7 +395,7 @@ html[data-theme="aurora"] .tag-filter-option.is-active {
 
 html[data-theme="aurora"] .tag-filter-option:has(input:checked):hover,
 html[data-theme="aurora"] .tag-filter-option.is-active:hover {
-  border-color: rgba(94, 229, 184, 0.45);
+  border-color: rgb(94 229 184 / 46%);
   background: var(--primary-accent-soft-hover);
 }
 
@@ -263,7 +409,7 @@ html[data-theme="aurora"] .tag-filter-option:has(input:focus-visible) {
 }
 
 /* --------------------------------------------------------------------------
-   Masthead & Topbar
+   Masthead, headings and buttons
    -------------------------------------------------------------------------- */
 html[data-theme="aurora"] .eyebrow {
   color: var(--primary-accent);
@@ -275,115 +421,144 @@ html[data-theme="aurora"] h1,
 html[data-theme="aurora"] h2,
 html[data-theme="aurora"] .topbar h1,
 html[data-theme="aurora"] .notes-panel__heading h2,
-html[data-theme="aurora"] .quick-view-content h1,
-html[data-theme="aurora"] .quick-view-content h2,
-html[data-theme="aurora"] .quick-view-content h3,
-html[data-theme="aurora"] .quick-view-content h4,
-html[data-theme="aurora"] .quick-view-content h5,
-html[data-theme="aurora"] .quick-view-content h6,
 html[data-theme="aurora"] .quick-view-document-header h1 {
-  color: #edecff;
-  letter-spacing: -0.015em;
+  color: var(--aurora-ink);
+  letter-spacing: -0.02em;
 }
 
-html[data-theme="aurora"] .subtitle {
-  color: #a5a4c6;
-}
-
-html[data-theme="aurora"] .button-secondary {
-  border-color: #555279;
-  color: #cfcee9;
-  background: #1f1c3a;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-  transition: color var(--interaction-duration) var(--interaction-easing), background-color var(--interaction-duration) var(--interaction-easing), border-color var(--interaction-duration) var(--interaction-easing), box-shadow var(--interaction-duration) var(--interaction-easing), transform var(--motion-duration-micro) var(--motion-ease-out);
-}
-
-html[data-theme="aurora"] .button-secondary:hover:not(:disabled) {
-  border-color: #6b6891;
-  color: #ffffff;
-  background: #363356;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-}
-
+/* Primary actions glow across the aurora band, mint through sky to violet. */
 html[data-theme="aurora"] .button-primary {
-  border-color: var(--primary-accent);
+  border-color: transparent;
   color: var(--primary-button-text);
-  background: var(--primary-accent);
-  box-shadow: 0 1px 6px rgba(94, 229, 184, 0.25);
+  background: linear-gradient(115deg, var(--aurora-mint) 0%, var(--aurora-sky) 58%, var(--aurora-violet) 100%) border-box;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 28%), 0 1px 2px rgb(var(--aurora-shade) / 50%), 0 4px 16px -6px rgb(94 229 184 / 42%);
   font-weight: var(--font-weight-bold);
   letter-spacing: -0.01em;
-  transition: color var(--interaction-duration) var(--interaction-easing), background-color var(--interaction-duration) var(--interaction-easing), border-color var(--interaction-duration) var(--interaction-easing), box-shadow var(--interaction-duration) var(--interaction-easing), transform var(--motion-duration-micro) var(--motion-ease-out);
 }
 
 html[data-theme="aurora"] .button-primary:hover:not(:disabled) {
-  border-color: var(--primary-accent-hover);
+  border-color: transparent;
   color: var(--primary-button-text);
-  background: var(--primary-accent-hover);
-  box-shadow: 0 2px 10px rgba(94, 229, 184, 0.35);
+  background: linear-gradient(115deg, #82efc9 0%, #9bd8fa 54%, #cbbcff 100%) border-box;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 34%), 0 1px 2px rgb(var(--aurora-shade) / 50%), 0 6px 20px -6px rgb(182 160 255 / 52%);
+}
+
+html[data-theme="aurora"] .button-secondary {
+  border-color: var(--aurora-line-input);
+  color: var(--aurora-ink-2);
+  background: var(--aurora-card);
+  box-shadow: var(--shadow-xs);
+}
+
+html[data-theme="aurora"] .button-secondary:hover:not(:disabled) {
+  border-color: var(--aurora-line-strong);
+  color: var(--aurora-ink);
+  background: var(--aurora-hover);
 }
 
 html[data-theme="aurora"] .button-danger {
-  border-color: rgba(248, 113, 113, 0.3);
-  color: #fca5a5;
-  background: rgba(239, 68, 68, 0.1);
-  transition: color var(--interaction-duration) var(--interaction-easing), background-color var(--interaction-duration) var(--interaction-easing), border-color var(--interaction-duration) var(--interaction-easing), box-shadow var(--interaction-duration) var(--interaction-easing), transform var(--motion-duration-micro) var(--motion-ease-out);
+  border-color: rgb(245 163 173 / 30%);
+  color: var(--aurora-danger);
+  background: rgb(240 110 130 / 10%);
 }
 
 html[data-theme="aurora"] .button-danger:hover:not(:disabled) {
-  border-color: #ef4444;
-  color: #ffffff;
-  background: #dc2626;
-  box-shadow: 0 2px 10px rgba(220, 38, 38, 0.35);
+  border-color: rgb(245 163 173 / 52%);
+  color: #f9c6cf;
+  background: rgb(240 110 130 / 18%);
 }
 
 html[data-theme="aurora"] .icon-button {
-  color: #a5a4c6;
-  transition: color var(--interaction-duration) var(--interaction-easing), background-color var(--interaction-duration) var(--interaction-easing), transform var(--motion-duration-micro) var(--motion-ease-out);
+  color: var(--aurora-ink-3);
 }
 
 html[data-theme="aurora"] .icon-button:hover {
-  color: #edecff;
-  background: #363356;
+  color: var(--aurora-ink);
+  background: var(--aurora-hover);
 }
 
 html[data-theme="aurora"] .icon-button--danger:hover {
-  color: #fca5a5;
-  background: rgba(239, 68, 68, 0.15);
+  color: var(--aurora-danger);
+  background: var(--note-card-action-danger-surface);
 }
 
-html[data-theme="aurora"] .topbar-actions.is-pinned {
-  border-color: #4b486e;
-  background: rgba(23, 20, 44, 0.95);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+/* Pinned bars float over scrolled content, so they keep a little glass. */
+html[data-theme="aurora"] .topbar-actions.is-pinned,
+html[data-theme="aurora"] .toolbar.is-pinned {
+  border-color: var(--aurora-line);
+  background: color-mix(in srgb, var(--aurora-paper) 90%, transparent);
+  box-shadow: var(--shadow-md);
   backdrop-filter: blur(10px);
 }
 
 /* --------------------------------------------------------------------------
-   Notes Panel & Floating Toolbar
+   Library chrome: panel, curtains, toolbar, fields and segmented controls
    -------------------------------------------------------------------------- */
 html[data-theme="aurora"] .notes-panel {
-  border-color: #322e51;
-  background: #17142c;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  border-color: var(--aurora-line);
+  background: var(--aurora-paper);
+  box-shadow: var(--shadow-lg), inset 0 1px 0 rgb(240 238 255 / 3%);
+}
+
+/* Living aurora: two curtains of faint rays hang from above the top corner,
+ * their bright hems in the open heading band, and sway out of step, one
+ * brightening as the other fades. Both layers sit under every card and stay
+ * within the contrast budget for quiet text. */
+html[data-theme="aurora"]:not([data-glass="true"]) .notes-panel {
+  position: relative;
+  isolation: isolate;
+}
+
+html[data-theme="aurora"]:not([data-glass="true"]) .notes-panel::before,
+html[data-theme="aurora"]:not([data-glass="true"]) .notes-panel::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: -1;
+  width: min(56rem, 92%);
+  height: 16rem;
+  border-top-right-radius: inherit;
+  -webkit-mask-image: radial-gradient(120% 100% at 85% 0%, #000 30%, transparent 82%);
+  mask-image: radial-gradient(120% 100% at 85% 0%, #000 30%, transparent 82%);
+  /* Skewing from the top-right corner keeps both curtains inside the panel. */
+  transform-origin: 100% 0;
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+
+html[data-theme="aurora"]:not([data-glass="true"]) .notes-panel::before {
+  background: var(--aurora-curtain) left -2rem top -5.5rem / 28rem auto repeat-x;
+  opacity: 0.6;
+  animation: nook-aurora-curtain 24s ease-in-out infinite;
+}
+
+html[data-theme="aurora"]:not([data-glass="true"]) .notes-panel::after {
+  background: var(--aurora-curtain) left -11rem top -7rem / 36rem auto repeat-x;
+  opacity: 0.3;
+  animation: nook-aurora-veil 24s ease-in-out infinite;
+}
+
+@keyframes nook-aurora-curtain {
+  0%, 100% { opacity: 0.48; transform: skewX(0deg) scaleY(1); }
+  50% { opacity: 0.74; transform: skewX(-2.5deg) scaleY(1.06); }
+}
+
+@keyframes nook-aurora-veil {
+  0%, 100% { opacity: 0.4; transform: skewX(-1.5deg) scaleY(1.04); }
+  50% { opacity: 0.14; transform: skewX(0deg) scaleY(0.97); }
 }
 
 html[data-theme="aurora"] .notes-count {
-  border-color: #4b486e;
-  color: #a5a4c6;
-  background: #1f1c3a;
+  border-color: var(--aurora-line);
+  color: var(--aurora-ink-3);
+  background: var(--aurora-well);
 }
 
 html[data-theme="aurora"] .toolbar {
-  border-color: #3e3a60;
-  background: #1f1c3a;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
-}
-
-html[data-theme="aurora"] .toolbar.is-pinned {
-  border-color: #4b486e;
-  background: rgba(23, 20, 44, 0.95);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
-  backdrop-filter: blur(10px);
+  border-color: var(--aurora-line);
+  background: var(--aurora-paper);
+  box-shadow: none;
 }
 
 html[data-theme="aurora"] .search-field input,
@@ -396,11 +571,10 @@ html[data-theme="aurora"] .create-row select,
 html[data-theme="aurora"] .management-row input,
 html[data-theme="aurora"] .management-row select,
 html[data-theme="aurora"] .management-search input {
-  border-color: #555279;
-  color: #cfcee9;
-  background-color: #17142c;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
-  transition: border-color var(--interaction-duration) var(--motion-ease-out), box-shadow var(--interaction-duration) var(--motion-ease-out);
+  border-color: var(--aurora-line-input);
+  color: var(--aurora-ink);
+  background-color: var(--aurora-well);
+  box-shadow: none;
 }
 
 html[data-theme="aurora"] .search-field input:focus,
@@ -420,69 +594,84 @@ html[data-theme="aurora"] .color-picker__trigger:focus-visible {
   box-shadow: 0 0 0 3px var(--primary-accent-focus);
 }
 
-html[data-theme="aurora"] .search-icon,
+html[data-theme="aurora"] .sort-field__trigger {
+  border-color: var(--aurora-line-input);
+}
+
+html[data-theme="aurora"] .search-icon {
+  color: var(--aurora-ink-4);
+}
+
 html[data-theme="aurora"] .sort-field,
-html[data-theme="aurora"] .view-mode-button,
-html[data-theme="aurora"] .note-editor-mode__button,
-html[data-theme="aurora"] .results-meta {
-  color: #a5a4c6;
+html[data-theme="aurora"] .sort-field select {
+  color: var(--aurora-ink-2);
 }
 
-html[data-theme="aurora"] .search-field input::placeholder,
-html[data-theme="aurora"] .tag-picker__input-row input::placeholder,
-html[data-theme="aurora"] .field input::placeholder,
-html[data-theme="aurora"] .field textarea::placeholder,
-html[data-theme="aurora"] .management-search input::placeholder {
-  color: #8a88ae;
+/* Placeholders stay quiet but keep 4.5:1 on wells; ink-4 is for icons. */
+html[data-theme="aurora"] :is(input, textarea)::placeholder {
+  color: var(--aurora-ink-3);
 }
 
-html[data-theme="aurora"] .search-shortcut {
-  border-color: #555279;
-  color: #a5a4c6;
-  background: #120f25;
+html[data-theme="aurora"] .search-shortcut,
+html[data-theme="aurora"] .usage-count {
+  border-color: var(--aurora-line);
+  color: var(--aurora-ink-3);
+  background: var(--aurora-paper);
 }
 
 html[data-theme="aurora"] .search-shortcut kbd {
   background: transparent !important;
   border: 0 !important;
   box-shadow: none !important;
-  color: #cfcee9 !important;
+  color: var(--aurora-ink-2) !important;
   font-weight: var(--font-weight-bold);
 }
 
 html[data-theme="aurora"] .clear-search {
-  color: #cfcee9;
-  background: #4b486e;
+  color: var(--aurora-ink-2);
+  background: var(--aurora-hover);
 }
 
 html[data-theme="aurora"] .clear-search:hover {
-  color: #ffffff;
-  background: #6b6991;
+  color: var(--aurora-ink);
+  background: var(--aurora-pressed);
 }
 
 html[data-theme="aurora"] .view-mode-control__choices,
 html[data-theme="aurora"] .note-editor-modes {
-  border-color: #555279;
-  background: #17142c;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+  border-color: var(--aurora-line);
+  background: var(--aurora-well);
+  box-shadow: none;
+}
+
+html[data-theme="aurora"] .view-mode-button,
+html[data-theme="aurora"] .note-editor-mode__button {
+  color: var(--aurora-ink-3);
+  background: transparent;
 }
 
 html[data-theme="aurora"] .view-mode-choice + .view-mode-choice .view-mode-button,
 html[data-theme="aurora"] .view-mode-button + .view-mode-button {
-  border-color: #4b486e;
+  border-color: var(--aurora-line);
 }
 
-html[data-theme="aurora"] .view-mode-button:hover,
-html[data-theme="aurora"] .note-editor-mode__button:hover:not(:disabled) {
-  color: var(--primary-accent-text);
-  background: var(--primary-accent-soft);
+html[data-theme="aurora"] .view-mode-button:hover:not(.is-active, [aria-pressed="true"]),
+html[data-theme="aurora"] .note-editor-mode__button:hover:not([aria-pressed="true"], :disabled) {
+  color: var(--aurora-ink);
+  background: rgb(240 238 255 / 5%);
 }
 
+/* Selected segments rise as a violet thumb; the icon carries the mint. */
 html[data-theme="aurora"] .view-mode-button.is-active,
 html[data-theme="aurora"] .view-mode-button[aria-pressed="true"],
 html[data-theme="aurora"] .note-editor-mode__button[aria-pressed="true"] {
-  color: var(--primary-accent-text);
-  background: var(--primary-accent-soft);
+  color: var(--aurora-ink);
+  background: var(--aurora-raised);
+  box-shadow: inset 0 1px 0 rgb(240 238 255 / 6%), 0 0 0 1px rgb(var(--aurora-shade) / 34%), 0 1px 3px rgb(var(--aurora-shade) / 44%);
+}
+
+html[data-theme="aurora"] :is(.view-mode-button.is-active, .view-mode-button[aria-pressed="true"], .note-editor-mode__button[aria-pressed="true"]) svg {
+  color: var(--primary-accent);
 }
 
 html[data-theme="aurora"] .active-filter-pill {
@@ -499,51 +688,49 @@ html[data-theme="aurora"] .active-filter-pill__clear:hover {
   background: var(--primary-accent-soft-hover);
 }
 
-html[data-theme="aurora"] .active-filter-pill--tag .active-filter-pill__clear {
-  color: #cfcee9;
-}
-
 html[data-theme="aurora"] .active-filter-pill--tag {
-  border-color: #555279;
-  color: #cfcee9;
-  background: #1f1c3a;
+  border-color: var(--aurora-line-input);
+  color: var(--aurora-ink-2);
+  background: var(--aurora-card);
 }
 
-html[data-theme="aurora"] .active-filter-pill--tag .active-filter-pill__clear:hover {
-  background: rgba(255, 255, 255, 0.1);
+html[data-theme="aurora"] .active-filter-pill--tag .active-filter-pill__clear {
+  color: var(--aurora-ink-3);
+}
+
+html[data-theme="aurora"] .active-filter-pill--tag .active-filter-pill__clear:hover,
+html[data-theme="aurora"] .active-filter-pill--type .active-filter-pill__clear:hover {
+  color: var(--aurora-ink);
+  background: rgb(240 238 255 / 8%);
 }
 
 html[data-theme="aurora"] .active-filter-clear-all {
-  color: var(--primary-accent);
+  color: var(--primary-accent-text);
 }
 
 /* --------------------------------------------------------------------------
-   Cards & Note List (Raised Dusk Surfaces #1f1c3a)
+   Cards, tags and pagination
    -------------------------------------------------------------------------- */
 html[data-theme="aurora"] .note-card {
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-  transition:
-    transform var(--motion-duration-micro) var(--interaction-easing),
-    box-shadow var(--motion-duration-micro) var(--interaction-easing),
-    border-color var(--motion-duration-micro) var(--interaction-easing),
-    background-color var(--motion-duration-micro) var(--interaction-easing);
+  box-shadow: var(--shadow-xs);
 }
 
+/* Hover keeps background-image, so the pinned crest stays in place. */
 html[data-theme="aurora"] .note-card:hover,
-html[data-theme="aurora"] .note-card:focus-within {
-  border-color: rgba(94, 229, 184, 0.45);
-  background: #2d2a4b;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(94, 229, 184, 0.15);
+html[data-theme="aurora"] .note-card:focus-within,
+html[data-theme="aurora"] .note-card.is-hover {
+  background-color: var(--note-card-hover-surface);
+  box-shadow: 0 1px 2px rgb(var(--aurora-shade) / 32%), 0 14px 30px -14px rgb(var(--aurora-shade) / 80%), 0 0 26px -12px rgb(182 160 255 / 36%);
 }
 
-html[data-theme="aurora"] .note-card:focus-within:not(:hover) {
-  border-color: #555279;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+html[data-theme="aurora"] .note-card:hover .note-card__title,
+html[data-theme="aurora"] .note-card__title:hover {
+  color: var(--primary-accent-text);
 }
 
 html[data-theme="aurora"] .note-card--pinned {
   border-color: var(--pinned-card-border);
-  background: var(--pinned-card-surface);
+  background-color: var(--pinned-card-surface);
   box-shadow: var(--pinned-card-shadow);
   transform: none;
 }
@@ -552,31 +739,53 @@ html[data-theme="aurora"] .note-card--pinned:focus-within:not(:hover) {
   border-color: var(--pinned-card-border);
 }
 
-@media (hover: hover) and (pointer: fine) {
-  html[data-theme="aurora"] .note-card--pinned:hover,
-  html[data-theme="aurora"] .note-card--pinned.is-hover {
-    border-color: var(--pinned-card-border-hover);
-  }
+/* Pinned notes wear a spectrum crest with a little mint light beneath it. */
+html[data-theme="aurora"] :is(.pinned-tray .note-card, .note-card--pinned) {
+  background-image: var(--aurora-crest-line), var(--aurora-crest-glow);
+  background-repeat: no-repeat;
+  background-position: top, top;
+  background-size: 100% 2px, 100% 100%;
+}
+
+/* The pinned tray: a spectrum hairline above a faint aurora wash. The wash
+ * stays translucent so the library curtains still glow between pinned cards. */
+html[data-theme="aurora"] .pinned-tray {
+  background:
+    linear-gradient(90deg, transparent, rgb(94 229 184 / 60%) 16%, rgb(111 200 247 / 55%) 50%, rgb(182 160 255 / 55%) 84%, transparent) top / 100% 1px no-repeat,
+    linear-gradient(180deg, rgb(94 229 184 / 4%), rgb(182 160 255 / 2%) 70%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--pinned-tray-accent) 12%, transparent);
 }
 
 html[data-theme="aurora"] .note-card.is-detail-source {
   border-color: var(--primary-accent);
-  box-shadow: 0 0 0 3px var(--primary-accent-focus), 0 6px 18px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 0 0 3px var(--primary-accent-focus), var(--shadow-md);
 }
 
 html[data-theme="aurora"] .more-tags,
 html[data-theme="aurora"] .untagged {
-  color: #a5a4c6;
+  color: var(--aurora-ink-3);
 }
 
-html[data-theme="aurora"] .note-card__title:hover {
-  color: var(--primary-accent-hover);
-}
-
+/* Search matches glow in a mint-to-sky band, apart from the violet selection. */
 html[data-theme="aurora"] .search-highlight {
-  color: #120f25;
-  background: #86f2cb;
+  color: var(--primary-button-text);
+  background: linear-gradient(100deg, #7debc4, #8fd2fb);
   border-radius: 2px;
+  box-shadow: 0 0 0.5rem -0.1rem rgb(94 229 184 / 45%);
+}
+
+/* Tags carry a small spectrum number sign. */
+html[data-theme="aurora"] :where(.tag-filter-option__name, .tag-chip)::before,
+html[data-theme="aurora"] .note-card .tag-chip::before,
+html[data-theme="aurora"] :is(.note-dialog .selected-tag > span:first-child, .note-detail-surface .quick-view-tag)::before {
+  content: "#";
+  margin-right: 0.08em;
+  color: var(--aurora-mint);
+  background: linear-gradient(160deg, var(--aurora-mint), var(--aurora-violet));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: var(--font-weight-semibold);
 }
 
 html[data-theme="aurora"] .tag-chip,
@@ -591,24 +800,21 @@ html[data-theme="aurora"] .note-detail-surface .quick-view-tag {
 
 html[data-theme="aurora"] .tag-chip:hover,
 html[data-theme="aurora"] .tag-chip.is-selected,
-html[data-theme="aurora"] .tag-suggestion:hover {
-  border-color: #716e98;
-  color: #ffffff;
-  background: #3e3a60;
+html[data-theme="aurora"] .tag-suggestion:hover,
+html[data-theme="aurora"] .selected-tag:hover {
+  border-color: var(--aurora-line-strong);
+  color: var(--aurora-ink);
+  background: var(--aurora-hover);
 }
 
 html[data-theme="aurora"] .tag-suggestion--create {
-  border-color: rgba(94, 229, 184, 0.35);
-  color: #aaf6d8;
-  background: rgba(94, 229, 184, 0.12);
-}
-
-html[data-theme="aurora"] .note-card__action {
-  transition: color var(--interaction-duration) var(--motion-ease-out), background-color var(--interaction-duration) var(--motion-ease-out), transform var(--motion-duration-micro) var(--motion-ease-out);
+  border-color: var(--primary-accent-border);
+  color: var(--primary-accent-text);
+  background: var(--primary-accent-soft);
 }
 
 html[data-theme="aurora"] .note-card__pin-toggle {
-  color: #a5a4c6;
+  color: var(--aurora-ink-3);
 }
 
 html[data-theme="aurora"] .note-card--pinned .note-card__pin-toggle {
@@ -617,95 +823,16 @@ html[data-theme="aurora"] .note-card--pinned .note-card__pin-toggle {
   background: var(--pinned-marker-background);
 }
 
-/* --------------------------------------------------------------------------
-   Category Badges (Soft Night Tokens)
-   -------------------------------------------------------------------------- */
-html[data-theme="aurora"] .type-badge--indigo  { border-color: rgba(165, 180, 252, 0.25); color: #c7d2fe; background-color: rgba(99, 102, 241, 0.12); }
-html[data-theme="aurora"] .type-badge--blue    { border-color: rgba(147, 197, 253, 0.25); color: #bfdbfe; background-color: rgba(59, 130, 246, 0.12); }
-html[data-theme="aurora"] .type-badge--sky     { border-color: rgba(125, 211, 252, 0.25); color: #bae6fd; background-color: rgba(14, 165, 233, 0.12); }
-html[data-theme="aurora"] .type-badge--cyan    { border-color: rgba(103, 232, 249, 0.25); color: #a5f3fc; background-color: rgba(6, 182, 212, 0.12); }
-html[data-theme="aurora"] .type-badge--teal    { border-color: rgba(94, 234, 212, 0.25);  color: #99f6e4; background-color: rgba(20, 184, 166, 0.12); }
-html[data-theme="aurora"] .type-badge--emerald { border-color: rgba(110, 231, 183, 0.25); color: #a7f3d0; background-color: rgba(16, 185, 129, 0.12); }
-html[data-theme="aurora"] .type-badge--green   { border-color: rgba(134, 239, 172, 0.25); color: #bbf7d0; background-color: rgba(34, 197, 94, 0.12); }
-html[data-theme="aurora"] .type-badge--lime    { border-color: rgba(190, 242, 100, 0.25); color: #d9f99d; background-color: rgba(132, 204, 22, 0.12); }
-html[data-theme="aurora"] .type-badge--amber   { border-color: rgba(253, 224, 71, 0.25);  color: #fde68a; background-color: rgba(245, 158, 11, 0.12); }
-html[data-theme="aurora"] .type-badge--orange  { border-color: rgba(253, 186, 116, 0.25); color: #fed7aa; background-color: rgba(249, 115, 22, 0.12); }
-html[data-theme="aurora"] .type-badge--red     { border-color: rgba(252, 165, 165, 0.25); color: #fecaca; background-color: rgba(239, 68, 68, 0.12); }
-html[data-theme="aurora"] .type-badge--rose    { border-color: rgba(253, 164, 175, 0.25); color: #fecdd3; background-color: rgba(244, 63, 94, 0.12); }
-html[data-theme="aurora"] .type-badge--pink    { border-color: rgba(249, 168, 212, 0.25); color: #fbcfe8; background-color: rgba(236, 72, 153, 0.12); }
-html[data-theme="aurora"] .type-badge--violet  { border-color: rgba(196, 181, 253, 0.25); color: #ddd6fe; background-color: rgba(139, 92, 246, 0.12); }
-html[data-theme="aurora"] .type-badge--purple  { border-color: rgba(216, 180, 254, 0.25); color: #e9d5ff; background-color: rgba(168, 85, 247, 0.12); }
-html[data-theme="aurora"] .type-badge--slate   { border-color: rgba(148, 163, 184, 0.25); color: #e2e8f0; background-color: rgba(148, 163, 184, 0.12); }
-
-/* Detail Type Chip Variable Bindings */
-html[data-theme="aurora"] .type-badge--indigo  { --detail-type-chip-border: rgba(165, 180, 252, 0.25); --detail-type-chip-color: #c7d2fe; --detail-type-chip-background: rgba(99, 102, 241, 0.12); }
-html[data-theme="aurora"] .type-badge--blue    { --detail-type-chip-border: rgba(147, 197, 253, 0.25); --detail-type-chip-color: #bfdbfe; --detail-type-chip-background: rgba(59, 130, 246, 0.12); }
-html[data-theme="aurora"] .type-badge--sky     { --detail-type-chip-border: rgba(125, 211, 252, 0.25); --detail-type-chip-color: #bae6fd; --detail-type-chip-background: rgba(14, 165, 233, 0.12); }
-html[data-theme="aurora"] .type-badge--cyan    { --detail-type-chip-border: rgba(103, 232, 249, 0.25); --detail-type-chip-color: #a5f3fc; --detail-type-chip-background: rgba(6, 182, 212, 0.12); }
-html[data-theme="aurora"] .type-badge--teal    { --detail-type-chip-border: rgba(94, 234, 212, 0.25);  --detail-type-chip-color: #99f6e4; --detail-type-chip-background: rgba(20, 184, 166, 0.12); }
-html[data-theme="aurora"] .type-badge--emerald { --detail-type-chip-border: rgba(110, 231, 183, 0.25); --detail-type-chip-color: #a7f3d0; --detail-type-chip-background: rgba(16, 185, 129, 0.12); }
-html[data-theme="aurora"] .type-badge--green   { --detail-type-chip-border: rgba(134, 239, 172, 0.25); --detail-type-chip-color: #bbf7d0; --detail-type-chip-background: rgba(34, 197, 94, 0.12); }
-html[data-theme="aurora"] .type-badge--lime    { --detail-type-chip-border: rgba(190, 242, 100, 0.25); --detail-type-chip-color: #d9f99d; --detail-type-chip-background: rgba(132, 204, 22, 0.12); }
-html[data-theme="aurora"] .type-badge--amber   { --detail-type-chip-border: rgba(253, 224, 71, 0.25);  --detail-type-chip-color: #fde68a; --detail-type-chip-background: rgba(245, 158, 11, 0.12); }
-html[data-theme="aurora"] .type-badge--orange  { --detail-type-chip-border: rgba(253, 186, 116, 0.25); --detail-type-chip-color: #fed7aa; --detail-type-chip-background: rgba(249, 115, 22, 0.12); }
-html[data-theme="aurora"] .type-badge--red     { --detail-type-chip-border: rgba(252, 165, 165, 0.25); --detail-type-chip-color: #fecaca; --detail-type-chip-background: rgba(239, 68, 68, 0.12); }
-html[data-theme="aurora"] .type-badge--rose    { --detail-type-chip-border: rgba(253, 164, 175, 0.25); --detail-type-chip-color: #fecdd3; --detail-type-chip-background: rgba(244, 63, 94, 0.12); }
-html[data-theme="aurora"] .type-badge--pink    { --detail-type-chip-border: rgba(249, 168, 212, 0.25); --detail-type-chip-color: #fbcfe8; --detail-type-chip-background: rgba(236, 72, 153, 0.12); }
-html[data-theme="aurora"] .type-badge--violet  { --detail-type-chip-border: rgba(196, 181, 253, 0.25); --detail-type-chip-color: #ddd6fe; --detail-type-chip-background: rgba(139, 92, 246, 0.12); }
-html[data-theme="aurora"] .type-badge--purple  { --detail-type-chip-border: rgba(216, 180, 254, 0.25); --detail-type-chip-color: #e9d5ff; --detail-type-chip-background: rgba(168, 85, 247, 0.12); }
-html[data-theme="aurora"] .type-badge--slate   { --detail-type-chip-border: rgba(148, 163, 184, 0.25); --detail-type-chip-color: #e2e8f0; --detail-type-chip-background: rgba(148, 163, 184, 0.12); }
-
-/* Sidebar Type Filters & Active Type Pills */
-html[data-theme="aurora"] .sidebar-filter--type.is-active {
-  color: var(--filter-type-text, var(--primary-accent-text));
-  background: var(--filter-type-background, var(--primary-accent-soft));
-}
-
-html[data-theme="aurora"] .sidebar-filter--type.is-active .filter-count {
-  color: inherit;
-}
-
-html[data-theme="aurora"] .active-filter-pill--type {
-  border-color: var(--filter-type-border, var(--primary-accent-border));
-  color: var(--filter-type-text, var(--primary-accent-text));
-  background: var(--filter-type-background, var(--primary-accent-soft));
-}
-
-html[data-theme="aurora"] .active-filter-pill--type .active-filter-pill__clear:hover {
-  background: rgba(255, 255, 255, 0.1);
-}
-
-html[data-theme="aurora"] .sidebar-filter--indigo, html[data-theme="aurora"] .active-filter-pill--type-indigo { --filter-type-border: rgba(99, 102, 241, 0.35); --filter-type-text: #c7d2fe; --filter-type-background: rgba(99, 102, 241, 0.15); }
-html[data-theme="aurora"] .sidebar-filter--blue,   html[data-theme="aurora"] .active-filter-pill--type-blue   { --filter-type-border: rgba(59, 130, 246, 0.35); --filter-type-text: #bfdbfe; --filter-type-background: rgba(59, 130, 246, 0.15); }
-html[data-theme="aurora"] .sidebar-filter--sky,    html[data-theme="aurora"] .active-filter-pill--type-sky    { --filter-type-border: rgba(14, 165, 233, 0.35); --filter-type-text: #bae6fd; --filter-type-background: rgba(14, 165, 233, 0.15); }
-html[data-theme="aurora"] .sidebar-filter--cyan,   html[data-theme="aurora"] .active-filter-pill--type-cyan   { --filter-type-border: rgba(6, 182, 212, 0.35);  --filter-type-text: #a5f3fc; --filter-type-background: rgba(6, 182, 212, 0.15); }
-html[data-theme="aurora"] .sidebar-filter--teal,   html[data-theme="aurora"] .active-filter-pill--type-teal   { --filter-type-border: rgba(20, 184, 166, 0.35); --filter-type-text: #99f6e4; --filter-type-background: rgba(20, 184, 166, 0.15); }
-html[data-theme="aurora"] .sidebar-filter--emerald,html[data-theme="aurora"] .active-filter-pill--type-emerald{ --filter-type-border: rgba(16, 185, 129, 0.35); --filter-type-text: #a7f3d0; --filter-type-background: rgba(16, 185, 129, 0.15); }
-html[data-theme="aurora"] .sidebar-filter--green,  html[data-theme="aurora"] .active-filter-pill--type-green  { --filter-type-border: rgba(34, 197, 94, 0.35);  --filter-type-text: #bbf7d0; --filter-type-background: rgba(34, 197, 94, 0.15); }
-html[data-theme="aurora"] .sidebar-filter--lime,   html[data-theme="aurora"] .active-filter-pill--type-lime   { --filter-type-border: rgba(132, 204, 22, 0.35); --filter-type-text: #d9f99d; --filter-type-background: rgba(132, 204, 22, 0.15); }
-html[data-theme="aurora"] .sidebar-filter--amber,  html[data-theme="aurora"] .active-filter-pill--type-amber  { --filter-type-border: rgba(245, 158, 11, 0.35); --filter-type-text: #fde68a; --filter-type-background: rgba(245, 158, 11, 0.15); }
-html[data-theme="aurora"] .sidebar-filter--orange, html[data-theme="aurora"] .active-filter-pill--type-orange { --filter-type-border: rgba(249, 115, 22, 0.35); --filter-type-text: #fed7aa; --filter-type-background: rgba(249, 115, 22, 0.15); }
-html[data-theme="aurora"] .sidebar-filter--red,    html[data-theme="aurora"] .active-filter-pill--type-red    { --filter-type-border: rgba(239, 68, 68, 0.35);  --filter-type-text: #fecaca; --filter-type-background: rgba(239, 68, 68, 0.15); }
-html[data-theme="aurora"] .sidebar-filter--rose,   html[data-theme="aurora"] .active-filter-pill--type-rose   { --filter-type-border: rgba(244, 63, 94, 0.35);  --filter-type-text: #fecdd3; --filter-type-background: rgba(244, 63, 94, 0.15); }
-html[data-theme="aurora"] .sidebar-filter--pink,   html[data-theme="aurora"] .active-filter-pill--type-pink   { --filter-type-border: rgba(236, 72, 153, 0.35); --filter-type-text: #fbcfe8; --filter-type-background: rgba(236, 72, 153, 0.15); }
-html[data-theme="aurora"] .sidebar-filter--violet, html[data-theme="aurora"] .active-filter-pill--type-violet { --filter-type-border: rgba(139, 92, 246, 0.35); --filter-type-text: #ddd6fe; --filter-type-background: rgba(139, 92, 246, 0.15); }
-html[data-theme="aurora"] .sidebar-filter--purple, html[data-theme="aurora"] .active-filter-pill--type-purple { --filter-type-border: rgba(168, 85, 247, 0.35); --filter-type-text: #e9d5ff; --filter-type-background: rgba(168, 85, 247, 0.15); }
-html[data-theme="aurora"] .sidebar-filter--slate,  html[data-theme="aurora"] .active-filter-pill--type-slate  { --filter-type-border: rgba(148, 163, 184, 0.35);--filter-type-text: #e2e8f0; --filter-type-background: rgba(148, 163, 184, 0.15); }
-
-/* --------------------------------------------------------------------------
-   Pagination
-   -------------------------------------------------------------------------- */
 html[data-theme="aurora"] .pagination-button {
-  border-color: #555279;
-  color: #a5a4c6;
+  border-color: var(--aurora-line);
+  color: var(--aurora-ink-3);
   background: transparent;
-  transition: color var(--interaction-duration) var(--interaction-easing), background-color var(--interaction-duration) var(--interaction-easing), border-color var(--interaction-duration) var(--interaction-easing), transform var(--motion-duration-micro) var(--motion-ease-out);
 }
 
 html[data-theme="aurora"] .pagination-button:hover:not(:disabled) {
-  border-color: #716e98;
-  color: #edecff;
-  background: #1f1c3a;
+  border-color: var(--aurora-line-strong);
+  color: var(--aurora-ink);
+  background: var(--aurora-hover);
 }
 
 html[data-theme="aurora"] .pagination-button.is-active {
@@ -717,67 +844,171 @@ html[data-theme="aurora"] .pagination-button.is-active {
 
 html[data-theme="aurora"] .pagination-button:disabled,
 html[data-theme="aurora"] .pagination-ellipsis {
-  color: #77759d;
+  color: var(--note-card-action-disabled);
 }
 
 /* --------------------------------------------------------------------------
-   App Dialogs & Modals
+   Note types: rays of the aurora. One light hue per type, each 6.3:1 or
+   more on its own tinted chip, glowing softly against the night.
    -------------------------------------------------------------------------- */
-html[data-theme="aurora"] .app-dialog {
-  border-color: #555279;
-  color: #cfcee9;
-  background: #1f1c3a;
-  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
+html[data-theme="aurora"] :where(.type-dot, .type-badge, .sidebar-filter--type, .active-filter-pill--type) { --aurora-type: #b3b0d3; }
+html[data-theme="aurora"] :is(.type-dot--indigo, .type-badge--indigo, .sidebar-filter--indigo, .active-filter-pill--type-indigo) { --aurora-type: #aab2ff; }
+html[data-theme="aurora"] :is(.type-dot--blue, .type-badge--blue, .sidebar-filter--blue, .active-filter-pill--type-blue) { --aurora-type: #8fbcff; }
+html[data-theme="aurora"] :is(.type-dot--sky, .type-badge--sky, .sidebar-filter--sky, .active-filter-pill--type-sky) { --aurora-type: #84d2fb; }
+html[data-theme="aurora"] :is(.type-dot--cyan, .type-badge--cyan, .sidebar-filter--cyan, .active-filter-pill--type-cyan) { --aurora-type: #7adfe8; }
+html[data-theme="aurora"] :is(.type-dot--teal, .type-badge--teal, .sidebar-filter--teal, .active-filter-pill--type-teal) { --aurora-type: #70e0c8; }
+html[data-theme="aurora"] :is(.type-dot--emerald, .type-badge--emerald, .sidebar-filter--emerald, .active-filter-pill--type-emerald) { --aurora-type: #74e4ad; }
+html[data-theme="aurora"] :is(.type-dot--green, .type-badge--green, .sidebar-filter--green, .active-filter-pill--type-green) { --aurora-type: #9be38a; }
+html[data-theme="aurora"] :is(.type-dot--lime, .type-badge--lime, .sidebar-filter--lime, .active-filter-pill--type-lime) { --aurora-type: #cbe57a; }
+html[data-theme="aurora"] :is(.type-dot--amber, .type-badge--amber, .sidebar-filter--amber, .active-filter-pill--type-amber) { --aurora-type: #f3cf74; }
+html[data-theme="aurora"] :is(.type-dot--orange, .type-badge--orange, .sidebar-filter--orange, .active-filter-pill--type-orange) { --aurora-type: #f6ad7a; }
+html[data-theme="aurora"] :is(.type-dot--red, .type-badge--red, .sidebar-filter--red, .active-filter-pill--type-red) { --aurora-type: #f79a98; }
+html[data-theme="aurora"] :is(.type-dot--rose, .type-badge--rose, .sidebar-filter--rose, .active-filter-pill--type-rose) { --aurora-type: #f7a1bb; }
+html[data-theme="aurora"] :is(.type-dot--pink, .type-badge--pink, .sidebar-filter--pink, .active-filter-pill--type-pink) { --aurora-type: #f3a5dc; }
+html[data-theme="aurora"] :is(.type-dot--violet, .type-badge--violet, .sidebar-filter--violet, .active-filter-pill--type-violet) { --aurora-type: #c2a8ff; }
+html[data-theme="aurora"] :is(.type-dot--purple, .type-badge--purple, .sidebar-filter--purple, .active-filter-pill--type-purple) { --aurora-type: #dca5f3; }
+html[data-theme="aurora"] :is(.type-dot--slate, .type-badge--slate, .sidebar-filter--slate, .active-filter-pill--type-slate) { --aurora-type: #b3b0d3; }
+
+html[data-theme="aurora"] :is(.type-badge, .sidebar-filter--type, .active-filter-pill--type) {
+  --filter-type-border: color-mix(in srgb, var(--aurora-type) 32%, transparent);
+  --filter-type-text: var(--aurora-type);
+  --filter-type-background: color-mix(in srgb, var(--aurora-type) 13%, transparent);
+  --detail-type-chip-border: color-mix(in srgb, var(--aurora-type) 26%, transparent);
+  --detail-type-chip-color: var(--aurora-type);
+  --detail-type-chip-background: color-mix(in srgb, var(--aurora-type) 11%, var(--aurora-card));
 }
 
-html[data-theme="aurora"] .app-dialog::backdrop {
-  background: rgba(0, 0, 0, 0.65);
-  backdrop-filter: blur(8px);
+html[data-theme="aurora"] .type-badge {
+  border-color: var(--detail-type-chip-border);
+  color: var(--detail-type-chip-color);
+  background-color: var(--detail-type-chip-background);
+}
+
+/* The mobile card layout sets badge text to the strong ink; keep the ray's colour. */
+html[data-theme="aurora"] .note-card .type-badge {
+  color: var(--detail-type-chip-color);
+}
+
+/* Every badge is led by a small auroral ray of its colour, fading upward.
+ * Inline-block, because card badges are blocks so their names can ellipsize. */
+html[data-theme="aurora"] :is(.type-badge:not(.note-type-picker__trigger), .active-filter-pill--type)::before {
+  content: "";
+  display: inline-block;
+  flex: none;
+  width: 0.3rem;
+  height: 0.62rem;
+  margin-inline-end: 0.36rem;
+  vertical-align: -0.08em;
+  border-radius: 999px;
+  background: linear-gradient(180deg, color-mix(in srgb, currentColor 30%, transparent), currentColor 85%);
+  box-shadow: 0 0 0.4rem color-mix(in srgb, currentColor 55%, transparent);
+}
+
+/* The filter pill already spaces its children with a gap. */
+html[data-theme="aurora"] .active-filter-pill.active-filter-pill--type::before {
+  margin-inline-end: 0;
+}
+
+/* Type dots glow. Sizes and rings stay with their owners, so mobile chips
+ * and the larger management swatches keep their own geometry. */
+html[data-theme="aurora"] .type-dot {
+  background: var(--aurora-type);
+  box-shadow: 0 0 0.45rem -0.05rem color-mix(in srgb, var(--aurora-type) 75%, transparent);
+}
+
+/* Sidebar type filters and active type pills keep their own colour family. */
+html[data-theme="aurora"] .sidebar-filter--type.is-active {
+  border-color: var(--filter-type-border, var(--primary-accent-border));
+  color: var(--filter-type-text, var(--primary-accent-text));
+  background: var(--filter-type-background, var(--primary-accent-soft));
+}
+
+html[data-theme="aurora"] .sidebar-filter--type.is-active :is(.filter-count, .sidebar-filter__icon) {
+  color: inherit;
+}
+
+html[data-theme="aurora"] .active-filter-pill--type {
+  border-color: var(--filter-type-border, var(--primary-accent-border));
+  color: var(--filter-type-text, var(--primary-accent-text));
+  background: var(--filter-type-background, var(--primary-accent-soft));
+}
+
+/* The collapsed rail grows type dots into initial chips: light hues written
+ * in night ink, with a halo ring around the current one. */
+@media (min-width: 821px) {
+  html[data-theme="aurora"] .app-shell.is-sidebar-collapsed .sidebar-filter--type .type-dot,
+  html[data-theme="aurora"][data-sidebar-collapsed="true"] .app-shell .sidebar-filter--type .type-dot {
+    color: var(--aurora-canvas);
+    background: var(--aurora-type);
+    box-shadow: 0 0 0.6rem -0.1rem color-mix(in srgb, var(--aurora-type) 60%, transparent);
+    font-weight: var(--font-weight-bold);
+  }
+
+  html[data-theme="aurora"] .app-shell.is-sidebar-collapsed .sidebar-filter--type:is(.is-active, [aria-pressed="true"]) .type-dot,
+  html[data-theme="aurora"][data-sidebar-collapsed="true"] .app-shell .sidebar-filter--type:is(.is-active, [aria-pressed="true"]) .type-dot {
+    box-shadow: 0 0 0 2px var(--aurora-sidebar), 0 0 0 3.5px var(--aurora-type), 0 0 0.8rem color-mix(in srgb, var(--aurora-type) 55%, transparent);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Dialogs
+   -------------------------------------------------------------------------- */
+html[data-theme="aurora"] .app-dialog {
+  border-color: var(--aurora-line);
+  color: var(--aurora-ink-2);
+  background: var(--aurora-card);
+  box-shadow: 0 0 0 1px rgb(var(--aurora-shade) / 34%), 0 28px 64px -20px rgb(var(--aurora-shade) / 80%), inset 0 1px 0 rgb(240 238 255 / 4%);
+}
+
+html[data-theme="aurora"] .app-dialog::backdrop,
+html[data-theme="aurora"] .workflow-dialog::backdrop {
+  background: rgb(5 3 16 / 58%);
+  backdrop-filter: blur(3px);
 }
 
 html[data-theme="aurora"] .dialog-header,
 html[data-theme="aurora"] .dialog-footer {
-  border-color: #3e3a60;
-  background: #1c1737;
+  border-color: var(--aurora-line);
+  background: var(--aurora-card);
 }
 
-html[data-theme="aurora"] .dialog-footer__stats {
-  color: #a5a4c6;
+html[data-theme="aurora"] .dialog-header h2 {
+  color: var(--aurora-ink);
 }
 
-html[data-theme="aurora"] .field,
+html[data-theme="aurora"] .dialog-footer__stats,
 html[data-theme="aurora"] .confirmation-dialog__body p,
 html[data-theme="aurora"] .dialog-description {
-  color: #a5a4c6;
+  color: var(--aurora-ink-3);
+}
+
+html[data-theme="aurora"] .field {
+  color: var(--aurora-ink-2);
 }
 
 html[data-theme="aurora"] .field > span em {
-  color: #fca5a5;
+  color: var(--aurora-danger);
 }
 
 /* --------------------------------------------------------------------------
-   Detail Workspace & Note Editor
+   Detail workspace and note editor
    -------------------------------------------------------------------------- */
 html[data-theme="aurora"] .note-detail-surface {
-  border-color: #3e3a60;
-  color: #cfcee9;
-  background: #1c1838;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  border-color: var(--aurora-line);
+  color: var(--aurora-ink-2);
+  background: var(--aurora-paper);
+  box-shadow: var(--shadow-lg);
 }
 
-html[data-theme="aurora"] .note-detail-surface .dialog-header {
-  border-color: #322e51;
-  background: #131028;
-}
-
+html[data-theme="aurora"] .note-detail-surface .dialog-header,
 html[data-theme="aurora"] .note-detail-surface .dialog-footer {
-  border-color: #322e51;
-  background: #131028;
-  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.25);
+  border-color: var(--aurora-line);
+  background: var(--aurora-paper);
+  box-shadow: none;
 }
 
 html[data-theme="aurora"] .note-dialog .field--title input {
-  color: #edecff;
+  color: var(--aurora-ink);
   background: transparent;
   border: 0;
   box-shadow: none;
@@ -794,60 +1025,36 @@ html[data-theme="aurora"] .note-dialog .field--title input:focus-visible {
 html[data-theme="aurora"] .note-dialog #note-content,
 html[data-theme="aurora"] .note-dialog .note-content-preview,
 html[data-theme="aurora"] .note-content-preview {
-  border-color: #3e3a60;
-  color: #cfcee9;
+  border-color: var(--aurora-line);
+  color: var(--aurora-ink-2);
 }
 
 html[data-theme="aurora"] .note-dialog .note-content-field.is-split .note-editor-pane--preview {
-  border-color: #3e3a60;
+  border-color: var(--aurora-line);
 }
 
 html[data-theme="aurora"] .note-editor-pane__label {
-  color: #a5a4c6;
-}
-
-html[data-theme="aurora"] .note-editor-modes {
-  border-color: #555279;
-  background: #17142c;
-}
-
-html[data-theme="aurora"] .note-editor-mode__button {
-  color: #a5a4c6;
-  transition: color var(--interaction-duration) var(--motion-ease-out), background-color var(--interaction-duration) var(--motion-ease-out), box-shadow var(--interaction-duration) var(--motion-ease-out), transform var(--motion-duration-micro) var(--motion-ease-out);
-}
-
-html[data-theme="aurora"] .note-editor-mode__button:hover:not(:disabled),
-html[data-theme="aurora"] .note-editor-mode__button[aria-pressed="true"] {
-  color: var(--primary-accent-text);
-  background: var(--primary-accent-soft);
+  color: var(--aurora-ink-3);
 }
 
 html[data-theme="aurora"] .note-formatting-toolbar {
-  border-bottom-color: #322e51;
+  border-bottom-color: var(--aurora-line);
   background: transparent;
 }
 
 html[data-theme="aurora"] .note-formatting-tool__button {
-  color: #a5a4c6;
-  transition: color var(--interaction-duration) var(--motion-ease-out), background-color var(--interaction-duration) var(--motion-ease-out), border-color var(--interaction-duration) var(--motion-ease-out), transform var(--motion-duration-micro) var(--motion-ease-out);
+  color: var(--aurora-ink-3);
 }
 
 html[data-theme="aurora"] .note-formatting-tool__button:hover {
-  color: #edecff;
-  background: #363356;
-}
-
-html[data-theme="aurora"] .note-formatting-tool__tooltip {
-  border-color: #716e98;
-  color: #edecff;
-  background: #1c1838;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.55), 0 2px 6px rgba(0, 0, 0, 0.35);
+  color: var(--aurora-ink);
+  background: var(--aurora-hover);
 }
 
 html[data-theme="aurora"] .tag-picker {
-  border-color: #555279;
-  color: #cfcee9;
-  background-color: #17142c;
+  border-color: var(--aurora-line-input);
+  color: var(--aurora-ink-2);
+  background-color: var(--aurora-well);
 }
 
 html[data-theme="aurora"] .note-dialog .tag-picker,
@@ -859,8 +1066,6 @@ html[data-theme="aurora"] .note-dialog .tag-picker:focus-within {
   box-shadow: none;
 }
 
-
-
 html[data-theme="aurora"] .tag-suggestions__label,
 html[data-theme="aurora"] .field-help,
 html[data-theme="aurora"] .note-meta,
@@ -868,30 +1073,31 @@ html[data-theme="aurora"] .quick-view-content-label,
 html[data-theme="aurora"] .quick-view-dates,
 html[data-theme="aurora"] .note-detail-surface .note-meta,
 html[data-theme="aurora"] .note-detail-surface .quick-view-dates {
-  border-color: #3e3a60;
-  color: #a5a4c6;
+  border-color: var(--aurora-line);
+  color: var(--aurora-ink-3);
 }
 
 html[data-theme="aurora"] .tag-add-button {
-  border-color: #555279;
-  color: #a5a4c6;
-  background: #17142c;
-  transition: color var(--interaction-duration) var(--motion-ease-out), background-color var(--interaction-duration) var(--motion-ease-out), border-color var(--interaction-duration) var(--motion-ease-out), transform var(--motion-duration-micro) var(--motion-ease-out);
+  border-color: var(--aurora-line);
+  color: var(--aurora-ink-3);
+  background: var(--aurora-paper);
 }
 
 html[data-theme="aurora"] .tag-add-button:hover:not(:disabled) {
-  border-color: #716e98;
-  color: #edecff;
-  background: #2d2a4b;
+  border-color: var(--aurora-line-strong);
+  color: var(--aurora-ink);
+  background: var(--aurora-hover);
 }
 
-
+html[data-theme="aurora"] .selected-tag button {
+  color: var(--aurora-ink-4);
+}
 
 html[data-theme="aurora"] .selected-tag button:hover,
 html[data-theme="aurora"] .selected-tag button:focus-visible {
   outline: none;
-  color: #fca5a5;
-  background: rgba(239, 68, 68, 0.2);
+  color: var(--aurora-danger);
+  background: rgb(240 110 130 / 18%);
 }
 
 html[data-theme="aurora"] .selected-tag:has(button:focus-visible) {
@@ -901,38 +1107,33 @@ html[data-theme="aurora"] .selected-tag:has(button:focus-visible) {
 
 html[data-theme="aurora"] .note-type-picker__trigger,
 html[data-theme="aurora"] .color-picker__trigger {
-  border-color: #555279;
-  color: #cfcee9;
-  background-color: #17142c;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23a5a4c6' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  border-color: var(--aurora-line-input);
+  color: var(--aurora-ink-2);
+  background-color: var(--aurora-well);
+  background-image: var(--select-chevron);
 }
 
 html[data-theme="aurora"] .note-dialog .note-type-picker__trigger {
-  border-color: var(--detail-type-chip-border, #555279);
-  color: var(--detail-type-chip-color, #cfcee9);
-  background-color: var(--detail-type-chip-background, #1f1c3a);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23a5a4c6' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  border-color: var(--detail-type-chip-border);
+  color: var(--detail-type-chip-color);
+  background-color: var(--detail-type-chip-background);
+  background-image: var(--select-chevron);
   background-position: right 0.42rem center;
   background-size: 0.65rem 0.65rem;
   background-repeat: no-repeat;
 }
 
 html[data-theme="aurora"] .note-dialog .note-type-picker__trigger:hover {
-  border-color: var(--detail-type-chip-color, #edecff);
-  background-color: var(--detail-type-chip-background, #363356);
+  border-color: var(--detail-type-chip-color);
 }
 
 html[data-theme="aurora"] .note-dialog .note-type-picker__trigger[aria-expanded="true"] {
   border-color: var(--primary-accent);
-  background-color: var(--detail-type-chip-background, #363356);
 }
-
-
 
 html[data-theme="aurora"] .color-picker__option,
 html[data-theme="aurora"] .note-type-picker__option {
-  color: #cfcee9;
-  transition: color var(--interaction-duration) var(--motion-ease-out), background-color var(--interaction-duration) var(--motion-ease-out);
+  color: var(--aurora-ink-2);
 }
 
 html[data-theme="aurora"] .color-picker__option:hover,
@@ -945,44 +1146,34 @@ html[data-theme="aurora"] .note-type-picker__option[aria-selected="true"] {
   background: var(--primary-accent-soft);
 }
 
-html[data-theme="aurora"] .tag-marker {
-  background: #a5a4c6;
-  box-shadow: 0 0 0 3px #1f1c3a;
-}
-
-/* Note Save Status */
+/* Save status: quiet when saved, mint while work is pending. */
 html[data-theme="aurora"] .note-save-status.is-saved,
 html[data-theme="aurora"] .detail-commandbar__info .note-save-status.is-saved {
-  color: #4ade80;
+  color: var(--status-success-text);
   background: transparent;
   border-color: transparent;
 }
 
 html[data-theme="aurora"] .detail-commandbar__info .note-save-status.is-new {
-  color: #a5a4c6;
+  color: var(--aurora-ink-3);
   background: transparent;
   border-color: transparent;
 }
 
 html[data-theme="aurora"] .note-save-status.is-saving,
-html[data-theme="aurora"] .detail-commandbar__info .note-save-status.is-saving {
-  color: #76c7ff;
-  background: rgba(118, 199, 255, 0.12);
-  border-color: rgba(118, 199, 255, 0.28);
-}
-
+html[data-theme="aurora"] .detail-commandbar__info .note-save-status.is-saving,
 html[data-theme="aurora"] .note-save-status.is-dirty,
 html[data-theme="aurora"] .detail-commandbar__info .note-save-status.is-dirty {
-  color: #aaf6d8;
-  background: rgba(94, 229, 184, 0.14);
-  border-color: rgba(94, 229, 184, 0.35);
+  color: var(--primary-accent-text);
+  background: var(--primary-accent-soft);
+  border-color: var(--primary-accent-border);
 }
 
 html[data-theme="aurora"] .note-save-status.is-error,
 html[data-theme="aurora"] .detail-commandbar__info .note-save-status.is-error {
-  color: #fca5a5;
-  background: rgba(239, 68, 68, 0.14);
-  border-color: rgba(239, 68, 68, 0.35);
+  color: var(--status-error-text);
+  background: var(--status-error-surface);
+  border-color: var(--status-error-border);
 }
 
 html[data-theme="aurora"] .note-detail-surface .dialog-footer__tools .icon-button,
@@ -992,9 +1183,8 @@ html[data-theme="aurora"] .note-detail-surface .note-save-shortcut__trigger,
 html[data-theme="aurora"] .note-detail-surface .note-markdown-help__trigger,
 html[data-theme="aurora"] .note-save-shortcut__trigger,
 html[data-theme="aurora"] .note-markdown-help__trigger {
-  color: #a5a4c6;
+  color: var(--aurora-ink-3);
   background: transparent;
-  transition: color var(--interaction-duration) var(--motion-ease-out), background-color var(--interaction-duration) var(--motion-ease-out), border-color var(--interaction-duration) var(--motion-ease-out), transform var(--motion-duration-micro) var(--motion-ease-out);
 }
 
 html[data-theme="aurora"] .note-detail-surface .dialog-footer__tools .icon-button:hover:not(:disabled),
@@ -1004,20 +1194,19 @@ html[data-theme="aurora"] .note-detail-surface .note-markdown-help__trigger:hove
 html[data-theme="aurora"] .note-save-shortcut__trigger:hover,
 html[data-theme="aurora"] .note-markdown-help__trigger:hover,
 html[data-theme="aurora"] .note-markdown-help__trigger:focus-visible {
-  color: #edecff;
-  background: #363356;
+  color: var(--aurora-ink);
+  background: var(--aurora-hover);
 }
 
 html[data-theme="aurora"] .note-detail-surface .note-delete-button:hover:not(:disabled) {
-  color: #fca5a5;
-  background: rgba(239, 68, 68, 0.15);
+  color: var(--aurora-danger);
+  background: var(--note-card-action-danger-surface);
 }
 
 html[data-theme="aurora"] .quick-save-note-button {
   border-color: var(--primary-accent-border);
   color: var(--primary-accent-text);
   background: var(--primary-accent-soft);
-  transition: color var(--interaction-duration) var(--motion-ease-out), background-color var(--interaction-duration) var(--motion-ease-out), border-color var(--interaction-duration) var(--motion-ease-out), transform var(--motion-duration-micro) var(--motion-ease-out);
 }
 
 html[data-theme="aurora"] .quick-save-note-button:hover:not(:disabled) {
@@ -1026,27 +1215,23 @@ html[data-theme="aurora"] .quick-save-note-button:hover:not(:disabled) {
 }
 
 /* --------------------------------------------------------------------------
-   Quick View & Markdown Rendering
+   Quick View and Markdown: a page under the northern lights
    -------------------------------------------------------------------------- */
 html[data-theme="aurora"] .quick-view-content,
 html[data-theme="aurora"] .note-detail-surface .quick-view-content {
-  color: #cfcee9;
+  color: var(--aurora-ink-2);
 }
 
-html[data-theme="aurora"] .quick-view-content-card {
-  border-color: #3e3a60;
-}
-
+html[data-theme="aurora"] .quick-view-content-card,
 html[data-theme="aurora"] .quick-view-document-header {
-  border-color: #322e51;
+  border-color: var(--aurora-line);
 }
 
 html[data-theme="aurora"] .quick-view-copy-button,
 html[data-theme="aurora"] .quick-view-export-button {
-  border-color: #555279;
-  color: #cfcee9;
-  background: #1f1c3a;
-  transition: color var(--interaction-duration) var(--motion-ease-out), background-color var(--interaction-duration) var(--motion-ease-out), border-color var(--interaction-duration) var(--motion-ease-out), transform var(--motion-duration-micro) var(--motion-ease-out);
+  border-color: var(--aurora-line-input);
+  color: var(--aurora-ink-2);
+  background: var(--aurora-card);
 }
 
 html[data-theme="aurora"] .quick-view-export-group {
@@ -1055,547 +1240,437 @@ html[data-theme="aurora"] .quick-view-export-group {
 
 html[data-theme="aurora"] .quick-view-copy-button:hover:not(:disabled),
 html[data-theme="aurora"] .quick-view-export-button:hover:not(:disabled) {
-  border-color: #716e98;
-  color: #ffffff;
-  background: #363356;
+  border-color: var(--aurora-line-strong);
+  color: var(--aurora-ink);
+  background: var(--aurora-hover);
 }
 
-html[data-theme="aurora"] .quick-view-content a {
-  color: var(--primary-accent);
-  text-decoration-color: rgba(94, 229, 184, 0.35);
-  transition: color var(--interaction-duration) var(--motion-ease-out), text-decoration-color var(--interaction-duration) var(--motion-ease-out);
+html[data-theme="aurora"] :is(.quick-view-content, .note-content-preview) :is(h1, h2) {
+  color: var(--aurora-ink);
+  letter-spacing: -0.02em;
 }
 
-html[data-theme="aurora"] .quick-view-content a:hover {
-  color: var(--primary-accent-hover);
-  text-decoration-color: var(--primary-accent-hover);
+/* The title rule runs through the spectrum and fades into the hairline. */
+html[data-theme="aurora"] :is(.quick-view-content, .note-content-preview) h1 {
+  border-bottom-color: var(--aurora-line);
+  border-image: linear-gradient(90deg, var(--aurora-mint), var(--aurora-sky) 5rem, var(--aurora-violet) 10rem, color-mix(in srgb, var(--aurora-pink) 24%, var(--aurora-line)) 16rem, var(--aurora-line) 60%) 1;
 }
 
-html[data-theme="aurora"] .quick-view-content blockquote {
-  border-left-color: var(--primary-accent);
-  background: rgba(94, 229, 184, 0.05);
-  color: #cfcee9;
+html[data-theme="aurora"] :is(.quick-view-content, .note-content-preview) h3 {
+  color: #e2dff6;
 }
 
-html[data-theme="aurora"] .quick-view-content hr {
-  border-color: #3e3a60;
+html[data-theme="aurora"] :is(.quick-view-content, .note-content-preview) h4 {
+  color: var(--aurora-ink-2);
 }
 
-html[data-theme="aurora"] .quick-view-content code,
+html[data-theme="aurora"] :is(.quick-view-content, .note-content-preview) :is(h5, h6) {
+  color: var(--aurora-ink-3);
+}
+
+/* Links read in mint over a violet underline. */
+html[data-theme="aurora"] :is(.quick-view-content, .note-content-preview) a {
+  color: var(--primary-accent-text);
+  text-decoration-color: rgb(182 160 255 / 55%);
+  text-underline-offset: 0.2em;
+}
+
+html[data-theme="aurora"] :is(.quick-view-content, .note-content-preview) a:hover {
+  color: var(--toast-action-hover);
+  text-decoration-color: currentColor;
+}
+
+/* Quotes hang from a mint-to-pink rail over a faint aurora wash. */
+html[data-theme="aurora"] :is(.quick-view-content, .note-content-preview) blockquote {
+  border-left-color: color-mix(in srgb, var(--primary-accent) 60%, var(--aurora-line));
+  border-image: linear-gradient(180deg, var(--aurora-mint), var(--aurora-sky) 40%, var(--aurora-violet) 75%, var(--aurora-pink)) 1;
+  color: #d4d0ec;
+  background: linear-gradient(90deg, rgb(94 229 184 / 7%), rgb(182 160 255 / 3%) 70%, transparent);
+}
+
+/* A small aurora ribbon rests in the middle of the horizontal rule. */
+html[data-theme="aurora"] :is(.quick-view-content, .note-content-preview) hr {
+  overflow: visible;
+  height: auto;
+  margin-block: 1.6rem;
+  border: 0;
+  background:
+    linear-gradient(90deg, transparent, rgb(94 229 184 / 36%)) left center / calc(50% - 2rem) 1px no-repeat,
+    linear-gradient(90deg, rgb(182 160 255 / 36%), transparent) right center / calc(50% - 2rem) 1px no-repeat;
+  line-height: 1;
+  text-align: center;
+}
+
+html[data-theme="aurora"] :is(.quick-view-content, .note-content-preview) hr::before {
+  content: "";
+  display: inline-block;
+  width: 2.8rem;
+  height: 0.8rem;
+  vertical-align: middle;
+  background: var(--aurora-rule) center / contain no-repeat;
+}
+
+html[data-theme="aurora"] :is(.quick-view-content, .note-content-preview) code:not(pre code),
 html[data-theme="aurora"] .note-markdown-help__tooltip code {
-  border-color: #555279;
-  color: #aaf6d8;
-  background: rgba(94, 229, 184, 0.1);
+  border: 1px solid #342e5c;
+  color: #dcd9f2;
+  background: var(--aurora-hover);
 }
 
-html[data-theme="aurora"] .quick-view-content pre,
-html[data-theme="aurora"] .note-content-preview pre {
-  border-color: #322e51;
-  background: #120f25;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+html[data-theme="aurora"] :is(.quick-view-content, .note-content-preview) pre {
+  border-color: var(--aurora-line);
+  background: var(--aurora-well);
+  box-shadow: inset 0 1px 0 rgb(240 238 255 / 3%);
 }
 
-html[data-theme="aurora"] .quick-view-content .markdown-code-header,
-html[data-theme="aurora"] .note-content-preview .markdown-code-header {
-  border-bottom-color: #322e51;
-  background: #1c1838;
-}
-
-html[data-theme="aurora"] .quick-view-content .markdown-code-lang,
-html[data-theme="aurora"] .note-content-preview .markdown-code-lang {
-  color: #a5a4c6;
-}
-
-html[data-theme="aurora"] .quick-view-content .markdown-code-copy-btn,
-html[data-theme="aurora"] .note-content-preview .markdown-code-copy-btn {
-  border-color: #555279;
-  color: #a5a4c6;
-  background: #1f1c3a;
-  transition: color var(--interaction-duration) var(--motion-ease-out), background-color var(--interaction-duration) var(--motion-ease-out), border-color var(--interaction-duration) var(--motion-ease-out), transform var(--motion-duration-micro) var(--motion-ease-out);
-}
-
-html[data-theme="aurora"] .quick-view-content .markdown-code-copy-btn:hover,
-html[data-theme="aurora"] .note-content-preview .markdown-code-copy-btn:hover {
-  border-color: #716e98;
-  color: #ffffff;
-  background: #363356;
-}
-
-html[data-theme="aurora"] .quick-view-content .markdown-code-copy-btn.is-copied,
-html[data-theme="aurora"] .note-content-preview .markdown-code-copy-btn.is-copied {
-  border-color: rgba(52, 211, 153, 0.4);
-  color: #34d399;
-  background: rgba(52, 211, 153, 0.12);
-}
-
-html[data-theme="aurora"] .quick-view-content .markdown-code-check-icon,
-html[data-theme="aurora"] .note-content-preview .markdown-code-check-icon {
-  color: currentColor;
-}
-
-html[data-theme="aurora"] .quick-view-content pre code,
-html[data-theme="aurora"] .note-content-preview pre code {
-  color: #d5d5f0;
+html[data-theme="aurora"] :is(.quick-view-content, .note-content-preview) pre code {
+  color: #dcd9f2;
   background: transparent;
 }
 
-/* Syntax Tokens - Antigravity / VS Code Default Dark */
-html[data-theme="aurora"] .quick-view-content .token-keyword,
-html[data-theme="aurora"] .note-content-preview .token-keyword {
-  color: #c4a7ff;
+html[data-theme="aurora"] :is(.quick-view-content, .note-content-preview) .markdown-code-header {
+  border-bottom-color: var(--aurora-line);
+  background: color-mix(in srgb, var(--aurora-ink) 3%, var(--aurora-well));
 }
 
-html[data-theme="aurora"] .quick-view-content .token-string,
-html[data-theme="aurora"] .note-content-preview .token-string {
-  color: #9ff0cf;
+html[data-theme="aurora"] :is(.quick-view-content, .note-content-preview) .markdown-code-lang {
+  color: var(--aurora-ink-3);
 }
 
-html[data-theme="aurora"] .quick-view-content .token-function,
-html[data-theme="aurora"] .note-content-preview .token-function {
-  color: #8fd3ff;
+html[data-theme="aurora"] :is(.quick-view-content, .note-content-preview) .markdown-code-copy-btn {
+  border-color: var(--aurora-line-input);
+  color: var(--aurora-ink-3);
+  background: var(--aurora-paper);
 }
 
-html[data-theme="aurora"] .quick-view-content .token-number,
-html[data-theme="aurora"] .note-content-preview .token-number {
-  color: #ffb4d8;
+html[data-theme="aurora"] :is(.quick-view-content, .note-content-preview) .markdown-code-copy-btn:hover {
+  border-color: var(--aurora-line-strong);
+  color: var(--aurora-ink);
+  background: var(--aurora-hover);
 }
 
-html[data-theme="aurora"] .quick-view-content .token-boolean,
-html[data-theme="aurora"] .note-content-preview .token-boolean {
-  color: #f0a6ff;
+html[data-theme="aurora"] :is(.quick-view-content, .note-content-preview) .markdown-code-copy-btn.is-copied {
+  border-color: var(--status-success-border);
+  color: var(--status-success-text);
+  background: var(--status-success-surface);
 }
 
-html[data-theme="aurora"] .quick-view-content .token-comment,
-html[data-theme="aurora"] .note-content-preview .token-comment {
-  color: #8f8bbb;
-  font-style: italic;
+html[data-theme="aurora"] :is(.quick-view-content, .note-content-preview) .markdown-code-check-icon {
+  color: currentColor;
 }
 
-html[data-theme="aurora"] .quick-view-content .token-operator,
-html[data-theme="aurora"] .note-content-preview .token-operator {
-  color: #d5d5f0;
+/* Syntax: aurora hues, each at least 5.6:1 on the code surface. */
+html[data-theme="aurora"] .token-keyword { color: #c6adff; }
+html[data-theme="aurora"] .token-string { color: #8ee8c0; }
+html[data-theme="aurora"] .token-function { color: #86cbf6; }
+html[data-theme="aurora"] .token-number { color: #f4aad6; }
+html[data-theme="aurora"] .token-boolean { color: #f6bb8e; }
+html[data-theme="aurora"] .token-comment { color: #8f8ab8; font-style: italic; }
+html[data-theme="aurora"] .token-operator,
+html[data-theme="aurora"] .token-punctuation { color: #aca8cf; }
+html[data-theme="aurora"] .token-property,
+html[data-theme="aurora"] .token-tag { color: #a9b9ff; }
+html[data-theme="aurora"] .token-type { color: #79e0d6; }
+
+html[data-theme="aurora"] :is(.quick-view-content, .note-content-preview) .markdown-image {
+  border-color: var(--aurora-line);
+  box-shadow: var(--shadow-md);
 }
 
-html[data-theme="aurora"] .quick-view-content .token-property,
-html[data-theme="aurora"] .quick-view-content .token-tag,
-html[data-theme="aurora"] .note-content-preview .token-property,
-html[data-theme="aurora"] .note-content-preview .token-tag {
-  color: #b3c6ff;
-}
-
-html[data-theme="aurora"] .quick-view-content .token-type,
-html[data-theme="aurora"] .note-content-preview .token-type {
-  color: #6ff7d6;
-}
-
-html[data-theme="aurora"] .quick-view-content .markdown-image,
-html[data-theme="aurora"] .note-content-preview .markdown-image {
-  border-color: #555279;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
-}
-
-html[data-theme="aurora"] .quick-view-content .markdown-image-alt,
-html[data-theme="aurora"] .note-content-preview .markdown-image-alt {
-  border-color: #3e3a60;
-  color: #a5a4c6;
-  background: #17142c;
+html[data-theme="aurora"] :is(.quick-view-content, .note-content-preview) .markdown-image-alt {
+  border-color: var(--aurora-line);
+  color: var(--aurora-ink-3);
+  background: var(--aurora-well);
 }
 
 html[data-theme="aurora"] .quick-view-content .markdown-empty {
-  color: #8a88ae;
+  color: var(--aurora-ink-3);
 }
 
-/* Markdown Tables, Details & Math */
-html[data-theme="aurora"] .quick-view-content .markdown-table-wrapper,
-html[data-theme="aurora"] .note-content-preview .markdown-table-wrapper,
-html[data-theme="aurora"] .quick-view-content .markdown-details,
-html[data-theme="aurora"] .note-content-preview .markdown-details,
-html[data-theme="aurora"] .quick-view-content .markdown-math--block,
-html[data-theme="aurora"] .note-content-preview .markdown-math--block {
-  border-color: #3e3a60;
-  background: #17142c;
+html[data-theme="aurora"] :is(.quick-view-content, .note-content-preview) :is(.markdown-table-wrapper, .markdown-details, .markdown-math--block) {
+  border-color: var(--aurora-line);
+  background: var(--aurora-well);
 }
 
-html[data-theme="aurora"] .quick-view-content .markdown-table th,
-html[data-theme="aurora"] .note-content-preview .markdown-table th {
-  color: #edecff;
-  background: #1f1c3a;
-  font-weight: var(--font-weight-bold);
+html[data-theme="aurora"] :is(.quick-view-content, .note-content-preview) .markdown-math {
+  color: var(--aurora-ink);
 }
 
-html[data-theme="aurora"] .quick-view-content .markdown-table th,
-html[data-theme="aurora"] .quick-view-content .markdown-table td,
-html[data-theme="aurora"] .note-content-preview .markdown-table th,
-html[data-theme="aurora"] .note-content-preview .markdown-table td {
-  border-color: #3e3a60;
+html[data-theme="aurora"] :is(.quick-view-content, .note-content-preview) .markdown-table :is(th, td) {
+  border-color: var(--aurora-line);
 }
 
-html[data-theme="aurora"] .quick-view-content .markdown-table tbody tr:nth-child(even),
-html[data-theme="aurora"] .note-content-preview .markdown-table tbody tr:nth-child(even) {
-  background: rgba(255, 255, 255, 0.02);
+html[data-theme="aurora"] :is(.quick-view-content, .note-content-preview) .markdown-table th {
+  color: var(--aurora-ink);
+  background: color-mix(in srgb, var(--primary-accent) 6%, var(--aurora-well));
+  font-weight: var(--font-weight-semibold);
 }
 
-/* GitHub-style Callout Alerts */
-html[data-theme="aurora"] .quick-view-content .markdown-alert,
-html[data-theme="aurora"] .note-content-preview .markdown-alert {
-  border-color: rgba(118, 199, 255, 0.24);
-  border-left-color: #76c7ff;
-  color: #cfcee9;
-  background: rgba(118, 199, 255, 0.08);
+html[data-theme="aurora"] :is(.quick-view-content, .note-content-preview) .markdown-table tbody tr:nth-child(even) {
+  background: rgb(240 238 255 / 2%);
 }
 
-html[data-theme="aurora"] .quick-view-content .markdown-alert__title,
-html[data-theme="aurora"] .note-content-preview .markdown-alert__title {
-  color: #a8dcff;
+/* Callouts keep distinct semantic hues, each drawn from the aurora night. */
+html[data-theme="aurora"] .markdown-alert,
+html[data-theme="aurora"] .markdown-alert--note { border-color: rgb(111 200 247 / 26%); border-left-color: #6fc8f7; color: var(--aurora-ink-2); background: rgb(111 200 247 / 8%); }
+html[data-theme="aurora"] :is(.markdown-alert, .markdown-alert--note) .markdown-alert__title { color: #9bd8fa; }
+html[data-theme="aurora"] .markdown-alert--tip { border-color: rgb(116 228 173 / 26%); border-left-color: #6cd9a2; color: var(--aurora-ink-2); background: rgb(116 228 173 / 8%); }
+html[data-theme="aurora"] .markdown-alert--tip .markdown-alert__title { color: #9fe8bf; }
+html[data-theme="aurora"] .markdown-alert--warning { border-color: rgb(224 178 90 / 28%); border-left-color: #e0b25a; color: var(--aurora-ink-2); background: rgb(224 178 90 / 8%); }
+html[data-theme="aurora"] .markdown-alert--warning .markdown-alert__title { color: #f1cb7a; }
+html[data-theme="aurora"] .markdown-alert--caution { border-color: rgb(228 122 138 / 28%); border-left-color: #e47a8a; color: var(--aurora-ink-2); background: rgb(228 122 138 / 8%); }
+html[data-theme="aurora"] .markdown-alert--caution .markdown-alert__title { color: var(--aurora-danger); }
+html[data-theme="aurora"] .markdown-alert--important { border-color: rgb(182 160 255 / 28%); border-left-color: #b6a0ff; color: var(--aurora-ink-2); background: rgb(182 160 255 / 8%); }
+html[data-theme="aurora"] .markdown-alert--important .markdown-alert__title { color: #cdbdff; }
+
+html[data-theme="aurora"] :is(.quick-view-content, .note-content-preview) :is(.markdown-details summary, .markdown-footnotes h4) {
+  color: var(--aurora-ink-2);
 }
 
-html[data-theme="aurora"] .quick-view-content .markdown-alert--tip,
-html[data-theme="aurora"] .note-content-preview .markdown-alert--tip {
-  border-color: rgba(74, 222, 128, 0.24);
-  border-left-color: #4ade80;
-  color: #cfcee9;
-  background: rgba(34, 197, 94, 0.08);
-}
-
-html[data-theme="aurora"] .quick-view-content .markdown-alert--tip .markdown-alert__title,
-html[data-theme="aurora"] .note-content-preview .markdown-alert--tip .markdown-alert__title {
-  color: #86efac;
-}
-
-html[data-theme="aurora"] .quick-view-content .markdown-alert--warning,
-html[data-theme="aurora"] .note-content-preview .markdown-alert--warning {
-  border-color: rgba(251, 146, 60, 0.26);
-  border-left-color: #fb923c;
-  color: #cfcee9;
-  background: rgba(249, 115, 22, 0.09);
-}
-
-html[data-theme="aurora"] .quick-view-content .markdown-alert--warning .markdown-alert__title,
-html[data-theme="aurora"] .note-content-preview .markdown-alert--warning .markdown-alert__title {
-  color: #fed7aa;
-}
-
-html[data-theme="aurora"] .quick-view-content .markdown-alert--caution,
-html[data-theme="aurora"] .note-content-preview .markdown-alert--caution {
-  border-color: rgba(248, 113, 113, 0.26);
-  border-left-color: #f87171;
-  color: #cfcee9;
-  background: rgba(239, 68, 68, 0.09);
-}
-
-html[data-theme="aurora"] .quick-view-content .markdown-alert--caution .markdown-alert__title,
-html[data-theme="aurora"] .note-content-preview .markdown-alert--caution .markdown-alert__title {
-  color: #fca5a5;
-}
-
-html[data-theme="aurora"] .quick-view-content .markdown-alert--important,
-html[data-theme="aurora"] .note-content-preview .markdown-alert--important {
-  border-color: rgba(189, 167, 255, 0.3);
-  border-left-color: #bda7ff;
-  color: #cfcee9;
-  background: rgba(189, 167, 255, 0.08);
-}
-
-html[data-theme="aurora"] .quick-view-content .markdown-alert--important .markdown-alert__title,
-html[data-theme="aurora"] .note-content-preview .markdown-alert--important .markdown-alert__title {
-  color: #d7ccff;
-}
-
-html[data-theme="aurora"] .quick-view-content .markdown-details summary,
-html[data-theme="aurora"] .note-content-preview .markdown-details summary,
-html[data-theme="aurora"] .quick-view-content .markdown-footnotes h4,
-html[data-theme="aurora"] .note-content-preview .markdown-footnotes h4 {
-  color: #cfcee9;
-}
-
-html[data-theme="aurora"] .quick-view-content .markdown-math,
-html[data-theme="aurora"] .note-content-preview .markdown-math {
-  color: #aaf6d8;
-  background: rgba(94, 229, 184, 0.1);
-}
-
-html[data-theme="aurora"] .quick-view-content .markdown-footnotes,
-html[data-theme="aurora"] .note-content-preview .markdown-footnotes {
-  border-color: #3e3a60;
+html[data-theme="aurora"] :is(.quick-view-content, .note-content-preview) .markdown-footnotes {
+  border-color: var(--aurora-line);
 }
 
 /* --------------------------------------------------------------------------
-   Settings & Management Dialog
+   Settings and management
    -------------------------------------------------------------------------- */
 html[data-theme="aurora"] .organize-tabs {
-  border-bottom-color: #3e3a60;
-  background: #1c1737;
+  border-bottom-color: var(--aurora-line);
+  background: var(--aurora-well);
+  box-shadow: inset 0 0 0 1px var(--aurora-line);
 }
 
 html[data-theme="aurora"] .organize-tab {
-  color: #a5a4c6;
-  transition: color var(--interaction-duration) var(--motion-ease-out), background-color var(--interaction-duration) var(--motion-ease-out), border-color var(--interaction-duration) var(--motion-ease-out);
+  color: var(--aurora-ink-3);
+}
+
+html[data-theme="aurora"] .organize-tab:hover:not(.is-active) {
+  color: var(--aurora-ink);
 }
 
 html[data-theme="aurora"] .organize-tab.is-active {
   border-bottom-color: transparent;
-  color: var(--primary-accent-text);
-  background: #0c392b;
-  box-shadow: inset 0 0 0 1px var(--primary-accent-border), 0 1px 2px rgb(0 0 0 / 28%);
+  color: var(--aurora-ink);
+  background: var(--aurora-raised);
+  box-shadow: inset 0 1px 0 rgb(240 238 255 / 6%), 0 0 0 1px rgb(var(--aurora-shade) / 34%), 0 1px 3px rgb(var(--aurora-shade) / 44%);
 }
 
 html[data-theme="aurora"] .management-list {
-  border-color: #3e3a60;
-  background: #17142c;
+  border-color: var(--aurora-line);
+  background: var(--aurora-paper);
   box-shadow: none;
 }
 
 html[data-theme="aurora"] .management-row {
-  border-color: #322e51;
-  border-bottom-color: #322e51;
+  border-color: var(--aurora-line);
   background: transparent;
 }
 
-html[data-theme="aurora"] .management-row__name {
-  color: #edecff;
+html[data-theme="aurora"] .management-row__name,
+html[data-theme="aurora"] .empty-state h3 {
+  color: var(--aurora-ink);
 }
 
 html[data-theme="aurora"] .management-row__default {
-  color: #a5a4c6;
-  background: #1f1c3a;
-  border-color: #555279;
+  border-color: var(--aurora-line);
+  color: var(--aurora-ink-3);
+  background: var(--aurora-well);
 }
 
 html[data-theme="aurora"] .management-create-row {
-  border-color: #3e3a60;
-  background: #17142c;
+  border-color: var(--aurora-line);
+  background: var(--aurora-well);
 }
 
-html[data-theme="aurora"] .management-empty {
-  color: #8a88ae;
+html[data-theme="aurora"] .management-empty,
+html[data-theme="aurora"] .color-select {
+  color: var(--aurora-ink-3);
 }
 
-html[data-theme="aurora"] .color-select,
-html[data-theme="aurora"] .usage-count {
-  color: #a5a4c6;
+html[data-theme="aurora"] .tag-marker {
+  background: var(--aurora-ink-3);
+  box-shadow: 0 0 0 3px var(--aurora-paper);
 }
 
 /* --------------------------------------------------------------------------
-   Tooltips, Keyboard Shortcuts & Help
+   Tooltips and keyboard hints
    -------------------------------------------------------------------------- */
 html[data-theme="aurora"] .shortcut-tooltip,
 html[data-theme="aurora"] .note-save-shortcut__tooltip,
 html[data-theme="aurora"] .note-markdown-help__tooltip,
-html[data-theme="aurora"] .note-detail-action-tooltip__content {
-  border-color: #555279;
-  color: #cfcee9;
-  background: #1c1838;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
+html[data-theme="aurora"] .note-detail-action-tooltip__content,
+html[data-theme="aurora"] .note-formatting-tool__tooltip {
+  border-color: var(--aurora-line-input);
+  color: var(--aurora-ink-2);
+  background: var(--aurora-overlay);
+  box-shadow: 0 2px 6px rgb(var(--aurora-shade) / 32%), 0 12px 28px -10px rgb(var(--aurora-shade) / 64%);
 }
 
 html[data-theme="aurora"] .shortcut-tooltip kbd,
 html[data-theme="aurora"] .note-save-shortcut kbd,
 html[data-theme="aurora"] .command-dialog__help kbd {
-  border-color: #555279;
-  border-bottom-color: #716e98;
-  color: #edecff;
-  background: #2d2a4b;
-  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.3);
+  border-color: var(--aurora-line-input);
+  border-bottom-color: var(--aurora-line-strong);
+  color: var(--aurora-ink);
+  background: var(--aurora-raised);
+  box-shadow: 0 1px 0 rgb(var(--aurora-shade) / 44%);
 }
 
 html[data-theme="aurora"] .note-save-shortcut__tooltip p,
 html[data-theme="aurora"] .note-markdown-help__tooltip p {
-  color: #a5a4c6;
+  color: var(--aurora-ink-3);
 }
 
 /* --------------------------------------------------------------------------
-   Empty States & Mobile Filters
+   Empty states: a small window onto the polar sky, lights shimmering over
+   a mountain ridge
    -------------------------------------------------------------------------- */
 html[data-theme="aurora"] .empty-state {
-  border-color: #3e3a60;
-  color: #a5a4c6;
+  border-color: var(--aurora-line);
+  color: var(--aurora-ink-3);
 }
 
+/* The tile keeps its owner's radius, so the mobile window stays rounder. */
 html[data-theme="aurora"] .empty-state__icon {
-  color: var(--primary-accent);
-  background: var(--primary-accent-soft);
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  border: 1px solid rgb(182 160 255 / 32%);
+  color: var(--primary-accent-text);
+  background: linear-gradient(180deg, #1c1942 0%, #161333 58%, #100d26 100%);
+  box-shadow: 0 0 0 0.4rem rgb(94 229 184 / 4%), 0 0 2rem -0.4rem rgb(94 229 184 / 34%), inset 0 1px 0 rgb(240 238 255 / 6%);
 }
 
-html[data-theme="aurora"] .empty-state h3 {
-  color: #edecff;
+html[data-theme="aurora"] .empty-state__icon::before,
+html[data-theme="aurora"] .empty-state__icon::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  pointer-events: none;
+}
+
+html[data-theme="aurora"] .empty-state__icon::before {
+  inset: -10% -25% 30%;
+  background:
+    radial-gradient(48% 30% at 30% 34%, rgb(94 229 184 / 34%), transparent 72%),
+    radial-gradient(40% 26% at 70% 22%, rgb(182 160 255 / 30%), transparent 72%),
+    radial-gradient(30% 22% at 52% 48%, rgb(111 200 247 / 18%), transparent 72%);
+  animation: nook-aurora-shimmer 7s ease-in-out infinite alternate;
+}
+
+html[data-theme="aurora"] .empty-state__icon::after {
+  inset: auto 0 0;
+  height: 30%;
+  background: var(--aurora-ridge) center bottom / 100% 100% no-repeat;
+}
+
+@keyframes nook-aurora-shimmer {
+  from { opacity: 0.6; transform: translateX(-6%); }
+  to { opacity: 1; transform: translateX(6%); }
 }
 
 html[data-theme="aurora"] .mobile-filter-toggle {
-  border-color: #555279;
-  color: #cfcee9;
-  background: #1f1c3a;
+  border-color: var(--aurora-line);
+  color: var(--aurora-ink-2);
+  background: var(--aurora-card);
 }
 
 html[data-theme="aurora"] .mobile-filter-toggle__count.is-empty {
-  color: #a5a4c6;
-  background: #17142c;
+  color: var(--aurora-ink-3);
+  background: var(--aurora-well);
 }
 
-/* --------------------------------------------------------------------------
-   Toast Notifications & System Errors
-   -------------------------------------------------------------------------- */
 html[data-theme="aurora"] .startup-error {
-  border-color: rgba(248, 113, 113, 0.3);
-  color: #fecaca;
-  background: #2a1a1c;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  border-color: rgb(245 163 173 / 30%);
+  color: var(--toast-error-text);
+  background: var(--toast-error-surface);
+  box-shadow: var(--shadow-md);
 }
 
 html[data-theme="aurora"] .startup-error p {
-  color: #fca5a5;
+  color: var(--aurora-danger);
 }
+
+/* Theme icon */
+html[data-theme="aurora"] .theme-toggle__icon--aurora { display: inline-flex !important; }
+html[data-theme="aurora"] :where(.theme-toggle__icon--sun, .theme-toggle__icon--coffee, .theme-toggle__icon--forest, .theme-toggle__icon--moon, .theme-toggle__icon--auto, .theme-toggle__icon--midnight, .theme-toggle__icon--retro, .theme-toggle__icon--eink) { display: none !important; }
 
 /* --------------------------------------------------------------------------
-   Aurora Signature
-   The gradient is reserved for focal details: the wordmark, primary actions,
-   active navigation, the pinned crest, hover edges, and Markdown accents.
+   Pointer, motion, size and contrast adaptations
    -------------------------------------------------------------------------- */
-html[data-theme="aurora"] {
-  --aurora-mint: #5ee5b8;
-  --aurora-sky: #76c7ff;
-  --aurora-violet: #bda7ff;
-  --aurora-pink: #ed9ee5;
-  --aurora-gradient: linear-gradient(115deg, var(--aurora-mint) 0%, var(--aurora-sky) 36%, var(--aurora-violet) 68%, var(--aurora-pink) 100%);
-  --aurora-glow:
-    radial-gradient(70% 48% at 14% -6%, rgb(94 229 184 / 10%), transparent 70%),
-    radial-gradient(60% 44% at 58% -12%, rgb(118 199 255 / 8%), transparent 70%),
-    radial-gradient(56% 42% at 96% -4%, rgb(189 167 255 / 11%), transparent 72%);
-}
-
-/* Polar-night canvas: a soft aurora wash over a deep night sky. */
-html[data-theme="aurora"] body {
-  background:
-    var(--aurora-glow),
-    #17142c;
-  background-attachment: fixed;
-}
-
-html[data-theme="aurora"] .notes-panel {
-  background: var(--aurora-glow), #17142c;
-}
-
-html[data-theme="aurora"] .sidebar {
-  background:
-    radial-gradient(120% 34% at 0% 0%, rgb(94 229 184 / 8%), transparent 70%),
-    #120f25;
-}
-
-/* Gradient wordmark with a slow drift. */
-html[data-theme="aurora"] .brand strong {
-  color: #edecff;
-  background: var(--aurora-gradient);
-  background-size: 220% 100%;
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: nook-aurora-drift 14s ease-in-out infinite alternate;
-}
-
-@keyframes nook-aurora-drift {
-  from { background-position: 0% 50%; }
-  to { background-position: 100% 50%; }
-}
-
-/* Active navigation carries a slim aurora rail. */
-html[data-theme="aurora"] .space-link.is-active:not(.space-link--trash),
-html[data-theme="aurora"] .sidebar-filter.is-active:not(.sidebar-filter--type) {
-  background:
-    linear-gradient(180deg, var(--aurora-mint), var(--aurora-violet)) left center / 3px 58% no-repeat,
-    var(--primary-accent-soft);
-}
-
-/* Primary actions glow across the aurora band. */
-html[data-theme="aurora"] .button-primary {
-  border-color: transparent;
-  background: linear-gradient(115deg, var(--aurora-mint) 0%, var(--aurora-sky) 58%, var(--aurora-violet) 100%) border-box;
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / 30%), 0 2px 12px rgb(94 229 184 / 20%);
-}
-
-html[data-theme="aurora"] .button-primary:hover:not(:disabled) {
-  border-color: transparent;
-  background: linear-gradient(115deg, #86f2cb 0%, #9ad6ff 54%, #d3c6ff 100%) border-box;
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / 36%), 0 4px 20px rgb(189 167 255 / 34%);
-}
-
-/* The pinned tray and pinned cards wear an aurora crest. */
-html[data-theme="aurora"] .pinned-tray {
-  background:
-    linear-gradient(90deg, transparent, rgb(94 229 184 / 72%) 16%, rgb(118 199 255 / 72%) 50%, rgb(189 167 255 / 72%) 84%, transparent) top / 100% 1px no-repeat,
-    linear-gradient(180deg, rgb(94 229 184 / 7%), rgb(189 167 255 / 4%));
-}
-
-html[data-theme="aurora"] .note-card--pinned {
-  background:
-    var(--aurora-gradient) top / 100% 2px no-repeat,
-    var(--pinned-card-surface);
-}
-
-/* Solid themes trace hover with an aurora edge; glass keeps its own rim. */
 @media (hover: hover) and (pointer: fine) {
-  html[data-theme="aurora"]:not([data-glass="true"]) .note-card:is(:hover, .is-hover) {
+  html[data-theme="aurora"] .note-card--pinned:hover,
+  html[data-theme="aurora"] .note-card--pinned.is-hover {
+    border-color: var(--pinned-card-border-hover);
+    background-color: var(--note-card-hover-surface);
+  }
+
+  html[data-theme="aurora"] .note-card .type-badge--filter:hover {
+    background-color: color-mix(in srgb, var(--aurora-type) 18%, var(--aurora-card));
+  }
+
+  /* Solid surfaces trace hover with a spectrum edge; glass keeps its own rim. */
+  html[data-theme="aurora"]:not([data-glass="true"]) .note-card:not(.is-detail-source):is(:hover, .is-hover) {
     border-color: transparent;
     background:
-      linear-gradient(#2d2a4b, #2d2a4b) padding-box,
-      var(--aurora-gradient) border-box;
-    box-shadow: 0 10px 28px -8px rgb(0 0 0 / 55%), 0 0 22px -6px rgb(189 167 255 / 32%);
+      linear-gradient(var(--note-card-hover-surface), var(--note-card-hover-surface)) padding-box,
+      var(--aurora-edge) border-box var(--aurora-line);
+  }
+
+  html[data-theme="aurora"]:not([data-glass="true"]) :is(.pinned-tray .note-card, .note-card--pinned):not(.is-detail-source):is(:hover, .is-hover) {
+    background:
+      var(--aurora-crest-line) top / 100% 2px no-repeat padding-box,
+      var(--aurora-crest-glow) top / 100% 100% no-repeat padding-box,
+      linear-gradient(var(--note-card-hover-surface), var(--note-card-hover-surface)) padding-box,
+      var(--aurora-edge) border-box var(--aurora-line);
   }
 }
 
-/* Markdown accents: a gradient rule under H1 and an aurora quote rail. */
-html[data-theme="aurora"] .quick-view-content h1 {
-  border-image: linear-gradient(90deg, var(--aurora-mint), var(--aurora-sky) 30%, var(--aurora-violet) 60%, rgb(237 158 229 / 0%)) 1;
-}
-
-html[data-theme="aurora"] .quick-view-content blockquote {
-  border-image: linear-gradient(180deg, var(--aurora-mint), var(--aurora-violet) 60%, var(--aurora-pink)) 1;
-  background: linear-gradient(90deg, rgb(94 229 184 / 7%), rgb(189 167 255 / 4%) 70%, transparent);
-}
-
-html[data-theme="aurora"] .quick-view-content a {
-  text-decoration-color: rgb(189 167 255 / 55%);
-}
-
-html[data-theme="aurora"] * {
-  scrollbar-color: #5a5487 transparent;
-}
-
 @media (prefers-reduced-motion: reduce) {
-  html[data-theme="aurora"] .brand strong {
+  html[data-theme="aurora"] .brand strong,
+  html[data-theme="aurora"] .empty-state__icon::before {
     animation: none;
+  }
+
+  html[data-theme="aurora"]:not([data-glass="true"]) .notes-panel::before,
+  html[data-theme="aurora"]:not([data-glass="true"]) .notes-panel::after {
+    animation: none;
+    will-change: auto;
+  }
+}
+
+@media (max-width: 820px) {
+  /* The mobile library has no panel of its own; the curtains stay smaller. */
+  html[data-theme="aurora"]:not([data-glass="true"]) .notes-panel::before,
+  html[data-theme="aurora"]:not([data-glass="true"]) .notes-panel::after {
+    width: 100%;
+    height: 12rem;
+  }
+
+  html[data-theme="aurora"]:not([data-glass="true"]) .notes-panel::before {
+    background-position: left -2rem top -3.5rem;
+    background-size: 20rem auto;
+  }
+
+  html[data-theme="aurora"]:not([data-glass="true"]) .notes-panel::after {
+    background-position: left -9rem top -5rem;
+    background-size: 26rem auto;
   }
 }
 
 @media (forced-colors: active) {
-  html[data-theme="aurora"] .brand strong {
-    background: none;
-    -webkit-text-fill-color: currentColor;
-  }
-
-  html[data-theme="aurora"] .button-primary {
-    border-color: ButtonText;
-    color: ButtonText;
-    background: ButtonFace;
-  }
-
-  html[data-theme="aurora"] :is(body, .notes-panel, .sidebar, .pinned-tray, .note-card, .space-link.is-active, .sidebar-filter.is-active) {
-    background-image: none;
-  }
-
-  html[data-theme="aurora"] .quick-view-content :is(h1, blockquote) {
-    border-image: none;
-  }
-}
-
-/* --------------------------------------------------------------------------
-   Aurora Theme Toggle Icon
-   -------------------------------------------------------------------------- */
-html[data-theme="aurora"] .theme-toggle__icon--aurora {
-  display: inline-flex !important;
-}
-
-/* Logo tile follows the aurora band. */
-html[data-theme="aurora"] {
-  --brand-mark-start: #1fa58a;
-  --brand-mark-mid: #5b4fd0;
-  --brand-mark-end: #a8479c;
+  html[data-theme="aurora"] :is(body, .sidebar, .pinned-tray, .pinned-tray .note-card, .note-card--pinned, .space-link.is-active, .sidebar-filter.is-active) { background-image: none; }
+  html[data-theme="aurora"] :is(.notes-panel::before, .notes-panel::after) { content: none; }
+  html[data-theme="aurora"] .brand strong { background: none; -webkit-text-fill-color: currentColor; }
+  html[data-theme="aurora"] .button-primary { border-color: ButtonText; color: ButtonText; background: ButtonFace; }
+  html[data-theme="aurora"] :where(.tag-filter-option__name, .tag-chip)::before,
+  html[data-theme="aurora"] .note-card .tag-chip::before,
+  html[data-theme="aurora"] :is(.note-dialog .selected-tag > span:first-child, .note-detail-surface .quick-view-tag)::before { background: none; -webkit-text-fill-color: currentColor; }
+  html[data-theme="aurora"] :is(.type-badge:not(.note-type-picker__trigger), .active-filter-pill--type)::before { background: CanvasText; }
+  html[data-theme="aurora"] .empty-state__icon { border-color: CanvasText; background: Canvas; }
+  html[data-theme="aurora"] .empty-state__icon::before,
+  html[data-theme="aurora"] .empty-state__icon::after { content: none; }
+  html[data-theme="aurora"] :is(.quick-view-content, .note-content-preview) :is(h1, blockquote) { border-image: none; }
+  html[data-theme="aurora"] :is(.quick-view-content, .note-content-preview) hr { background: none; border-top: 1px solid CanvasText; }
+  html[data-theme="aurora"] :is(.quick-view-content, .note-content-preview) hr::before { content: none; }
 }

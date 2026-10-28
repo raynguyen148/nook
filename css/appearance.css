@@ -174,14 +174,14 @@ html[data-theme="aurora"] {
   --ambient-aurora: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1600 900' width='1600' height='900'%3E%3Cdefs%3E%3ClinearGradient id='a-base' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23080716'/%3E%3Cstop offset='45%25' stop-color='%2313102b'/%3E%3Cstop offset='100%25' stop-color='%231f1745'/%3E%3C/linearGradient%3E%3ClinearGradient id='a-mint' x1='0%25' y1='100%25' x2='0%25' y2='0%25'%3E%3Cstop offset='0%25' stop-color='%235ee5b8' stop-opacity='0.92'/%3E%3Cstop offset='30%25' stop-color='%233fd9a8' stop-opacity='0.55'/%3E%3Cstop offset='70%25' stop-color='%232bb3c9' stop-opacity='0.18'/%3E%3Cstop offset='100%25' stop-color='%232bb3c9' stop-opacity='0'/%3E%3C/linearGradient%3E%3ClinearGradient id='a-violet' x1='0%25' y1='100%25' x2='0%25' y2='0%25'%3E%3Cstop offset='0%25' stop-color='%23bda7ff' stop-opacity='0.78'/%3E%3Cstop offset='45%25' stop-color='%237b6cff' stop-opacity='0.32'/%3E%3Cstop offset='100%25' stop-color='%235a4fd0' stop-opacity='0'/%3E%3C/linearGradient%3E%3ClinearGradient id='a-sky' x1='0%25' y1='0%25' x2='100%25' y2='0%25'%3E%3Cstop offset='0%25' stop-color='%2376c7ff' stop-opacity='0'/%3E%3Cstop offset='50%25' stop-color='%2376c7ff' stop-opacity='0.5'/%3E%3Cstop offset='100%25' stop-color='%23bda7ff' stop-opacity='0'/%3E%3C/linearGradient%3E%3CradialGradient id='a-glow-pink' cx='86%25' cy='86%25' r='48%25'%3E%3Cstop offset='0%25' stop-color='%23ed9ee5' stop-opacity='0.6'/%3E%3Cstop offset='55%25' stop-color='%23a8479c' stop-opacity='0.22'/%3E%3Cstop offset='100%25' stop-color='%231f1745' stop-opacity='0'/%3E%3C/radialGradient%3E%3CradialGradient id='a-glow-mint' cx='18%25' cy='62%25' r='46%25'%3E%3Cstop offset='0%25' stop-color='%233fd9a8' stop-opacity='0.42'/%3E%3Cstop offset='60%25' stop-color='%231fa58a' stop-opacity='0.12'/%3E%3Cstop offset='100%25' stop-color='%23080716' stop-opacity='0'/%3E%3C/radialGradient%3E%3C/defs%3E%3Crect width='1600' height='900' fill='url%28%23a-base%29'/%3E%3Crect width='1600' height='900' fill='url%28%23a-glow-mint%29'/%3E%3Crect width='1600' height='900' fill='url%28%23a-glow-pink%29'/%3E%3Cpath d='M-60 170 C260 50 560 220 900 150 C1180 92 1420 40 1660 96 L1660 -40 L-60 -40 Z' fill='url%28%23a-violet%29'/%3E%3Cpath d='M-60 120 C300 -20 620 220 940 120 C1200 40 1420 -60 1660 40 L1660 230 C1420 150 1220 300 960 360 C640 430 300 330 -60 470 Z' fill='url%28%23a-mint%29'/%3E%3Cpath d='M-60 476 C300 340 640 440 960 366 C1220 306 1420 156 1660 236 L1660 252 C1420 178 1220 330 960 388 C640 460 300 366 -60 500 Z' fill='url%28%23a-sky%29'/%3E%3Cpath d='M0 760 L150 690 L260 730 L420 640 L560 720 L720 660 L880 740 L1040 620 L1180 700 L1320 650 L1460 720 L1600 680 L1600 900 L0 900 Z' fill='%230a0920' fill-opacity='0.72'/%3E%3C/svg%3E");
   --nature-scene: var(--nature-aurora);
   --ambient-scene: var(--ambient-aurora);
-  --glass-sidebar-surface: #120f25;
-  --glass-library-surface: #17142c;
-  --glass-detail-surface: #1c1838;
-  --glass-card-hover-surface: #2d2a4b;
-  --glass-orb-a: #3fd9a8;
-  --glass-orb-b: #5a8cff;
-  --glass-orb-c: #b06cff;
-  --nature-ink: #8f8cc4;
+  --glass-sidebar-surface: var(--aurora-sidebar);
+  --glass-library-surface: var(--aurora-paper);
+  --glass-detail-surface: var(--aurora-card);
+  --glass-card-hover-surface: var(--aurora-card-hover);
+  --glass-orb-a: #4fdcae;
+  --glass-orb-b: #5fb6f0;
+  --glass-orb-c: #a68cff;
+  --nature-ink: #9c98c4;
   --nature-strength: 0.90;
   --nature-sidebar-strength: 0.20;
 }

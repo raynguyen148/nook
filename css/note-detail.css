@@ -2134,7 +2134,7 @@ html[data-theme="midnight"] .note-editor-mode--compare {
 
 html[data-theme="aurora"] .note-editor-mode--side-note,
 html[data-theme="aurora"] .note-editor-mode--compare {
-  border-left-color: rgba(255, 255, 255, 0.12);
+  border-left-color: var(--aurora-line, #2a2549);
 }
 
 html[data-theme="dark"] .secondary-commandbar {
@@ -2219,7 +2219,7 @@ html[data-theme="midnight"] #secondary-reader-view #secondary-content-field.is-s
 
 /* Aurora theme refinements */
 html[data-theme="aurora"] .secondary-commandbar {
-  border-bottom-color: #322e51;
+  border-bottom-color: var(--aurora-line, #2a2549);
 }
 
 html[data-theme="aurora"] .note-secondary-surface .field--title input,
@@ -2227,7 +2227,7 @@ html[data-theme="aurora"] .note-secondary-surface #secondary-note-title-input {
   border: 0 !important;
   border-radius: 0 !important;
   padding: 0 !important;
-  color: #edecff !important;
+  color: var(--aurora-ink, #f0eeff) !important;
   background: transparent !important;
   background-color: transparent !important;
   box-shadow: none !important;
@@ -2246,16 +2246,16 @@ html[data-theme="aurora"] .note-secondary-surface #secondary-note-title-input:fo
 
 html[data-theme="aurora"] .note-secondary-surface #secondary-note-content-editor,
 html[data-theme="aurora"] .note-secondary-surface #secondary-split-preview {
-  color: #e6e6f2;
+  color: var(--aurora-ink-2, #cfcbe8);
 }
 
 html[data-theme="aurora"] #secondary-reader-view .note-formatting-toolbar {
-  border-color: #322e51 !important;
-  border-bottom-color: #322e51 !important;
+  border-color: var(--aurora-line, #2a2549) !important;
+  border-bottom-color: var(--aurora-line, #2a2549) !important;
 }
 
 html[data-theme="aurora"] #secondary-reader-view #secondary-content-field.is-split .note-editor-pane--preview {
-  border-left-color: #3e3a60 !important;
+  border-left-color: var(--aurora-line, #2a2549) !important;
 }
 
 /* Forest theme refinements */
