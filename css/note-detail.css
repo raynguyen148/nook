@@ -2252,7 +2252,7 @@ html[data-theme="forest"] .note-secondary-surface #secondary-note-title-input {
   border: 0 !important;
   border-radius: 0 !important;
   padding: 0 !important;
-  color: #1e2d24 !important;
+  color: #1c2a21 !important;
   background: transparent !important;
   background-color: transparent !important;
   box-shadow: none !important;
@@ -2270,13 +2270,13 @@ html[data-theme="forest"] .note-secondary-surface #secondary-note-title-input:fo
 }
 
 html[data-theme="forest"] #secondary-reader-view .note-formatting-toolbar {
-  border-color: #d0dfd2 !important;
-  border-bottom-color: #d0dfd2 !important;
+  border-color: #d5dfd0 !important;
+  border-bottom-color: #d5dfd0 !important;
 }
 
 html[data-theme="forest"] .note-dialog .note-content-field.is-split .note-editor-pane--preview,
 html[data-theme="forest"] #secondary-reader-view #secondary-content-field.is-split .note-editor-pane--preview {
-  border-left-color: #d0dfd2 !important;
+  border-left-color: #d5dfd0 !important;
 }
 
 /* Retro theme refinements */

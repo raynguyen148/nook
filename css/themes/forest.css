@@ -1,758 +1,1423 @@
-/* ==========================================================================
-   Nook - Theme: Forest (Quiet Evergreen)
-   A calm, paper-like light palette inspired by shaded woodland paths.
-   The theme is deliberately CSS-only: no remote fonts, images, or assets.
-   ========================================================================== */
+/* Hallmark · genre: editorial · macrostructure: preserved Nook workspace
+ * theme: morning at the forest's edge · tone: calm, restorative, sun-dappled · anchor hue: evergreen
+ * signatures: a deep canopy sidebar with a pale fern and drifting pollen,
+ * komorebi light falling across the library, leaf-shaped type marks, a sprig
+ * on pinned notes, a seedling on rules and empty states, night-forest code
+ * contrast: ink 13+, muted 5.1+ on canvas, evergreen 6.2+ on dew, canopy 6+ · fonts: Vietnamese-safe
+ */
+/* Nook - Forest theme: a sunlit clearing for slow, unhurried writing.
+ * Palatino carries full Vietnamese coverage; Optima, Gill Sans, and Avenir
+ * were rejected because they drop stacked Vietnamese diacritics. */
 
 html[data-theme="forest"] {
-  /* Shared metadata and menu roles; component geometry stays in its owner. */
-  --tag-chip-border: #cbdccc;
-  --tag-chip-text: #496252;
-  --tag-chip-surface: #f0f6ef;
-  --picker-menu-border: #cbdccc;
-  --picker-menu-surface: #f8fbf7;
-  --picker-menu-text: #1e2d24;
-  --picker-menu-shadow: 0 12px 36px rgb(37 76 49 / 13%);
-
   color-scheme: light;
-  --theme-surface-page: #f3f7f1;
-  --theme-danger-border: #e6bfc1;
-  --backup-good-accent: #2f6b4f;
-  --backup-warning-accent: #8d5608;
-  background: #f3f7f1;
-  color: #1e2d24;
-  --management-search-resting-border: #cbdccc;
-  --management-search-resting-shadow: 0 1px 2px rgb(0 0 0 / 4%);
-  --management-row-input-resting-border: #cbdccc;
+  accent-color: #2f6b4f;
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI Variable Text", "Segoe UI", system-ui, Roboto, "Helvetica Neue", sans-serif;
+  --font-display: Palatino, "Palatino Linotype", "Book Antiqua", "URW Palladio L", P052, Georgia, serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  --forest-font-read: Palatino, "Palatino Linotype", "Book Antiqua", "URW Palladio L", P052, Georgia, serif;
+
+  /* Clearing, moss, and morning dew */
+  --forest-canvas: #ecf1e7;
+  --forest-tray: #f3f6ee;
+  --forest-paper: #f9fbf5;
+  --forest-dew: #fdfefa;
+  --forest-chrome: #f3f6ee;
+  --forest-actions: #eff3e9;
+  --forest-moss-wash: #e6ede0;
+  --forest-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .14 0 0 0 0 .25 0 0 0 0 .17 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' opacity='.11' filter='url%28%23g%29'/%3E%3C/svg%3E");
+  /* Low morning sun warms the top right; the far corner rests in leaf shade. */
+  --forest-sun:
+    radial-gradient(70rem 42rem at 90% -14%, rgb(246 236 188 / 62%), transparent 68%),
+    radial-gradient(56rem 38rem at -8% 112%, rgb(63 122 82 / 10%), transparent 72%);
+
+  /* Ink */
+  --forest-ink: #1c2a21;
+  --forest-ink-soft: #3d5044;
+  --forest-muted: #55695b;
+  --forest-border: #d5dfd0;
+  --forest-border-hover: #c3d1bd;
+  --forest-border-input: #ccd8c6;
+  --forest-border-strong: #b3c4ad;
+  --forest-disabled-surface: #eef2ea;
+  --forest-disabled-ink: #8a9a8d;
+
+  /* Evergreen leads; new leaves and sunflecks support it. */
+  --forest-accent: #2f6b4f;
+  --forest-accent-hover: #245a41;
+  --forest-accent-text: #2a6248;
+  --forest-accent-soft: #e0ecdf;
+  --forest-accent-soft-hover: #d2e4d2;
+  --forest-accent-border: #a9c9b0;
+  --forest-cream: #f7fbf4;
+  --forest-fern: #4f8a4b;
+  --forest-sunfleck: #f2e2a0;
+
+  /* Woodland colours for states and callouts */
+  --forest-moss: #3f6e2f;
+  --forest-moss-soft: #e3edd8;
+  --forest-moss-border: #bcd3a8;
+  --forest-honey: #7f5410;
+  --forest-honey-soft: #f6ebcc;
+  --forest-honey-border: #e2cd8f;
+  --forest-berry: #a13c45;
+  --forest-berry-soft: #f7e0e0;
+  --forest-berry-border: #e4b6b8;
+  --forest-river: #2b6a82;
+  --forest-heather: #6a4d7c;
+  --forest-overlay: rgb(20 38 28 / 36%);
+
+  /* The canopy: deep evergreen shade, lit by new leaves */
+  --forest-canopy: #1b3326;
+  --forest-canopy-raised: #24402f;
+  --forest-canopy-hover: #2d4c39;
+  --forest-canopy-edge: #132519;
+  --forest-canopy-ink: #e8f0e2;
+  --forest-canopy-ink-soft: #c4d4c0;
+  --forest-canopy-muted: #a9bda7;
+  --forest-canopy-line: rgb(232 240 226 / 12%);
+  --forest-canopy-line-strong: rgb(232 240 226 / 24%);
+  --forest-canopy-wash: rgb(232 240 226 / 6%);
+  --forest-leaf: #b8dc95;
+  --forest-leaf-hover: #c9e6ad;
+  --forest-canopy-chalk: #cfe0c8;
+  /* Two slanted shafts of light and a glow where the canopy thins. */
+  --forest-canopy-light:
+    linear-gradient(112deg, transparent 10%, rgb(246 228 160 / 6%) 20%, transparent 32%, transparent 44%, rgb(246 228 160 / 4%) 52%, transparent 62%),
+    radial-gradient(120% 60% at 50% -8%, rgb(214 236 182 / 10%), transparent 70%);
+  --forest-fern-frond: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 250 250'%3E%3Cg opacity='.09' fill='%23e8f0e2' stroke='%23e8f0e2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cg opacity='.65'%3E%3Cpath stroke='none' d='M236 240.4Q246 238.9 251.8 228.6Q240.3 231.3 236 240.4ZM236 240.4Q231.8 231.8 220.7 230Q226.4 239.6 236 240.4ZM234.8 222.4Q246.2 219.6 251.9 207Q238.7 211.4 234.8 222.4ZM234.8 222.4Q228.9 212.9 215.8 211.9Q223.5 222.6 234.8 222.4ZM231.9 204.7Q242 201.1 246.1 189.1Q234.5 194.3 231.9 204.7ZM231.9 204.7Q225.7 196.5 213.7 196.7Q221.7 205.7 231.9 204.7ZM227.3 187.1Q236.1 183.1 238.8 172Q228.9 177.5 227.3 187.1ZM227.3 187.1Q221.1 180.2 210.4 181.4Q218.2 188.9 227.3 187.1ZM221.1 169.7Q228.5 165.5 230 155.5Q221.7 161.2 221.1 169.7ZM221.1 169.7Q215.1 164.2 205.7 166.1Q213.2 172 221.1 169.7ZM213.2 152.6Q219.3 148.4 219.9 139.7Q213.1 145.2 213.2 152.6ZM213.2 152.6Q207.7 148.2 199.8 150.5Q206.6 155.1 213.2 152.6ZM203.7 135.6Q208.4 131.8 208.3 124.6Q203.1 129.5 203.7 135.6ZM203.7 135.6Q198.8 132.4 192.5 134.8Q198.4 138.1 203.7 135.6ZM192.5 118.9Q195.9 115.7 195.4 110.2Q191.7 114.3 192.5 118.9ZM192.5 118.9Q188.6 116.7 183.9 118.9Q188.6 121.1 192.5 118.9ZM179.7 102.3Q181.6 100.2 181.1 96.9Q179 99.6 179.7 102.3ZM179.7 102.3Q177.2 101.2 174.4 102.7Q177.4 103.8 179.7 102.3ZM176 98Q175.5 94.6 171.8 93.2Q172.8 97 176 98Z'/%3E%3Cpath fill='none' stroke-width='1.8' d='M236 250Q238 170 176 98'/%3E%3C/g%3E%3Cpath stroke='none' d='M211.5 231Q225.9 225.8 231.6 208.7Q215.2 216.1 211.5 231ZM211.5 231Q203.3 218.9 186.2 218.4Q196.9 231.8 211.5 231ZM207.8 213.9Q224.9 206.6 230.6 185.5Q211.2 195.6 207.8 213.9ZM207.8 213.9Q197 199.8 176.2 200.4Q190.1 215.9 207.8 213.9ZM203.1 197.3Q218.9 189.4 223.2 169.1Q205.4 179.8 203.1 197.3ZM203.1 197.3Q192.2 184.5 172.6 186.1Q186.5 200.1 203.1 197.3ZM197.6 181Q212 172.8 215 153.4Q198.8 164.4 197.6 181ZM197.6 181Q186.6 169.5 168.2 172.2Q182.1 184.5 197.6 181ZM191.1 165.2Q204.2 156.7 205.9 138.4Q191.4 149.6 191.1 165.2ZM191.1 165.2Q180.2 155 163.1 158.5Q176.8 169.3 191.1 165.2ZM183.8 149.7Q195.5 141.1 196.1 124Q183.1 135.2 183.8 149.7ZM183.8 149.7Q173.1 140.9 157.3 145Q170.7 154.4 183.8 149.7ZM175.5 134.7Q185.9 126.1 185.5 110.3Q174.2 121.3 175.5 134.7ZM175.5 134.7Q165.2 127.1 150.9 131.7Q163.7 139.7 175.5 134.7ZM166.4 120.1Q175.4 111.7 174.3 97.2Q164.4 107.9 166.4 120.1ZM166.4 120.1Q156.5 113.7 143.6 118.7Q155.8 125.3 166.4 120.1ZM156.3 105.9Q164.1 97.8 162.3 84.8Q153.9 95 156.3 105.9ZM156.3 105.9Q147.1 100.6 135.7 105.8Q147 111.1 156.3 105.9ZM145.4 92.1Q151.9 84.6 149.7 73.1Q142.7 82.5 145.4 92.1ZM145.4 92.1Q136.9 87.8 127 93Q137.3 97.2 145.4 92.1ZM133.5 78.7Q138.8 71.9 136.4 62Q130.8 70.5 133.5 78.7ZM133.5 78.7Q125.9 75.4 117.6 80.3Q126.8 83.5 133.5 78.7ZM120.7 65.8Q124.9 59.8 122.4 51.6Q118.1 59 120.7 65.8ZM120.7 65.8Q114.3 63.3 107.5 67.8Q115.3 70.1 120.7 65.8ZM107.1 53.2Q110.1 48.4 107.8 42Q104.7 48 107.1 53.2ZM107.1 53.2Q101.9 51.5 96.7 55.3Q103 56.8 107.1 53.2ZM92.5 41.1Q94.4 37.7 92.7 33.6Q90.8 37.7 92.5 41.1ZM92.5 41.1Q89 40.1 85.7 42.8Q89.9 43.6 92.5 41.1ZM86 36Q84.5 32 79.6 31.1Q81.8 35.6 86 36Z'/%3E%3Cpath fill='none' stroke-width='2.2' d='M214 246Q196 120 86 36'/%3E%3Cpath fill='none' stroke-width='2.4' d='M176 248Q154 185 150 155L147.4 155.5L145 156.5L142.9 157.9L141.2 159.7L139.9 161.7L139.1 164L138.7 166.3L138.8 168.6L139.4 170.8L140.3 172.8L141.7 174.5L143.3 175.9L145.1 176.9L147.1 177.4L149.1 177.6L151 177.4L152.8 176.8L154.4 175.9L155.7 174.6L156.8 173.2L157.5 171.6L157.9 170L157.9 168.4L157.6 166.8L157 165.4L156.1 164.1L155 163.1L153.8 162.4L152.5 162L151.2 161.8L150 161.9L148.8 162.2L147.7 162.8L146.9 163.5L146.2 164.4L145.7 165.4L145.5 166.4L145.5 167.3L145.7 168.3L146 169.1L146.5 169.7L147.1 170.3L147.8 170.6L148.5 170.8L149.1 170.9L149.7 170.8L150.3 170.5L150.7 170.2'/%3E%3C/g%3E%3C/svg%3E");
+  --forest-motes: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 280 460'%3E%3Cfilter id='g' x='-200%25' y='-200%25' width='500%25' height='500%25'%3E%3CfeGaussianBlur stdDeviation='.6'/%3E%3C/filter%3E%3Cg fill='%23f4e3a6' filter='url%28%23g%29'%3E%3Ccircle cx='52' cy='120' r='1.6' fill-opacity='0.55'/%3E%3Ccircle cx='118' cy='64' r='1.2' fill-opacity='0.4'/%3E%3Ccircle cx='196' cy='150' r='1.8' fill-opacity='0.45'/%3E%3Ccircle cx='86' cy='240' r='1.1' fill-opacity='0.35'/%3E%3Ccircle cx='230' cy='300' r='1.4' fill-opacity='0.4'/%3E%3Ccircle cx='40' cy='380' r='1.3' fill-opacity='0.3'/%3E%3Ccircle cx='160' cy='420' r='1' fill-opacity='0.35'/%3E%3Ccircle cx='210' cy='40' r='1.1' fill-opacity='0.3'/%3E%3Ccircle cx='140' cy='300' r='1.5' fill-opacity='0.25'/%3E%3C/g%3E%3C/svg%3E");
+
+  /* Komorebi: blurred leaf shadows and warm flecks of sun through branches */
+  --forest-dapple: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 700 420'%3E%3Cdefs%3E%3Cfilter id='b' x='-10%25' y='-10%25' width='120%25' height='120%25'%3E%3CfeGaussianBlur stdDeviation='7'/%3E%3C/filter%3E%3Cfilter id='s' x='-30%25' y='-30%25' width='160%25' height='160%25'%3E%3CfeGaussianBlur stdDeviation='5'/%3E%3C/filter%3E%3CradialGradient id='f' cx='1' cy='0' r='1.05'%3E%3Cstop offset='0' stop-color='%23fff'/%3E%3Cstop offset='.55' stop-color='%23fff' stop-opacity='.7'/%3E%3Cstop offset='1' stop-color='%23fff' stop-opacity='0'/%3E%3C/radialGradient%3E%3Cmask id='m'%3E%3Crect width='700' height='420' fill='url%28%23f%29'/%3E%3C/mask%3E%3C/defs%3E%3Cg mask='url%28%23m%29'%3E%3Cg filter='url%28%23s%29' fill='%23ffe9a8' fill-opacity='.55'%3E%3Cellipse cx='470' cy='120' rx='15' ry='10' transform='rotate%28-24 470 120%29'/%3E%3Cellipse cx='560' cy='175' rx='18' ry='12' transform='rotate%28-24 560 175%29'/%3E%3Cellipse cx='400' cy='230' rx='12' ry='8' transform='rotate%28-24 400 230%29'/%3E%3Cellipse cx='610' cy='300' rx='13' ry='9' transform='rotate%28-24 610 300%29'/%3E%3Cellipse cx='520' cy='260' rx='10' ry='7' transform='rotate%28-24 520 260%29'/%3E%3Cellipse cx='350' cy='95' rx='9' ry='6' transform='rotate%28-24 350 95%29'/%3E%3Cellipse cx='660' cy='60' rx='12' ry='8' transform='rotate%28-24 660 60%29'/%3E%3Cellipse cx='300' cy='190' rx='8' ry='5' transform='rotate%28-24 300 190%29'/%3E%3Cellipse cx='445' cy='320' rx='9' ry='6' transform='rotate%28-24 445 320%29'/%3E%3Cellipse cx='580' cy='110' rx='8' ry='6' transform='rotate%28-24 580 110%29'/%3E%3C/g%3E%3Cg filter='url%28%23b%29' opacity='.09'%3E%3Cg fill='%23284d34'%3E%3Cpath d='M687.6 -18.1Q666.9 -41.3 631.9 -32.6Q658.2 -7.9 687.6 -18.1ZM687.6 -18.1Q674.8 8.9 696.9 35.2Q708.8 2.9 687.6 -18.1ZM661.6 4.1Q640.5 -23.3 600.9 -16.4Q628.1 13.1 661.6 4.1ZM661.6 4.1Q645.3 33.1 667.8 64.1Q683.6 29.1 661.6 4.1ZM632.6 25.8Q614.4 -1.1 576.9 3.1Q600.7 32.3 632.6 25.8ZM632.6 25.8Q615.6 52 634.9 82.3Q651.6 50.5 632.6 25.8ZM600.4 47Q584.9 21.1 549.9 23Q570.5 51.4 600.4 47ZM600.4 47Q583.3 70.4 599.6 99.6Q616.9 70.9 600.4 47ZM565.2 67.7Q552.1 43.1 519.8 43.3Q537.4 70.3 565.2 67.7ZM565.2 67.7Q548.3 88.5 562 116.1Q579.2 90.5 565.2 67.7ZM526.8 87.8Q515.9 64.9 486.5 63.8Q501.5 89.1 526.8 87.8ZM526.8 87.8Q510.7 106.1 522 131.7Q538.7 109.1 526.8 87.8ZM485.3 107.5Q476.4 86.7 450.2 84.6Q462.7 107.7 485.3 107.5ZM485.3 107.5Q470.3 123.2 479.5 146.4Q495.2 126.9 485.3 107.5ZM440.8 126.6Q433.7 108.3 411.1 105.7Q421.2 126.1 440.8 126.6ZM440.8 126.6Q427.3 139.7 434.6 160.1Q448.7 143.7 440.8 126.6ZM393.1 145.2Q387.8 130.3 369.8 127.7Q377.3 144.3 393.1 145.2ZM393.1 145.2Q381.9 155.4 387.3 172Q399 159.1 393.1 145.2ZM380 150Q358.4 145.4 340.9 164.2Q366.4 167.4 380 150Z'/%3E%3Cpath d='M690.1 159.8Q672.8 139.6 642.7 146.6Q664.9 168.1 690.1 159.8ZM690.1 159.8Q681.2 183.7 701.9 204.5Q709.7 176.2 690.1 159.8ZM663 186.1Q644.4 163.8 611.4 170.9Q635.2 194.7 663 186.1ZM663 186.1Q652.8 212.1 675.1 235.2Q684.1 204.3 663 186.1ZM632.6 214.7Q615.9 194.1 585.7 200.2Q607.2 222.3 632.6 214.7ZM632.6 214.7Q623 238.3 643.1 259.7Q651.7 231.6 632.6 214.7ZM599 245.7Q584.2 227 557.1 232.2Q576.1 252.2 599 245.7ZM599 245.7Q590.2 266.7 608 286.1Q616 261 599 245.7ZM562.2 278.9Q549.4 262.4 525.5 266.7Q542.1 284.4 562.2 278.9ZM562.2 278.9Q554.3 297.3 569.8 314.4Q577 292.5 562.2 278.9ZM522.2 314.4Q511.5 300.4 491.4 303.9Q505.2 318.9 522.2 314.4ZM522.2 314.4Q515.4 329.9 528.3 344.4Q534.5 326 522.2 314.4ZM478.9 352.2Q470.9 341.6 455.6 344.1Q466 355.6 478.9 352.2ZM478.9 352.2Q473.7 363.9 483.4 375.1Q488.2 361.1 478.9 352.2ZM470 360Q451.5 362.9 443.4 383.1Q464.5 377.9 470 360Z'/%3E%3Cpath d='M555.1 -12.9Q541.8 -26 521.7 -18.2Q538.4 -4.6 555.1 -12.9ZM555.1 -12.9Q551.9 4.7 569.4 15.4Q571.2 -5.1 555.1 -12.9ZM525.7 19.6Q515.4 4.1 494.2 7.6Q507.6 24.3 525.7 19.6ZM525.7 19.6Q518.9 36.2 533.9 50.2Q539.8 30.6 525.7 19.6ZM488.9 46.7Q483 32.6 465.5 32Q473.6 47.6 488.9 46.7ZM488.9 46.7Q480.9 59 490.7 72.6Q498.5 57.7 488.9 46.7ZM444.8 68.2Q442.3 57.6 430.1 55.2Q434 67 444.8 68.2ZM444.8 68.2Q437.7 75.8 443 86.5Q450.2 77 444.8 68.2ZM440 70Q425 67 413 80.1Q430.7 82.1 440 70Z'/%3E%3C/g%3E%3Cg fill='none' stroke='%23284d34' stroke-width='5' stroke-linecap='round'%3E%3Cpath d='M700 -30Q600 70 380 150'/%3E%3Cpath d='M700 150Q620 230 470 360'/%3E%3Cpath d='M560 -20Q520 40 440 70'/%3E%3C/g%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+
+  /* Small ornaments: an olive-like sprig, a seedling, and a single leaf */
+  --forest-sprig: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cg opacity='.15'%3E%3Cpath d='M94.5 92.5Q82.8 82 65 86.8Q79.7 97.9 94.5 92.5ZM83.4 82.4Q87 68.5 75.6 56.1Q72.8 72.6 83.4 82.4ZM72 74.6Q60.4 68.8 47.3 76.5Q61.4 82.1 72 74.6ZM59.3 67.9Q59.5 56.3 48.3 48.7Q49.2 62.3 59.3 67.9ZM47.2 63Q37.2 60.4 28.3 68.5Q40.2 70.6 47.2 63ZM30 58Q22.5 50.6 10.6 53.3Q20 61.2 30 58Z' fill='%233f7a52'/%3E%3Cpath d='M104 104Q80 70 30 58' fill='none' stroke='%233f7a52' stroke-width='1.6' stroke-linecap='round'/%3E%3C/g%3E%3C/svg%3E");
+  --forest-seedling: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 30Q15.5 22 16 13' fill='none' stroke='%233a7350' stroke-width='1.8' stroke-linecap='round'/%3E%3Cpath d='M16 17Q13.6 10.1 5.2 9.8Q8.7 17.4 16 17Z' fill='%234f8a4b'/%3E%3Cpath d='M16 14Q24.3 15.6 29.5 7.5Q19.9 6.6 16 14Z' fill='%232f6b4f'/%3E%3C/svg%3E");
+  --forest-leaf-mark: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 16'%3E%3Cpath d='M1 9Q10.5 10.8 17.7 2.3Q6.6 1.2 1 9Z' fill='%234f8a4b'/%3E%3Cpath d='M2 8.6Q8 6.6 15.5 3.8' fill='none' stroke='%23f9fbf5' stroke-opacity='.75' stroke-width='.9' stroke-linecap='round'/%3E%3C/svg%3E");
+
+  /* Night forest for code */
+  --forest-code-surface: #15241b;
+  --forest-code-header: #1b2e22;
+  --forest-code-text: #e3eedf;
+  --forest-code-muted: #98ad9c;
+  --forest-token-keyword: #a3d48c;
+  --forest-token-string: #e8cf86;
+  --forest-token-function: #8fd3c3;
+  --forest-token-number: #f2b08a;
+  --forest-token-boolean: #f29f8f;
+  --forest-token-comment: #8ea392;
+  --forest-token-property: #c7dba0;
+  --forest-token-type: #a8c8e8;
+
+  /* Shape: river-stone radii and soft, leaf-shaded shadows */
+  --forest-radius-sm: 6px;
+  --forest-radius-control: 10px;
+  --forest-radius-card: 14px;
+  --forest-radius-dialog: 18px;
+  --forest-shadow-xs: 0 1px 2px rgb(28 52 38 / 6%);
+  --forest-shadow-sm: 0 1px 2px rgb(28 52 38 / 6%), 0 4px 12px -8px rgb(28 52 38 / 18%);
+  --forest-shadow-md: 0 1px 2px rgb(28 52 38 / 6%), 0 10px 28px -14px rgb(28 52 38 / 28%);
+  --forest-shadow-lg: 0 2px 6px rgb(28 52 38 / 8%), 0 28px 60px -24px rgb(28 52 38 / 40%);
+  --forest-shadow-hover: 0 2px 4px rgb(28 52 38 / 6%), 0 16px 32px -16px rgb(28 52 38 / 32%);
+  --forest-icon-stroke-width: 1.7;
+  --forest-transition-duration: 220ms;
+  --forest-transition-easing: cubic-bezier(0.22, 1, 0.36, 1);
+  --forest-type: var(--forest-ink-soft);
+  --forest-type-canopy: var(--forest-canopy-ink-soft);
+
+  /* Shared app tokens */
+  --control-radius: var(--forest-radius-control);
+  --surface-radius: var(--forest-radius-card);
+  --shadow-xs: var(--forest-shadow-xs);
+  --shadow-sm: var(--forest-shadow-sm);
+  --shadow-md: var(--forest-shadow-md);
+  --shadow-lg: var(--forest-shadow-lg);
+  --theme-surface-page: var(--forest-canvas);
+  --theme-border-strong: var(--forest-border-strong);
+  --theme-danger-border: var(--forest-berry-border);
+  --brand-mark-start: #7fb26a;
+  --brand-mark-mid: #3f8a5a;
+  --brand-mark-end: #24533d;
+  --picker-menu-border: var(--forest-border-input);
+  --picker-menu-surface: var(--forest-dew);
+  --picker-menu-text: var(--forest-ink);
+  --picker-menu-shadow: var(--forest-shadow-md);
+  --tag-menu-border: var(--forest-border-input);
+  --tag-menu-surface: var(--forest-dew);
+  --tag-menu-shadow: var(--forest-shadow-md);
+  --tag-chip-border: var(--forest-border);
+  --tag-chip-text: var(--forest-ink-soft);
+  --tag-chip-surface: var(--forest-paper);
+  --theme-picker-menu-shadow: var(--forest-shadow-md);
+  --select-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='m4 6 4 4 4-4' stroke='%2355695b' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  --management-search-resting-border: var(--forest-border-input);
+  --management-search-resting-shadow: none;
+  --management-row-input-resting-border: var(--forest-border-input);
   --management-row-input-resting-shadow: none;
-  --form-control-resting-background: #ffffff;
-  --note-title-resting-background: transparent;
+  --form-control-resting-background: var(--forest-dew);
+  --note-title-resting-border: var(--forest-border);
+  --primary-accent: var(--forest-accent);
+  --primary-accent-hover: var(--forest-accent-hover);
+  --primary-accent-strong: var(--forest-accent-hover);
+  --primary-accent-text: var(--forest-accent-text);
+  --primary-accent-soft: var(--forest-accent-soft);
+  --primary-accent-soft-hover: var(--forest-accent-soft-hover);
+  --primary-accent-border: var(--forest-accent-border);
+  --primary-accent-focus: rgb(47 107 79 / 22%);
+  --primary-accent-shadow: rgb(47 107 79 / 20%);
+  --split-highlight-source: rgb(226 196 92 / 32%);
+  --split-highlight-preview: rgb(226 196 92 / 18%);
+  --split-highlight-edge: #9a7a1e;
+  --split-highlight-outline: rgb(47 107 79 / 40%);
+  --primary-button-text: var(--forest-cream);
+  --focus-color: var(--forest-accent);
+  --focus-radius: var(--forest-radius-control);
+  --interaction-duration: var(--forest-transition-duration);
+  --interaction-easing: var(--forest-transition-easing);
+  --skeleton-base: #e6ede0;
+  --skeleton-shine: #f3f6ee;
+  --pinned-card-border: #bdd3bf;
+  --pinned-card-border-hover: #7fae8c;
+  --pinned-card-surface: var(--forest-dew);
+  --pinned-card-accent: var(--forest-accent);
+  --pinned-card-shadow: var(--forest-shadow-sm);
+  --pinned-marker-background: var(--forest-accent-soft);
+  --pinned-marker-border: var(--forest-accent-border);
+  --pinned-marker-color: var(--forest-accent-text);
+  --note-card-surface: var(--forest-dew);
+  --note-card-hover-surface: var(--forest-dew);
+  --note-card-border: var(--forest-border);
+  --note-card-hover-border: var(--forest-border-hover);
+  --note-card-title: var(--forest-ink);
+  --note-card-title-letter-spacing: 0;
+  --note-card-preview: var(--forest-ink-soft);
+  --note-card-muted: var(--forest-muted);
+  --note-card-actions-border: var(--forest-border);
+  --note-card-actions-surface: var(--forest-actions);
+  --note-card-action: var(--forest-ink-soft);
+  --note-card-action-hover: var(--forest-accent-text);
+  --note-card-action-hover-surface: var(--forest-accent-soft);
+  --note-card-action-danger: var(--forest-berry);
+  --note-card-action-danger-surface: var(--forest-berry-soft);
+  --note-card-action-disabled: var(--forest-disabled-ink);
+  --status-success-text: var(--forest-moss);
+  --status-success-surface: var(--forest-moss-soft);
+  --status-success-border: var(--forest-moss-border);
+  --status-warning-text: var(--forest-honey);
+  --status-warning-surface: var(--forest-honey-soft);
+  --status-warning-border: var(--forest-honey-border);
+  --status-error-text: var(--forest-berry);
+  --status-error-surface: var(--forest-berry-soft);
+  --status-error-border: var(--forest-berry-border);
+  --backup-good-accent: var(--forest-moss);
+  --backup-warning-accent: var(--forest-honey);
+  --backup-never-accent: var(--forest-accent);
+  --detail-type-chip-border: var(--forest-border-input);
+  --detail-type-chip-color: var(--forest-ink-soft);
+  --detail-type-chip-background: var(--forest-dew);
 
-  /* Evergreen anchor: reserved for actions, selected states, and emphasis. */
-  --primary-accent: #2f6b4f;
-  --primary-accent-hover: #24513c;
-  --primary-accent-text: #24513c;
-  --primary-accent-soft: #e3f0e7;
-  --primary-accent-soft-hover: #d5e8db;
-  --primary-accent-border: #b8d5c1;
-  --primary-accent-focus: rgb(47 107 79 / 28%);
-  --primary-accent-shadow: rgb(47 107 79 / 18%);
-  --split-highlight-source: rgb(54 139 94 / 28%);
-  --split-highlight-preview: rgb(54 139 94 / 14%);
-  --split-highlight-edge: #2f6b4f;
-  --split-highlight-outline: rgb(36 81 60 / 40%);
+  /* Toasts drift down from the canopy. */
+  --toast-surface: var(--forest-canopy);
+  --toast-border: var(--forest-canopy-edge);
+  --toast-text: var(--forest-canopy-ink);
+  --toast-status-surface: rgb(184 220 149 / 18%);
+  --toast-status-icon: var(--forest-leaf);
+  --toast-action: var(--forest-leaf);
+  --toast-action-hover: var(--forest-cream);
+  --toast-focus: var(--forest-leaf);
+  --toast-shadow: 0 2px 6px rgb(27 51 38 / 16%), 0 18px 36px -18px rgb(27 51 38 / 50%);
+  --toast-error-surface: #4a2227;
+  --toast-error-border: #5e2b31;
+  --toast-error-text: var(--forest-canopy-ink);
+  --toast-error-status-surface: rgb(232 240 226 / 12%);
+  --toast-error-status-icon: #f4c4c4;
+  --toast-error-action: #f6d0c4;
+  --toast-error-action-hover: var(--forest-cream);
+  --toast-error-focus: #f6d0c4;
 
-  --pinned-card-border: color-mix(in srgb, var(--primary-accent) 24%, var(--note-card-border));
-  --pinned-card-border-hover: #5e936d;
-  --pinned-card-surface: var(--note-card-surface);
-  --pinned-card-shadow: 0 1px 2px rgb(38 78 49 / 8%);
-  --pinned-marker-background: #e4efd9;
-  --pinned-marker-border: #b6d09f;
-  --pinned-marker-color: #35633e;
-
-  --note-card-surface: #ffffff;
-  --note-card-border: #d6e2d8;
-  --note-card-title: #1e2d24;
-  --note-card-title-letter-spacing: -0.015em;
-  --note-card-preview: #40594b;
-  --note-card-muted: #4e6655;
-  --note-card-actions-border: #d6e2d8;
-  --note-card-actions-surface: #f3f7f1;
-  --note-card-action: #5a7062;
-  --note-card-action-hover: var(--primary-accent-text);
-  --note-card-action-hover-surface: var(--primary-accent-soft);
-  --note-card-action-danger: #b13d43;
-  --note-card-action-danger-surface: #fff1f1;
-  --note-card-action-disabled: #b9c9bd;
-
-  --primary-button-text: #ffffff;
-  --focus-color: var(--primary-accent);
-  --focus-radius: 0.65rem;
-  --interaction-duration: 180ms;
-  --interaction-easing: cubic-bezier(0.16, 1, 0.3, 1);
-
-  --toast-surface: #1f3b2b;
-  --toast-border: #3d654d;
-  --toast-text: #f2f8f2;
-  --toast-status-surface: #2d543d;
-  --toast-status-icon: #b9dfc2;
-  --toast-action: #c9e7ce;
-  --toast-action-hover: #ffffff;
-  --toast-focus: #d1eed5;
-  --toast-shadow: 0 10px 28px rgb(30 65 42 / 20%);
-  --toast-error-surface: #4b292d;
-  --toast-error-border: #854b51;
-  --toast-error-text: #fff3f2;
-  --toast-error-status-surface: #693b40;
-  --toast-error-status-icon: #f5b7b3;
-  --toast-error-action: #ffd0cb;
-  --toast-error-action-hover: #ffffff;
-  --toast-error-focus: #ffd5d0;
-
-  --detail-type-chip-border: #c6d8cb;
-  --detail-type-chip-color: #345844;
-  --detail-type-chip-background: #f1f7f2;
-  --select-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='m4 6 4 4 4-4' stroke='%235b7565' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  color: var(--forest-ink);
+  background-color: var(--forest-canvas);
+  background-image: var(--forest-sun), var(--forest-grain);
+  background-repeat: no-repeat, no-repeat, repeat;
 }
 
 html[data-theme="forest"] body {
-  background: #f3f7f1;
-  color: #1e2d24;
+  color: var(--forest-ink);
+  background-color: var(--forest-canvas);
+  background-image: var(--forest-sun), var(--forest-grain);
+  background-repeat: no-repeat, no-repeat, repeat;
   font-family: var(--font-sans);
 }
 
-html[data-theme="forest"] ::selection {
-  background: #cfe4d5;
-  color: #173524;
+html[data-theme="forest"] ::selection { color: var(--forest-ink); background: #cfe5c4; }
+html[data-theme="forest"] * { scrollbar-color: #b8c9b2 transparent; }
+
+html[data-theme="forest"] :where(.brand strong, .topbar h1, .notes-panel__heading h2, .quick-view-document-header h1, .dialog-header h2, .empty-state h3, .startup-error h1) {
+  color: var(--forest-ink);
+  font-family: var(--font-display);
+  font-style: normal;
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0;
 }
 
-html[data-theme="forest"] * {
-  scrollbar-color: #b9d0be transparent;
+html[data-theme="forest"] :where(button, input, select) {
+  font-family: var(--font-sans);
+  letter-spacing: 0;
+}
+
+html[data-theme="forest"] textarea {
+  font-family: var(--forest-font-read);
+  font-weight: var(--font-weight-regular);
+  letter-spacing: 0;
+}
+
+html[data-theme="forest"] :where(.storage-status, .filter-count, .results-meta, .note-card__meta, .note-card__date, .quick-view-meta, .quick-view-context, .quick-view-content-label, .quick-view-dates, .note-editor-stats, .note-save-status, .dialog-footer__stats, .management-row__default, .usage-count, .detail-commandbar__state) {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+}
+
+html[data-theme="forest"] :where(.eyebrow, .subtitle, .brand small, .filter-help, .filter-count, .results-meta, .note-card__meta, .quick-view-meta, .dialog-description, .organize-panel__count) { color: var(--forest-muted); }
+
+html[data-theme="forest"] :where(.filter-heading, .filter-section-title h2) {
+  color: var(--forest-muted);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.12em;
+}
+
+/* The tagline reads like a line from a field journal. */
+html[data-theme="forest"] .brand small {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: var(--font-weight-regular);
+  letter-spacing: 0.01em;
 }
 
 /* --------------------------------------------------------------------------
-   Sidebar and navigation
+   Sidebar: the canopy, deep evergreen shade with light falling through
    -------------------------------------------------------------------------- */
 html[data-theme="forest"] .sidebar {
-  border-color: #d6e2d8;
-  background: #eaf2e9;
-  box-shadow: 0 4px 24px -2px rgb(37 76 49 / 7%);
+  /* Shared tokens flip to light-on-shade inside the canopy. The light
+   * --forest-* tokens are never redefined here, so tooltips stay light. */
+  --text-strong: var(--forest-canopy-ink);
+  --text-default: var(--forest-canopy-ink-soft);
+  --text-muted: var(--forest-canopy-muted);
+  --surface-panel: var(--forest-canopy-raised);
+  --surface-muted: var(--forest-canopy-wash);
+  --surface-raised: var(--forest-canopy-raised);
+  --border-subtle: var(--forest-canopy-line);
+  --border-strong: var(--forest-canopy-line-strong);
+  --border-focus: var(--forest-leaf);
+  --component-surface: var(--forest-canopy-raised);
+  --component-surface-muted: var(--forest-canopy-wash);
+  --component-text: var(--forest-canopy-ink-soft);
+  --component-text-muted: var(--forest-canopy-muted);
+  --component-border: var(--forest-canopy-line);
+  --component-border-strong: var(--forest-canopy-line-strong);
+  --component-focus: var(--forest-leaf);
+  --component-selected: rgb(184 220 149 / 14%);
+  --selected-surface: rgb(184 220 149 / 14%);
+  --selected-surface-hover: rgb(184 220 149 / 20%);
+  --selected-text: var(--forest-canopy-ink);
+  --selected-border: rgb(184 220 149 / 40%);
+  --primary-accent: var(--forest-leaf);
+  --primary-accent-hover: var(--forest-leaf-hover);
+  --primary-accent-strong: var(--forest-leaf-hover);
+  --primary-accent-text: var(--forest-leaf);
+  --primary-accent-soft: rgb(184 220 149 / 14%);
+  --primary-accent-soft-hover: rgb(184 220 149 / 22%);
+  --primary-accent-border: rgb(184 220 149 / 40%);
+  --primary-accent-focus: rgb(184 220 149 / 30%);
+  --focus-color: var(--forest-leaf);
+  --focus-ring: var(--forest-leaf);
+  --focus-ring-soft: rgb(184 220 149 / 30%);
+  --skeleton-base: rgb(232 240 226 / 9%);
+  --skeleton-shine: rgb(232 240 226 / 17%);
+  --glass-secondary-ink: #d3e0cf;
+  --nature-ink: var(--forest-canopy-chalk);
+  --backup-good-accent: var(--forest-leaf);
+  --backup-warning-accent: #ebc66e;
+  --backup-never-accent: #9cc2e8;
+
+  border: 1px solid var(--forest-canopy-edge);
+  border-radius: var(--forest-radius-dialog);
+  color: var(--forest-canopy-ink);
+  background-color: var(--forest-canopy);
+  background-image: var(--forest-fern-frond), var(--forest-motes), var(--forest-canopy-light);
+  background-repeat: no-repeat;
+  background-position: right bottom, center top 2.5rem, 0 0, 0 0;
+  background-size: 9rem, 100% auto, 100% 100%, 100% 100%;
+  box-shadow: 0 2px 6px rgb(19 37 25 / 18%), 0 18px 40px -20px rgb(19 37 25 / 55%);
 }
 
-html[data-theme="forest"] .sidebar-toggle-btn,
-html[data-theme="forest"] .quick-view-header-toggle {
-  border-color: #cbdccc;
-  color: #6d8575;
-  background: #f3f7f1;
+/* The fern and pollen need the full canopy; the narrow rail keeps the light. */
+html[data-theme="forest"] .app-shell:is(.is-sidebar-collapsed, .is-sidebar-collapsing, .is-sidebar-expanding) .sidebar,
+html[data-theme="forest"][data-sidebar-collapsed="true"] .app-shell .sidebar {
+  background-image: none, none, var(--forest-canopy-light);
 }
 
-html[data-theme="forest"] .sidebar-toggle-btn:hover,
-html[data-theme="forest"] .quick-view-header-toggle:hover {
-  border-color: #a9c5ad;
-  color: #1e2d24;
-  background: #e0ece1;
+/* Glass paints its own film and silhouette over the canopy. */
+html[data-theme="forest"][data-glass="true"] .app-shell .sidebar { background-image: none; }
+
+html[data-theme="forest"] :is(.sidebar, .sidebar *) { scrollbar-color: rgb(232 240 226 / 22%) transparent; }
+html[data-theme="forest"] .brand-mark { filter: none; }
+html[data-theme="forest"] .sidebar .brand strong { color: var(--forest-canopy-ink); }
+html[data-theme="forest"] .sidebar :where(.brand small, .filter-help, .filter-count, .sidebar-empty) { color: var(--forest-canopy-muted); }
+html[data-theme="forest"] .sidebar .space-navigation { border-bottom: 1px dashed rgb(232 240 226 / 16%); }
+
+/* Section names are set like trail markers: small, widely spaced capitals. */
+html[data-theme="forest"] .sidebar .filter-heading { letter-spacing: 0; text-transform: none; }
+
+html[data-theme="forest"] .sidebar :where(.filter-heading > span, .filter-section-title h2) {
+  color: var(--forest-canopy-muted);
+  font-family: var(--font-sans);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
 }
 
-html[data-theme="forest"] .brand strong,
-html[data-theme="forest"] .topbar h1,
-html[data-theme="forest"] .notes-panel__heading h2,
-html[data-theme="forest"] .quick-view-document-header h1 {
-  color: #1e2d24;
-  font-family: var(--font-display);
-  letter-spacing: -0.02em;
+html[data-theme="forest"] .sidebar .text-button { color: var(--forest-leaf); }
+html[data-theme="forest"] .sidebar .text-button:is(:hover, :focus-visible):not(:disabled) { color: var(--forest-leaf-hover); }
+
+html[data-theme="forest"] :where(.sidebar-toggle-btn, .quick-view-header-toggle) {
+  border: 1px solid var(--forest-border);
+  color: var(--forest-muted);
+  background: var(--forest-dew);
+  box-shadow: none;
 }
 
-html[data-theme="forest"] .brand small,
-html[data-theme="forest"] .filter-heading,
-html[data-theme="forest"] .filter-section-title h2,
-html[data-theme="forest"] .subtitle,
-html[data-theme="forest"] .results-meta {
-  color: var(--text-muted);
+/* Expanded only; the collapsed rail's accent-token toggle outranks this. */
+html[data-theme="forest"] .sidebar :where(.sidebar-toggle-btn) {
+  border-color: var(--forest-canopy-line);
+  color: var(--forest-canopy-muted);
+  background: var(--forest-canopy-raised);
 }
 
-html[data-theme="forest"] .eyebrow {
-  color: var(--primary-accent);
-  font-weight: var(--font-weight-bold);
-  letter-spacing: 0.08em;
+html[data-theme="forest"] .sidebar :where(.sidebar-toggle-btn):hover {
+  border-color: var(--forest-canopy-line-strong);
+  color: var(--forest-canopy-ink);
+  background: var(--forest-canopy-hover);
 }
 
+/* Backup status is a small pebble; the mobile sheet shows it on paper. */
 html[data-theme="forest"] .storage-status {
-  border-color: var(--backup-health-border, #cbdccc);
-  color: var(--backup-health-text, #496252);
-  background: var(--backup-health-surface, #e1ece1);
+  border: 1px solid var(--backup-health-border, var(--forest-border));
+  border-radius: var(--radius-pill);
+  color: var(--backup-health-text, var(--forest-ink-soft));
+  background: var(--backup-health-surface, var(--forest-paper));
+  box-shadow: none;
 }
 
-html[data-theme="forest"] .text-button:not(:disabled),
-html[data-theme="forest"] .active-filter-clear-all {
-  color: var(--primary-accent);
+html[data-theme="forest"] .sidebar .storage-status {
+  border-color: var(--backup-health-border, rgb(232 240 226 / 14%));
+  color: var(--backup-health-text, var(--forest-canopy-ink-soft));
+  background: var(--backup-health-surface, rgb(232 240 226 / 5%));
 }
 
-html[data-theme="forest"] .text-button:hover:not(:disabled),
-html[data-theme="forest"] .active-filter-clear-all:hover {
-  color: var(--primary-accent-hover);
+/* Rows on paper (the mobile filter sheet) */
+html[data-theme="forest"] :where(.space-link, .sidebar-filter) {
+  border-radius: var(--forest-radius-control);
+  color: var(--forest-ink-soft);
+  font-weight: var(--font-weight-medium);
+  transition:
+    color var(--forest-transition-duration) var(--forest-transition-easing),
+    background-color var(--forest-transition-duration) var(--forest-transition-easing),
+    box-shadow var(--forest-transition-duration) var(--forest-transition-easing),
+    transform var(--forest-transition-duration) var(--forest-transition-easing);
 }
 
-html[data-theme="forest"] .space-link,
-html[data-theme="forest"] .sidebar-filter {
-  color: #40594b;
+html[data-theme="forest"] :where(.space-link, .sidebar-filter):hover { border-color: transparent; color: var(--forest-ink); background: var(--forest-moss-wash); }
+
+html[data-theme="forest"] :where(.space-link, .sidebar-filter):is(.is-active, [aria-pressed="true"]) {
+  color: var(--forest-accent-text);
+  background: var(--forest-accent-soft);
+  font-weight: var(--font-weight-semibold);
 }
 
-html[data-theme="forest"] .space-link:hover,
-html[data-theme="forest"] .sidebar-filter:hover {
-  color: #1e2d24;
-  background: #dfece1;
+html[data-theme="forest"] :where(.space-link, .sidebar-filter):is(.is-active, [aria-pressed="true"]) :is(.filter-count, svg) { color: inherit; }
+html[data-theme="forest"] :where(.space-link, .sidebar-filter):is(.is-active, [aria-pressed="true"]):hover { background: var(--forest-accent-soft-hover); }
+html[data-theme="forest"] .space-link--trash:is(.is-active, [aria-pressed="true"]) { color: var(--forest-berry); background: var(--forest-berry-soft); }
+
+/* Rows in the canopy: pale text; the current place rests in a patch of
+ * light, with its icon and count picked out in new-leaf green. */
+html[data-theme="forest"] .sidebar :where(.space-link, .sidebar-filter) { border-color: transparent; color: var(--forest-canopy-ink-soft); }
+html[data-theme="forest"] .sidebar :where(.space-link, .sidebar-filter):hover { border-color: transparent; color: var(--forest-canopy-ink); background: rgb(232 240 226 / 6%); }
+/* Counts brighten with their row so they stay clear where the fern shows through. */
+html[data-theme="forest"] .sidebar :where(.space-link, .sidebar-filter):hover .filter-count { color: var(--forest-canopy-ink-soft); }
+
+html[data-theme="forest"] .sidebar :where(.space-link, .sidebar-filter):is(.is-active, [aria-pressed="true"]) {
+  border-color: transparent;
+  color: #f6fbf2;
+  background: rgb(232 240 226 / 11%);
+  box-shadow: inset 0 1px 0 rgb(246 251 242 / 5%);
 }
 
-html[data-theme="forest"] .space-link.is-active,
-html[data-theme="forest"] .sidebar-filter.is-active {
-  border-color: var(--primary-accent-border);
-  color: var(--primary-accent-text);
-  background: var(--primary-accent-soft);
+html[data-theme="forest"] .sidebar :where(.space-link, .sidebar-filter):is(.is-active, [aria-pressed="true"]) :is(.filter-count, svg, .sidebar-filter__icon) { color: var(--forest-leaf); }
+html[data-theme="forest"] .sidebar :where(.space-link, .sidebar-filter):is(.is-active, [aria-pressed="true"]):hover { background: rgb(232 240 226 / 14%); }
+
+html[data-theme="forest"] .sidebar .space-link--trash:is(.is-active, [aria-pressed="true"]) {
+  color: #f1c9c5;
+  background: rgb(236 150 146 / 13%);
 }
 
-html[data-theme="forest"] .space-link.is-active .filter-count,
-html[data-theme="forest"] .sidebar-filter.is-active .filter-count,
-html[data-theme="forest"] .filter-count {
-  color: var(--text-muted);
+html[data-theme="forest"] .sidebar .space-link--trash:is(.is-active, [aria-pressed="true"]) :is(.filter-count, svg) { color: inherit; }
+html[data-theme="forest"] .sidebar .space-link--trash:is(.is-active, [aria-pressed="true"]):hover { background: rgb(236 150 146 / 18%); }
+
+/* Glass lays its own sheen over the same wash. The shared glass edge is
+ * bright enough to read as an outline in deep shade, so it stays faint here. */
+html[data-theme="forest"][data-glass="true"] .sidebar :is(.space-link, .sidebar-filter):is(.is-active, [aria-pressed="true"]) {
+  border-color: transparent;
+  background: var(--glass-sheen, none), rgb(232 240 226 / 13%);
+  box-shadow: inset 0 1px 0 rgb(246 251 242 / 6%);
 }
 
-html[data-theme="forest"] .space-link--trash.is-active {
-  border-color: #e2bcb9;
-  color: #9b3535;
-  background: #faefef;
+html[data-theme="forest"][data-glass="true"] .sidebar .space-link--trash:is(.is-active, [aria-pressed="true"]) {
+  background: var(--glass-sheen, none), rgb(236 150 146 / 15%);
 }
 
-html[data-theme="forest"] .space-link--trash.is-active .filter-count {
-  color: #9b3535;
+/* Note types are plant dyes: a deep tone on paper, a light tone in shade. */
+html[data-theme="forest"] :is(.type-dot--indigo, .type-badge--indigo, .sidebar-filter--indigo, .active-filter-pill--type-indigo) { --forest-type: #46518c; --forest-type-canopy: #aab3ea; }
+html[data-theme="forest"] :is(.type-dot--blue, .type-badge--blue, .sidebar-filter--blue, .active-filter-pill--type-blue) { --forest-type: #2e5e88; --forest-type-canopy: #9cc2e8; }
+html[data-theme="forest"] :is(.type-dot--sky, .type-badge--sky, .sidebar-filter--sky, .active-filter-pill--type-sky) { --forest-type: #2a6683; --forest-type-canopy: #94cbe4; }
+html[data-theme="forest"] :is(.type-dot--cyan, .type-badge--cyan, .sidebar-filter--cyan, .active-filter-pill--type-cyan) { --forest-type: #1f696c; --forest-type-canopy: #8dd1d2; }
+html[data-theme="forest"] :is(.type-dot--teal, .type-badge--teal, .sidebar-filter--teal, .active-filter-pill--type-teal) { --forest-type: #22665a; --forest-type-canopy: #8ad0bd; }
+html[data-theme="forest"] :is(.type-dot--emerald, .type-badge--emerald, .sidebar-filter--emerald, .active-filter-pill--type-emerald) { --forest-type: #276b47; --forest-type-canopy: #8fd6a6; }
+html[data-theme="forest"] :is(.type-dot--green, .type-badge--green, .sidebar-filter--green, .active-filter-pill--type-green) { --forest-type: #44702d; --forest-type-canopy: #a9d68a; }
+html[data-theme="forest"] :is(.type-dot--lime, .type-badge--lime, .sidebar-filter--lime, .active-filter-pill--type-lime) { --forest-type: #5a6520; --forest-type-canopy: #c9d77c; }
+html[data-theme="forest"] :is(.type-dot--amber, .type-badge--amber, .sidebar-filter--amber, .active-filter-pill--type-amber) { --forest-type: #85590e; --forest-type-canopy: #ebc66e; }
+html[data-theme="forest"] :is(.type-dot--orange, .type-badge--orange, .sidebar-filter--orange, .active-filter-pill--type-orange) { --forest-type: #984f1c; --forest-type-canopy: #eea777; }
+html[data-theme="forest"] :is(.type-dot--red, .type-badge--red, .sidebar-filter--red, .active-filter-pill--type-red) { --forest-type: #a23a33; --forest-type-canopy: #ef9a8f; }
+html[data-theme="forest"] :is(.type-dot--rose, .type-badge--rose, .sidebar-filter--rose, .active-filter-pill--type-rose) { --forest-type: #9a3a52; --forest-type-canopy: #eea2b3; }
+html[data-theme="forest"] :is(.type-dot--pink, .type-badge--pink, .sidebar-filter--pink, .active-filter-pill--type-pink) { --forest-type: #943f6b; --forest-type-canopy: #eda6c9; }
+html[data-theme="forest"] :is(.type-dot--violet, .type-badge--violet, .sidebar-filter--violet, .active-filter-pill--type-violet) { --forest-type: #624b8e; --forest-type-canopy: #bca8e8; }
+html[data-theme="forest"] :is(.type-dot--purple, .type-badge--purple, .sidebar-filter--purple, .active-filter-pill--type-purple) { --forest-type: #713f7c; --forest-type-canopy: #d0a5dd; }
+html[data-theme="forest"] :is(.type-dot--slate, .type-badge--slate, .sidebar-filter--slate, .active-filter-pill--type-slate) { --forest-type: #4f5a53; --forest-type-canopy: #b4c0b7; }
+
+html[data-theme="forest"] :is(.type-badge, .sidebar-filter--type, .active-filter-pill--type) {
+  --filter-type-border: color-mix(in srgb, var(--forest-type) 28%, transparent);
+  --filter-type-text: var(--forest-type);
+  --filter-type-background: color-mix(in srgb, var(--forest-type) 10%, var(--forest-dew));
+  --detail-type-chip-border: color-mix(in srgb, var(--forest-type) 28%, transparent);
+  --detail-type-chip-color: var(--forest-type);
+  --detail-type-chip-background: color-mix(in srgb, var(--forest-type) 10%, var(--forest-dew));
 }
 
-/* Type filters retain a subdued, type-aware surface so their selected state
- * reads at a glance without competing with Forest's leaf-green navigation. */
-html[data-theme="forest"] .sidebar-filter--type.is-active {
-  border-color: var(--filter-type-border);
-  color: var(--filter-type-text);
-  background: var(--filter-type-background);
+/* Every type mark is a small leaf. Sizes stay low-specificity so mobile
+ * chips and the larger management swatches keep their own dimensions. */
+html[data-theme="forest"] :where(.type-dot) { width: 0.62rem; height: 0.62rem; }
+html[data-theme="forest"] .type-dot { border-radius: 0 100%; background: var(--forest-type); box-shadow: none; }
+html[data-theme="forest"] #mobile-filter-dialog .sidebar-filter .type-dot { border-radius: 0 100%; }
+html[data-theme="forest"] .sidebar .type-dot { background: var(--forest-type-canopy); }
+
+html[data-theme="forest"] .sidebar-filter--type:is(.is-active, [aria-pressed="true"]) {
+  color: var(--forest-type);
+  background: color-mix(in srgb, var(--forest-type) 10%, var(--forest-dew));
 }
 
-html[data-theme="forest"] .sidebar-filter--type.is-active .filter-count {
-  color: inherit;
+html[data-theme="forest"] .sidebar .sidebar-filter--type:is(.is-active, [aria-pressed="true"]) {
+  color: #f6fbf2;
+  background: color-mix(in srgb, var(--forest-type-canopy) 14%, transparent);
 }
 
-html[data-theme="forest"] .active-filter-pill--type {
-  border-color: var(--filter-type-border);
-  color: var(--filter-type-text);
-  background: var(--filter-type-background);
+html[data-theme="forest"] .sidebar .sidebar-filter--type:is(.is-active, [aria-pressed="true"]) .filter-count { color: var(--forest-type-canopy); }
+html[data-theme="forest"] .sidebar .sidebar-filter--type:is(.is-active, [aria-pressed="true"]):hover { background: color-mix(in srgb, var(--forest-type-canopy) 20%, transparent); }
+
+html[data-theme="forest"][data-glass="true"] .sidebar .sidebar-filter--type:is(.is-active, [aria-pressed="true"]) {
+  background: var(--glass-sheen, none), color-mix(in srgb, var(--forest-type-canopy) 16%, transparent);
 }
 
-html[data-theme="forest"] .sidebar-filter--indigo, html[data-theme="forest"] .active-filter-pill--type-indigo { --filter-type-border: #cbd2e8; --filter-type-text: #3d5085; --filter-type-background: #eff1f8; }
-html[data-theme="forest"] .sidebar-filter--blue,   html[data-theme="forest"] .active-filter-pill--type-blue   { --filter-type-border: #c0d8e6; --filter-type-text: #326785; --filter-type-background: #edf5fa; }
-html[data-theme="forest"] .sidebar-filter--sky,    html[data-theme="forest"] .active-filter-pill--type-sky    { --filter-type-border: #c0dce4; --filter-type-text: #2c6d7b; --filter-type-background: #edf7f8; }
-html[data-theme="forest"] .sidebar-filter--cyan,   html[data-theme="forest"] .active-filter-pill--type-cyan   { --filter-type-border: #bddfde; --filter-type-text: #28727a; --filter-type-background: #eaf7f7; }
-html[data-theme="forest"] .sidebar-filter--teal,   html[data-theme="forest"] .active-filter-pill--type-teal   { --filter-type-border: #b9ded3; --filter-type-text: #246e60; --filter-type-background: #e9f6f1; }
-html[data-theme="forest"] .sidebar-filter--emerald,html[data-theme="forest"] .active-filter-pill--type-emerald{ --filter-type-border: #bcdfce; --filter-type-text: #287053; --filter-type-background: #e9f6ee; }
-html[data-theme="forest"] .sidebar-filter--green,  html[data-theme="forest"] .active-filter-pill--type-green  { --filter-type-border: #c2dfbb; --filter-type-text: #3a703d; --filter-type-background: #ecf7e9; }
-html[data-theme="forest"] .sidebar-filter--lime,   html[data-theme="forest"] .active-filter-pill--type-lime   { --filter-type-border: #d2dfaf; --filter-type-text: #627b20; --filter-type-background: #f4f8e8; }
-html[data-theme="forest"] .sidebar-filter--amber,  html[data-theme="forest"] .active-filter-pill--type-amber  { --filter-type-border: #e5d1a4; --filter-type-text: #815f18; --filter-type-background: #fff6e4; }
-html[data-theme="forest"] .sidebar-filter--orange, html[data-theme="forest"] .active-filter-pill--type-orange { --filter-type-border: #e9cbae; --filter-type-text: #8c531f; --filter-type-background: #fff2e8; }
-html[data-theme="forest"] .sidebar-filter--red,    html[data-theme="forest"] .active-filter-pill--type-red    { --filter-type-border: #e7c2c2; --filter-type-text: #913f43; --filter-type-background: #fff0ef; }
-html[data-theme="forest"] .sidebar-filter--rose,   html[data-theme="forest"] .active-filter-pill--type-rose   { --filter-type-border: #e9c4cf; --filter-type-text: #944256; --filter-type-background: #fff0f3; }
-html[data-theme="forest"] .sidebar-filter--pink,   html[data-theme="forest"] .active-filter-pill--type-pink   { --filter-type-border: #ebc7d9; --filter-type-text: #97486f; --filter-type-background: #fff0f7; }
-html[data-theme="forest"] .sidebar-filter--violet, html[data-theme="forest"] .active-filter-pill--type-violet { --filter-type-border: #d7c9e9; --filter-type-text: #694b95; --filter-type-background: #f5f0fb; }
-html[data-theme="forest"] .sidebar-filter--purple, html[data-theme="forest"] .active-filter-pill--type-purple { --filter-type-border: #dcc8e7; --filter-type-text: #74458b; --filter-type-background: #f9f0fa; }
-html[data-theme="forest"] .sidebar-filter--slate,  html[data-theme="forest"] .active-filter-pill--type-slate  { --filter-type-border: #d1dbe0; --filter-type-text: #566b74; --filter-type-background: #f1f5f5; }
+/* The collapsed rail grows type leaves into initial chips: light dye leaves
+ * written in canopy ink, with a pale ring around the current one. */
+@media (min-width: 821px) {
+  html[data-theme="forest"] .app-shell.is-sidebar-collapsed .sidebar-filter--type .type-dot,
+  html[data-theme="forest"][data-sidebar-collapsed="true"] .app-shell .sidebar-filter--type .type-dot {
+    border-radius: 0.2rem 0.85rem;
+    color: var(--forest-canopy);
+    background: var(--forest-type-canopy);
+    box-shadow: none;
+    font-family: var(--font-sans);
+    font-weight: var(--font-weight-bold);
+  }
 
-html[data-theme="forest"] .tag-filter-option {
-  border-color: #d0dfd2;
-  color: #496252;
-  background: #f0f6ef;
+  html[data-theme="forest"] .app-shell.is-sidebar-collapsed .sidebar-filter--type:is(.is-active, [aria-pressed="true"]) .type-dot,
+  html[data-theme="forest"][data-sidebar-collapsed="true"] .app-shell .sidebar-filter--type:is(.is-active, [aria-pressed="true"]) .type-dot {
+    box-shadow: 0 0 0 2px var(--forest-canopy), 0 0 0 3.5px var(--forest-type-canopy);
+  }
 }
 
-html[data-theme="forest"] .tag-filter-option:hover {
-  border-color: #adc8b2;
-  color: #1e2d24;
-  background: #e2eee3;
+/* Tags are small paper pills with an evergreen number sign. */
+html[data-theme="forest"] :where(.tag-filter-option, .tag-chip, .selected-tag, .quick-view-tag, .tag-add-button),
+html[data-theme="forest"] .note-card .tag-chip {
+  border: 1px solid var(--forest-border);
+  border-radius: var(--radius-pill);
+  color: var(--forest-ink-soft);
+  background: var(--forest-paper);
+  box-shadow: none;
+  font-weight: var(--font-weight-medium);
+  transition:
+    color var(--forest-transition-duration) var(--forest-transition-easing),
+    background-color var(--forest-transition-duration) var(--forest-transition-easing),
+    border-color var(--forest-transition-duration) var(--forest-transition-easing);
 }
 
-html[data-theme="forest"] .tag-filter-option:has(input:checked),
-html[data-theme="forest"] .tag-filter-option.is-active {
-  border-color: var(--primary-accent-border);
-  color: var(--primary-accent-text);
-  background: var(--primary-accent-soft);
+html[data-theme="forest"] :where(.tag-filter-option__name, .tag-chip)::before,
+html[data-theme="forest"] .note-card .tag-chip::before,
+html[data-theme="forest"] :is(.note-dialog .selected-tag > span:first-child, .note-detail-surface .quick-view-tag)::before {
+  content: "#";
+  margin-right: 0.08em;
+  color: var(--forest-accent);
+  font-weight: var(--font-weight-semibold);
 }
 
-html[data-theme="forest"] .tag-filter-option .filter-count {
-  color: var(--text-muted);
+html[data-theme="forest"] .tag-filter-option .filter-count { color: var(--forest-muted); }
+
+html[data-theme="forest"] .tag-filter-option:is(:has(input:checked), .is-active),
+html[data-theme="forest"] .tag-chip.is-selected,
+html[data-theme="forest"] .note-card .tag-chip.is-selected {
+  border-color: var(--forest-accent-border);
+  color: var(--forest-accent-text);
+  background: var(--forest-accent-soft);
 }
+
+html[data-theme="forest"] .tag-filter-option:is(:has(input:checked), .is-active) .filter-count { color: var(--forest-accent-text); }
+html[data-theme="forest"] .tag-filter-option:has(input:focus-visible) { outline: 2px solid var(--forest-accent); outline-offset: 2px; }
+
+/* In the canopy, tags are pale outlines; a chosen one fills with new leaf. */
+html[data-theme="forest"] .sidebar :where(.tag-filter-option) {
+  border-color: rgb(232 240 226 / 18%);
+  color: var(--forest-canopy-ink-soft);
+  background: rgb(232 240 226 / 5%);
+}
+
+html[data-theme="forest"] .sidebar .tag-filter-option__name::before { color: var(--forest-leaf); }
+html[data-theme="forest"] .sidebar .tag-filter-option .filter-count { color: var(--forest-canopy-muted); }
+html[data-theme="forest"] .sidebar .tag-filter-option:hover .filter-count { color: var(--forest-canopy-ink-soft); }
+
+html[data-theme="forest"] .sidebar :where(.tag-filter-option):hover {
+  border-color: rgb(232 240 226 / 32%);
+  color: var(--forest-canopy-ink);
+  background: rgb(232 240 226 / 10%);
+}
+
+html[data-theme="forest"] .sidebar .tag-filter-option:is(:has(input:checked), .is-active) {
+  border-color: transparent;
+  color: var(--forest-canopy);
+  background: var(--forest-leaf);
+}
+
+html[data-theme="forest"] .sidebar .tag-filter-option:is(:has(input:checked), .is-active) .filter-count,
+html[data-theme="forest"] .sidebar .tag-filter-option:is(:has(input:checked), .is-active) .tag-filter-option__name::before { color: #2a4a33; }
+html[data-theme="forest"] .sidebar .tag-filter-option:is(:has(input:checked), .is-active):hover { background: var(--forest-leaf-hover); }
+html[data-theme="forest"] .sidebar .tag-filter-option:has(input:focus-visible) { outline-color: var(--forest-leaf); }
+
+html[data-theme="forest"] .notes-list--compact .note-card__tags .tag-chip {
+  min-height: 1.3rem;
+  padding-block: 0.1rem;
+  padding-inline: 0.42rem;
+  font-size: 0.65rem;
+}
+
+html[data-theme="forest"] .notes-list--compact .note-card__tags .more-tags { font-size: 0.65rem; color: var(--forest-muted); }
+
+/* Type badges are soft dyed pills led by a leaf of their colour. */
+html[data-theme="forest"] .type-badge,
+html[data-theme="forest"] .note-card .type-badge,
+html[data-theme="forest"] .active-filter-pill.active-filter-pill--type,
+html[data-theme="forest"] :is(.note-dialog, .note-detail-surface, .note-secondary-surface) .note-type-picker__trigger {
+  border: 1px solid color-mix(in srgb, var(--forest-type) 28%, transparent);
+  border-radius: var(--radius-pill);
+  color: var(--forest-type);
+  background-color: color-mix(in srgb, var(--forest-type) 10%, var(--forest-dew));
+  box-shadow: none;
+  font-family: var(--font-sans);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.01em;
+  text-transform: none;
+}
+
+html[data-theme="forest"] .type-badge:not(.note-type-picker__trigger) {
+  padding-inline: 0.5rem 0.6rem;
+  font-size: 0.68rem;
+  vertical-align: middle;
+}
+
+/* Inline-block, because card badges are blocks so their names can ellipsize. */
+html[data-theme="forest"] :is(.type-badge:not(.note-type-picker__trigger), .active-filter-pill--type)::before {
+  content: "";
+  display: inline-block;
+  flex: none;
+  margin-inline-end: 0.32rem;
+  vertical-align: 0.04em;
+  width: 0.48rem;
+  height: 0.48rem;
+  border-radius: 0 100%;
+  background: currentColor;
+}
+
+/* The filter pill already spaces its children with a gap. */
+html[data-theme="forest"] .active-filter-pill.active-filter-pill--type::before { margin-inline-end: 0; }
+
+html[data-theme="forest"] .notes-list--compact .type-badge {
+  min-height: 1.25rem;
+  padding: 0.08rem 0.45rem;
+  font-size: 0.62rem;
+}
+
+html[data-theme="forest"] .type-badge--filter:focus-visible {
+  outline: 2px solid var(--forest-type);
+  outline-offset: var(--focus-ring-offset);
+}
+
+/* The editor's type picker keeps its chevron and shows its own leaf. */
+html[data-theme="forest"] :is(.note-dialog, .note-detail-surface, .note-secondary-surface) .note-type-picker__trigger {
+  cursor: pointer;
+  transition:
+    background-color var(--forest-transition-duration) var(--forest-transition-easing),
+    border-color var(--forest-transition-duration) var(--forest-transition-easing);
+}
+
+html[data-theme="forest"] :is(.note-dialog, .note-detail-surface, .note-secondary-surface) .note-type-picker__trigger .type-dot {
+  display: inline-block;
+  flex: none;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 0 100%;
+  background: currentColor;
+}
+
+html[data-theme="forest"] :is(.note-dialog, .note-detail-surface, .note-secondary-surface) .note-type-picker__trigger:hover,
+html[data-theme="forest"] :is(.note-dialog, .note-detail-surface, .note-secondary-surface) .note-type-picker__trigger[aria-expanded="true"] {
+  border-color: color-mix(in srgb, var(--forest-type) 55%, transparent);
+  background-color: color-mix(in srgb, var(--forest-type) 16%, var(--forest-dew));
+}
+
+html[data-theme="forest"] :is(.note-dialog, .note-detail-surface, .note-secondary-surface) .note-type-picker__trigger:focus-visible {
+  outline: 2px solid var(--forest-type);
+  outline-offset: var(--focus-ring-offset);
+}
+
+html[data-theme="forest"] .active-filter-pill.active-filter-pill--type .active-filter-pill__clear {
+  color: var(--forest-type);
+  transition:
+    color var(--forest-transition-duration) var(--forest-transition-easing),
+    background-color var(--forest-transition-duration) var(--forest-transition-easing);
+}
+
+html[data-theme="forest"] .active-filter-pill.active-filter-pill--type .active-filter-pill__clear:hover { background: color-mix(in srgb, var(--forest-type) 14%, transparent); }
+html[data-theme="forest"] .active-filter-pill.active-filter-pill--type .active-filter-pill__clear:focus-visible { outline: 2px solid var(--forest-type); outline-offset: 1px; }
+
+html[data-theme="forest"] :where(.more-tags, .untagged),
+html[data-theme="forest"] .note-card :where(.more-tags, .untagged) { color: var(--forest-muted); }
+
+html[data-theme="forest"] :where(.active-filter-pill, .notes-count, .usage-count, .management-row__default) {
+  border: 1px solid var(--forest-border);
+  border-radius: var(--radius-pill);
+  color: var(--forest-ink-soft);
+  background: var(--forest-moss-wash);
+  box-shadow: none;
+  font-weight: var(--font-weight-semibold);
+}
+
+html[data-theme="forest"] :where(.notes-count, .active-filter-pill.is-active) { background: var(--forest-dew); }
+html[data-theme="forest"] :where(.text-button, .active-filter-clear-all, .active-filter-pill__clear) { color: var(--forest-accent-text); font-weight: var(--font-weight-semibold); text-decoration-color: currentColor; }
 
 /* --------------------------------------------------------------------------
-   Library controls, cards, and actions
+   Library: a mossy clearing with light filtering through the leaves
    -------------------------------------------------------------------------- */
 html[data-theme="forest"] .notes-panel {
-  border-color: #d6e2d8;
-  background: #f8fbf7;
-  box-shadow: 0 4px 24px -2px rgb(37 76 49 / 5%);
+  border: 1px solid var(--forest-border);
+  border-radius: var(--forest-radius-dialog);
+  color: var(--forest-ink);
+  background: var(--forest-tray);
+  box-shadow: var(--forest-shadow-sm);
 }
 
-html[data-theme="forest"] .notes-count {
-  border-color: #cbdccc;
-  color: #496252;
-  background: #e4eee4;
+/* Komorebi: leaf shadows and sunflecks rest in the top corner and sway in a
+ * slow breeze. The layer sits under every card, so text never moves. */
+html[data-theme="forest"]:not([data-glass="true"]) .notes-panel {
+  position: relative;
+  isolation: isolate;
 }
 
-html[data-theme="forest"] .toolbar,
-html[data-theme="forest"] .note-editor-modes,
-html[data-theme="forest"] .view-mode-control__choices {
-  border-color: #d0dfd2;
-  background: #edf5ed;
-  box-shadow: 0 1px 2px rgb(37 76 49 / 4%);
+html[data-theme="forest"]:not([data-glass="true"]) .notes-panel::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: -1;
+  width: min(44rem, 80%);
+  height: 26rem;
+  border-top-right-radius: inherit;
+  background: var(--forest-dapple) right top / 100% 100% no-repeat;
+  transform-origin: 100% 0;
+  animation: nook-forest-breeze 22s ease-in-out infinite;
+  pointer-events: none;
+  will-change: transform;
 }
 
-html[data-theme="forest"] .toolbar.is-pinned {
-  border-color: #cbdccc;
-  background: rgb(248 251 247 / 96%);
-  box-shadow: 0 10px 26px rgb(37 76 49 / 10%);
-  backdrop-filter: blur(8px);
+@keyframes nook-forest-breeze {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-10px, 6px) scale(0.985); }
 }
 
-html[data-theme="forest"] input[type="text"],
-html[data-theme="forest"] input[type="search"],
-html[data-theme="forest"] select,
-html[data-theme="forest"] textarea,
-html[data-theme="forest"] .search-field input,
-html[data-theme="forest"] .sort-field select {
-  border-color: #cbdccc;
-  color: #1e2d24;
-  background-color: #ffffff;
+html[data-theme="forest"] .notes-panel__heading { border-bottom-color: var(--forest-border); }
+
+html[data-theme="forest"] :where(.toolbar, .topbar-actions.is-pinned) {
+  border: 1px solid var(--forest-border);
+  border-radius: var(--forest-radius-card);
+  background: var(--forest-dew);
+  box-shadow: var(--forest-shadow-xs);
 }
 
-html[data-theme="forest"] input::placeholder,
-html[data-theme="forest"] textarea::placeholder,
-html[data-theme="forest"] .search-field input::placeholder {
-  color: var(--text-muted);
+/* Inputs, menus, and segmented controls */
+html[data-theme="forest"] :where(input:not([type]), input[type="text"], input[type="search"]:not(#command-search), input[type="email"], input[type="url"], textarea, select, .color-picker__trigger) {
+  border: 1px solid var(--forest-border-input) !important;
+  border-radius: var(--forest-radius-control) !important;
+  color: var(--forest-ink) !important;
+  background-color: var(--forest-dew) !important;
+  box-shadow: inset 0 1px 2px rgb(28 52 38 / 5%) !important;
 }
 
-html[data-theme="forest"] input:focus,
-html[data-theme="forest"] select:focus,
-html[data-theme="forest"] textarea:focus,
-html[data-theme="forest"] .tag-picker:focus-within,
-html[data-theme="forest"] .note-type-picker__trigger:focus-visible,
-html[data-theme="forest"] .color-picker__trigger:focus-visible {
-  border-color: var(--primary-accent);
-  box-shadow: 0 0 0 3px var(--primary-accent-focus);
+html[data-theme="forest"] :where(input, textarea)::placeholder { color: var(--forest-muted); opacity: 1; }
+
+html[data-theme="forest"] :where(input:not([type]), input[type="text"], input[type="search"]:not(#command-search), input[type="email"], input[type="url"], textarea, select, .color-picker__trigger):is(:focus, :focus-visible),
+html[data-theme="forest"] .tag-picker:focus-within {
+  border-color: var(--forest-accent) !important;
+  outline: 2px solid transparent !important;
+  background-color: var(--forest-dew) !important;
+  box-shadow: 0 0 0 3px rgb(47 107 79 / 20%) !important;
 }
 
-html[data-theme="forest"] .search-shortcut,
-html[data-theme="forest"] .notes-count,
-html[data-theme="forest"] .usage-count {
-  border-color: #cbdccc;
-  color: #496252;
-  background: #e4eee4;
+html[data-theme="forest"] :where(input, textarea, select):disabled { border-color: var(--forest-border) !important; color: var(--forest-disabled-ink) !important; background: var(--forest-disabled-surface) !important; box-shadow: none !important; }
+html[data-theme="forest"] :where(input, textarea):invalid { border-color: var(--forest-berry) !important; }
+html[data-theme="forest"] :where(.field-error, .note-save-status.is-error) { color: var(--forest-berry); font-weight: var(--font-weight-semibold); }
+
+html[data-theme="forest"] .clear-search {
+  border: 1px solid var(--forest-accent-border);
+  border-radius: var(--radius-pill);
+  color: var(--forest-accent-text);
+  background: var(--forest-accent-soft);
+  box-shadow: none;
 }
 
-html[data-theme="forest"] .search-shortcut kbd {
-  color: #294a36 !important;
-  background: transparent !important;
-  border: 0 !important;
-  box-shadow: none !important;
+html[data-theme="forest"] .clear-search:focus-visible { outline: 2px solid var(--forest-accent); outline-offset: var(--focus-ring-offset); }
+html[data-theme="forest"] .search-icon { color: var(--forest-muted); text-shadow: none; }
+
+html[data-theme="forest"] .sort-field__trigger {
+  border: 1px solid var(--forest-border-input);
+  border-radius: var(--forest-radius-control);
+  color: var(--forest-ink);
+  background-color: var(--forest-dew);
+  box-shadow: var(--forest-shadow-xs);
 }
 
-html[data-theme="forest"] .view-mode-button,
-html[data-theme="forest"] .note-editor-mode__button {
-  color: var(--text-muted);
+/* Segmented controls are a moss track holding a dew pill. */
+html[data-theme="forest"] :where(.view-mode-control__choices, .note-editor-modes) {
+  border: 1px solid var(--forest-border);
+  border-radius: var(--forest-radius-control);
+  background: var(--forest-moss-wash);
+  box-shadow: inset 0 1px 2px rgb(28 52 38 / 6%);
+}
+
+html[data-theme="forest"] :where(.view-mode-button, .note-editor-mode__button) {
+  border-radius: 8px;
+  color: var(--forest-muted);
   background: transparent;
-}
-
-html[data-theme="forest"] .view-mode-button:hover:not(.is-active),
-html[data-theme="forest"] .note-editor-mode__button:hover:not([aria-pressed="true"]),
-html[data-theme="forest"] .view-mode-button.is-active,
-html[data-theme="forest"] .view-mode-button[aria-pressed="true"],
-html[data-theme="forest"] .note-editor-mode__button[aria-pressed="true"] {
-  color: #1e2d24;
-  background: #dfece1 !important;
+  transition:
+    color var(--forest-transition-duration) var(--forest-transition-easing),
+    background-color var(--forest-transition-duration) var(--forest-transition-easing),
+    box-shadow var(--forest-transition-duration) var(--forest-transition-easing);
 }
 
 html[data-theme="forest"] .view-mode-choice + .view-mode-choice .view-mode-button,
-html[data-theme="forest"] .view-mode-button + .view-mode-button {
-  border-left-color: #d6e2d8;
+html[data-theme="forest"] .view-mode-button + .view-mode-button { border-left-color: transparent; }
+
+html[data-theme="forest"] :is(.view-mode-button.is-active, .view-mode-button[aria-pressed="true"], .note-editor-mode__button[aria-pressed="true"]) {
+  color: var(--forest-accent-text);
+  background: var(--forest-dew);
+  box-shadow: 0 0 0 1px var(--forest-border), var(--forest-shadow-xs);
 }
 
-html[data-theme="forest"] .active-filter-pill {
-  border-color: var(--primary-accent-border);
-  color: var(--primary-accent-text);
-  background: var(--primary-accent-soft);
+html[data-theme="forest"] :where(.sort-field__menu, .tag-suggestions, .note-type-picker__menu, .color-picker__menu) {
+  border: 1px solid var(--forest-border-input);
+  border-radius: 12px;
+  color: var(--forest-ink);
+  background: var(--forest-dew);
+  box-shadow: var(--forest-shadow-md);
 }
 
-html[data-theme="forest"] .active-filter-pill__clear {
-  color: var(--primary-accent-text);
+/* The card More menu is a top-layer popover styled after this file loads. */
+html[data-theme="forest"] .note-card .note-card__actions[popover] {
+  border: 1px solid var(--forest-border-input);
+  border-radius: 12px;
+  background: var(--forest-dew);
+  box-shadow: var(--forest-shadow-md);
 }
 
-html[data-theme="forest"] .active-filter-pill__clear:hover {
-  background: var(--primary-accent-soft-hover);
+html[data-theme="forest"] .note-card .note-card__actions[popover] > .note-card__action:not(.note-card__action--danger):is(:hover, :focus-visible):not(:disabled) {
+  color: var(--forest-accent-text);
+  background: var(--forest-accent-soft);
 }
 
-/* Keep type pills aligned with their selected sidebar filters. */
-html[data-theme="forest"] .active-filter-pill.active-filter-pill--type {
-  border-color: var(--filter-type-border);
-  color: var(--filter-type-text);
-  background: var(--filter-type-background);
-}
+html[data-theme="forest"] :where(.sort-field__option, .tag-suggestion, .note-type-picker__option, .color-picker__option) { border-radius: 8px; color: var(--forest-ink); }
+html[data-theme="forest"] :where(.sort-field__option, .tag-suggestion, .note-type-picker__option, .color-picker__option):is(:hover, :focus-visible),
+html[data-theme="forest"] :where(.sort-field__option, .tag-suggestion, .note-type-picker__option, .color-picker__option)[aria-selected="true"] { outline: none; color: var(--forest-accent-text); background: var(--forest-accent-soft); }
 
-html[data-theme="forest"] .note-card {
-  border-color: var(--note-card-border);
-  background: var(--note-card-surface);
-  box-shadow: 0 1px 3px rgb(37 76 49 / 5%), 0 3px 8px rgb(37 76 49 / 3%);
-  transition: transform var(--motion-duration-micro) var(--interaction-easing), box-shadow var(--motion-duration-micro) var(--interaction-easing), border-color var(--motion-duration-micro) var(--interaction-easing);
-}
-
-html[data-theme="forest"] .note-card:hover,
-html[data-theme="forest"] .note-card:focus-within {
-  border-color: #a9c8ae;
-  box-shadow: 0 6px 18px rgb(37 76 49 / 9%);
-}
-
-html[data-theme="forest"] .note-card--pinned {
-  border-color: var(--pinned-card-border);
-  background: var(--pinned-card-surface);
-  box-shadow: var(--pinned-card-shadow);
-}
-
-html[data-theme="forest"] .note-card--pinned:hover,
-html[data-theme="forest"] .note-card--pinned.is-hover {
-  border-color: var(--pinned-card-border-hover);
-}
-
-html[data-theme="forest"] .note-card:hover .note-card__title {
-  color: var(--primary-accent);
-}
-
-
-
-/* Keep the footer visually continuous with both regular and pinned cards. */
-html[data-theme="forest"] .note-card__footer {
-  background: transparent;
-}
-
-html[data-theme="forest"] .tag-chip:hover,
-html[data-theme="forest"] .tag-chip.is-selected,
-html[data-theme="forest"] .selected-tag:hover {
-  border-color: #9fbea5;
-  color: #1e2d24;
-  background: #e1eee2;
-}
-
-html[data-theme="forest"] .note-card--pinned .note-card__pin-toggle {
-  border-color: var(--pinned-marker-border);
-  color: var(--pinned-marker-color);
-  background: var(--pinned-marker-background);
-}
-
-html[data-theme="forest"] .pagination-button {
-  border-color: #cbdccc;
-  color: var(--text-muted);
-  background: transparent;
-}
-
-html[data-theme="forest"] .pagination-button:hover:not(:disabled),
-html[data-theme="forest"] .pagination-button.is-active {
-  border-color: var(--primary-accent-border);
-  color: var(--primary-accent-text);
-  background: var(--primary-accent-soft);
-}
-
-html[data-theme="forest"] .pagination-button:disabled,
-html[data-theme="forest"] .pagination-ellipsis {
-  color: #9caf9f;
+/* --------------------------------------------------------------------------
+   Buttons: polished evergreen and pale river stone that lift softly
+   -------------------------------------------------------------------------- */
+html[data-theme="forest"] :where(.button-primary, .button-secondary, .button-danger, .icon-button, .mobile-filter-toggle) {
+  border: 1px solid var(--forest-border-input);
+  border-radius: var(--forest-radius-control);
+  color: var(--forest-ink);
+  box-shadow: none;
+  font-weight: var(--font-weight-semibold);
+  transition:
+    color var(--forest-transition-duration) var(--forest-transition-easing),
+    background-color var(--forest-transition-duration) var(--forest-transition-easing),
+    border-color var(--forest-transition-duration) var(--forest-transition-easing),
+    box-shadow var(--forest-transition-duration) var(--forest-transition-easing),
+    transform var(--forest-transition-duration) var(--forest-transition-easing);
 }
 
 html[data-theme="forest"] .button-primary {
-  border-color: var(--primary-accent);
-  color: var(--primary-button-text);
-  background: var(--primary-accent);
-  box-shadow: 0 2px 6px rgb(47 107 79 / 18%);
+  border-color: #22513b;
+  color: var(--forest-cream);
+  background: linear-gradient(180deg, #357556, #2a6047) #2f6b4f;
+  box-shadow: inset 0 1px 0 rgb(226 245 214 / 20%), 0 1px 2px rgb(28 52 38 / 18%), 0 6px 14px -8px rgb(47 107 79 / 55%);
 }
 
-html[data-theme="forest"] .button-primary:hover:not(:disabled) {
-  border-color: var(--primary-accent-hover);
-  background: var(--primary-accent-hover);
-}
-
-html[data-theme="forest"] .button-secondary {
-  border-color: #cbdccc;
-  color: #40594b;
-  background: #f0f6ef;
-}
-
-html[data-theme="forest"] .button-secondary:hover:not(:disabled) {
-  border-color: #a9c5ad;
-  color: #1e2d24;
-  background: #e0ece1;
-}
+html[data-theme="forest"] .button-secondary { background: var(--forest-dew); box-shadow: var(--forest-shadow-xs); }
+html[data-theme="forest"] :where(.icon-button, .mobile-filter-toggle) { background: var(--forest-dew); }
 
 html[data-theme="forest"] .button-danger {
-  border-color: #e5bfc0;
-  color: #9a3038;
-  background: #fff3f2;
+  border-color: #82303a;
+  color: var(--forest-cream);
+  background: linear-gradient(180deg, #ab4550, #96353e) #a13c45;
+  box-shadow: inset 0 1px 0 rgb(255 226 226 / 20%), 0 1px 2px rgb(28 52 38 / 18%);
 }
 
-html[data-theme="forest"] .button-danger:hover:not(:disabled) {
-  border-color: #d58e92;
-  color: #7e242b;
-  background: #ffe7e5;
+html[data-theme="forest"] .topbar-actions .theme-toggle:not(.topbar-preferences__button) { border-radius: var(--forest-radius-control); padding-inline: 0.82rem; }
+html[data-theme="forest"] .topbar-actions .theme-toggle__icon { width: 1.05rem; height: 1.05rem; }
+
+html[data-theme="forest"] :where(.button-primary, .button-secondary, .button-danger, .icon-button, .mobile-filter-toggle):focus-visible,
+html[data-theme="forest"] :where(.pagination-button, .note-card__action, .note-formatting-tool__button):focus-visible { outline: 2px solid var(--forest-accent); outline-offset: var(--focus-ring-offset); }
+
+html[data-theme="forest"] :where(.button-primary, .button-secondary, .button-danger, .icon-button, .mobile-filter-toggle):active:not(:disabled) { transform: translateY(1px); }
+html[data-theme="forest"] :where(.button-primary, .button-danger):active:not(:disabled) { box-shadow: inset 0 2px 3px rgb(19 37 25 / 24%); }
+html[data-theme="forest"] :where(.button-primary, .button-secondary, .button-danger, .icon-button, .mobile-filter-toggle):disabled { border-color: var(--forest-border); color: var(--forest-disabled-ink); background: var(--forest-disabled-surface); box-shadow: none; transform: none; }
+
+html[data-theme="forest"] :where(.pagination-button, .note-card__action, .note-formatting-tool__button) { border: 1px solid transparent; border-radius: var(--forest-radius-control); color: var(--forest-ink-soft); background: transparent; }
+html[data-theme="forest"] .pagination-button.is-active { border-color: #22513b; color: var(--forest-cream); background: var(--forest-accent); box-shadow: var(--forest-shadow-xs); }
+html[data-theme="forest"] :where(.pagination-button:disabled, .pagination-ellipsis) { color: var(--forest-disabled-ink); }
+html[data-theme="forest"] :is(.note-card__action--danger, .note-card__action--permanent):is(:hover, :focus-visible):not(:disabled) { border-color: var(--forest-berry-border); color: var(--forest-berry); background: var(--forest-berry-soft); }
+html[data-theme="forest"] .note-card__action--restore:is(:hover, :focus-visible) { border-color: var(--forest-accent-border); color: var(--forest-accent-text); background: var(--forest-accent-soft); }
+
+/* Note Detail footer utilities stay unboxed until touched. */
+html[data-theme="forest"] .note-detail-surface .dialog-footer__tools :where(.icon-button, .note-delete-button, .note-save-shortcut__trigger, .note-markdown-help__trigger),
+html[data-theme="forest"] .note-detail-surface .dialog-footer__preview-actions :where(.icon-button, .note-delete-button, .note-save-shortcut__trigger, .note-markdown-help__trigger) {
+  border: 1px solid transparent;
+  border-radius: var(--forest-radius-control);
+  color: var(--forest-ink-soft);
+  background: transparent;
+  box-shadow: none;
+}
+
+html[data-theme="forest"] .note-detail-surface .dialog-footer__tools :where(.icon-button, .note-delete-button, .note-save-shortcut__trigger, .note-markdown-help__trigger):focus-visible,
+html[data-theme="forest"] .note-detail-surface .dialog-footer__preview-actions :where(.icon-button, .note-delete-button, .note-save-shortcut__trigger, .note-markdown-help__trigger):focus-visible {
+  outline: 2px solid var(--forest-accent);
+  outline-offset: var(--focus-ring-offset);
+  color: var(--forest-accent-text);
+  background: var(--forest-accent-soft);
+}
+
+html[data-theme="forest"] .note-detail-surface .dialog-footer__tools :where(.icon-button, .note-delete-button, .note-save-shortcut__trigger, .note-markdown-help__trigger):active:not(:disabled),
+html[data-theme="forest"] .note-detail-surface .dialog-footer__preview-actions :where(.icon-button, .note-delete-button, .note-save-shortcut__trigger, .note-markdown-help__trigger):active:not(:disabled) {
+  color: var(--forest-accent-text);
+  background: var(--forest-accent-soft);
+  transform: none;
+  box-shadow: none;
+}
+
+html[data-theme="forest"] .note-detail-surface .dialog-footer__tools :where(.icon-button, .note-delete-button):disabled,
+html[data-theme="forest"] .note-detail-surface .dialog-footer__preview-actions :where(.icon-button, .note-delete-button):disabled {
+  border-color: transparent;
+  color: var(--forest-disabled-ink);
+  background: transparent;
+  box-shadow: none;
+}
+
+html[data-theme="forest"] :where(button svg, .note-save-status__icon, .empty-state__icon svg, .toast__indicator svg) {
+  stroke-width: var(--forest-icon-stroke-width);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  shape-rendering: geometricPrecision;
 }
 
 /* --------------------------------------------------------------------------
-   Detail view, Markdown, dialogs, and management surfaces
+   Note cards: dew-fresh pages; pinned ones carry a small sprig in the corner
    -------------------------------------------------------------------------- */
-html[data-theme="forest"] .note-detail-surface,
-html[data-theme="forest"] .quick-view-content,
-html[data-theme="forest"] .note-content-preview {
-  color: #2e4637;
-  background: #f8fbf7;
+html[data-theme="forest"] .note-card {
+  border: 1px solid var(--forest-border);
+  border-radius: var(--forest-radius-card);
+  color: var(--forest-ink);
+  background-color: var(--forest-dew);
+  box-shadow: var(--forest-shadow-sm);
+  transition:
+    border-color var(--forest-transition-duration) var(--forest-transition-easing),
+    background-color var(--forest-transition-duration) var(--forest-transition-easing),
+    box-shadow var(--forest-transition-duration) var(--forest-transition-easing),
+    transform var(--forest-transition-duration) var(--forest-transition-easing);
 }
 
-/* The title field sits directly on the editor surface, not on a white input card. */
-html[data-theme="forest"] #note-title {
-  background-color: var(--note-title-resting-background);
+html[data-theme="forest"] .note-card:focus-within {
+  border-color: var(--forest-border-hover);
+  box-shadow: var(--forest-shadow-sm), 0 0 0 3px rgb(47 107 79 / 12%);
 }
 
-html[data-theme="forest"] .detail-commandbar,
-html[data-theme="forest"] .note-formatting-toolbar,
-html[data-theme="forest"] .dialog-footer,
-html[data-theme="forest"] .organize-tabs {
-  border-color: #d0dfd2;
-  background: #edf5ed;
+html[data-theme="forest"] .note-card__title {
+  color: var(--forest-ink);
+  font-family: var(--font-display);
+  font-style: normal;
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0;
 }
 
-html[data-theme="forest"] .detail-commandbar__state,
-html[data-theme="forest"] .detail-commandbar__info .note-save-status.is-saved,
-html[data-theme="forest"] .detail-commandbar__info .note-save-status.is-new {
-  color: #39734f;
+html[data-theme="forest"] .note-card__preview { color: var(--forest-ink-soft); }
+html[data-theme="forest"] .note-card__date { color: var(--forest-muted); }
+html[data-theme="forest"] .note-card__footer { border-top-color: #e6ede1; }
+
+html[data-theme="forest"] .note-card--pinned {
+  border-color: var(--pinned-card-border);
+  background-color: var(--pinned-card-surface);
+  box-shadow: var(--pinned-card-shadow);
 }
 
-html[data-theme="forest"] .detail-commandbar__info .note-save-status.is-dirty {
-  color: #9a671d;
+html[data-theme="forest"] .note-card--pinned .note-card__pin-toggle {
+  opacity: 1;
+  visibility: visible;
+  border: 1px solid transparent;
+  color: var(--pinned-marker-color);
+  background-color: transparent;
 }
 
-html[data-theme="forest"] .detail-commandbar__info .note-save-status.is-error {
-  color: #a2383e;
+/* A sprig pressed into the corner of the page, like a keepsake. */
+html[data-theme="forest"] :is(.pinned-tray .note-card, .note-card--pinned) {
+  background-image: var(--forest-sprig);
+  background-repeat: no-repeat;
+  background-position: right -0.95rem bottom -1.05rem;
+  background-size: 4.4rem;
 }
 
-html[data-theme="forest"] .quick-view-content h1,
-html[data-theme="forest"] .quick-view-content h2,
-html[data-theme="forest"] .quick-view-content h3,
-html[data-theme="forest"] .note-content-preview h1,
-html[data-theme="forest"] .note-content-preview h2,
-html[data-theme="forest"] .note-content-preview h3 {
-  color: #1e2d24;
+html[data-theme="forest"] .notes-list--compact :is(.pinned-tray .note-card, .note-card--pinned) { background-size: 3.2rem; }
+
+html[data-theme="forest"] .pinned-tray {
+  border: 1px dashed color-mix(in srgb, var(--forest-accent) 32%, var(--forest-border));
+  border-radius: var(--forest-radius-card);
+  background: rgb(47 107 79 / 4%);
 }
 
-html[data-theme="forest"] .quick-view-content blockquote,
-html[data-theme="forest"] .note-content-preview blockquote {
-  border-left-color: #9fbea5;
-  color: #496252;
+html[data-theme="forest"] .pinned-tray__toggle { color: var(--forest-accent-text); font-weight: var(--font-weight-semibold); }
+html[data-theme="forest"] .pinned-tray__count { color: var(--forest-muted); }
+
+html[data-theme="forest"] mark.search-highlight {
+  border: 0;
+  border-radius: 3px;
+  padding-inline: 0.1em;
+  color: var(--forest-ink);
+  background: var(--forest-sunfleck);
+  box-shadow: none;
 }
 
-html[data-theme="forest"] .quick-view-content code:not(pre code),
-html[data-theme="forest"] .note-content-preview code:not(pre code) {
-  border: 1px solid #cbdccc;
-  color: #2f6b4f;
-  background: #e9f2ea;
+/* --------------------------------------------------------------------------
+   Dialogs and the note detail sheet
+   -------------------------------------------------------------------------- */
+html[data-theme="forest"] :where(.app-dialog, .note-detail-surface) {
+  border: 1px solid var(--forest-border);
+  border-radius: var(--forest-radius-dialog);
+  color: var(--forest-ink);
+  background: var(--forest-dew);
+  box-shadow: var(--forest-shadow-lg);
 }
 
-html[data-theme="forest"] .quick-view-content pre,
-html[data-theme="forest"] .note-content-preview pre {
-  border-color: #3d654d;
-  background: #1f3b2b;
-  box-shadow: 0 2px 8px -2px rgb(30 65 42 / 14%);
-}
-
-html[data-theme="forest"] .quick-view-content pre code,
-html[data-theme="forest"] .note-content-preview pre code {
-  color: #e3f0e7;
-}
-
-html[data-theme="forest"] .quick-view-content .markdown-code-header,
-html[data-theme="forest"] .note-content-preview .markdown-code-header {
-  background: #294a36;
-  border-bottom-color: #3d654d;
-}
-
-html[data-theme="forest"] .quick-view-content .markdown-code-lang,
-html[data-theme="forest"] .note-content-preview .markdown-code-lang {
-  color: #b9dfc2;
-}
-
-html[data-theme="forest"] .quick-view-content .markdown-code-copy-btn,
-html[data-theme="forest"] .note-content-preview .markdown-code-copy-btn {
-  background: #315640;
-  color: #d8eddd;
-  border-color: #5a8065;
-}
-
-html[data-theme="forest"] .quick-view-content .markdown-code-copy-btn:hover,
-html[data-theme="forest"] .note-content-preview .markdown-code-copy-btn:hover {
-  background: #3f6f51;
-  border-color: #7aa087;
-  color: #ffffff;
-}
-
-html[data-theme="forest"] .quick-view-content .markdown-code-copy-btn.is-copied,
-html[data-theme="forest"] .note-content-preview .markdown-code-copy-btn.is-copied {
-  background: #2d543d;
-  border-color: #74a47c;
-  color: #d1eed5;
-}
-
-/* Forest syntax highlighting */
-html[data-theme="forest"] .token-keyword { color: #d7a5e8; font-weight: var(--font-weight-semibold); }
-html[data-theme="forest"] .token-string { color: #a8d98a; }
-html[data-theme="forest"] .token-comment { color: #8fb49b; font-style: italic; }
-html[data-theme="forest"] .token-number { color: #e8c37d; }
-html[data-theme="forest"] .token-function { color: #8ed0e8; }
-html[data-theme="forest"] .token-boolean { color: #f0a98b; font-weight: var(--font-weight-semibold); }
-html[data-theme="forest"] .token-operator { color: #b9dfc2; }
-html[data-theme="forest"] .token-property,
-html[data-theme="forest"] .token-tag { color: #f1a1b1; }
-html[data-theme="forest"] .token-type { color: #8dd4c1; }
-html[data-theme="forest"] .token-punctuation { color: #b7d0bd; }
-
-html[data-theme="forest"] .quick-view-content hr,
-html[data-theme="forest"] .note-content-preview hr,
-html[data-theme="forest"] .quick-view-content th,
-html[data-theme="forest"] .note-content-preview th,
-html[data-theme="forest"] .quick-view-content td,
-html[data-theme="forest"] .note-content-preview td {
-  border-color: #cbdccc;
-}
-
-html[data-theme="forest"] .quick-view-content th,
-html[data-theme="forest"] .note-content-preview th,
-html[data-theme="forest"] .quick-view-content tr:nth-child(even),
-html[data-theme="forest"] .note-content-preview tr:nth-child(even) {
-  background: #edf5ed;
-}
-
-/* Callouts keep distinct semantic hues, muted toward Forest's botanical paper. */
-html[data-theme="forest"] .markdown-alert--note {
-  border: 1px solid #cfdfe2;
-  border-left: 3.5px solid #3f7389;
-  color: #1f3a44;
-  background: #eef4f5;
-}
-html[data-theme="forest"] .markdown-alert--note .markdown-alert__title {
-  color: #2d5f73;
-}
-html[data-theme="forest"] .markdown-alert--tip {
-  border: 1px solid #cde2cc;
-  border-left: 3.5px solid #2f6b4f;
-  color: #1e3a2b;
-  background: #edf5ec;
-}
-html[data-theme="forest"] .markdown-alert--tip .markdown-alert__title {
-  color: #2f6b4f;
-}
-html[data-theme="forest"] .markdown-alert--warning {
-  border: 1px solid #ecdcb8;
-  border-left: 3.5px solid #a7741c;
-  color: #4f3a10;
-  background: #fbf5e7;
-}
-html[data-theme="forest"] .markdown-alert--warning .markdown-alert__title {
-  color: #85580e;
-}
-html[data-theme="forest"] .markdown-alert--caution {
-  border: 1px solid #efd3c9;
-  border-left: 3.5px solid #a8452e;
-  color: #552016;
-  background: #faf0ec;
-}
-html[data-theme="forest"] .markdown-alert--caution .markdown-alert__title {
-  color: #8f3522;
-}
-html[data-theme="forest"] .markdown-alert--important {
-  border: 1px solid #ddd3e6;
-  border-left: 3.5px solid #6c4a86;
-  color: #3a2649;
-  background: #f3f0f6;
-}
-html[data-theme="forest"] .markdown-alert--important .markdown-alert__title {
-  color: #5c3b74;
-}
-
-html[data-theme="forest"] .app-dialog,
-html[data-theme="forest"] .management-list {
-  border-color: #cbdccc;
-  color: #1e2d24;
-  background: #f8fbf7;
-  box-shadow: 0 12px 36px rgb(37 76 49 / 13%);
-}
+html[data-theme="forest"] .note-detail-surface { box-shadow: var(--forest-shadow-md); }
 
 html[data-theme="forest"] .app-dialog::backdrop {
-  background: rgb(26 53 35 / 38%);
-  backdrop-filter: blur(3px);
+  background: var(--forest-overlay);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
 }
 
-html[data-theme="forest"] .dialog-header,
-html[data-theme="forest"] .management-row {
-  border-color: #d6e2d8;
+html[data-theme="forest"] :where(.detail-commandbar, .dialog-header, .dialog-footer, .note-formatting-toolbar, .organize-tabs) { border-color: var(--forest-border); background: var(--forest-chrome); }
+
+html[data-theme="forest"] .note-detail-surface .dialog-header,
+html[data-theme="forest"] .note-detail-surface .dialog-footer {
+  border-color: var(--forest-border);
+  border-radius: 0;
+  background: var(--forest-chrome);
 }
 
-html[data-theme="forest"] .dialog-header h2,
-html[data-theme="forest"] .management-row__name,
-html[data-theme="forest"] .empty-state h3 {
-  color: #1e2d24;
+html[data-theme="forest"] .confirmation-dialog__body p { color: var(--forest-ink-soft); }
+
+html[data-theme="forest"] #note-title { border: 0 !important; border-bottom: 1px solid var(--forest-border) !important; border-radius: 0 !important; padding-inline: 0; color: var(--forest-ink) !important; background: transparent !important; box-shadow: none !important; font-family: var(--font-display); font-style: normal; font-weight: var(--font-weight-bold); }
+html[data-theme="forest"] #note-title:focus-visible { border-bottom-color: var(--forest-accent) !important; outline: 2px solid transparent !important; box-shadow: 0 2px 0 -1px var(--forest-accent) !important; }
+html[data-theme="forest"] .note-secondary-surface :is(.field--title input, #secondary-note-title-input) { font-family: var(--font-display); font-style: normal; font-weight: var(--font-weight-bold); }
+
+html[data-theme="forest"] .note-formatting-toolbar { border: 1px solid var(--forest-border); border-radius: var(--forest-radius-control); box-shadow: none; }
+html[data-theme="forest"] .note-formatting-tool__button:is(:hover, :focus-visible) { border-color: var(--forest-accent-border); color: var(--forest-accent-text); background: var(--forest-accent-soft); }
+
+html[data-theme="forest"] .note-dialog #note-content,
+html[data-theme="forest"] .note-secondary-surface #secondary-note-content-editor { font-family: var(--forest-font-read); line-height: 1.7; }
+
+html[data-theme="forest"] :where(.note-save-status.is-saved) { color: var(--forest-moss); }
+html[data-theme="forest"] :where(.note-save-status.is-new) { color: var(--forest-muted); }
+html[data-theme="forest"] .note-save-status.is-saving { color: var(--forest-accent-text); }
+html[data-theme="forest"] .note-save-status.is-dirty { color: var(--forest-honey); }
+
+/* In the command bar each save state is a small pebble label. */
+html[data-theme="forest"] .detail-commandbar__info .note-save-status.is-saved { color: var(--forest-moss); }
+html[data-theme="forest"] .detail-commandbar__info .note-save-status.is-new { color: var(--forest-muted); }
+html[data-theme="forest"] .detail-commandbar__info .note-save-status.is-saving { border-color: var(--forest-accent-border); color: var(--forest-accent-text); background: var(--forest-accent-soft); }
+html[data-theme="forest"] .detail-commandbar__info .note-save-status.is-dirty { border-color: var(--forest-honey-border); color: var(--forest-honey); background: var(--forest-honey-soft); }
+html[data-theme="forest"] .detail-commandbar__info .note-save-status.is-error { border-color: var(--forest-berry-border); color: var(--forest-berry); background: var(--forest-berry-soft); }
+
+html[data-theme="forest"] :where(.shortcut-tooltip, .note-save-shortcut__tooltip, .note-markdown-help__tooltip, .note-detail-action-tooltip__content, .note-formatting-tool__tooltip) {
+  border: 1px solid var(--forest-border-input);
+  border-radius: 8px;
+  color: var(--forest-ink);
+  background: var(--forest-dew);
+  box-shadow: var(--forest-shadow-md);
 }
 
-html[data-theme="forest"] .organize-tab {
-  color: var(--text-muted);
+html[data-theme="forest"] kbd {
+  border: 1px solid var(--forest-border-hover);
+  border-radius: var(--forest-radius-sm);
+  color: var(--forest-ink);
+  background: var(--forest-chrome);
+  box-shadow: 0 1px 0 var(--forest-border-hover);
+  font-family: var(--font-sans);
+  font-weight: var(--font-weight-semibold);
 }
 
-html[data-theme="forest"] .organize-tab.is-active {
-  color: var(--primary-accent-text);
+html[data-theme="forest"] .search-shortcut { border: 1px solid var(--forest-border-hover); color: var(--forest-ink-soft); background: var(--forest-chrome); box-shadow: 0 1px 0 var(--forest-border-hover); }
+html[data-theme="forest"] .search-shortcut kbd { min-width: 0; border: 0; border-radius: 0; padding: 0; color: inherit; background: transparent; box-shadow: none; font: inherit; }
+
+/* Settings tabs and the frost choice share the moss track. */
+html[data-theme="forest"] .organize-tabs { border: 1px solid var(--forest-border); border-radius: var(--forest-radius-control); background: var(--forest-moss-wash); box-shadow: inset 0 1px 2px rgb(28 52 38 / 6%); }
+html[data-theme="forest"] .organize-tab { border-radius: 8px; color: var(--forest-muted); background: transparent; }
+html[data-theme="forest"] .organize-tab.is-active { color: var(--forest-accent-text); background: var(--forest-dew); box-shadow: 0 0 0 1px var(--forest-border), var(--forest-shadow-xs); }
+html[data-theme="forest"] .organize-tab:focus-visible { outline: 2px solid var(--forest-accent); outline-offset: 2px; }
+html[data-theme="forest"] .glass-frost-control__choices { border: 1px solid var(--forest-border); border-radius: var(--forest-radius-control); background: var(--forest-moss-wash); }
+html[data-theme="forest"] .glass-frost-choice span { border-radius: 8px; }
+
+@media (forced-colors: none) {
+  html[data-theme="forest"] .glass-frost-choice input:checked + span { color: var(--forest-accent-text); background: var(--forest-dew); box-shadow: 0 0 0 1px var(--forest-border), var(--forest-shadow-xs); }
 }
 
-html[data-theme="forest"] .organize-tab.is-active {
-  border-bottom-color: var(--primary-accent);
-}
+html[data-theme="forest"] :where(.management-create-row, .management-list) { border: 1px solid var(--forest-border); border-radius: var(--forest-radius-card); color: var(--forest-ink); background: var(--forest-paper); box-shadow: none; }
+html[data-theme="forest"] .management-row { border-color: var(--forest-border); color: var(--forest-ink); background: transparent; }
+html[data-theme="forest"] .management-row__name { color: var(--forest-ink); }
+html[data-theme="forest"] .startup-error { border-color: var(--forest-berry-border); color: var(--forest-ink); background: var(--forest-berry-soft); box-shadow: var(--forest-shadow-md); }
 
-html[data-theme="forest"] .note-type-picker__option:hover,
-html[data-theme="forest"] .note-type-picker__option[aria-selected="true"] {
-  background: #e8f1e8;
-}
+/* --------------------------------------------------------------------------
+   Empty states: a mossy stone with a seedling stirring on top
+   -------------------------------------------------------------------------- */
+html[data-theme="forest"] :where(.empty-state, .management-empty) { color: var(--forest-muted); }
 
-html[data-theme="forest"] .management-row__default,
-html[data-theme="forest"] .empty-state,
-html[data-theme="forest"] .mobile-filter-toggle {
-  border-color: #cbdccc;
-  color: var(--text-muted);
-  background: #edf5ed;
-}
-
-html[data-theme="forest"] .shortcut-tooltip,
-html[data-theme="forest"] .note-save-shortcut__tooltip,
-html[data-theme="forest"] .note-markdown-help__tooltip,
-html[data-theme="forest"] .note-detail-action-tooltip__content {
-  border-color: #c2d5c5;
-  color: #2e4637;
-  background: #f2f8f2;
-  box-shadow: 0 6px 20px rgb(37 76 49 / 14%);
-}
-
-html[data-theme="forest"] .shortcut-tooltip kbd,
-html[data-theme="forest"] .note-save-shortcut kbd,
-html[data-theme="forest"] .command-dialog__help kbd {
-  border-color: #bfd3c2;
-  border-bottom-color: #a9c5ad;
-  color: #294a36;
-  background: #e1eee2;
+html[data-theme="forest"] .empty-state {
+  border: 1px dashed var(--forest-border-hover);
+  border-radius: var(--forest-radius-dialog);
+  background: rgb(253 254 250 / 55%);
 }
 
 html[data-theme="forest"] .empty-state__icon {
-  color: var(--primary-accent);
-  background: var(--primary-accent-soft);
+  position: relative;
+  width: 3.7rem;
+  height: 2.95rem;
+  margin: 1.7rem 0 1.15rem;
+  border: 1.5px solid var(--forest-accent-border);
+  border-radius: 52% 48% 44% 56% / 62% 58% 42% 38%;
+  color: var(--forest-accent-text);
+  background: radial-gradient(120% 95% at 32% 22%, #f1f7ec, var(--forest-accent-soft) 58%, #cfe2cd);
+  box-shadow: inset 0 -0.3rem 0.5rem -0.3rem rgb(47 107 79 / 22%);
 }
 
-html[data-theme="forest"] .startup-error {
-  border-color: #e0b5b7;
-  color: #8e2d35;
-  background: #fff1f1;
+html[data-theme="forest"] .empty-state__icon svg { width: 1.3rem; height: 1.3rem; margin-top: 0.15rem; }
+
+/* The seedling */
+html[data-theme="forest"] .empty-state__icon::before {
+  content: "";
+  position: absolute;
+  bottom: calc(100% - 0.38rem);
+  left: 50%;
+  width: 1.55rem;
+  height: 1.55rem;
+  margin-left: -0.775rem;
+  background: var(--forest-seedling) center / contain no-repeat;
+  transform-origin: 50% 100%;
+  animation: nook-forest-sprout 4.2s ease-in-out infinite;
+  pointer-events: none;
 }
 
-/* Forest has a dedicated local glyph supplied by the theme switcher markup. */
-html[data-theme="forest"] .theme-toggle__icon--forest {
-  display: inline-flex !important;
+/* Soft shade on the ground beneath the stone */
+html[data-theme="forest"] .empty-state__icon::after {
+  content: "";
+  position: absolute;
+  bottom: -0.55rem;
+  left: 50%;
+  z-index: -1;
+  width: 125%;
+  height: 0.6rem;
+  margin-left: -62.5%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgb(28 52 38 / 16%), transparent);
+  pointer-events: none;
 }
 
-html[data-theme="forest"] .theme-toggle__icon--sun,
-html[data-theme="forest"] .theme-toggle__icon--coffee,
-html[data-theme="forest"] .theme-toggle__icon--moon,
-html[data-theme="forest"] .theme-toggle__icon--auto {
-  display: none !important;
+@keyframes nook-forest-sprout {
+  0%, 100% { transform: rotate(-4deg); }
+  50% { transform: rotate(4deg); }
 }
 
-/* Logo tile follows the theme accent. */
-html[data-theme="forest"] {
-  --brand-mark-start: #3f8a66;
-  --brand-mark-mid: #2f6b4f;
-  --brand-mark-end: #1f4a36;
+/* --------------------------------------------------------------------------
+   Markdown preview: a field journal, with a night forest for code
+   -------------------------------------------------------------------------- */
+html[data-theme="forest"] :where(.quick-view-content, .note-content-preview) {
+  color: var(--forest-ink);
+  background: var(--forest-dew);
+  font-family: var(--forest-font-read);
+  line-height: 1.7;
+}
+
+html[data-theme="forest"] :where(.quick-view-content, .note-content-preview) :where(h1, h2, h3, h4, h5, h6) {
+  color: var(--forest-ink);
+  font-family: var(--font-display);
+  font-style: normal;
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0;
+  line-height: 1.25;
+}
+
+/* The first heading grows a short vine that ends in a leaf. */
+html[data-theme="forest"] :where(.quick-view-content, .note-content-preview) h1 {
+  border-bottom: 0;
+  padding-bottom: 0.8rem;
+  background:
+    var(--forest-leaf-mark) left 2.62rem bottom 0 / 1rem 0.8rem no-repeat,
+    linear-gradient(90deg, var(--forest-accent), var(--forest-fern)) left bottom 0.3rem / 2.75rem 2px no-repeat;
+}
+
+html[data-theme="forest"] :where(.quick-view-content, .note-content-preview) :where(h5, h6) {
+  color: var(--forest-ink-soft);
+  font-family: var(--font-sans);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+html[data-theme="forest"] :where(.quick-view-content, .note-content-preview) :where(ul, ol) > li::marker { color: var(--forest-fern); }
+html[data-theme="forest"] :where(.quick-view-content, .note-content-preview) ol > li::marker { color: var(--forest-accent); font-family: var(--font-display); font-weight: var(--font-weight-bold); }
+
+html[data-theme="forest"] :where(.quick-view-content, .note-content-preview) a {
+  color: var(--forest-accent-text);
+  text-decoration-color: color-mix(in srgb, var(--forest-accent) 40%, transparent);
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.2em;
+}
+
+html[data-theme="forest"] :where(.quick-view-content, .note-content-preview) a:hover { color: var(--forest-accent-hover); text-decoration-color: currentColor; }
+
+html[data-theme="forest"] :where(.quick-view-content, .note-content-preview) code:not(pre code) {
+  border: 1px solid #d3e0cc;
+  border-radius: var(--forest-radius-sm);
+  color: #2d5e2a;
+  background: #e6eedd;
+  font-family: var(--font-mono);
+  font-weight: var(--font-weight-medium);
+}
+
+html[data-theme="forest"] :where(.quick-view-content, .note-content-preview) pre {
+  border: 1px solid var(--forest-canopy-edge);
+  border-radius: 12px;
+  color: var(--forest-code-text);
+  background: var(--forest-code-surface);
+  box-shadow: var(--forest-shadow-md);
+}
+
+html[data-theme="forest"] :where(.quick-view-content, .note-content-preview) pre code {
+  border: 0;
+  color: var(--forest-code-text);
+  background: transparent;
+  box-shadow: none;
+  font-family: var(--font-mono);
+}
+
+html[data-theme="forest"] :where(.quick-view-content, .note-content-preview) .markdown-code-header { border-bottom-color: rgb(152 173 156 / 22%); color: var(--forest-code-text); background: var(--forest-code-header); }
+html[data-theme="forest"] :where(.quick-view-content, .note-content-preview) .markdown-code-lang { color: var(--forest-code-muted); letter-spacing: 0.08em; text-transform: uppercase; }
+html[data-theme="forest"] :where(.quick-view-content, .note-content-preview) .markdown-code-copy-btn { border: 1px solid rgb(152 173 156 / 40%); border-radius: var(--forest-radius-sm); color: var(--forest-code-text); background: transparent; }
+html[data-theme="forest"] :where(.quick-view-content, .note-content-preview) .markdown-code-copy-btn:is(:hover, :focus-visible) { outline: none; border-color: var(--forest-leaf); color: var(--forest-code-surface); background: var(--forest-leaf); }
+html[data-theme="forest"] :where(.quick-view-content, .note-content-preview) .markdown-code-copy-btn.is-copied { border-color: var(--forest-token-string); color: var(--forest-code-surface); background: var(--forest-token-string); }
+
+html[data-theme="forest"] .token-keyword { color: var(--forest-token-keyword); font-weight: var(--font-weight-semibold); }
+html[data-theme="forest"] .token-string { color: var(--forest-token-string); }
+html[data-theme="forest"] .token-function { color: var(--forest-token-function); }
+html[data-theme="forest"] .token-number { color: var(--forest-token-number); }
+html[data-theme="forest"] .token-boolean { color: var(--forest-token-boolean); font-weight: var(--font-weight-semibold); }
+html[data-theme="forest"] .token-comment { color: var(--forest-token-comment); font-style: italic; }
+html[data-theme="forest"] .token-operator { color: var(--forest-code-text); }
+html[data-theme="forest"] :where(.token-property, .token-tag) { color: var(--forest-token-property); }
+html[data-theme="forest"] .token-type { color: var(--forest-token-type); }
+html[data-theme="forest"] .token-punctuation { color: var(--forest-code-muted); }
+
+/* Quotes rest on a strip of moss, opened by a fern-green mark. */
+html[data-theme="forest"] :where(.quick-view-content, .note-content-preview) blockquote {
+  position: relative;
+  border: 0;
+  border-inline-start: 3px solid var(--forest-fern);
+  border-radius: 0 12px 12px 0;
+  padding: 0.6rem 1rem 0.6rem 2.7rem;
+  color: var(--forest-ink-soft);
+  background: #eef4ea;
+  box-shadow: none;
+  font-style: italic;
+}
+
+html[data-theme="forest"] :where(.quick-view-content, .note-content-preview) blockquote::before {
+  content: "\201C";
+  position: absolute;
+  top: 0.08em;
+  left: 0.6rem;
+  color: var(--forest-fern);
+  font-family: var(--font-display);
+  font-size: 2.6em;
+  font-style: normal;
+  line-height: 1;
+}
+
+html[data-theme="forest"] :where(.quick-view-content, .note-content-preview) .markdown-table-wrapper { border: 1px solid var(--forest-border); border-radius: 12px; background: var(--forest-dew); box-shadow: var(--forest-shadow-xs); }
+html[data-theme="forest"] :where(.quick-view-content, .note-content-preview) .markdown-table :where(th, td) { border-color: var(--forest-border); }
+html[data-theme="forest"] :where(.quick-view-content, .note-content-preview) .markdown-table td { font-variant-numeric: lining-nums tabular-nums; }
+
+html[data-theme="forest"] :where(.quick-view-content, .note-content-preview) .markdown-table th {
+  color: var(--forest-ink);
+  background: var(--forest-moss-wash);
+  font-family: var(--font-sans);
+  font-style: normal;
+  font-weight: var(--font-weight-semibold);
+}
+
+html[data-theme="forest"] :where(.quick-view-content, .note-content-preview) .markdown-table tbody tr:nth-child(even) { background: #f7faf3; }
+
+/* A seedling grows in the middle of the horizontal rule. */
+html[data-theme="forest"] :where(.quick-view-content, .note-content-preview) hr {
+  overflow: visible;
+  height: auto;
+  margin-block: 1.6rem;
+  border: 0;
+  background:
+    linear-gradient(var(--forest-border-strong), var(--forest-border-strong)) left center / calc(50% - 1.5rem) 1px no-repeat,
+    linear-gradient(var(--forest-border-strong), var(--forest-border-strong)) right center / calc(50% - 1.5rem) 1px no-repeat;
+  line-height: 1;
+  text-align: center;
+}
+
+html[data-theme="forest"] :where(.quick-view-content, .note-content-preview) hr::before {
+  content: "";
+  display: inline-block;
+  width: 1.15rem;
+  height: 1.15rem;
+  vertical-align: middle;
+  background: var(--forest-seedling) center / contain no-repeat;
+}
+
+/* Callouts are tinted like light through coloured leaves. */
+html[data-theme="forest"] :where(.quick-view-content, .note-content-preview) .markdown-alert {
+  --forest-alert: var(--forest-river);
+  border: 1px solid color-mix(in srgb, var(--forest-alert) 18%, var(--forest-border));
+  border-inline-start: 4px solid var(--forest-alert);
+  border-radius: 4px 12px 12px 4px;
+  color: var(--forest-ink);
+  background: color-mix(in srgb, var(--forest-alert) 6%, var(--forest-dew));
+  box-shadow: none;
+}
+
+html[data-theme="forest"] :where(.quick-view-content, .note-content-preview) .markdown-alert--note { --forest-alert: var(--forest-river); }
+html[data-theme="forest"] :where(.quick-view-content, .note-content-preview) .markdown-alert--tip { --forest-alert: var(--forest-moss); }
+html[data-theme="forest"] :where(.quick-view-content, .note-content-preview) .markdown-alert--warning { --forest-alert: var(--forest-honey); }
+html[data-theme="forest"] :where(.quick-view-content, .note-content-preview) .markdown-alert--caution { --forest-alert: var(--forest-berry); }
+html[data-theme="forest"] :where(.quick-view-content, .note-content-preview) .markdown-alert--important { --forest-alert: var(--forest-heather); }
+html[data-theme="forest"] :where(.quick-view-content, .note-content-preview) .markdown-alert__title { color: var(--forest-alert); font-family: var(--font-sans); font-style: normal; font-weight: var(--font-weight-semibold); }
+
+html[data-theme="forest"] :where(.quick-view-content, .note-content-preview) .markdown-details { border: 1px solid var(--forest-border); border-radius: 12px; color: var(--forest-ink); background: var(--forest-paper); box-shadow: none; }
+html[data-theme="forest"] :where(.quick-view-content, .note-content-preview) .markdown-details summary { color: var(--forest-ink); font-family: var(--font-display); font-style: normal; font-weight: var(--font-weight-bold); }
+html[data-theme="forest"] :where(.quick-view-content, .note-content-preview) .markdown-details summary:focus-visible { outline: 2px solid var(--forest-accent); outline-offset: var(--focus-ring-offset); background: var(--forest-accent-soft); }
+html[data-theme="forest"] :where(.quick-view-content, .note-content-preview) .markdown-math { border: 1px solid var(--forest-border); color: var(--forest-ink); background: var(--forest-paper); font-family: var(--font-mono); }
+html[data-theme="forest"] :where(.quick-view-content, .note-content-preview) .markdown-math--block { box-shadow: none; }
+html[data-theme="forest"] :where(.quick-view-content, .note-content-preview) .markdown-footnotes { border-color: var(--forest-border); color: var(--forest-muted); }
+html[data-theme="forest"] :where(.quick-view-content, .note-content-preview) .markdown-footnotes h4 { color: var(--forest-ink); font-family: var(--font-display); font-style: normal; }
+html[data-theme="forest"] :where(.quick-view-content, .note-content-preview) :where(.markdown-footnote-ref, .markdown-footnote-backref) { color: var(--forest-accent-text); font-weight: var(--font-weight-semibold); }
+html[data-theme="forest"] :where(.quick-view-content, .note-content-preview) :where(.markdown-image, .markdown-image-alt) { border: 1px dashed var(--forest-border-hover); border-radius: var(--forest-radius-control); color: var(--forest-muted); background: var(--forest-paper); box-shadow: none; }
+
+/* Theme icon */
+html[data-theme="forest"] .theme-toggle__icon--forest { display: inline-flex !important; }
+html[data-theme="forest"] :where(.theme-toggle__icon--sun, .theme-toggle__icon--coffee, .theme-toggle__icon--midnight, .theme-toggle__icon--moon, .theme-toggle__icon--auto, .theme-toggle__icon--aurora, .theme-toggle__icon--retro, .theme-toggle__icon--eink) { display: none !important; }
+
+@media (hover: hover) and (pointer: fine) {
+  html[data-theme="forest"] :where(.icon-button, .mobile-filter-toggle, .quick-view-header-toggle):hover:not(:disabled) { border-color: var(--forest-border-hover); color: var(--forest-ink); background: var(--forest-paper); box-shadow: var(--forest-shadow-xs); }
+  html[data-theme="forest"] :where(.button-primary, .button-danger, .button-secondary):hover:not(:disabled):not(:active) { transform: translateY(-1px); }
+  html[data-theme="forest"] .button-primary:hover:not(:disabled) { background: linear-gradient(180deg, #2f6b4f, #245a41) #2a6248; box-shadow: inset 0 1px 0 rgb(226 245 214 / 20%), 0 2px 4px rgb(28 52 38 / 16%), 0 10px 20px -10px rgb(47 107 79 / 60%); }
+  html[data-theme="forest"] .button-danger:hover:not(:disabled) { background: linear-gradient(180deg, #a13c45, #883039) #943741; }
+  html[data-theme="forest"] .button-secondary:hover:not(:disabled) { border-color: var(--forest-border-strong); background: var(--forest-dew); box-shadow: var(--forest-shadow-sm); }
+  html[data-theme="forest"] :where(.tag-filter-option, .tag-chip, .tag-add-button):hover { border-color: var(--forest-border-strong); color: var(--forest-ink); background: var(--forest-dew); }
+  html[data-theme="forest"] .tag-filter-option:is(:has(input:checked), .is-active):hover,
+  html[data-theme="forest"] .tag-chip.is-selected:hover { border-color: var(--forest-accent); background: var(--forest-accent-soft-hover); }
+  html[data-theme="forest"] .note-card:hover { transform: translateY(-2px); border-color: var(--forest-border-hover); background-color: var(--forest-dew); box-shadow: var(--forest-shadow-hover); }
+  html[data-theme="forest"] .note-card--pinned:is(:hover, .is-hover) { border-color: var(--pinned-card-border-hover); }
+  html[data-theme="forest"] :where(.view-mode-button, .note-editor-mode__button):hover:not(.is-active, [aria-pressed="true"]) { color: var(--forest-ink); background: rgb(253 254 250 / 60%); }
+  html[data-theme="forest"] :where(.pagination-button, .note-card__action, .note-card__pin-toggle, .note-formatting-tool__button):hover:not(:disabled) { border-color: var(--forest-accent-border); color: var(--forest-accent-text); background: var(--forest-accent-soft); box-shadow: none; }
+  html[data-theme="forest"] .pagination-button.is-active:hover { color: var(--forest-cream); background: var(--forest-accent-hover); }
+  html[data-theme="forest"] :where(.text-button, .active-filter-clear-all, .active-filter-pill__clear):hover:not(:disabled) { color: var(--forest-accent-hover); background: var(--forest-accent-soft); }
+  html[data-theme="forest"] .sidebar .text-button:hover:not(:disabled) { background: rgb(184 220 149 / 14%); }
+  html[data-theme="forest"] .note-card .type-badge--filter:hover { background-color: color-mix(in srgb, var(--forest-type) 16%, var(--forest-dew)); }
+  html[data-theme="forest"] .note-detail-surface .dialog-footer__tools :where(.icon-button, .note-save-shortcut__trigger, .note-markdown-help__trigger):hover:not(:disabled),
+  html[data-theme="forest"] .note-detail-surface .dialog-footer__preview-actions :where(.icon-button, .note-save-shortcut__trigger, .note-markdown-help__trigger):hover:not(:disabled) { border-color: transparent; color: var(--forest-accent-text); background: var(--forest-accent-soft); box-shadow: none; }
+  html[data-theme="forest"] .note-detail-surface .dialog-footer__tools .note-delete-button:hover:not(:disabled),
+  html[data-theme="forest"] .note-detail-surface .dialog-footer__preview-actions .note-delete-button:hover:not(:disabled) { border-color: transparent; color: var(--forest-berry); background: var(--forest-berry-soft); box-shadow: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-theme="forest"] { --forest-transition-duration: 0ms; }
+  html[data-theme="forest"] :where(.note-card, button) { transform: none !important; }
+  html[data-theme="forest"]:not([data-glass="true"]) .notes-panel::before { animation: none; will-change: auto; }
+  html[data-theme="forest"] .empty-state__icon::before { animation: none; }
+}
+
+@media (max-width: 820px) {
+  /* The mobile library has no panel of its own; the light stays smaller. */
+  html[data-theme="forest"]:not([data-glass="true"]) .notes-panel::before {
+    width: min(26rem, 100%);
+    height: 17rem;
+  }
+}
+
+@media (max-width: 620px) {
+  html[data-theme="forest"] :where(.app-dialog, .note-detail-surface) {
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  html[data-theme="forest"] .organize-tabs { max-width: calc(100% - 2rem); }
+}
+
+@media (forced-colors: active) {
+  html[data-theme="forest"] :where(.tag-filter-option, .tag-chip, .button, .icon-button, .note-card, .app-dialog, .type-badge) { border-color: ButtonText; box-shadow: none; }
+  html[data-theme="forest"] :is(.sidebar, .pinned-tray .note-card, .note-card--pinned) { background-image: none; box-shadow: none; }
+  html[data-theme="forest"] .notes-panel::before { content: none; }
+  html[data-theme="forest"] :is(.type-badge:not(.note-type-picker__trigger), .active-filter-pill--type)::before { background: CanvasText; }
+  html[data-theme="forest"] .empty-state__icon { border-color: CanvasText; background: Canvas; box-shadow: none; }
+  html[data-theme="forest"] .empty-state__icon::before,
+  html[data-theme="forest"] .empty-state__icon::after { content: none; }
+  html[data-theme="forest"] :where(.quick-view-content, .note-content-preview) h1 { background: none; }
+  html[data-theme="forest"] :where(.quick-view-content, .note-content-preview) hr { background: none; border-top: 1px solid CanvasText; }
+  html[data-theme="forest"] :where(.quick-view-content, .note-content-preview) hr::before { content: none; }
 }
