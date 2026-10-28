@@ -123,3 +123,54 @@ test("footnote back links stay inside the footnote's last paragraph", () => {
   assert.equal(backrefs.length, 2);
   backrefs.forEach((link) => assert.ok(paragraph.children.includes(link)));
 });
+
+function renderTableAlignments(api, delimiter) {
+  const container = new NodeStub("div");
+  api.renderInto(container, `| Left | Center | Right |\n${delimiter}\n| a | b | c |`);
+  const table = findAll(container, "TABLE")[0];
+  if (!table) return null;
+  return findAll(table, "TH").map((cell) => cell.dataset.align);
+}
+
+test("table delimiter rows accept one or more dashes per cell and keep alignment", () => {
+  const { api } = loadMarkdown();
+  assert.deepEqual(renderTableAlignments(api, "| :-- | :-: | --: |"), ["left", "center", "right"]);
+  assert.deepEqual(renderTableAlignments(api, "| - | - | - |"), ["left", "left", "left"]);
+  assert.deepEqual(renderTableAlignments(api, "|:-|:-:|-:|"), ["left", "center", "right"]);
+  assert.deepEqual(renderTableAlignments(api, ":-- | :-: | --:"), ["left", "center", "right"]);
+  assert.deepEqual(renderTableAlignments(api, "| :---: | ---- | ---: |"), ["center", "left", "right"]);
+});
+
+test("malformed table delimiter rows stay paragraph text", () => {
+  const { api } = loadMarkdown();
+  for (const delimiter of [
+    "| :-- |  | --: |",
+    "| : | :: | : |",
+    "| -a- | - | - |",
+    "| - - | - | - |",
+    "| -- : | - | - |",
+    "| -=- | - | - |",
+    "---",
+  ]) {
+    assert.equal(renderTableAlignments(api, delimiter), null, delimiter);
+  }
+});
+
+test("table source mapping covers rows of a short-delimiter table", () => {
+  const { api } = loadMarkdown();
+  const container = new NodeStub("div");
+  api.renderInto(container, "| A | B |\n| :- | -: |\n| 1 | 2 |\n| 3 | 4 |", "", { sourceMap: true });
+  const rows = findAll(container, "TR").map((row) => [row.dataset.markdownSourceStart, row.dataset.markdownSourceEnd]);
+  assert.deepEqual(rows, [["0", "2"], ["2", "3"], ["3", "4"]]);
+});
+
+test("plain-text previews drop short table delimiter rows", () => {
+  const { api } = loadMarkdown();
+  for (const delimiter of ["| :-- | :-: | --: |", "| - | - | - |", ":-- | :-: | --:", "| - | - | -"]) {
+    const text = api.toPlainText(`| A | B | C |\n${delimiter}\n| 1 | 2 | 3 |`, { preserveBlocks: true });
+    assert.doesNotMatch(text, /-/, delimiter);
+    assert.match(text, /A\s+B\s+C/);
+    assert.match(text, /1\s+2\s+3/);
+  }
+  assert.match(api.toPlainText("Range 1 - 2 | 3"), /Range 1 - 2/);
+});

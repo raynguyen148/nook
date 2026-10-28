@@ -1455,7 +1455,7 @@
   function parseTableDelimiter(line) {
     if (!hasUnescapedPipe(line)) return null;
     const cells = splitTableRow(line);
-    if (!cells.length || cells.some((cell) => !/^:?-{3,}:?$/.test(cell))) return null;
+    if (!cells.length || cells.some((cell) => !/^:?-+:?$/.test(cell))) return null;
     return cells.map((cell) => {
       const left = cell.startsWith(":");
       const right = cell.endsWith(":");
@@ -2074,7 +2074,7 @@
     text = text.replace(/^(?:[-*_]\s*){3,}$/gm, "");
 
     // Table delimiter rows and pipe separators
-    text = text.replace(/^\|?(?:\s*:?-+:?\s*\|)+\s*$/gm, "");
+    text = text.replace(/^[ \t]*(?=[^\n]*\|)\|?[ \t]*:?-+:?[ \t]*(?:\|[ \t]*:?-+:?[ \t]*)*\|?[ \t]*$/gm, "");
     text = text.replace(/^\||\|$/gm, "").replace(/\|/g, " ");
 
     // Task list checkboxes
