@@ -2123,15 +2123,21 @@
 
 /* Dark, Midnight & Aurora theme refinements */
 html[data-theme="dark"] .note-editor-mode--side-note,
+html[data-theme="dark"] .note-editor-mode--compare {
+  border-left-color: var(--dark-line, #2b2926);
+}
+
 html[data-theme="midnight"] .note-editor-mode--side-note,
 html[data-theme="aurora"] .note-editor-mode--side-note,
-html[data-theme="dark"] .note-editor-mode--compare,
 html[data-theme="midnight"] .note-editor-mode--compare,
 html[data-theme="aurora"] .note-editor-mode--compare {
   border-left-color: rgba(255, 255, 255, 0.12);
 }
 
-html[data-theme="dark"] .secondary-commandbar,
+html[data-theme="dark"] .secondary-commandbar {
+  border-bottom-color: var(--dark-line, #2b2926);
+}
+
 html[data-theme="midnight"] .secondary-commandbar {
   border-bottom-color: #1e293b;
 }
@@ -2141,7 +2147,7 @@ html[data-theme="dark"] .note-secondary-surface #secondary-note-title-input {
   border: 0 !important;
   border-radius: 0 !important;
   padding: 0 !important;
-  color: #e8e8e8 !important;
+  color: var(--dark-ink, #f1ede6) !important;
   background: transparent !important;
   background-color: transparent !important;
   box-shadow: none !important;
@@ -2181,19 +2187,22 @@ html[data-theme="midnight"] .note-secondary-surface #secondary-note-title-input:
 }
 
 html[data-theme="dark"] .note-secondary-surface #secondary-note-content-editor,
+html[data-theme="dark"] .note-secondary-surface #secondary-split-preview {
+  color: var(--dark-ink-2, #d0cac0);
+}
+
 html[data-theme="midnight"] .note-secondary-surface #secondary-note-content-editor,
-html[data-theme="dark"] .note-secondary-surface #secondary-split-preview,
 html[data-theme="midnight"] .note-secondary-surface #secondary-split-preview {
   color: #e2e8f0;
 }
 
 html[data-theme="dark"] #secondary-reader-view .note-formatting-toolbar {
-  border-color: #2b2b2b !important;
-  border-bottom-color: #2b2b2b !important;
+  border-color: var(--dark-line, #2b2926) !important;
+  border-bottom-color: var(--dark-line, #2b2926) !important;
 }
 
 html[data-theme="dark"] #secondary-reader-view #secondary-content-field.is-split .note-editor-pane--preview {
-  border-left-color: #26354a !important;
+  border-left-color: var(--dark-line, #2b2926) !important;
 }
 
 html[data-theme="midnight"] #secondary-reader-view .note-formatting-toolbar {

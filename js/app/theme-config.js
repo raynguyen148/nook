@@ -12,7 +12,7 @@
     coffee: { label: "Coffee", file: "coffee", color: "#2b1f18" },
     forest: { label: "Forest", file: "forest", color: "#1b3326" },
     retro: { label: "Retro", file: "retro", color: "#1f5c5a" },
-    dark: { label: "Dark", file: "dark", color: "#09090b" },
+    dark: { label: "Dark", file: "dark", color: "#121110" },
     midnight: { label: "Midnight", file: "midnight", color: "#18263f" },
     aurora: { label: "Aurora", file: "aurora", color: "#17142c" },
   }).map(([key, value]) => [key, Object.freeze(value)])));
