@@ -1,7 +1,7 @@
 /* Hallmark · genre: editorial · macrostructure: preserved Nook workspace
  * theme: neighbourhood slow-bar café · tone: warm, unhurried, lamp-lit · anchor hue: caramel
  * signatures: dark wooden menu board, latte paper under a
- * reading lamp, cup-ring stains on pinned notes, coffee-bean rules, a steaming
+ * reading lamp, a pair of roasted beans on pinned notes, coffee-bean rules, a steaming
  * mug for empty states, espresso code blocks
  * contrast: ink 14+, muted 5.2+ on canvas, caramel 5.2+ on foam, board 6+ · fonts: Vietnamese-safe
  */
@@ -88,9 +88,9 @@ html[data-theme="coffee"] {
   --coffee-wood: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='w'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.7 .014' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .95 0 0 0 0 .9 0 0 0 0 .84 0 0 0 .6 0'/%3E%3C/filter%3E%3Cfilter id='s'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .95 0 0 0 0 .9 0 0 0 0 .84 0 0 0 .6 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' opacity='.07' filter='url%28%23w%29'/%3E%3Crect width='100%25' height='100%25' opacity='.05' filter='url%28%23s%29'/%3E%3C/svg%3E");
   --coffee-cup: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64' fill='none' stroke='%23f3e8da' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cg opacity='.1'%3E%3Cpath d='M24 6c-3 4 3 7 0 11M32 3c-3 4 3 7 0 11M40 6c-3 4 3 7 0 11'/%3E%3Cpath d='M12 24h36v8c0 11-8 18-18 18S12 43 12 32z'/%3E%3Cpath d='M48 28h3a6 6 0 0 1 0 12h-4'/%3E%3Cpath d='M8 55c5 3.5 39 3.5 44 0'/%3E%3C/g%3E%3C/svg%3E");
 
-  /* Small ornaments: a roasted bean, a cup ring, and steam */
+  /* Small ornaments: a roasted bean, a resting pair of beans, and steam */
   --coffee-bean: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 28'%3E%3Cellipse cx='10' cy='14' rx='8.5' ry='12.5' fill='%239a5523'/%3E%3Cpath d='M10 2.5c-3 4-3 8 0 11.5s3 7.5 0 11.5' fill='none' stroke='%23fbf7f1' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E");
-  --coffee-ring: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cfilter id='d'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.035' numOctaves='2' seed='7'/%3E%3CfeDisplacementMap in='SourceGraphic' scale='5'/%3E%3C/filter%3E%3Cg fill='none' stroke='%238a4b1f' filter='url%28%23d%29'%3E%3Ccircle cx='50' cy='50' r='42' fill='%238a4b1f' fill-opacity='.035' stroke-width='3' stroke-opacity='.16'/%3E%3Ccircle cx='50' cy='50' r='38.5' stroke-width='1' stroke-opacity='.08'/%3E%3Cpath d='M15 31a41 41 0 0 1 29-21' stroke-width='5' stroke-linecap='round' stroke-opacity='.07'/%3E%3C/g%3E%3C/svg%3E");
+  --coffee-beans: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 92 80'%3E%3Cg fill='%239a5523' opacity='.15'%3E%3Cg transform='translate(56 46) rotate(-28) scale(1.45)'%3E%3Cpath d='M0-15C8.5-15 11-7 10.5 1 10 9 6 15 0 15-6.5 15-10.5 8.5-10.5 0-10.5-8-7.5-15 0-15Z'/%3E%3Cpath d='M1-13.5C-2.5-8-2.5-3.5.5 0S3 8.5-.5 13.5' fill='none' stroke='%23fffdf9' stroke-width='1.5' stroke-linecap='round'/%3E%3C/g%3E%3Cg transform='translate(24 62) rotate(58) scale(.95)'%3E%3Cpath d='M0-15C8.5-15 11-7 10.5 1 10 9 6 15 0 15-6.5 15-10.5 8.5-10.5 0-10.5-8-7.5-15 0-15Z'/%3E%3Cpath d='M1-13.5C-2.5-8-2.5-3.5.5 0S3 8.5-.5 13.5' fill='none' stroke='%23fffdf9' stroke-width='1.5' stroke-linecap='round'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
   --coffee-steam: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 36' fill='none' stroke='%23b08462' stroke-width='1.6' stroke-linecap='round'%3E%3Cpath d='M12 34c-4-5-4-9 0-14s4-9 0-14' opacity='.55'/%3E%3Cpath d='M20 30c-4-5-4-9 0-14s4-9 0-13' opacity='.8'/%3E%3Cpath d='M28 34c-4-5-4-9 0-14s4-9 0-14' opacity='.55'/%3E%3C/svg%3E");
 
   /* Espresso for code */
@@ -916,7 +916,7 @@ html[data-theme="coffee"] :where(button svg, .note-save-status__icon, .empty-sta
 }
 
 /* --------------------------------------------------------------------------
-   Note cards: foam cards; pinned ones carry the ring a cup left behind
+   Note cards: foam cards; pinned ones keep two beans tucked in the corner
    -------------------------------------------------------------------------- */
 html[data-theme="coffee"] .note-card {
   border: 1px solid var(--coffee-border);
@@ -962,15 +962,19 @@ html[data-theme="coffee"] .note-card--pinned .note-card__pin-toggle {
   background-color: transparent;
 }
 
-/* A faint coffee ring, cut off by the card's corner. */
+/* Two faint roasted beans, one large and one small, cut off by the card's
+ * corner. The crease is drawn in foam so it reads as pressed into the card. */
 html[data-theme="coffee"] :is(.pinned-tray .note-card, .note-card--pinned) {
-  background-image: var(--coffee-ring);
+  background-image: var(--coffee-beans);
   background-repeat: no-repeat;
-  background-position: right -1.1rem bottom -1.3rem;
-  background-size: 5.6rem;
+  background-position: right -0.5rem bottom -0.7rem;
+  background-size: 4.9rem auto;
 }
 
-html[data-theme="coffee"] .notes-list--compact :is(.pinned-tray .note-card, .note-card--pinned) { background-size: 3.6rem; }
+html[data-theme="coffee"] .notes-list--compact :is(.pinned-tray .note-card, .note-card--pinned) {
+  background-position: right -0.4rem bottom -0.6rem;
+  background-size: 3.4rem auto;
+}
 
 html[data-theme="coffee"] .pinned-tray {
   border: 1px dashed color-mix(in srgb, var(--coffee-accent) 32%, var(--coffee-border));
