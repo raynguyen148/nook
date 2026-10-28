@@ -2128,8 +2128,11 @@ html[data-theme="dark"] .note-editor-mode--compare {
 }
 
 html[data-theme="midnight"] .note-editor-mode--side-note,
+html[data-theme="midnight"] .note-editor-mode--compare {
+  border-left-color: var(--midnight-line, #1d2740);
+}
+
 html[data-theme="aurora"] .note-editor-mode--side-note,
-html[data-theme="midnight"] .note-editor-mode--compare,
 html[data-theme="aurora"] .note-editor-mode--compare {
   border-left-color: rgba(255, 255, 255, 0.12);
 }
@@ -2139,7 +2142,7 @@ html[data-theme="dark"] .secondary-commandbar {
 }
 
 html[data-theme="midnight"] .secondary-commandbar {
-  border-bottom-color: #1e293b;
+  border-bottom-color: var(--midnight-line, #1d2740);
 }
 
 html[data-theme="dark"] .note-secondary-surface .field--title input,
@@ -2169,7 +2172,7 @@ html[data-theme="midnight"] .note-secondary-surface #secondary-note-title-input 
   border: 0 !important;
   border-radius: 0 !important;
   padding: 0 !important;
-  color: #e5efff !important;
+  color: var(--midnight-ink, #e8edf8) !important;
   background: transparent !important;
   background-color: transparent !important;
   box-shadow: none !important;
@@ -2193,7 +2196,7 @@ html[data-theme="dark"] .note-secondary-surface #secondary-split-preview {
 
 html[data-theme="midnight"] .note-secondary-surface #secondary-note-content-editor,
 html[data-theme="midnight"] .note-secondary-surface #secondary-split-preview {
-  color: #e2e8f0;
+  color: var(--midnight-ink-2, #c3cce0);
 }
 
 html[data-theme="dark"] #secondary-reader-view .note-formatting-toolbar {
@@ -2206,12 +2209,12 @@ html[data-theme="dark"] #secondary-reader-view #secondary-content-field.is-split
 }
 
 html[data-theme="midnight"] #secondary-reader-view .note-formatting-toolbar {
-  border-color: #1d3550 !important;
-  border-bottom-color: #1d3550 !important;
+  border-color: var(--midnight-line, #1d2740) !important;
+  border-bottom-color: var(--midnight-line, #1d2740) !important;
 }
 
 html[data-theme="midnight"] #secondary-reader-view #secondary-content-field.is-split .note-editor-pane--preview {
-  border-left-color: #29415f !important;
+  border-left-color: var(--midnight-line, #1d2740) !important;
 }
 
 /* Aurora theme refinements */

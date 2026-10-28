@@ -13,7 +13,7 @@
     forest: { label: "Forest", file: "forest", color: "#1b3326" },
     retro: { label: "Retro", file: "retro", color: "#1f5c5a" },
     dark: { label: "Dark", file: "dark", color: "#121110" },
-    midnight: { label: "Midnight", file: "midnight", color: "#18263f" },
+    midnight: { label: "Midnight", file: "midnight", color: "#0b1120" },
     aurora: { label: "Aurora", file: "aurora", color: "#17142c" },
   }).map(([key, value]) => [key, Object.freeze(value)])));
   const modes = Object.freeze(Object.keys(metadata));
