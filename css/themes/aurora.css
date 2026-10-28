@@ -58,10 +58,12 @@ html[data-theme="aurora"] {
   --aurora-dusk: linear-gradient(180deg, #15112e 0%, var(--aurora-sidebar) 40%, #0d0b1c 100%);
 
   /* Ornaments: a tiling aurora curtain of faint rays, a spectral ribbon for
-   * rules, and a mountain ridge for the empty-state window. */
+   * rules, a mountain ridge for the empty-state window, and the night side of
+   * the Earth seen from orbit, mint and violet glow banding its rim. */
   --aurora-curtain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 320 200'%3E%3Cdefs%3E%3ClinearGradient id='a' gradientUnits='userSpaceOnUse' x1='0' y1='160' x2='0' y2='8'%3E%3Cstop offset='0' stop-color='%235ee5b8' stop-opacity='.12'/%3E%3Cstop offset='.2' stop-color='%235ee5b8' stop-opacity='.085'/%3E%3Cstop offset='.48' stop-color='%236fc8f7' stop-opacity='.05'/%3E%3Cstop offset='.78' stop-color='%23b6a0ff' stop-opacity='.03'/%3E%3Cstop offset='1' stop-color='%23f09fd9' stop-opacity='0'/%3E%3C/linearGradient%3E%3ClinearGradient id='b' gradientUnits='userSpaceOnUse' x1='0' y1='104' x2='0' y2='0'%3E%3Cstop offset='0' stop-color='%236fc8f7' stop-opacity='.08'/%3E%3Cstop offset='.45' stop-color='%23b6a0ff' stop-opacity='.05'/%3E%3Cstop offset='1' stop-color='%23f09fd9' stop-opacity='0'/%3E%3C/linearGradient%3E%3Cpattern id='r' width='16' height='200' patternUnits='userSpaceOnUse'%3E%3Crect width='16' height='200' fill='%23fff' opacity='.42'/%3E%3Crect x='1' width='1.6' height='200' fill='%23fff'/%3E%3Crect x='4.4' width='.8' height='200' fill='%23fff' opacity='.6'/%3E%3Crect x='7' width='2.4' height='200' fill='%23fff' opacity='.85'/%3E%3Crect x='11' width='.7' height='200' fill='%23fff' opacity='.5'/%3E%3Crect x='13.2' width='1.3' height='200' fill='%23fff' opacity='.9'/%3E%3C/pattern%3E%3Cmask id='m'%3E%3Crect width='320' height='200' fill='url%28%23r%29'/%3E%3C/mask%3E%3Cfilter id='f' x='-5%25' y='-60%25' width='110%25' height='220%25'%3E%3CfeGaussianBlur stdDeviation='1.8'/%3E%3C/filter%3E%3C/defs%3E%3Cg mask='url%28%23m%29'%3E%3Cpath fill='url%28%23b%29' d='M0 92C24 80 70 104 112 94S190 64 236 80S296 104 320 92V0H0Z'/%3E%3Cpath fill='url%28%23a%29' d='M0 140C30 124 78 160 120 146S196 108 238 126S290 156 320 140V0H0Z'/%3E%3C/g%3E%3Cg fill='none' filter='url%28%23f%29' stroke-linecap='round'%3E%3Cpath stroke='%238fd2fb' stroke-opacity='.08' stroke-width='2' d='M0 92C24 80 70 104 112 94S190 64 236 80S296 104 320 92'/%3E%3Cpath stroke='%237cf0c6' stroke-opacity='.11' stroke-width='3' d='M0 140C30 124 78 160 120 146S196 108 238 126S290 156 320 140'/%3E%3C/g%3E%3C/svg%3E");
   --aurora-rule: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 56 16'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='0'%3E%3Cstop offset='0' stop-color='%235ee5b8' stop-opacity='0'/%3E%3Cstop offset='.22' stop-color='%235ee5b8'/%3E%3Cstop offset='.5' stop-color='%236fc8f7'/%3E%3Cstop offset='.78' stop-color='%23b6a0ff'/%3E%3Cstop offset='1' stop-color='%23f09fd9' stop-opacity='0'/%3E%3C/linearGradient%3E%3Cfilter id='f' x='-10%25' y='-80%25' width='120%25' height='260%25'%3E%3CfeGaussianBlur stdDeviation='1.4'/%3E%3C/filter%3E%3C/defs%3E%3Cpath d='M2 10C10 4 17 13 26 8S41 3 54 7' fill='none' stroke='url%28%23g%29' stroke-width='3' stroke-linecap='round' opacity='.45' filter='url%28%23f%29'/%3E%3Cpath d='M2 10C10 4 17 13 26 8S41 3 54 7' fill='none' stroke='url%28%23g%29' stroke-width='1.4' stroke-linecap='round'/%3E%3C/svg%3E");
   --aurora-ridge: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 20' preserveAspectRatio='none'%3E%3Cpath fill='%230b0a1d' d='M0 12L7 7L12 10L20 3L27 9L33 6L40 11L47 5L55 10L64 7V20H0Z'/%3E%3Cpath fill='none' stroke='%235ee5b8' stroke-opacity='.28' stroke-width='.6' d='M0 12L7 7L12 10L20 3L27 9L33 6L40 11L47 5L55 10L64 7'/%3E%3C/svg%3E");
+  --aurora-earth: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='56 74 144 96' fill='none'%3E%3Ccircle cx='232' cy='262' r='176' stroke='%23b6a0ff' stroke-width='22' stroke-opacity='.05'/%3E%3Ccircle cx='232' cy='262' r='166' stroke='%23b6a0ff' stroke-width='10' stroke-opacity='.1'/%3E%3Ccircle cx='232' cy='262' r='159' stroke='%235ee5b8' stroke-width='6' stroke-opacity='.18'/%3E%3Ccircle cx='232' cy='262' r='155' stroke='%235ee5b8' stroke-width='1.6' stroke-opacity='.7'/%3E%3Ccircle cx='232' cy='262' r='154' fill='%23080715'/%3E%3Cpath d='M150 140c15-8 35-12 50-12' stroke='%236fc8f7' stroke-opacity='.12'/%3E%3C/svg%3E");
 
   --theme-surface-page: var(--aurora-canvas);
   --theme-border-strong: var(--aurora-line-strong);
@@ -214,27 +216,37 @@ html[data-theme="aurora"] * {
 }
 
 /* --------------------------------------------------------------------------
-   Sidebar: an aurora curtain hanging over a dusk-to-night sky
+   Sidebar: an aurora curtain above, the Earth's lit rim below
    -------------------------------------------------------------------------- */
 html[data-theme="aurora"] .sidebar {
   border-color: var(--aurora-line);
   background-color: var(--aurora-sidebar);
-  background-image: var(--aurora-curtain), var(--aurora-dusk);
-  background-repeat: repeat-x, no-repeat;
-  background-position: left -3rem top 0, 0 0;
-  background-size: 22rem auto, 100% 100%;
+  background-image: var(--aurora-earth), var(--aurora-curtain), var(--aurora-dusk);
+  background-repeat: no-repeat, repeat-x, no-repeat;
+  background-position: right bottom, left -3rem top 0, 0 0;
+  background-size: 11.5rem auto, 22rem auto, 100% 100%;
+  /* The Earth rises after the last filter instead of behind a count. */
+  background-attachment: local, scroll, scroll;
   box-shadow: var(--shadow-sm), inset 0 1px 0 rgb(240 238 255 / 3%);
 }
 
-/* The curtain needs the full sidebar; the narrow rail keeps the dusk. */
+/* The curtain and Earth need the full sidebar; the narrow rail keeps the dusk. */
 html[data-theme="aurora"] .app-shell:is(.is-sidebar-collapsed, .is-sidebar-collapsing, .is-sidebar-expanding) .sidebar,
 html[data-theme="aurora"][data-sidebar-collapsed="true"] .app-shell .sidebar {
-  background-image: none, var(--aurora-dusk);
+  background-image: none, none, var(--aurora-dusk);
 }
 
 /* Glass paints its own film and scene over the sidebar. */
 html[data-theme="aurora"][data-glass="true"] .app-shell .sidebar {
   background-image: none;
+}
+
+/* On the full desktop sidebar the Earth scrolls with the list; extra bottom
+ * padding, which tag fitting already measures, keeps its rim clear. */
+@media (min-width: 821px) {
+  html[data-theme="aurora"]:not([data-glass="true"], [data-sidebar-collapsed="true"]) .app-shell:not(.is-sidebar-collapsed, .is-sidebar-collapsing, .is-sidebar-expanding) .sidebar {
+    padding-bottom: 5.5rem;
+  }
 }
 
 html[data-theme="aurora"] .sidebar-toggle-btn,
