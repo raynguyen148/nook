@@ -26,7 +26,14 @@ async function main() {
     } catch { response.writeHead(404); response.end(); }
   });
   await new Promise(resolve => server.listen(0, "127.0.0.1", resolve));
-  const browser = await chromium.launch({ headless: true });
+  // System Chrome by default; a failed launch must release the server so the process exits.
+  let browser;
+  try {
+    browser = await chromium.launch({ headless: true, channel: process.env.NOOK_BROWSER_CHANNEL || "chrome", timeout: 30_000 });
+  } catch (error) {
+    await new Promise(resolve => server.close(resolve));
+    throw error;
+  }
   const report = { completed: false, generatedAt: new Date().toISOString(), captures: [], errors: [], externalRequests: [], checks: [] };
   const context = await browser.newContext({ viewport: { width: 1440, height: 900 }, reducedMotion: "reduce" });
   await context.addInitScript(() => {

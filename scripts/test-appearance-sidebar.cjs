@@ -3,6 +3,10 @@
 const fs = require("node:fs/promises"), assert = require("node:assert/strict"), http = require("node:http"), path = require("node:path"), os = require("node:os");
 let server;
 const { chromium } = require(process.env.NOOK_PLAYWRIGHT_MODULE || "playwright");
+// Pin a non-default Frost level so the film checks prove the preference reaches CSS.
+// Desktop "frosted" resolves to these values in css/appearance.css.
+const frost = "frosted", frostFilter = "blur(26px) saturate(1.5)", readingFrostFilter = "blur(30px) saturate(1.15)";
+const glass = (enabled, transparency) => JSON.stringify({ enabled, transparency, frost });
 async function main() {
   const root = path.resolve(__dirname, ".."), out = process.env.NOOK_SCREENSHOT_DIR || await fs.mkdtemp(path.join(os.tmpdir(), "nook-sidebar-scroll-"));
   await fs.mkdir(out, { recursive: true });
@@ -24,14 +28,14 @@ async function main() {
   } });
   await new Promise(resolve => server.listen(0, "127.0.0.1", resolve));
   const origin = `http://127.0.0.1:${server.address().port}`;
-  const browser = await chromium.launch({ channel: "chrome", headless: true }), context = await browser.newContext({ viewport: { width: 1440, height: 900 }, reducedMotion: "reduce", serviceWorkers: "block" }), page = await context.newPage();
+  const browser = await chromium.launch({ channel: process.env.NOOK_BROWSER_CHANNEL || "chrome", headless: true }), context = await browser.newContext({ viewport: { width: 1440, height: 900 }, reducedMotion: "reduce", serviceWorkers: "block" }), page = await context.newPage();
   const checks = [], errors = [], states = [];
   const check = (s, b) => { assert.ok(b, s); checks.push(s); };
   page.on("pageerror", e => errors.push(e.message));
   page.on("console", m => { if (m.type() === "error")
     errors.push(m.text()); });
   const ready = async () => { await page.waitForFunction(() => document.querySelector(".app-shell")?.getAttribute("aria-busy") === "false" && !!document.querySelector("#nook-theme-stylesheet")?.sheet); await page.evaluate(() => document.fonts.ready); await page.waitForTimeout(100); };
-  const record = () => page.evaluate(() => { const side = document.querySelector(".sidebar"), scroll = document.querySelector("#sidebar-scroll"), film = getComputedStyle(side, "::after"); return { shellScroll: side.scrollTop, shellHeight: side.clientHeight, contentHeight: side.scrollHeight, scrollTop: scroll.scrollTop, scrollHeight: scroll.scrollHeight, clientHeight: scroll.clientHeight, filmHeight: parseFloat(film.height), filter: film.backdropFilter, overflow: document.documentElement.scrollWidth > innerWidth }; });
+  const record = () => page.evaluate(() => { const side = document.querySelector(".sidebar"), scroll = document.querySelector("#sidebar-scroll"), film = getComputedStyle(side, "::after"); return { shellScroll: side.scrollTop, shellHeight: side.clientHeight, contentHeight: side.scrollHeight, scrollTop: scroll.scrollTop, scrollHeight: scroll.scrollHeight, clientHeight: scroll.clientHeight, filmHeight: parseFloat(film.height), filter: film.backdropFilter, frost: document.documentElement.dataset.glassFrost, overflow: document.documentElement.scrollWidth > innerWidth }; });
   try {
     await page.goto(origin);
     await ready();
@@ -39,7 +43,7 @@ async function main() {
     const tag = demo.data.tags[0];
     for (let i = 0; i < 40; i++)
       demo.data.tags.push({ ...tag, id: `tag-scroll-${i}`, name: `Example long tag ${i}`, normalizedName: `example long tag ${i}` });
-    await page.evaluate(async (d) => { await PersonalNotesStorage.importBackup(d); localStorage.setItem("nook:onboarding-dismissed", "1"); localStorage.setItem("nook:glass", JSON.stringify({ enabled: true, transparency: 40 })); }, demo);
+    await page.evaluate(async ({ d, g }) => { await PersonalNotesStorage.importBackup(d); localStorage.setItem("nook:onboarding-dismissed", "1"); localStorage.setItem("nook:glass", g); }, { d: demo, g: glass(true, 40) });
     for (const theme of ["light", "coffee", "forest", "midnight", "dark", "aurora", "retro", "eink"]) {
       await page.setViewportSize({ width: 1440, height: 900 });
       await page.evaluate(t => localStorage.setItem("nook:theme", t), theme);
@@ -49,7 +53,7 @@ async function main() {
       await ready();
       const top = await record();
       // The film extends 1px over each border while the shell stays non-scrolling.
-      check(`${theme}: stationary shell covers full viewport pane`, top.shellScroll === 0 && top.contentHeight <= top.shellHeight + 1 && Math.abs(top.filmHeight - top.shellHeight) <= 2 && top.filter === "blur(20px) saturate(1.25)");
+      check(`${theme}: stationary shell covers full viewport pane`, top.shellScroll === 0 && top.contentHeight <= top.shellHeight + 1 && Math.abs(top.filmHeight - top.shellHeight) <= 2 && top.filter === frostFilter && top.frost === frost);
       await page.screenshot({ path: `${out}/${theme}-top.png` });
       const blank = async () => { const hidden = await page.addStyleTag({ content: "#sidebar-scroll,#sidebar-scroll *{visibility:hidden!important}" }); const r = await page.locator(".sidebar").boundingBox(); const image = await page.screenshot({ clip: { x: r.x + 2, y: r.y + 2, width: r.width - 20, height: r.height - 4 } }); await hidden.evaluate(el => el.remove()); return image; };
       const first = await blank();
@@ -136,7 +140,7 @@ async function main() {
       await page.locator("#display-tab").click();
       await page.waitForTimeout(300);
       await page.screenshot({ path: `${out}/${theme}-glass-settings.png` });
-      check(`${theme}: settings is a native modal with a separate film`, await page.locator("#organize-dialog").evaluate(el => el.matches(":modal") && getComputedStyle(el, "::before").backdropFilter.includes("blur(24px)")));
+      check(`${theme}: settings is a native modal with a separate film`, await page.locator("#organize-dialog").evaluate((el, filter) => el.matches(":modal") && getComputedStyle(el, "::before").backdropFilter === filter, readingFrostFilter));
       await page.keyboard.press("Escape");
       check(`${theme}: settings restores keyboard focus`, await page.locator("#organize-btn").evaluate(el => el === document.activeElement));
       await page.getByRole("button", { name: /^Open note:/ }).first().click();
@@ -158,28 +162,28 @@ async function main() {
       }
       await page.setViewportSize({ width: 1440, height: 900 });
       for (const transparency of [10, 50]) {
-        await page.evaluate(value => {
-          localStorage.setItem("nook:glass", JSON.stringify({ enabled: true, transparency: value }));
+        await page.evaluate(g => {
+          localStorage.setItem("nook:glass", g);
           localStorage.setItem("nook:background-style", "nature");
-        }, transparency);
+        }, glass(true, transparency));
         await page.reload();
         await ready();
         await page.screenshot({ path: `${out}/${theme}-glass-nature-${transparency}.png` });
         check(`${theme}: nature at ${transparency}% stays within viewport`, await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
       }
-      await page.evaluate(() => {
+      await page.evaluate(g => {
         localStorage.setItem("nook:background-style", "ambient");
-        localStorage.setItem("nook:glass", JSON.stringify({ enabled: true, transparency: 40 }));
-      });
+        localStorage.setItem("nook:glass", g);
+      }, glass(true, 40));
     }
     await page.setViewportSize({ width: 1440, height: 900 });
-    await page.evaluate(() => localStorage.setItem("nook:glass", JSON.stringify({ enabled: false, transparency: 40 })));
+    await page.evaluate(g => localStorage.setItem("nook:glass", g), glass(false, 40));
     await page.reload();
     await ready();
     check("glass off preserves original scroll/layout owner", await page.locator("#sidebar-scroll").evaluate(el => getComputedStyle(el).display === "contents"));
     const session = await context.newCDPSession(page);
     await session.send("Emulation.setEmulatedMedia", { features: [{ name: "prefers-reduced-transparency", value: "reduce" }] });
-    await page.evaluate(() => localStorage.setItem("nook:glass", JSON.stringify({ enabled: true, transparency: 40 })));
+    await page.evaluate(g => localStorage.setItem("nook:glass", g), glass(true, 40));
     await page.reload();
     await ready();
     check("reduced transparency preserves original layout", await page.locator("#sidebar-scroll").evaluate(el => getComputedStyle(el).display === "contents"));
