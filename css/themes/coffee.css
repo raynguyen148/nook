@@ -10,12 +10,12 @@
 html[data-theme="coffee"] {
   color-scheme: light;
   accent-color: #9a5523;
-  /* Display and reading faces carry full Vietnamese coverage on macOS; the
-   * fallbacks are the closest humanist faces shipped on Windows and Linux. */
+  /* Keep each reading run in a Vietnamese-complete serif. Charter lacks the
+   * stacked horn-and-tone glyphs used by words such as "được" and "trường". */
   --font-sans: Seravek, "Gill Sans Nova", Ubuntu, Calibri, "Segoe UI", system-ui, -apple-system, sans-serif;
-  --font-display: Cochin, Charter, "Bitstream Charter", Georgia, "Times New Roman", serif;
+  --font-display: Cochin, Baskerville, Georgia, "Times New Roman", serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-  --coffee-font-read: Charter, "Bitstream Charter", "Sitka Text", Cambria, Georgia, serif;
+  --coffee-font-read: Baskerville, Georgia, "Times New Roman", serif;
 
   /* Table, tray, and cups */
   --coffee-canvas: #ede2d3;

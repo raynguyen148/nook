@@ -6,16 +6,16 @@
  * contrast: ink 13+, muted 5.1+ on canvas, evergreen 6.2+ on dew, canopy 6+ · fonts: Vietnamese-safe
  */
 /* Nook - Forest theme: a sunlit clearing for slow, unhurried writing.
- * Palatino carries full Vietnamese coverage; Optima, Gill Sans, and Avenir
- * were rejected because they drop stacked Vietnamese diacritics. */
+ * Baskerville keeps the open book-serif texture without splitting Vietnamese
+ * tone-marked words across font fallbacks. */
 
 html[data-theme="forest"] {
   color-scheme: light;
   accent-color: #2f6b4f;
   --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI Variable Text", "Segoe UI", system-ui, Roboto, "Helvetica Neue", sans-serif;
-  --font-display: Palatino, "Palatino Linotype", "Book Antiqua", "URW Palladio L", P052, Georgia, serif;
+  --font-display: Baskerville, Georgia, "Times New Roman", serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-  --forest-font-read: Palatino, "Palatino Linotype", "Book Antiqua", "URW Palladio L", P052, Georgia, serif;
+  --forest-font-read: Baskerville, Georgia, "Times New Roman", serif;
 
   /* Clearing, moss, and morning dew */
   --forest-canvas: #ecf1e7;
