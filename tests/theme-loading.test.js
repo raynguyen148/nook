@@ -35,3 +35,11 @@ test("active CSS stays below the all-theme parse cost", () => {
   const allThemeBytes = activeThemeBytes.reduce((total, size) => total + size, sharedBytes);
   assert.ok(maximumActiveBytes < allThemeBytes * 0.7, `${maximumActiveBytes} should stay well below ${allThemeBytes}`);
 });
+
+test("Coffee interface text uses a Vietnamese-complete local fallback", () => {
+  const coffee = fs.readFileSync(path.join(root, "css/themes/coffee.css"), "utf8");
+  const fontStack = coffee.match(/--font-sans:\s*([^;]+);/)?.[1] ?? "";
+  assert.match(fontStack, /"Avenir Next"/);
+  assert.match(fontStack, /"Geist"/);
+  assert.doesNotMatch(fontStack, /Seravek|(?:^|,\s*)Avenir(?:,|$)/);
+});
