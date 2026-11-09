@@ -15,7 +15,10 @@ html[data-theme="retro"] {
   --font-display: SuperClarendon, Clarendon, "Clarendon URW", Georgia, "Times New Roman", serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
   --retro-font-type: "American Typewriter", "Courier Prime", "Courier New", Courier, monospace;
-  --retro-font-read: Baskerville, "Baskerville Old Face", "Libre Baskerville", Palatino, "Palatino Linotype", "Book Antiqua", Georgia, serif;
+  /* Baskerville's hairline strokes make stacked Vietnamese marks hard to read at
+   * body size. Palatino is sturdier, keeps lining figures, and ships on macOS
+   * ("Palatino Linotype" and "Book Antiqua" cover Windows). */
+  --retro-font-read: Palatino, "Palatino Linotype", "Book Antiqua", Georgia, "Times New Roman", serif;
 
   /* Paper stock */
   --retro-canvas: #ebe0c8;
@@ -1056,7 +1059,7 @@ html[data-theme="retro"] :where(.quick-view-content, .note-content-preview) {
   color: var(--retro-ink);
   background: var(--retro-paper);
   font-family: var(--retro-font-read);
-  font-variant-numeric: oldstyle-nums proportional-nums;
+  font-variant-numeric: lining-nums proportional-nums;
 }
 
 html[data-theme="retro"] .note-dialog #note-content,
