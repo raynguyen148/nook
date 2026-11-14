@@ -1,6 +1,6 @@
 "use strict";
 
-const CACHE_VERSION = "nook-app-ee73c168f8c8";
+const CACHE_VERSION = "nook-app-fed52e2a7cee";
 const APP_ASSETS = [
   "./",
   "./index.html",
@@ -63,6 +63,12 @@ const APP_ASSETS = [
   "./fonts/geist/geist-vietnamese-wght-italic.woff2",
   "./fonts/geist/geist-latin-ext-wght-italic.woff2",
   "./fonts/geist/geist-latin-wght-italic.woff2",
+  "./fonts/lora/lora-vietnamese-wght-normal.woff2",
+  "./fonts/lora/lora-latin-ext-wght-normal.woff2",
+  "./fonts/lora/lora-latin-wght-normal.woff2",
+  "./fonts/lora/lora-vietnamese-wght-italic.woff2",
+  "./fonts/lora/lora-latin-ext-wght-italic.woff2",
+  "./fonts/lora/lora-latin-wght-italic.woff2",
   "./js/storage.js",
   "./js/markdown.js",
   "./js/app/runtime.js",

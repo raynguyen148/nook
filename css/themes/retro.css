@@ -14,11 +14,9 @@ html[data-theme="retro"] {
   --font-sans: "Avenir Next", Avenir, "Segoe UI", system-ui, -apple-system, sans-serif;
   --font-display: SuperClarendon, Clarendon, "Clarendon URW", Georgia, "Times New Roman", serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  /* Edit and Preview share the typewriter face so the rendered page keeps the
+   * theme's voice instead of falling back to a plain book serif. */
   --retro-font-type: "American Typewriter", "Courier Prime", "Courier New", Courier, monospace;
-  /* Baskerville's hairline strokes make stacked Vietnamese marks hard to read at
-   * body size. Palatino is sturdier, keeps lining figures, and ships on macOS
-   * ("Palatino Linotype" and "Book Antiqua" cover Windows). */
-  --retro-font-read: Palatino, "Palatino Linotype", "Book Antiqua", Georgia, "Times New Roman", serif;
 
   /* Paper stock */
   --retro-canvas: #ebe0c8;
@@ -1053,13 +1051,15 @@ html[data-theme="retro"] .empty-state__icon { border: 1.5px solid var(--retro-ac
 html[data-theme="retro"] .startup-error { border-color: var(--retro-border-strong); color: var(--retro-ink); background: var(--retro-red-soft); box-shadow: var(--retro-shadow-md); }
 
 /* --------------------------------------------------------------------------
-   Markdown preview: book typography, ledger tables, and a CRT for code
+   Markdown preview: typed pages, ledger tables, and a CRT for code
    -------------------------------------------------------------------------- */
 html[data-theme="retro"] :where(.quick-view-content, .note-content-preview) {
   color: var(--retro-ink);
   background: var(--retro-paper);
-  font-family: var(--retro-font-read);
-  font-variant-numeric: lining-nums proportional-nums;
+  font-family: var(--retro-font-type);
+  /* American Typewriter ships no italic; let emphasis slant instead of
+   * silently rendering upright under the global font-synthesis: none. */
+  font-synthesis-style: auto;
 }
 
 html[data-theme="retro"] .note-dialog #note-content,

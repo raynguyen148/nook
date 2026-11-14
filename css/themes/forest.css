@@ -769,8 +769,9 @@ html[data-theme="forest"] :where(.toolbar, .topbar-actions.is-pinned) {
   box-shadow: var(--forest-shadow-xs);
 }
 
-/* Inputs, menus, and segmented controls */
-html[data-theme="forest"] :where(input:not([type]), input[type="text"], input[type="search"]:not(#command-search), input[type="email"], input[type="url"], textarea, select, .color-picker__trigger) {
+/* Inputs, menus, and segmented controls. The note editors stay a clean
+ * canvas, as in every other theme, so they skip the boxed field treatment. */
+html[data-theme="forest"] :where(input:not([type]), input[type="text"], input[type="search"]:not(#command-search), input[type="email"], input[type="url"], textarea:not(#note-content, #secondary-note-content-editor), select, .color-picker__trigger) {
   border: 1px solid var(--forest-border-input) !important;
   border-radius: var(--forest-radius-control) !important;
   color: var(--forest-ink) !important;
@@ -780,7 +781,7 @@ html[data-theme="forest"] :where(input:not([type]), input[type="text"], input[ty
 
 html[data-theme="forest"] :where(input, textarea)::placeholder { color: var(--forest-muted); opacity: 1; }
 
-html[data-theme="forest"] :where(input:not([type]), input[type="text"], input[type="search"]:not(#command-search), input[type="email"], input[type="url"], textarea, select, .color-picker__trigger):is(:focus, :focus-visible),
+html[data-theme="forest"] :where(input:not([type]), input[type="text"], input[type="search"]:not(#command-search), input[type="email"], input[type="url"], textarea:not(#note-content, #secondary-note-content-editor), select, .color-picker__trigger):is(:focus, :focus-visible),
 html[data-theme="forest"] .tag-picker:focus-within {
   border-color: var(--forest-accent) !important;
   outline: 2px solid transparent !important;

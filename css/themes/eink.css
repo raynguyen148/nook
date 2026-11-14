@@ -21,6 +21,11 @@ html[data-theme="eink"] {
   /* Iowan Old Style and Charter split several Vietnamese words across font
    * fallbacks. Baskerville keeps the same bookish voice with complete glyphs. */
   --font-display: Baskerville, Georgia, "Times New Roman", serif;
+  /* Baskerville's hairlines and old-style figures blur stacked Vietnamese marks
+   * and make "1" read as "l" at body size. Avenir Next is quiet, airy, and
+   * Vietnamese-complete (Optima and Hiragino lack dotted/horned vowels);
+   * headings keep Baskerville's bookish voice. */
+  --eink-font-read: "Avenir Next", "Segoe UI", system-ui, sans-serif;
   --font-mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
 
   /* Paper pulp grain, kept to the large page background only */
@@ -1469,7 +1474,8 @@ html[data-theme="eink"] .empty-state__icon svg {
 html[data-theme="eink"] .quick-view-content {
   color: var(--eink-ink);
   background: transparent;
-  font-family: var(--font-display);
+  font-family: var(--eink-font-read);
+  letter-spacing: 0.005em;
   line-height: 1.85;
 }
 
