@@ -2,7 +2,7 @@ globalThis[Symbol.for("nook.app.modules")].register("data-import", (app) => {
   "use strict";
 
   const { api, storage, elements, library, ui } = app;
-  const MAX_BACKUP_BYTES = 50 * 1024 * 1024;
+  const MAX_BACKUP_BYTES = 100 * 1024 * 1024;
   const MAX_MARKDOWN_BYTES = 200000;
   const MAX_MARKDOWN_BATCH_BYTES = 10 * 1024 * 1024;
   let pendingImport = null;
@@ -39,7 +39,7 @@ globalThis[Symbol.for("nook.app.modules")].register("data-import", (app) => {
     const replace = elements.importMode.value === "replace";
     elements.importConflictField.classList.toggle("is-hidden", replace);
     if (replace) {
-      elements.importResultSummary.textContent = "The current notes, types, tags, Trash, and history will be replaced. Download a backup first.";
+      elements.importResultSummary.textContent = "The current notes, images, types, tags, Trash, and history will be replaced. Images protected for recovery or recent insertions are kept. Download a backup first.";
       elements.confirmImport.textContent = "Replace library…";
       elements.importPreviewList.replaceChildren();
       elements.confirmImport.disabled = false;
@@ -66,11 +66,11 @@ globalThis[Symbol.for("nook.app.modules")].register("data-import", (app) => {
     const file = elements.importInput.files?.[0];
     if (!file || busy || elements.importDialog.open) return;
     try {
-      if (file.size > MAX_BACKUP_BYTES) throw new Error("Choose a backup smaller than 50 MB.");
+      if (file.size > MAX_BACKUP_BYTES) throw new Error("Choose a backup smaller than 100 MB.");
       const value = JSON.parse(await file.text());
       const inspection = storage.inspectBackup(value);
       pendingImport = { kind: "backup", value, preview: null };
-      elements.importSummary.textContent = `${file.name} · ${inspection.counts.notes} notes · ${inspection.counts.types} types · ${inspection.counts.tags} tags · ${inspection.counts.noteVersions} saved versions. Choose how to import.`;
+      elements.importSummary.textContent = `${file.name} · ${inspection.counts.notes} notes · ${inspection.counts.types} types · ${inspection.counts.tags} tags · ${inspection.counts.noteVersions} saved versions · ${inspection.counts.attachments} images. Choose how to import.`;
       elements.importMode.value = "merge";
       elements.importConflicts.value = "copy";
       elements.importBackupOptions.classList.remove("is-hidden");
@@ -106,7 +106,7 @@ globalThis[Symbol.for("nook.app.modules")].register("data-import", (app) => {
     if (pending.kind === "backup" && elements.importMode.value === "replace") {
       if (api.hasUnsavedNoteChanges() || api.hasUnsavedSecondaryChanges?.()) throw new Error("Save or close unfinished editor drafts before replacing the library.");
       const confirmed = await api.requestConfirmation({ title: "Replace the entire library?",
-        description: "This replaces every saved note, type, tag, Trash entry, and history version. Export your current library first. Recovery drafts stay in this browser.",
+        description: "This replaces every saved note, image, type, tag, Trash entry, and history version. Export your current library first. Recovery drafts and images protected for recovery or recent insertions stay in this browser.",
         confirmLabel: "Replace library", cancelLabel: "Keep library" });
       if (!confirmed) return;
       if (api.hasUnsavedNoteChanges() || api.hasUnsavedSecondaryChanges?.()) throw new Error("An editor changed while confirming. Save or close it before replacing the library.");

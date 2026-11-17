@@ -772,6 +772,11 @@
             </div>
           </div>
 
+          <div id="image-upload-status" class="image-upload-status is-hidden" role="status">
+            <span class="skeleton image-upload-status__skeleton" aria-hidden="true"></span>
+            <span data-image-upload-label></span>
+            <button class="button button-secondary button-compact" type="button" aria-label="Dismiss image status">Dismiss</button>
+          </div>
           <div id="note-content-field" class="field note-content-field">
             <div class="field-label-row">
               <label for="note-content">Markdown</label>
@@ -835,6 +840,13 @@
                   </svg>
                 </button>
                 <span class="note-formatting-tool__tooltip" role="tooltip">Alert</span>
+              </div>
+              <div class="note-formatting-tool">
+                <button id="insert-image-btn" class="note-formatting-tool__button" type="button" aria-label="Insert image" aria-describedby="insert-image-tip">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.75" y="3.75" width="16.5" height="16.5" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /><path d="m4 17 5-5 4 4 3-3 4 4" /></svg>
+                </button>
+                <span id="insert-image-tip" class="note-formatting-tool__tooltip" role="tooltip">Insert image · or paste from clipboard</span>
+                <input id="image-input" class="is-hidden" type="file" accept="image/png,image/jpeg,image/gif,image/webp,image/svg+xml" aria-label="Choose an image" tabindex="-1" />
               </div>
               <div class="note-formatting-tool">
                 <button class="note-formatting-tool__button" type="button" data-note-formatting="footnote" aria-label="Insert footnote">
@@ -1350,6 +1362,11 @@
                       <p class="field-help">Press Enter to add a tag, or choose a suggestion.</p>
                     </div>
                   </div>
+                  <div id="secondary-image-upload-status" class="image-upload-status is-hidden" role="status">
+                    <span class="skeleton image-upload-status__skeleton" aria-hidden="true"></span>
+                    <span data-image-upload-label></span>
+                    <button class="button button-secondary button-compact" type="button" aria-label="Dismiss side-note image status">Dismiss</button>
+                  </div>
                   <div id="secondary-content-field" class="field note-content-field">
                     <div class="note-formatting-toolbar" role="toolbar" aria-label="Markdown formatting">
                       <div class="note-formatting-tool">
@@ -1410,6 +1427,13 @@
                           </svg>
                         </button>
                         <span class="note-formatting-tool__tooltip" role="tooltip">Alert</span>
+                      </div>
+                      <div class="note-formatting-tool">
+                        <button id="secondary-insert-image-btn" class="note-formatting-tool__button" type="button" aria-label="Insert image in side note" aria-describedby="secondary-insert-image-tip">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.75" y="3.75" width="16.5" height="16.5" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /><path d="m4 17 5-5 4 4 3-3 4 4" /></svg>
+                        </button>
+                        <span id="secondary-insert-image-tip" class="note-formatting-tool__tooltip" role="tooltip">Insert image · or paste from clipboard</span>
+                        <input id="secondary-image-input" class="is-hidden" type="file" accept="image/png,image/jpeg,image/gif,image/webp,image/svg+xml" aria-label="Choose a side-note image" tabindex="-1" />
                       </div>
                       <div class="note-formatting-tool">
                         <button class="note-formatting-tool__button" type="button" data-secondary-note-formatting="footnote" aria-label="Insert footnote">
@@ -1918,7 +1942,7 @@
           <section class="management-row data-setting" aria-labelledby="data-backup-title">
             <div class="data-setting__copy">
               <h3 id="data-backup-title" class="management-row__name">Back up</h3>
-              <p class="dialog-description">Download notes, types, tags, Trash, and version history. Unfinished recovery drafts stay only in this browser and are not included.</p>
+              <p class="dialog-description">Download notes, images, types, tags, Trash, and version history. Unfinished recovery drafts stay only in this browser and are not included.</p>
             </div>
             <div class="data-setting__actions">
               <button id="data-export-btn" class="button button-secondary" type="button">Export backup</button>
@@ -1940,6 +1964,14 @@
           <section class="management-row data-setting">
             <div class="data-setting__copy"><h3 class="management-row__name">Draft Recovery</h3><p class="dialog-description">Find unfinished drafts from all Nook tabs. Preview, recover, save a copy, or download Markdown.</p></div>
             <div class="data-setting__actions"><button class="button button-secondary" type="button" data-open-recovery>Review drafts</button></div>
+          </section>
+          <section class="management-row data-setting" aria-labelledby="image-storage-title">
+            <div class="data-setting__copy">
+              <h3 id="image-storage-title" class="management-row__name">Local images</h3>
+              <p class="dialog-description">Images stay in this browser. Keep up to 50 MB, with 10 MB per image. Remove an image’s Markdown reference to hide it; cleanup keeps images used by notes, Trash, history, or drafts.</p>
+              <p id="image-storage-status" class="dialog-description" role="status">Check for unused images, then confirm what to remove. Images still in use are kept.</p>
+            </div>
+            <div class="data-setting__actions"><button id="review-unused-images-btn" class="button button-secondary" type="button">Remove unused images…</button></div>
           </section>
           <section class="management-row data-setting" aria-labelledby="storage-health-title">
             <div class="data-setting__copy">
@@ -2255,6 +2287,7 @@
     <script src="js/app/local-state.js"></script>
     <script src="js/app/search.js"></script>
     <script src="js/app/pane-controller.js"></script>
+    <script src="js/app/attachments.js"></script>
     <script src="js/app/library-sidebar.js"></script>
     <script src="js/app/workspace.js"></script>
     <script src="js/app/workspace-resize.js"></script>

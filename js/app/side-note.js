@@ -160,6 +160,8 @@
       resetCopyButtonFeedback(elements.secondaryCopyContent);
 
       const finishClose = () => {
+        api.releaseMarkdownImages(elements.secondaryNoteContent);
+        api.releaseMarkdownImages(elements.secondarySplitPreview);
         cancelSecondarySurfaceAnimation();
         window.cancelAnimationFrame(secondarySplitPreviewFrame);
         secondarySplitPreviewFrame = 0;
@@ -329,7 +331,7 @@
     function renderSecondarySplitPreview({ synchronize = true } = {}) {
       if (ui.secondaryNoteMode !== "split" || !elements.secondarySplitPreview || !elements.secondaryNoteContentEditor) return;
       lockNoteEditorScrollLeader(elements.secondaryNoteContentEditor);
-      globalThis.NookMarkdown.renderInto(
+      api.renderMarkdown(
         elements.secondarySplitPreview,
         elements.secondaryNoteContentEditor.value || "",
         "No content yet.",
@@ -410,7 +412,7 @@
 
       if (mode === "split") {
         if (elements.secondarySplitPreview && elements.secondaryNoteContentEditor) {
-          globalThis.NookMarkdown.renderInto(
+          api.renderMarkdown(
             elements.secondarySplitPreview,
             elements.secondaryNoteContentEditor.value || "",
             "No content yet.",
@@ -421,7 +423,7 @@
         }
       } else if (mode === "preview") {
         if (elements.secondaryNoteContentEditor && elements.secondaryNoteContent) {
-          globalThis.NookMarkdown.renderInto(elements.secondaryNoteContent, elements.secondaryNoteContentEditor.value || "");
+          api.renderMarkdown(elements.secondaryNoteContent, elements.secondaryNoteContentEditor.value || "");
         }
         if (elements.secondaryNoteTitleInput && elements.secondaryNoteTitle) {
           elements.secondaryNoteTitle.textContent = elements.secondaryNoteTitleInput.value.trim() || "Untitled note";
@@ -648,6 +650,7 @@
     }
 
     function openSecondaryNote(note, mode = "preview") {
+      api.resetImageUploadStatus(elements.secondaryNoteContentEditor);
       secondarySaveOperation = null;
       ui.secondaryNoteId = note.id;
       ui.secondaryNotePreviewHeaderCollapsed = false;
@@ -686,7 +689,7 @@
       elements.secondaryNoteType.replaceChildren(makeTypeBadge(type));
       renderSecondaryPreviewTags(note.tagIds);
 
-      globalThis.NookMarkdown.renderInto(elements.secondaryNoteContent, note.content || "");
+      api.renderMarkdown(elements.secondaryNoteContent, note.content || "");
       renderSecondaryTimestamps(note.createdAt, note.updatedAt);
 
       // Set Editor elements
@@ -703,7 +706,7 @@
         elements.secondaryNoteContentEditor.scrollTop = 0;
       }
       if (elements.secondarySplitPreview) {
-        globalThis.NookMarkdown.renderInto(
+        api.renderMarkdown(
           elements.secondarySplitPreview,
           note.content || "",
           "No content yet.",

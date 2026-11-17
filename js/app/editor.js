@@ -394,6 +394,7 @@ globalThis[Symbol.for("nook.app.modules")].register("editor", (app) => {
     focusTitle = true,
   } = {}) {
     api.resetPaneNotePicker?.("primary");
+    api.resetImageUploadStatus(elements.noteContent);
     primarySaveOperation = null;
     resetCopyButtonFeedback(elements.copyNoteContent);
     clearNoteAutoSave();

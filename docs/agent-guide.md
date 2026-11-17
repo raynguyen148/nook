@@ -97,6 +97,7 @@ Choose an owner by responsibility:
 | --- | --- |
 | Database, validation, migration, CRUD, history records, backup contract | [storage.js](../js/storage.js) |
 | Markdown parsing, safe rendered DOM | [markdown.js](../js/markdown.js) |
+| Local image paste/picker, hydration, resize, and cleanup UI | [attachments.js](../js/app/attachments.js), [storage.js](../js/storage.js) |
 | Static markup or cached controls | [index.html](../index.html), [elements.js](../js/app/elements.js) |
 | Shared state/constants/pure UI helpers | [core.js](../js/app/core.js) |
 | Legacy recovery compatibility or backup health | [local-state.js](../js/app/local-state.js) |
@@ -277,7 +278,8 @@ Existing behavior to retain:
   new note. Preview renders the source, while Edit Markdown edits raw text.
 - Copy uses raw Markdown. Rendering goes through `NookMarkdown.renderInto()`;
   raw HTML stays inert except the allowlisted details/summary syntax, unsafe
-  links stay inert, and images do not fetch remote resources.
+  links stay inert, and images do not fetch remote resources. App previews use
+  `api.renderMarkdown()` to hydrate local attachments and release Blob URLs.
 - Preserve source whitespace and Markdown syntax. Do not trim or rewrite the
   stored source to improve a preview or import; storage owns line-ending
   normalization, and imported front matter remains literal content.

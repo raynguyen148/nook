@@ -427,7 +427,7 @@
     function renderNoteEditorPreview({ synchronize = true } = {}) {
       if (ui.noteEditorMode !== "split") return;
       lockNoteEditorScrollLeader(elements.noteContent);
-      globalThis.NookMarkdown.renderInto(
+      api.renderMarkdown(
         elements.noteContentPreview,
         elements.noteContent.value,
         "No content yet.",

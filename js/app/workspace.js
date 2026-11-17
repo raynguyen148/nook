@@ -57,7 +57,7 @@
       } else {
         elements.quickViewTags.append(createElement("span", { className: "quick-view-no-tags", text: "No tags" }));
       }
-      globalThis.NookMarkdown.renderInto(elements.quickViewContent, note.content);
+      api.renderMarkdown(elements.quickViewContent, note.content);
       elements.quickViewDates.replaceChildren();
       if (note.createdAt && note.updatedAt) {
         elements.quickViewDates.append(
@@ -171,6 +171,8 @@
 
       const finishClose = () => {
         if (transitionSequence !== noteDetailTransitionSequence) return;
+        api.releaseMarkdownImages(elements.quickViewContent);
+        api.releaseMarkdownImages(elements.noteContentPreview);
         elements.noteDetailWorkspace.style.willChange = "auto";
         closeAnimation.cancel();
         if (noteDetailAnimation === closeAnimation) noteDetailAnimation = null;

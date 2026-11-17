@@ -363,9 +363,16 @@
     return link;
   }
 
-  function makeImage(label) {
+  function makeImage(label, destination) {
     // Keep image syntax offline: expose its accessible label without creating a fetchable element.
     const imageAlt = createElement("span", "markdown-image-alt");
+    const local = /^nook-asset:([a-zA-Z0-9_-]{1,100})$/.exec(destination?.url || "");
+    if (local) {
+      imageAlt.className = "markdown-local-image";
+      imageAlt.dataset.nookAssetId = local[1];
+      const width = /^width=(\d{2,4})$/.exec(destination.title || "");
+      if (width) imageAlt.dataset.nookImageWidth = String(Math.max(80, Math.min(4096, Number(width[1]))));
+    }
     imageAlt.setAttribute("role", "img");
     imageAlt.setAttribute("aria-label", `Image: ${label || "untitled"}`);
     appendText(imageAlt, label || "Image");
@@ -525,7 +532,11 @@
         const image = parseInlineLinkAt(source, index, context, pairs);
         if (image) {
           flushText(index);
-          const element = makeImage(image.label);
+          const element = makeImage(image.label, image.destination);
+          if (element?.dataset.nookAssetId) {
+            element.dataset.nookImageSource = source.slice(index, image.end);
+            element.dataset.nookImageLabel = image.label;
+          }
           if (element) parent.append(element);
           else appendDecodedText(parent, source.slice(index, image.end));
           index = image.end;

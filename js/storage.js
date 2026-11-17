@@ -2,7 +2,7 @@
   "use strict";
 
   const DB_NAME = "personal-notes";
-  const DB_VERSION = 3;
+  const DB_VERSION = 4;
   const LEGACY_STORAGE_KEY = "ray-interview-practice-library-v1";
   const BOOTSTRAP_META_KEY = "bootstrap-v1";
   const TAG_PREFIX_MIGRATION_META_KEY = "tag-prefix-removal-v1";
@@ -12,6 +12,10 @@
   const MAX_TITLE_LENGTH = 160;
   const MAX_NAME_LENGTH = 48;
   const MAX_CONTENT_LENGTH = 50000;
+  const MAX_IMAGE_BYTES = 10 * 1024 * 1024;
+  const MAX_IMAGE_LIBRARY_BYTES = 50 * 1024 * 1024;
+  const IMAGE_TOTALS_KEY = "image-totals-v1";
+  const IMAGE_PASTE_GRACE_MS = 5 * 60 * 1000;
   const HISTORY_RETENTION_LIMIT = 50;
   const HISTORY_MAX_CONTENT_BYTES = 5 * 1024 * 1024;
   const MAX_NOTE_VERSIONS_PER_IMPORT = MAX_RECORDS_PER_IMPORT * HISTORY_RETENTION_LIMIT;
@@ -38,6 +42,7 @@
     types: "types",
     tags: "tags",
     noteVersions: "noteVersions",
+    attachments: "attachments",
     meta: "meta",
   });
 
@@ -99,6 +104,9 @@
   }
 
   function createStores(database, transaction) {
+    if (!database.objectStoreNames.contains(STORE.attachments)) {
+      database.createObjectStore(STORE.attachments, { keyPath: "id" });
+    }
     if (!database.objectStoreNames.contains(STORE.notes)) {
       const notes = database.createObjectStore(STORE.notes, { keyPath: "id" });
       notes.createIndex("by-type-id", "typeId");
@@ -229,6 +237,232 @@
       throw new Error(`${label} needs a valid id.`);
     }
     return value.trim();
+  }
+
+  // Scan conservatively, including literal/code references: retaining an extra
+  // image is safer than breaking a draft or a historical Markdown reference.
+  function attachmentIds(content) {
+    return [...new Set(String(content || "").match(/nook-asset:[a-zA-Z0-9_-]{1,100}(?![a-zA-Z0-9_-])/g) || [])]
+      .map((reference) => reference.slice(11));
+  }
+
+  function imageMime(bytes) {
+    const starts = (...values) => values.every((value, index) => bytes[index] === value);
+    const ascii = (start, end) => String.fromCharCode(...bytes.subarray(start, end));
+    if (bytes.length >= 24 && starts(137, 80, 78, 71, 13, 10, 26, 10)) return "image/png";
+    if (bytes.length >= 4 && starts(255, 216, 255)) return "image/jpeg";
+    if (bytes.length >= 13 && ["GIF87a", "GIF89a"].includes(ascii(0, 6))) return "image/gif";
+    if (bytes.length >= 16 && ascii(0, 4) === "RIFF" && ascii(8, 12) === "WEBP") return "image/webp";
+    if (bytes[0] === 60 || bytes[0] === 239 || bytes[0] <= 32) {
+      let source;
+      try { source = new TextDecoder("utf-8", { fatal: true }).decode(bytes); } catch { /* Report unsupported files below. */ }
+      if (source?.trimStart().startsWith("<")) { validateSvg(source); return "image/svg+xml"; }
+    }
+    throw new Error("Choose a PNG, JPEG, GIF, WebP, or static SVG image.");
+  }
+
+  function validateSvg(source) {
+    const fail = () => { throw new Error("This SVG contains unsupported or external content. Use a static, self-contained SVG or export it as PNG."); };
+    // No document embedding: even accepted SVG is displayed only through <img>.
+    // Reject active elements, entities, processing instructions, external URLs,
+    // and CSS escapes rather than rewriting or executing untrusted SVG content.
+    if (/<!DOCTYPE|<!ENTITY|<\?(?!xml\s)/i.test(source)) fail();
+    const document = new DOMParser().parseFromString(source, "image/svg+xml");
+    if (document.querySelector("parsererror") || document.documentElement.localName !== "svg") fail();
+    const allowed = new Set(("svg g defs symbol use path rect circle ellipse line polyline polygon text tspan textPath title desc clipPath mask pattern marker linearGradient radialGradient stop style filter feBlend feColorMatrix feComponentTransfer feComposite feConvolveMatrix feDiffuseLighting feDisplacementMap feDistantLight feDropShadow feFlood feFuncA feFuncB feFuncG feFuncR feGaussianBlur feMerge feMergeNode feMorphology feOffset fePointLight feSpecularLighting feSpotLight feTile feTurbulence view").split(" "));
+    function safeCss(value) {
+      if (/[\\@]/.test(value) || /\/\*/.test(value)) fail();
+      for (const match of value.matchAll(/url\s*\(([^)]*)\)/gi)) {
+        if (!/^\s*['"]?#[a-zA-Z0-9_.:-]+['"]?\s*$/.test(match[1])) fail();
+      }
+    }
+    const nodes = [...document.querySelectorAll("*")];
+    if (nodes.length > 10000) fail();
+    nodes.forEach((node) => {
+      if (node.namespaceURI !== "http://www.w3.org/2000/svg" || !allowed.has(node.localName)) fail();
+      if (node.localName === "style") safeCss(node.textContent);
+      for (const attribute of node.attributes) {
+        if (/^on/i.test(attribute.localName) || ["src", "base"].includes(attribute.localName)) fail();
+        if (attribute.localName === "href" && !/^#[a-zA-Z0-9_.:-]+$/.test(attribute.value)) fail();
+        if (!attribute.name.startsWith("xmlns")) safeCss(attribute.value);
+      }
+    });
+  }
+
+  async function validateAttachment(file) {
+    if (!file || !Number.isFinite(file.size) || file.size <= 0 || file.size > MAX_IMAGE_BYTES) {
+      throw new Error("Each image must be nonempty and 10 MB or smaller.");
+    }
+    const bytes = new Uint8Array(await file.arrayBuffer());
+    return new Blob([bytes], { type: imageMime(bytes) });
+  }
+
+  function sameAttachment(left, right) {
+    return left.mimeType === right.mimeType && left.bytes.length === right.bytes.length &&
+      left.bytes.every((value, index) => value === right.bytes[index]);
+  }
+
+  function imageTotals(attachments) {
+    return { count: attachments.length, bytes: attachments.reduce((total, item) => total + item.bytes.length, 0) };
+  }
+
+  function writeImageTotals(stores, attachments) {
+    const totals = imageTotals(attachments);
+    if (totals.count > MAX_RECORDS_PER_IMPORT) throw new Error("Local images exceed the 10,000-image limit.");
+    if (totals.bytes > MAX_IMAGE_LIBRARY_BYTES) throw new Error("Local images exceed 50 MB. Remove unused images before adding more.");
+    stores.meta.put({ key: IMAGE_TOTALS_KEY, value: totals });
+  }
+
+  async function addAttachment(file) {
+    if (!file || !Number.isFinite(file.size) || file.size <= 0 || file.size > MAX_IMAGE_BYTES) {
+      throw new Error("Each image must be nonempty and 10 MB or smaller.");
+    }
+    const bytes = new Uint8Array(await file.arrayBuffer());
+    const mimeType = imageMime(bytes);
+    const digest = globalThis.crypto?.subtle
+      ? new Uint8Array(await globalThis.crypto.subtle.digest("SHA-256", bytes)) : null;
+    const id = digest ? `image-${Array.from(digest, (byte) => byte.toString(16).padStart(2, "0")).join("")}` : newId("image");
+    const attachment = { id, name: String(file.name || "Pasted image").slice(0, 160), mimeType, bytes,
+      createdAt: nowIso(), protectedUntil: Date.now() + IMAGE_PASTE_GRACE_MS };
+    return runAtomicMutation({
+      read: (stores) => [
+        { key: "existing", request: stores.attachments.get(id) },
+        { key: "totals", request: stores.meta.get(IMAGE_TOTALS_KEY) },
+      ],
+      apply: (records, stores) => {
+        if (records.existing) {
+          if (!sameAttachment(records.existing, attachment)) throw new Error("Image identity collision. This image was not inserted.");
+          stores.attachments.put({ ...records.existing, protectedUntil: attachment.protectedUntil });
+          return { result: { id, name: attachment.name }, changed: false };
+        }
+        const totals = records.totals?.value || { count: 0, bytes: 0 };
+        if (totals.count >= MAX_RECORDS_PER_IMPORT) throw new Error("Local images exceed the 10,000-image limit.");
+        if (totals.bytes + bytes.length > MAX_IMAGE_LIBRARY_BYTES) throw new Error("Local images exceed 50 MB. Remove unused images before adding more.");
+        stores.attachments.put(attachment);
+        stores.meta.put({ key: IMAGE_TOTALS_KEY, value: { count: totals.count + 1, bytes: totals.bytes + bytes.length } });
+        return { result: { id, name: attachment.name } };
+      },
+    });
+  }
+
+  async function getAttachment(id) {
+    const database = await openDatabase();
+    const transaction = database.transaction([STORE.attachments], "readonly");
+    const record = await requestResult(transaction.objectStore(STORE.attachments).get(requireId(id, "Image")));
+    await transactionDone(transaction);
+    return record ? new Blob([record.bytes], { type: record.mimeType }) : null;
+  }
+
+  function recoveryImageIds() {
+    const ids = new Set();
+    try {
+      const storage = globalThis.localStorage;
+      if (!storage) throw new Error();
+      for (let index = 0; index < storage.length; index += 1) {
+        const key = storage.key(index);
+        if (!key?.startsWith("nook:editor-draft:v2:") && key !== "nook:note-editor-draft") continue;
+        // Keep even expired records until the recovery owner removes them.
+        const record = JSON.parse(storage.getItem(key));
+        if (typeof record?.draft?.content !== "string") throw new Error();
+        [record.draft.content, record.committedSnapshot?.content].forEach((content) => attachmentIds(content).forEach((id) => ids.add(id)));
+      }
+    } catch {
+      throw new Error("Draft recovery could not be checked. Images were kept; allow browser storage and try again.");
+    }
+    return ids;
+  }
+
+  async function protectDraftAttachments(key, contents, savedAt) {
+    if (typeof key !== "string" || !key.startsWith("nook:editor-draft:v2:") || !Number.isFinite(Date.parse(savedAt))) return;
+    const ids = [...new Set(contents.flatMap(attachmentIds))];
+    const metadataKey = `image-draft:${key}`;
+    return runAtomicMutation({
+      read: (stores) => [{ key: "previous", request: stores.meta.get(metadataKey) }],
+      apply: (records, stores) => {
+        if (records.previous?.value.savedAt > savedAt) return { changed: false };
+        if (ids.length) stores.meta.put({ key: metadataKey, value: { ids, savedAt, expiresAt: Date.parse(savedAt) + 30 * 24 * 60 * 60 * 1000 } });
+        else stores.meta.delete(metadataKey);
+        return { changed: false };
+      },
+    });
+  }
+
+  async function inspectUnusedAttachments({ protectedContents = () => [], candidates = null, remove = false } = {}) {
+    // All note mutations and image writes share this transaction scope. Recheck
+    // current notes, history, and all-tab recovery at commit, not just preview.
+    return runAtomicMutation({
+      read: (stores) => ["notes", "noteVersions", "attachments", "meta"].map((key) => ({ key, request: stores[key].getAll() })),
+      apply: (records, stores) => {
+        const referenced = protectedDraftImageIds(records.meta);
+        [...records.notes, ...records.noteVersions, ...protectedContents().map((content) => ({ content }))]
+          .forEach((item) => attachmentIds(item.content).forEach((id) => referenced.add(id)));
+        const allowed = candidates ? new Set(candidates) : null;
+        const unused = records.attachments.filter((item) => !referenced.has(item.id) && item.protectedUntil <= Date.now() && (!allowed || allowed.has(item.id)));
+        if (remove && !allowed) throw new Error("Inspect unused images before removing them.");
+        if (remove) {
+          unused.forEach((item) => stores.attachments.delete(item.id));
+          const removed = new Set(unused.map((item) => item.id));
+          writeImageTotals(stores, records.attachments.filter((item) => !removed.has(item.id)));
+        }
+        return { result: { ...imageTotals(records.attachments), unusedCount: unused.length,
+          unusedBytes: imageTotals(unused).bytes, candidates: unused.map((item) => item.id) }, changed: remove && unused.length > 0 };
+      },
+    });
+  }
+
+  function protectedDraftImageIds(metadata) {
+    const ids = recoveryImageIds();
+    metadata.filter((item) => item.key.startsWith("image-draft:") && item.value.expiresAt > Date.now())
+      .forEach((item) => item.value.ids.forEach((id) => ids.add(id)));
+    return ids;
+  }
+
+  function encodeImage(bytes) {
+    let binary = "";
+    for (let offset = 0; offset < bytes.length; offset += 8192) binary += String.fromCharCode(...bytes.subarray(offset, offset + 8192));
+    return globalThis.btoa(binary);
+  }
+
+  function normalizeImportedAttachments(items) {
+    if (!Array.isArray(items) || items.length > MAX_RECORDS_PER_IMPORT) throw new Error("Backup images are invalid.");
+    let total = 0;
+    const attachments = items.map((item) => {
+      if (!item || typeof item.id !== "string" || !/^[a-zA-Z0-9_-]{1,100}$/.test(item.id) || typeof item.data !== "string" ||
+          item.data.length > Math.ceil(MAX_IMAGE_BYTES / 3) * 4 || item.data.length % 4 !== 0 || !/^[A-Za-z0-9+/]*={0,2}$/.test(item.data)) {
+        throw new Error("A backup image is invalid or exceeds 10 MB.");
+      }
+      const binary = globalThis.atob(item.data);
+      const bytes = Uint8Array.from(binary, (character) => character.charCodeAt(0));
+      if (!bytes.length || bytes.length > MAX_IMAGE_BYTES) throw new Error("A backup image exceeds 10 MB or is empty.");
+      total += bytes.length;
+      if (total > MAX_IMAGE_LIBRARY_BYTES) throw new Error("Backup images exceed 50 MB.");
+      const mimeType = imageMime(bytes);
+      if (mimeType !== item.mimeType) throw new Error("A backup image has an invalid format.");
+      return { id: item.id, bytes, mimeType, name: String(item.name || "Image").slice(0, 160),
+        createdAt: normalizeDate(item.createdAt, nowIso()), protectedUntil: 0 };
+    });
+    uniqueIds(attachments, "Image");
+    return attachments;
+  }
+
+  function mapIncomingAttachments(current, incoming) {
+    const existing = new Map(current.map((item) => [item.id, item]));
+    const used = new Set([...existing.keys(), ...incoming.map((item) => item.id)]);
+    const mapping = new Map();
+    const additions = [];
+    incoming.forEach((item) => {
+      const match = existing.get(item.id);
+      let id = item.id;
+      if (match && !sameAttachment(match, item)) {
+        do { id = newId("image"); } while (used.has(id));
+      }
+      used.add(id);
+      mapping.set(item.id, id);
+      if (!match || id !== item.id) additions.push({ ...item, id });
+    });
+    const content = (value) => value.replace(/nook-asset:([a-zA-Z0-9_-]{1,100})(?![a-zA-Z0-9_-])/g,
+      (reference, id) => mapping.has(id) ? `nook-asset:${mapping.get(id)}` : reference);
+    return { additions, content, ids: new Set(mapping.values()) };
   }
 
   function normalizeColor(value, index = 0) {
@@ -386,10 +620,11 @@
     return snapshot;
   }
 
-  async function getSnapshot({ includeHistory = false } = {}) {
+  async function getSnapshot({ includeHistory = false, includeAttachments = false } = {}) {
     const database = await openDatabase();
     const storeNames = [STORE.notes, STORE.types, STORE.tags, STORE.meta];
     if (includeHistory) storeNames.push(STORE.noteVersions);
+    if (includeAttachments) storeNames.push(STORE.attachments);
     const transaction = database.transaction(storeNames, "readonly");
     const notesRequest = transaction.objectStore(STORE.notes).getAll();
     const typesRequest = transaction.objectStore(STORE.types).getAll();
@@ -400,8 +635,9 @@
       requestResult(tagsRequest),
       requestResult(transaction.objectStore(STORE.meta).get(MUTATION_META_KEY)),
     ];
-    if (includeHistory) requests.push(requestResult(transaction.objectStore(STORE.noteVersions).getAll()));
-    const [notes, types, tags, mutation, noteVersions = []] = await Promise.all(requests);
+    requests.push(includeHistory ? requestResult(transaction.objectStore(STORE.noteVersions).getAll()) : []);
+    requests.push(includeAttachments ? requestResult(transaction.objectStore(STORE.attachments).getAll()) : []);
+    const [notes, types, tags, mutation, noteVersions, attachments] = await Promise.all(requests);
     await transactionDone(transaction);
     return sortSnapshot({
       notes: notes.map(normalizeNoteRecord),
@@ -409,6 +645,7 @@
       tags,
       noteVersions: includeHistory ? noteVersions.map(normalizeHistoryRecord) : [],
       mutationId: mutation?.value || "",
+      attachments,
     });
   }
 
@@ -439,6 +676,7 @@
     STORE.tags,
     STORE.noteVersions,
     STORE.meta,
+    STORE.attachments,
   ];
 
   async function runAtomicMutation({ read, apply }) {
@@ -458,6 +696,7 @@
         tags: transaction.objectStore(STORE.tags),
         noteVersions: transaction.objectStore(STORE.noteVersions),
         meta: transaction.objectStore(STORE.meta),
+        attachments: transaction.objectStore(STORE.attachments),
       };
       const records = {};
       let pendingReads = 0;
@@ -547,6 +786,7 @@
             tags: records[STORE.tags] || [],
             noteVersions: records[STORE.noteVersions] || [],
             meta: records[STORE.meta] || [],
+            attachments: records[STORE.attachments] || [],
           },
           stores,
         ),
@@ -827,7 +1067,7 @@
     if (
       !value ||
       value.format !== "personal-notes-backup" ||
-      ![1, 2, 3].includes(value.schemaVersion)
+      ![1, 2, 3, 4].includes(value.schemaVersion)
     ) {
       throw new Error("Choose a Personal Notes backup or a supported legacy library JSON file.");
     }
@@ -840,8 +1080,21 @@
     const noteVersions = value.schemaVersion >= 3
       ? normalizeImportedNoteVersions(data.noteVersions, notes)
       : [];
+    const attachments = value.schemaVersion >= 4 ? normalizeImportedAttachments(data.attachments) : [];
+    if (value.schemaVersion >= 4) {
+      const ids = new Set(attachments.map((item) => item.id));
+      const missing = data.missingAttachments ?? [];
+      if (!Array.isArray(missing) || missing.length > MAX_RECORDS_PER_IMPORT ||
+          missing.some((id) => typeof id !== "string" || !/^[a-zA-Z0-9_-]{1,100}$/.test(id) || ids.has(id))) {
+        throw new Error("The backup has invalid missing-image references.");
+      }
+      missing.forEach((id) => ids.add(id));
+      if ([...notes, ...noteVersions].some((note) => attachmentIds(note.content).some((id) => !ids.has(id)))) {
+        throw new Error("The backup is missing an image referenced by a note or saved version.");
+      }
+    }
     return {
-      snapshot: { notes, types, tags, noteVersions },
+      snapshot: { notes, types, tags, noteVersions, attachments },
       format: "personal-notes",
       schemaVersion: value.schemaVersion,
     };
@@ -850,19 +1103,34 @@
   async function replaceSnapshot(snapshot, source) {
     assertSnapshotShape(snapshot);
     await mutateLibrary((current, stores) => {
+      // Replacement removes the prior library, but keeps binary data needed by
+      // incoming notes, all-tab recovery, and image insertions still in flight.
+      const mapped = mapIncomingAttachments(current.attachments, snapshot.attachments || []);
+      const now = Date.now();
+      const mayRemoveImages = current.attachments.some((item) => !mapped.ids.has(item.id) && item.protectedUntil <= now);
+      const draftIds = mayRemoveImages ? protectedDraftImageIds(current.meta) : new Set();
+      const retained = current.attachments.filter((item) => mapped.ids.has(item.id) ||
+        draftIds.has(item.id) || item.protectedUntil > now);
+      if (imageTotals([...retained, ...mapped.additions]).bytes > MAX_IMAGE_LIBRARY_BYTES) {
+        throw new Error("This backup and images protected for drafts or recent insertions exceed 50 MB. Save or discard recovery drafts, or wait for recent insertions to finish, then try again.");
+      }
+      writeImageTotals(stores, [...retained, ...mapped.additions]);
+      const retainedIds = new Set(retained.map((item) => item.id));
+      current.attachments.forEach((item) => { if (!retainedIds.has(item.id)) stores.attachments.delete(item.id); });
+      mapped.additions.forEach((item) => stores.attachments.put(item));
       stores.notes.clear();
       stores.types.clear();
       stores.tags.clear();
       stores.noteVersions.clear();
       snapshot.types.forEach((item) => stores.types.put(item));
       snapshot.tags.forEach((item) => stores.tags.put(item));
-      snapshot.notes.forEach((item) => stores.notes.put(item));
-      snapshot.noteVersions.forEach((item) => stores.noteVersions.put(item));
+      snapshot.notes.forEach((item) => stores.notes.put({ ...item, content: mapped.content(item.content) }));
+      snapshot.noteVersions.forEach((item) => stores.noteVersions.put({ ...item, content: mapped.content(item.content) }));
       stores.meta.put({
         key: BOOTSTRAP_META_KEY,
         value: { source, completedAt: nowIso() },
       });
-    }, { readStores: [] });
+    }, { readStores: [STORE.attachments, STORE.meta] });
   }
 
   function shouldKeepTagCandidate(candidate, existing) {
@@ -1350,22 +1618,29 @@
   }
 
   async function buildExport({ noteIds = null } = {}) {
-    const snapshot = await getSnapshot({ includeHistory: true });
+    const snapshot = await getSnapshot({ includeHistory: true, includeAttachments: true });
     if (noteIds !== null) {
       const ids = new Set(noteIds.map((id) => requireId(id, "Note")));
       snapshot.notes = snapshot.notes.filter((note) => ids.has(note.id));
       if (snapshot.notes.length !== ids.size) throw new Error("Some selected notes no longer exist. Select them again.");
       snapshot.noteVersions = snapshot.noteVersions.filter((version) => ids.has(version.noteId));
     }
+    const referenced = new Set([...snapshot.notes, ...snapshot.noteVersions].flatMap((note) => attachmentIds(note.content)));
+    const attachments = snapshot.attachments.filter((item) => referenced.has(item.id));
+    const available = new Set(attachments.map((item) => item.id));
     return {
       format: "personal-notes-backup",
-      schemaVersion: 3,
+      schemaVersion: 4,
       exportedAt: nowIso(),
       data: {
         noteTypes: snapshot.types,
         tags: snapshot.tags,
         notes: snapshot.notes,
         noteVersions: snapshot.noteVersions,
+        attachments: attachments.map(({ id, name, mimeType, bytes, createdAt }) => ({ id, name, mimeType, createdAt, data: encodeImage(bytes) })),
+        // Preserve source-only Markdown imports and literal references without
+        // making a missing image prevent backing up the rest of the library.
+        missingAttachments: [...referenced].filter((id) => !available.has(id)),
       },
     };
   }
@@ -1378,6 +1653,7 @@
       types: parsed.snapshot.types.length,
       tags: parsed.snapshot.tags.length,
       noteVersions: parsed.snapshot.noteVersions.length,
+      attachments: (parsed.snapshot.attachments || []).length,
     } };
   }
 
@@ -1393,7 +1669,8 @@
   // a new ID, so an open editor and its revision history are never replaced.
   function planBackupMerge(current, incoming, conflictPolicy) {
     if (!["copy", "skip"].includes(conflictPolicy)) throw new Error("Choose how to handle conflicting notes.");
-    const additions = { notes: [], types: [], tags: [], noteVersions: [] };
+    const mappedImages = mapIncomingAttachments(current.attachments || [], incoming.attachments || []);
+    const additions = { notes: [], types: [], tags: [], noteVersions: [], attachments: [] };
     const typeMap = new Map();
     const tagMap = new Map();
     for (const [name, mapping, prefix] of [["types", typeMap, "type"], ["tags", tagMap, "tag"]]) {
@@ -1415,7 +1692,7 @@
     const rows = [];
     const counts = { added: 0, copied: 0, skipped: 0, identical: 0 };
     incoming.notes.forEach((note) => {
-      const mapped = { ...note, typeId: typeMap.get(note.typeId), tagIds: note.tagIds.map((id) => tagMap.get(id)) };
+      const mapped = { ...note, content: mappedImages.content(note.content), typeId: typeMap.get(note.typeId), tagIds: note.tagIds.map((id) => tagMap.get(id)) };
       const existing = existingNotes.get(note.id);
       let status = "add";
       if (existing && sameEditorFields(existing, mapped) && existing.isPinned === mapped.isPinned && existing.deletedAt === mapped.deletedAt) {
@@ -1447,18 +1724,21 @@
       const noteId = noteMap.get(version.noteId);
       if (!noteId) return;
       additions.noteVersions.push({
-        ...version, noteId, id: versionId(noteId, version.revision),
+        ...version, content: mappedImages.content(version.content), noteId, id: versionId(noteId, version.revision),
         typeId: mapHistoricalId(version.typeId, typeMap, missingTypeMap, "missing-type"),
         tagIds: version.tagIds.map((id) => mapHistoricalId(id, tagMap, missingTagMap, "missing-tag")),
       });
     });
+    const needed = new Set([...additions.notes, ...additions.noteVersions].flatMap((note) => attachmentIds(note.content)));
+    additions.attachments = mappedImages.additions.filter((item) => needed.has(item.id));
+    if (imageTotals([...(current.attachments || []), ...additions.attachments]).bytes > MAX_IMAGE_LIBRARY_BYTES) throw new Error("Local images would exceed 50 MB. Remove unused images before importing.");
     assertImportCapacity(current, additions);
     return { additions, counts, rows };
   }
 
   async function inspectBackupMerge(value, { conflictPolicy = "copy" } = {}) {
     const parsed = parseBackup(value);
-    const current = await getSnapshot();
+    const current = await getSnapshot({ includeAttachments: true });
     const plan = planBackupMerge(current, parsed.snapshot, conflictPolicy);
     return { counts: plan.counts, rows: plan.rows, mutationId: current.mutationId };
   }
@@ -1471,11 +1751,12 @@
         throw new Error("The library changed after preview. Inspect the file again before importing.");
       }
       const plan = planBackupMerge(current, parsed.snapshot, conflictPolicy);
-      for (const name of ["types", "tags", "notes", "noteVersions"]) {
+      for (const name of ["types", "tags", "notes", "noteVersions", "attachments"]) {
         plan.additions[name].forEach((item) => stores[name].put(item));
       }
+      writeImageTotals(stores, [...current.attachments, ...plan.additions.attachments]);
       return plan.counts;
-    });
+    }, { readStores: [STORE.notes, STORE.types, STORE.tags, STORE.meta, STORE.attachments] });
   }
 
   function inspectMarkdownFiles(files) {
@@ -1613,11 +1894,13 @@
         types: snapshot.types.length,
         tags: snapshot.tags.length,
         noteVersions: snapshot.noteVersions.length,
+        attachments: snapshot.attachments.length,
       };
       stores.notes.clear();
       stores.types.clear();
       stores.tags.clear();
       stores.noteVersions.clear();
+      stores.attachments.clear();
       stores.meta.clear();
       defaultTypes.forEach((type) => stores.types.put(type));
       stores.meta.put({
@@ -1625,7 +1908,7 @@
         value: { source: "library-reset", completedAt: resetAt },
       });
       return counts;
-    }, { readStores: [STORE.notes, STORE.types, STORE.tags, STORE.noteVersions, STORE.meta] });
+    }, { readStores: [STORE.notes, STORE.types, STORE.tags, STORE.noteVersions, STORE.meta, STORE.attachments] });
   }
 
   function inspectBackup(value) {
@@ -1638,6 +1921,7 @@
         types: parsed.snapshot.types.length,
         tags: parsed.snapshot.tags.length,
         noteVersions: parsed.snapshot.noteVersions.length,
+        attachments: (parsed.snapshot.attachments || []).length,
       },
     };
   }
@@ -1649,6 +1933,13 @@
     HISTORY_MAX_CONTENT_BYTES,
     MAX_CONTENT_LENGTH,
     MAX_TITLE_LENGTH,
+    MAX_IMAGE_BYTES,
+    attachmentIds,
+    addAttachment,
+    validateAttachment,
+    getAttachment,
+    inspectUnusedAttachments,
+    protectDraftAttachments,
     initialize,
     getSnapshot,
     getNote,

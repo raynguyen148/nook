@@ -11,9 +11,28 @@
       const textarea = targetTextarea || elements.noteContent;
       if (!textarea) return;
       textarea.focus();
-      textarea.setRangeText(replacement, selectionStart, selectionEnd, "preserve");
+      const original = textarea.value;
+      const expected = original.slice(0, selectionStart) + replacement + original.slice(selectionEnd);
+      let inputFired = false;
+      const observeInput = () => { inputFired = true; };
+      textarea.setSelectionRange(selectionStart, selectionEnd);
+      textarea.addEventListener("input", observeInput);
+      try {
+        // Native text insertion retains the browser's Undo/Redo history.
+        // setRangeText remains the fallback for browsers without this command.
+        if (document.activeElement === textarea &&
+            (textarea.maxLength < 0 || expected.length <= textarea.maxLength)) {
+          document.execCommand?.("insertText", false, replacement);
+        }
+      } catch { /* Fall back without losing the selected source. */ }
+      textarea.removeEventListener("input", observeInput);
+      if (textarea.value !== expected) {
+        if (textarea.value !== original) textarea.value = original;
+        textarea.setRangeText(replacement, selectionStart, selectionEnd, "preserve");
+        inputFired = false;
+      }
       textarea.setSelectionRange(nextSelectionStart, nextSelectionEnd);
-      textarea.dispatchEvent(new Event("input", { bubbles: true }));
+      if (!inputFired) textarea.dispatchEvent(new Event("input", { bubbles: true }));
     }
 
     function toggleNoteContentWrapper(marker, targetTextarea = elements.noteContent) {

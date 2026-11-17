@@ -1082,3 +1082,83 @@
 .markdown-footnote-backref {
   scroll-margin-block-start: 1rem;
 }
+/* Local attachment images never load URLs from Markdown directly. */
+.markdown-local-image {
+  display: block;
+  margin-block: var(--space-3);
+  color: var(--text-muted);
+  position: relative;
+  width: fit-content;
+  max-width: 100%;
+}
+
+.markdown-local-image img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--radius-sm);
+}
+
+.markdown-local-image.is-loading {
+  height: auto;
+  min-width: min(100%, 12rem);
+  min-height: 6rem;
+  border-radius: var(--radius-sm);
+  background: var(--skeleton-base);
+}
+
+.image-resize-handle {
+  position: absolute;
+  inset-inline-end: var(--space-1);
+  inset-block-end: var(--space-1);
+  display: grid;
+  place-items: center;
+  width: var(--control-height-sm);
+  height: var(--control-height-sm);
+  padding: var(--space-1);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  color: var(--text-default);
+  background: var(--surface-panel);
+  cursor: nwse-resize;
+  touch-action: none;
+  opacity: 0;
+}
+
+.image-resize-handle svg {
+  width: 100%; height: 100%; fill: none; stroke: currentColor;
+  stroke-width: 1.65; stroke-linecap: round; stroke-linejoin: round;
+}
+
+.markdown-local-image:hover .image-resize-handle,
+.markdown-local-image:focus-within .image-resize-handle,
+.markdown-local-image.is-resizing .image-resize-handle { opacity: 1; }
+
+.image-resize-handle:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.image-upload-status {
+  display: flex; align-items: center; gap: var(--space-3);
+  padding: var(--space-3); border-radius: var(--radius-sm);
+  background: var(--surface-panel); color: var(--text-muted);
+  font-size: var(--font-size-control); overflow-wrap: anywhere;
+}
+
+.image-upload-status__skeleton {
+  width: var(--control-height-lg); height: var(--control-height-lg);
+  border-radius: var(--radius-sm);
+}
+
+.image-upload-status:not(.is-error) button { display: none; }
+.image-upload-status.is-error { color: var(--danger-text); }
+
+@media (hover: none) {
+  .image-resize-handle { opacity: 1; }
+}
+
+@media (forced-colors: active) {
+  .image-resize-handle { border-color: ButtonText; }
+  .markdown-local-image.is-loading { outline: 1px solid CanvasText; }
+}

@@ -21,7 +21,7 @@ function fixture() {
       requestAnimationFrame(callback) { frames.set(++frameId, callback); return frameId; },
       cancelAnimationFrame(id) { frames.delete(id); },
     },
-    NookMarkdown: { renderInto() {} },
+    api: { renderMarkdown() {} },
   };
   vm.createContext(context);
   for (const name of ["clampScrollPosition", "getNoteEditorMaximumScrollTop", "getSplitScrollSession", "isNoteEditorScrollMapCurrent", "interpolateNoteEditorScrollMap", "lockNoteEditorScrollLeader", "syncNoteEditorScroll", "scheduleNoteEditorScrollMap", "renderNoteEditorPreview"]) {

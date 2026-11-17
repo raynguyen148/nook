@@ -918,6 +918,7 @@ globalThis[Symbol.for("nook.app.modules")].register("organize", (app) => {
       downloadExport(backup);
       recordBackupExport();
       showToast(`Backup prepared with ${pluralize(backup.data.notes.length, "note")}; browser download requested.`);
+      if (backup.data.missingAttachments.length) showToast("Some image references are unavailable. Their Markdown is included; the missing image files are not.", "error");
       return backup;
     } catch (error) {
       showError(error, "We could not export this backup.");

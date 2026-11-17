@@ -174,6 +174,24 @@
     tabId = "",
   } = {}) {
     const resolvedTabId = String(tabId || defaultTabId());
+    const imageProtections = new Map();
+
+    function protectImages(key, contents, savedAt, force = false) {
+      const imageStorage = globalThis.PersonalNotesStorage;
+      if (!imageStorage?.protectDraftAttachments) return;
+      const signature = [...new Set(contents.flatMap(imageStorage.attachmentIds))].sort().join("\n");
+      const previous = imageProtections.get(key);
+      if (!force && ((!signature && !previous) || (previous?.signature === signature && Date.now() - previous.at < 60 * 60 * 1000))) return;
+      const protection = { signature, at: Date.now() };
+      imageProtections.set(key, protection);
+      // Binary references also survive localStorage quota/write failures. These
+      // small IndexedDB pins are updated only when the image set changes/hourly.
+      void imageStorage.protectDraftAttachments(key, contents, savedAt).then(() => {
+        if (!signature && imageProtections.get(key) === protection) imageProtections.delete(key);
+      }).catch(() => {
+        if (imageProtections.get(key) === protection) imageProtections.delete(key);
+      });
+    }
     const resolvedMaxAge = Number.isFinite(maxAgeMs) && maxAgeMs >= 0
       ? maxAgeMs
       : DEFAULT_DRAFT_MAX_AGE_MS;
@@ -285,7 +303,11 @@
     function removeKey(key) {
       if (!key || !key.startsWith(DRAFT_RECOVERY_PREFIX) || typeof storage?.removeItem !== "function") return false;
       try {
+        let savedAt = nowIso();
+        let raw = "";
+        try { raw = storage.getItem(key) || ""; savedAt = JSON.parse(raw || "null")?.savedAt || savedAt; } catch { /* Malformed recovery can still be discarded. */ }
         storage.removeItem(key);
+        if (imageProtections.has(key) || raw.includes("nook-asset:")) protectImages(key, [], savedAt, true);
         return true;
       } catch {
         return false;
@@ -342,6 +364,7 @@
         conflicted,
         sources,
       };
+      protectImages(key, [normalizedDraft.content, committedSnapshot?.content || ""], savedAt);
       try {
         storage.setItem(key, JSON.stringify(record));
         return true;

@@ -15,6 +15,7 @@
     "feedback",
     "editor-session",
     "pane-controller",
+    "attachments",
     "note-actions",
     "library-sidebar",
     "library",

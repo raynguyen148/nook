@@ -67,6 +67,7 @@ QA uses an already installed local Playwright. Keep the app openable as a static
 - `js/app/library.js`: note cards, pagination, sort controls, and Trash rendering.
 - `js/app/workspace.js`: primary preview, detail workspace, and transitions.
 - `js/app/clipboard.js`: raw-Markdown copy and copy feedback.
+- `js/app/attachments.js`: local image paste/picker, safe preview hydration and URL lifetime, display resizing, and unused-image cleanup UI.
 - `js/app/side-note.js`: Side note navigation, DOM adapter, and autosave.
 - `js/app/note-switcher.js`: shared in-pane note picker, cancellation, and guarded switching.
 - `js/app/note-pickers.js`: shared type/tag picker components and pane adapters.
@@ -152,8 +153,9 @@ Do not silently reset the database, delete user data, or change backup format.
   links/reference links/autolinks, tables with alignment, footnotes, details,
   mathematical-expression text blocks, entities, hard line breaks, and
   horizontal rules. Keep unsupported syntax inert and safe.
-- Images are represented by accessible alt text to keep the app offline and
-  avoid loading untrusted remote assets. Raw HTML remains inert text except for
+- Local `nook-asset:` images are resolved only through the storage API; remote
+  images remain accessible alt text. SVG is validated as a static self-contained
+  subset and displayed through `<img>`, never injected as markup. Raw HTML remains inert text except for
   the explicitly allowlisted `<details>`/`<summary>` rendering.
 - Do not enable raw HTML or unsafe URL schemes in rendered notes without an
   explicit security review.

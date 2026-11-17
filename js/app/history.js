@@ -43,14 +43,14 @@ globalThis[Symbol.for("nook.app.modules")].register("history", (app) => {
     if (!version) {
       elements.historyPreviewTitle.textContent = "No earlier versions";
       elements.historyPreviewMeta.textContent = "A version is created only when saved content changes.";
-      globalThis.NookMarkdown.renderInto(elements.historyPreviewContent, "", "Nothing to preview yet.", {
+      api.renderMarkdown(elements.historyPreviewContent, "", "Nothing to preview yet.", {
         idPrefix: "history-empty",
       });
       return;
     }
     elements.historyPreviewTitle.textContent = version.title || "Untitled note";
     elements.historyPreviewMeta.textContent = `Revision ${version.revision} · saved ${formatFullDate(version.archivedAt || version.updatedAt)}`;
-    globalThis.NookMarkdown.renderInto(
+    api.renderMarkdown(
       elements.historyPreviewContent,
       version.content || "",
       "No content in this version.",
@@ -164,6 +164,7 @@ globalThis[Symbol.for("nook.app.modules")].register("history", (app) => {
   }
 
   function closeNoteHistory() {
+    api.releaseMarkdownImages(elements.historyPreviewContent);
     historySession += 1;
     if (elements.historyDialog.open) elements.historyDialog.close();
   }
@@ -188,6 +189,7 @@ globalThis[Symbol.for("nook.app.modules")].register("history", (app) => {
   function finishNoteHistoryClose() {
     // A native close event can arrive after a replacement dialog has opened.
     if (elements.historyDialog.open) return;
+    api.releaseMarkdownImages(elements.historyPreviewContent);
     const session = ++historySession;
     const invoker = ui.historyInvoker;
     versions = [];

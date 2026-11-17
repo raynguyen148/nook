@@ -35,6 +35,7 @@ theme-config
 → feedback
 → editor-session
 → pane-controller
+→ attachments
 → note-actions
 → library-sidebar
 → library
@@ -78,7 +79,7 @@ product decision.
 
 | Module | Owns |
 | --- | --- |
-| `js/storage.js` | IndexedDB v3, validation, migrations, revisioned note CRUD, history, Trash lifecycle, and backup parsing/import/export |
+| `js/storage.js` | IndexedDB v4, binary images, validation, migrations, revisioned note CRUD, history, Trash lifecycle, and backup parsing/import/export |
 | `js/markdown.js` | Safe Markdown-to-DOM rendering and plain-text conversion; no external parser or network asset loading |
 | `js/app/elements.js` | Cached DOM references |
 | `js/app/core.js` | Shared application state, constants, stored preferences, and pure UI helpers |
@@ -87,6 +88,7 @@ product decision.
 | `js/app/library-sidebar.js` | Sidebar filters, metadata badges, and card tag fitting |
 | `js/app/workspace.js` | Primary note preview, detail workspace, and shared primary/Side note surface animation policy; glass transitions keep opacity stable so backdrop blur remains continuous |
 | `js/app/clipboard.js` | Raw-Markdown copy and transient copy feedback |
+| `js/app/attachments.js` | Local image paste/picker, safe preview hydration, resize, progress/errors, and cleanup UI |
 | `js/app/note-pickers.js` | Shared type/tag picker components and both panes’ picker rendering |
 | `js/app/formatting.js` | Markdown editing operations and mobile formatting scroll cues |
 | `js/app/split-scroll.js` | Split preview rendering and scroll mapping/synchronization |
@@ -139,7 +141,7 @@ mutation, the library is refreshed instead of guessing derived counts.
 
 ## IndexedDB and stored-data contract
 
-`js/storage.js` opens database `personal-notes` at version `3`. The stores
+`js/storage.js` opens database `personal-notes` at version `4`. The stores
 are:
 
 | Store | Key/index | Purpose |
@@ -148,12 +150,48 @@ are:
 | `types` | keyPath `id`, unique `by-normalized-name` | Note types |
 | `tags` | keyPath `id`, unique `by-normalized-name` | Reusable tags |
 | `noteVersions` | keyPath `id`, index `by-note-id` | Archived committed snapshots |
+| `attachments` | keyPath `id` | Binary local images, MIME type, file name, and paste protection lease |
 | `meta` | keyPath `key` | Bootstrap and mutation metadata |
 
 The v3 upgrade creates `noteVersions` and normalizes every existing note with a
 positive integer `revision`; old v1/v2 notes begin at revision `1`. The
 migration does not clear or recreate the database. A missing history store or
 index is created in the upgrade transaction.
+
+The v4 upgrade adds `attachments` without changing existing notes. Each record
+holds a `Uint8Array`, validated MIME type, name, creation time, and short paste
+lease. SHA-256 IDs deduplicate identical files where Web Crypto is available;
+the fallback uses unique IDs. Blobs and object URLs are created only for active
+previews, shared across panes and released when the last preview drops them.
+The ordinary library snapshot does not read image bytes. Metadata tracks the
+50 MB image budget, with 10 MB per image and a UI decode limit of 24 megapixels.
+
+`attachments.js` owns paste/file selection, inline progress/errors, image URL
+lifetime, resize handles, and cleanup review. All app Markdown surfaces call
+its `api.renderMarkdown()` wrapper. The renderer creates inert placeholders
+only for exact `nook-asset:` destinations. Image resolution never accepts URLs
+from Markdown. Display width uses a bounded Markdown title (`"width=320"`),
+preserving the note model and per-occurrence history. Resizing verifies the
+editor session and captured source before changing the mapped source block.
+Image insertion uses the shared formatting helper's native `insertText` command
+to preserve Undo/Redo, with `setRangeText` as the compatibility fallback. It
+dispatches synthetic input only when native insertion did not already emit it.
+Active resize cancellation owns Escape before workspace navigation, and focus
+restoration waits for the same image's replacement handle to load.
+
+SVG passes a strict XML/element/URL/CSS validation boundary on paste and import.
+No script, event handler, entity, processing instruction, animation, embedded
+document/image, or external resource is accepted. Validated SVG is displayed
+only through `<img src="blob:…">`, never inline DOM, object, or iframe.
+
+Unused-image review and deletion share the full read-write transaction scope
+with notes and image writes. Deletion is restricted to reviewed IDs and checks
+current notes (including Trash), all retained history, current pane drafts,
+all-tab localStorage recovery, and unexpired IndexedDB draft-image pins again.
+New insertions have a five-minute grace lease. Draft pins update only when the
+reference set changes or hourly, expire with the 30-day recovery window, and
+compare timestamps to avoid clearing newer references. They protect image
+bytes even if localStorage cannot write; unreadable recovery blocks cleanup.
 
 Current note fields are:
 
@@ -265,18 +303,19 @@ conflicts return to the retained draft. The other pane's session is untouched.
 ```json
 {
   "format": "personal-notes-backup",
-  "schemaVersion": 3,
+  "schemaVersion": 4,
   "exportedAt": "...",
   "data": {
     "noteTypes": [],
     "tags": [],
     "notes": [],
-    "noteVersions": []
+    "noteVersions": [],
+    "attachments": []
   }
 }
 ```
 
-The parser accepts schema versions 1, 2, and 3, the older `data.types` name,
+The parser accepts schema versions 1, 2, 3, and 4, the older `data.types` name,
 and the legacy `interviewQuestions`/`protoblocNotes` shape. Missing revision
 fields in older backups normalize to revision `1`; older backups begin with no
 history. v3 history is normalized, bounded, and checked against current notes
@@ -302,10 +341,21 @@ rather than accidentally binding to a different local record.
 `inspectMarkdownFiles()` validates file names and source against the existing
 title/content limits; `importMarkdownFiles()` validates all inputs and catalog
 references before adding a complete batch atomically. UI file limits are
-50 MB per JSON backup, or 100 Markdown files/10 MB per batch/200 KB per file.
+100 MB per JSON backup, or 100 Markdown files/10 MB per batch/200 KB per file.
 New imports enforce the parser's 10,000-record limit on the combined library.
 `buildExport({ noteIds })` filters notes/history for selection downloads while
-retaining the catalog and the unchanged schema v3 envelope.
+retaining the catalog and the schema v4 envelope. Only images referenced by
+selected notes/history are included, encoded as Base64 at the backup boundary.
+Image payloads and reference completeness are validated before writes. Merge
+and replacement remap conflicting image IDs in note/history Markdown without
+overwriting existing images. Replacement keeps only incoming images and prior
+images protected by recovery records, draft pins, or recent-insertion leases.
+It deletes the other prior images in the replacement transaction and validates
+the combined retained/incoming image budget before writes. Reset clears images and
+pins together with the rest of the library. Older backups contain no images.
+Already missing references (including source-only Markdown imports) are listed
+explicitly in `data.missingAttachments`; their source can still round-trip.
+Undeclared missing payloads in a v4 backup fail validation.
 
 The UI confirmation describes the replacement and explicitly says recovery
 drafts are not in the file. Export creates a Blob and requests a browser

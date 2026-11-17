@@ -81,6 +81,10 @@
             const tags = database.createObjectStore("tags", { keyPath: "id" });
             tags.createIndex("by-normalized-name", "normalizedName", { unique: true });
             database.createObjectStore("meta", { keyPath: "key" });
+            if (version >= 3) {
+              const history = database.createObjectStore("noteVersions", { keyPath: "id" });
+              history.createIndex("by-note-id", "noteId");
+            }
             const transaction = request.transaction;
             transaction.objectStore("types").put(makeTypes()[0]);
             transaction.objectStore("notes").put(note);
@@ -137,12 +141,24 @@
         const storage = PersonalNotesStorage;
         await storage.initialize();
         const database = await requestResult(indexedDB.open(DB_NAME));
-        assert(database.version === 3, "v2 database migrates to schema version 3");
+        assert(database.version === 4, "v2 database migrates to schema version 4");
         assert(database.objectStoreNames.contains("noteVersions"), "v3 creates noteVersions store");
         database.close();
         const note = await storage.getNote("note-v2");
         assert(note?.revision === 1, "migrated v2 note starts at revision 1");
         assert(note?.isPinned === true && note?.deletedAt === null, "migrated v2 fields are preserved");
+      }
+
+      async function assertV3Migration() {
+        await deleteDatabase();
+        const original = { id: "note-v3", title: "Old v3 note", content: "unchanged source", typeId: "type-general", tagIds: [],
+          createdAt: "2026-09-18T00:00:00.000Z", updatedAt: "2026-09-18T00:00:00.000Z", revision: 7, isPinned: true, deletedAt: null };
+        await createLegacyDatabase(3, original);
+        await loadStorage();
+        await PersonalNotesStorage.initialize();
+        const snapshot = await PersonalNotesStorage.getSnapshot({ includeAttachments: true });
+        assert(snapshot.notes[0].content === original.content && snapshot.notes[0].revision === 7, "v4 upgrade preserves v3 content and revisions");
+        assert(snapshot.notes[0].isPinned === true && snapshot.attachments.length === 0, "v4 upgrade preserves note fields and adds empty image storage");
       }
 
       async function assertV1Migration() {
@@ -213,7 +229,7 @@
         let note = await storage.saveNote(baseNote("round trip"));
         note = await storage.saveNote({ ...baseNote("round trip with history"), id: note.id, expectedRevision: note.revision });
         const v3 = await storage.buildExport();
-        assert(v3.schemaVersion === 3 && v3.data.noteVersions.length === 1, "v3 export contains note history");
+        assert(v3.schemaVersion === 4 && v3.data.noteVersions.length === 1, "current export contains note history");
         const v1 = { ...v3, schemaVersion: 1, data: { noteTypes: v3.data.noteTypes, tags: v3.data.tags, notes: v3.data.notes } };
         const v2 = { ...v1, schemaVersion: 2 };
         assert(storage.inspectBackup(v1).counts.noteVersions === 0, "v1 backup remains readable");
@@ -240,10 +256,11 @@
         const scenario = new URLSearchParams(location.search).get("scenario") || "save";
         if (scenario === "v1") return assertV1Migration();
         if (scenario === "v2") return assertV2Migration();
+        if (scenario === "v3") return assertV3Migration();
         if (scenario === "save") return assertSaveHistoryAndConflict();
         if (scenario === "bytes") return assertHistoryByteCap();
         if (scenario === "backup") return assertBackupCompatibilityAndAtomicity();
-        throw new Error("Use ?scenario=v1, ?scenario=v2, ?scenario=save, ?scenario=bytes, or ?scenario=backup in a fresh tab.");
+        throw new Error("Use ?scenario=v1, ?scenario=v2, ?scenario=v3, ?scenario=save, ?scenario=bytes, or ?scenario=backup in a fresh tab.");
       }
 
       run()

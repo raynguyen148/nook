@@ -41,6 +41,7 @@ practice, and personal ideas in one calm, searchable local library.
 - Move notes to Trash, restore them, undo a move, permanently delete one note, or empty Trash.
 - Keep up to 50 earlier saved versions per note, preview them, and restore one without losing the current version.
 - Copy the raw Markdown source or export the current note as `.md`.
+- Paste or choose local images in either editor, preview them offline, and resize them with a drag handle or arrow keys.
 - Export and import a complete JSON backup, including version history. The local backup-health indicator reminds you when an export is missing or old.
 - Keep the primary editor and Side note as independent sessions with per-pane draft recovery and stale-write conflict handling.
 - Manage note types and tags from Settings → Organize Notes.
@@ -440,6 +441,52 @@ tags in each note's editor; the selection toolbar does not edit note fields.
 
 ## Markdown support
 
+### Local images
+
+Paste one image with Cmd/Ctrl+V, or use **Insert image** in either formatting
+toolbar. Nook accepts PNG, JPEG, GIF, WebP, and static, self-contained SVG files.
+Each image can be up to 10 MB and 24 million pixels; local images share a 50 MB
+budget. An inline skeleton shows image processing, with actionable failures.
+An image is inserted only after it is safely stored; newer typing is preserved.
+Image insertion supports the browser's native Undo/Redo in supported browsers.
+
+Images are stored as binary attachments in IndexedDB. Markdown holds a short
+reference such as `![Diagram](nook-asset:image-id)`. Split and Preview show the
+image. Drag its corner handle to resize, or focus the handle and use the left/
+right arrows; Home resets to its original width. A title such as `"width=320"`
+stores display size per occurrence without changing the original file.
+Escape cancels an active resize drag and keeps the note open. Keyboard resize
+returns focus to the same image even when another image is unavailable.
+History previews and notes in Trash are read-only. Ambiguous references (for
+example identical image syntax inside inline code in the same paragraph) must
+be placed on a separate Markdown line before resizing.
+
+SVG is validated before display and rendered only as an image. Scripts, event
+handlers, embedded documents/images, animation, external references, CSS imports/
+escapes, and XML entities are rejected. PNG export is an alternative for SVG
+files outside this supported subset. Markdown never loads remote images.
+
+**Settings → Data → Local images → Remove unused images…** shows the removable
+count and size before confirmation. Cleanup checks saved notes, Trash, history,
+and all-tab recovery again when deleting. Recent insertions are kept for five
+minutes. Recovery references also have small IndexedDB protection records, so
+a localStorage write failure cannot expose an active draft's images to cleanup.
+Unreadable recovery data blocks cleanup. Remove a reference to hide an image;
+its binary data stays until nothing needs it and cleanup is confirmed.
+
+JSON backups include images used by saved notes and history. Recovery drafts
+and their exclusive images remain local. Replacing a library keeps existing
+images still needed by drafts or recent insertions; other old images are removed
+atomically with the old library. A backup plus protected images must fit the
+50 MB budget. Standalone `.md`
+downloads and copied Markdown contain references, not the image files: use a
+JSON backup to transfer notes with images. Clearing site data deletes both
+notes and images; clearing only the browser's cached files does not.
+Already unavailable references remain visible as errors and are explicitly
+recorded in backups, so a broken image cannot block backing up other notes.
+
+### Supported syntax
+
 Nook includes a dependency-free, safe Markdown-to-DOM renderer. It supports a
 broad CommonMark/GFM-style subset, including:
 
@@ -557,13 +604,14 @@ Quick actions, to request a browser download named like
 ```json
 {
   "format": "personal-notes-backup",
-  "schemaVersion": 3,
+  "schemaVersion": 4,
   "exportedAt": "2026-01-01T00:00:00.000Z",
   "data": {
     "noteTypes": [],
     "tags": [],
     "notes": [],
-    "noteVersions": []
+    "noteVersions": [],
+    "attachments": []
   }
 }
 ```
@@ -586,7 +634,7 @@ If the library changes after preview, inspect the file again before importing.
 replaces notes, types, tags, and history in one atomic IndexedDB transaction.
 Save or close dirty primary/Side note drafts first. Both modes validate before
 writing, support older backups, and keep recovery drafts outside the backup.
-The file picker accepts JSON backups up to 50 MB. Merge is limited to 10,000
+The file picker accepts JSON backups up to 100 MB. Merge is limited to 10,000
 notes, types, and tags in the resulting library, matching the backup parser.
 
 The [Nook demo library](docs/sample-data/nook-demo-library.json) is a reusable,
@@ -595,7 +643,7 @@ refreshing the README gallery. It contains active notes plus four Trash records
 so restore and permanent-delete states are available immediately. Import it
 from the app's **Import** button whenever you need the same demo state again.
 
-Nook exports schema version `3` and accepts schema versions `1`, `2`, and `3`,
+Nook exports schema version `4` and accepts schema versions `1`, `2`, `3`, and `4`,
 including the older `types` naming in place of `noteTypes`. It also accepts the
 legacy library shape containing `interviewQuestions` and `protoblocNotes`.
 Legacy and older backups are upgraded into the current note/type/tag model;
@@ -609,7 +657,7 @@ mutation occurs.
 | [`index.html`](index.html) | Semantic page structure, accessible controls, detail workspace, and native dialogs |
 | [`css/app.css`](css/app.css) | Shared cascade manifest for foundations, components, features, and accessibility |
 | [`css/`](css) | Stylesheets organized by component, feature, responsive, accessibility, and theme ownership |
-| [`js/storage.js`](js/storage.js) | IndexedDB v3 setup, validation, migration, revisioned CRUD, history, Trash lifecycle, and backup import/export |
+| [`js/storage.js`](js/storage.js) | IndexedDB v4 setup, binary images, validation, migration, revisioned CRUD, history, Trash lifecycle, and backup import/export |
 | [`js/markdown.js`](js/markdown.js) | Safe dependency-free Markdown parser and DOM renderer |
 | [`js/app/runtime.js`](js/app/runtime.js) | Registers application modules and initializes them in an explicit dependency order |
 | [`js/app/elements.js`](js/app/elements.js) | Cached DOM references |
@@ -620,6 +668,7 @@ mutation occurs.
 | [`js/app/library.js`](js/app/library.js) | Note cards, pagination, Trash presentation, and sort controls |
 | [`js/app/workspace.js`](js/app/workspace.js) | Primary note preview, detail workspace, and workspace transitions |
 | [`js/app/clipboard.js`](js/app/clipboard.js) | Raw-Markdown copy and transient copy feedback |
+| [`js/app/attachments.js`](js/app/attachments.js) | Local image paste/picker, safe preview hydration, resizing, progress/errors, and cleanup |
 | [`js/app/side-note.js`](js/app/side-note.js) | Side note navigation and its DOM/editor adapter |
 | [`js/app/note-switcher.js`](js/app/note-switcher.js) | Shared in-pane note picker, cancellation, and guarded switching for both panes |
 | [`js/app/note-pickers.js`](js/app/note-pickers.js) | Shared type/tag picker components and both panes’ picker rendering |
@@ -670,7 +719,7 @@ body: storage.js → markdown.js → classic-script registrations
 `js/storage.js` exposes the frozen `PersonalNotesStorage` API and
 `js/markdown.js` exposes the frozen `NookMarkdown` API. The application modules
 register installers in any script-tag order. `runtime.js` initializes them as
-`theme-config → elements → core → local-state → search → preferences → feedback → editor-session → pane-controller → note-actions → library-sidebar → library → workspace → workspace-resize → clipboard → side-note → note-pickers → split-scroll → split-resize → formatting → editor → note-switcher → split-selection → history → organize → sync → offline → mobile → recovery → data-import → productivity → bulk-actions → onboarding → events`, reports missing or duplicate modules and conflicting API ownership, and
+`theme-config → elements → core → local-state → search → preferences → feedback → editor-session → pane-controller → attachments → note-actions → library-sidebar → library → workspace → workspace-resize → clipboard → side-note → note-pickers → split-scroll → split-resize → formatting → editor → note-switcher → split-selection → history → organize → sync → offline → mobile → recovery → data-import → productivity → bulk-actions → onboarding → events`, reports missing or duplicate modules and conflicting API ownership, and
 `events.js` removes the temporary registry before bootstrap. This is a
 classic-script registry, not an ES Module graph. The UI continues to use the
 storage API instead of accessing IndexedDB directly.

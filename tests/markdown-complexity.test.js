@@ -91,6 +91,19 @@ function findAll(node, tagName, found = []) {
   return found;
 }
 
+test("local image placeholders keep exact asset IDs and bounded display widths without creating fetchable images", () => {
+  const { api } = loadMarkdown();
+  const container = new NodeStub("div");
+  api.renderInto(container, '![Local](nook-asset:image-123 "width=9999")\n\n![Remote](https://example.test/pixel.png)\n\n![Unsafe](data:image/svg+xml,bad)');
+  const placeholders = findAll(container, "SPAN").filter((node) => node.dataset.nookAssetId);
+  assert.equal(placeholders.length, 1);
+  assert.equal(placeholders[0].dataset.nookAssetId, "image-123");
+  assert.equal(placeholders[0].dataset.nookImageWidth, "4096");
+  assert.equal(placeholders[0].dataset.nookImageLabel, "Local");
+  assert.equal(findAll(container, "IMG").length, 0);
+  assert.ok(container.textContent.includes("Remote") && container.textContent.includes("Unsafe"));
+});
+
 test("a different list type at the same indent starts a sibling list", () => {
   const { api } = loadMarkdown();
   const container = new NodeStub("div");
