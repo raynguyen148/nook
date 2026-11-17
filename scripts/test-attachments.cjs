@@ -256,6 +256,55 @@ async function main() {
       assert.equal(measured.pageOverflow, false, `${label}: page overflows viewport`);
       if (expectedMode) assert.equal(measured.mode, expectedMode, `${label}: requested editor mode must be active`);
     }
+    async function checkDismissStates(status, input, label) {
+      const dismiss = page.locator(`${status} button`);
+      const measure = () => dismiss.evaluate((button) => {
+        const bounds = button.getBoundingClientRect();
+        const icon = button.querySelector("svg").getBoundingClientRect();
+        const style = getComputedStyle(button);
+        return { x: bounds.x, y: bounds.y, width: bounds.width, height: bounds.height,
+          offsetX: icon.x + icon.width / 2 - bounds.x - bounds.width / 2,
+          offsetY: icon.y + icon.height / 2 - bounds.y - bounds.height / 2,
+          iconFits: icon.left >= bounds.left && icon.top >= bounds.top && icon.right <= bounds.right && icon.bottom <= bounds.bottom,
+          active: button.matches(":active"), focusVisible: button.matches(":focus-visible"),
+          background: style.backgroundColor, outlineStyle: style.outlineStyle, outlineWidth: parseFloat(style.outlineWidth) };
+      });
+      const centered = (state, bounds) => {
+        assert.ok(Math.abs(bounds.offsetX) < 0.5 && Math.abs(bounds.offsetY) < 0.5,
+          `${label}/${state}: dismiss icon must stay centered, ${JSON.stringify(bounds)}`);
+        assert.equal(bounds.iconFits, true, `${label}/${state}: icon must fit inside the hit area`);
+      };
+      await page.mouse.move(0, 0);
+      await page.locator(input).focus();
+      const idle = await measure();
+      centered("idle", idle);
+      await dismiss.hover();
+      await dismiss.evaluate((button) => Promise.all(button.getAnimations().map((animation) => animation.finished)));
+      const hover = await measure();
+      centered("hover", hover);
+      assert.deepEqual([hover.x, hover.y, hover.width, hover.height], [idle.x, idle.y, idle.width, idle.height], `${label}: hover must not shift the hit area`);
+      assert.notEqual(hover.background, idle.background, `${label}: hover must provide visible feedback`);
+      if (label.endsWith("/split/primary") && process.env.NOOK_SCREENSHOT_DIR) {
+        await page.locator(status).screenshot({ path: path.join(process.env.NOOK_SCREENSHOT_DIR, `notice-${label.split("/")[0]}-hover.png`) });
+      }
+      await page.mouse.down();
+      await dismiss.evaluate((button) => Promise.all(button.getAnimations().map((animation) => animation.finished)));
+      const active = await measure();
+      assert.equal(active.active, true, `${label}: exercise a real pointer press`);
+      centered("active", active);
+      await page.mouse.move(0, 0);
+      await page.mouse.up();
+      await page.keyboard.press("Tab");
+      await page.keyboard.press("Shift+Tab");
+      await dismiss.evaluate((button) => Promise.all(button.getAnimations().map((animation) => animation.finished)));
+      const focus = await measure();
+      assert.equal(focus.focusVisible, true, `${label}: keyboard focus must reach dismiss`);
+      assert.ok(focus.outlineStyle !== "none" && focus.outlineWidth > 0, `${label}: keyboard focus needs a visible ring`);
+      centered("focus", focus);
+      await page.keyboard.press("Enter");
+      assert.equal(await page.locator(status).isHidden(), true, `${label}: keyboard activation must dismiss the notice`);
+      assert.equal(await page.locator(input).evaluate((element) => document.activeElement === element), true, `${label}: dismissal must return focus to the editor`);
+    }
     await page.locator("#note-content").evaluate((textarea) => { textarea.setSelectionRange(7, 7); });
     await page.evaluate(() => { __holdImage = true; });
     await paste("#note-content");
@@ -407,8 +456,7 @@ async function main() {
           if (theme === "eink" && mode === "edit" && pane === "primary" && process.env.NOOK_SCREENSHOT_DIR) {
             await page.screenshot({ path: path.join(process.env.NOOK_SCREENSHOT_DIR, "upload-error-desktop.png") });
           }
-          await page.locator(`${status} button`).click();
-          assert.equal(await page.locator(input).evaluate((element) => document.activeElement === element), true);
+          await checkDismissStates(status, input, `${theme}/${mode}/${pane}`);
           await page.evaluate(() => { __holdImage = true; __failImage = "Not enough browser storage. Free some space and try again. " + "LongError".repeat(32); });
           await paste(input, "layout");
           await page.locator(`${status}:not(.is-hidden)`).waitFor();
@@ -433,7 +481,23 @@ async function main() {
         }
       }
       passed.push(`${theme}: loading and wrapped image errors fit both editors in Edit and Split`);
+      passed.push(`${theme}: dismiss stays centered on hover, press, and keyboard focus in both editors`);
     }
+    await page.emulateMedia({ reducedMotion: "no-preference" });
+    await page.evaluate(() => __qaApp.api.setGlass({ enabled: false }, { persist: false }));
+    for (const theme of ["light", "dark", "midnight", "aurora", "forest", "coffee", "retro", "eink"]) {
+      await page.evaluate((theme) => __qaApp.api.setTheme(theme, { animate: false, persist: false }), theme);
+      await page.waitForFunction(() => document.querySelector("#nook-theme-stylesheet").sheet);
+      for (const pane of ["primary", "secondary"]) {
+        const input = pane === "primary" ? "#note-content" : "#secondary-note-content-editor";
+        const status = pane === "primary" ? "#image-upload-status" : "#secondary-image-upload-status";
+        await paste(input, "oversize");
+        await page.locator(`${status}.is-error:not(.is-hidden)`).waitFor();
+        await checkDismissStates(status, input, `${theme}/solid/${pane}`);
+      }
+    }
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    passed.push("All themes: dismiss stays centered with regular motion and glass disabled in both editors");
     for (const pane of ["primary", "secondary"]) {
       const input = pane === "primary" ? "#note-content" : "#secondary-note-content-editor";
       const status = pane === "primary" ? "#image-upload-status" : "#secondary-image-upload-status";
@@ -481,7 +545,7 @@ async function main() {
       await page.locator("#image-upload-status.is-error:not(.is-hidden)").waitFor();
       await uploadLayout("primary", `Mobile ${width}px`, "edit");
       if (width === 375 && process.env.NOOK_SCREENSHOT_DIR) await page.screenshot({ path: path.join(process.env.NOOK_SCREENSHOT_DIR, "upload-error-mobile.png") });
-      await page.locator("#image-upload-status button").click();
+      await checkDismissStates("#image-upload-status", "#note-content", `Mobile ${width}px`);
       passed.push(`${width}px: image error fits above editor and dismissal restores focus`);
     }
     await page.setViewportSize({ width: 1440, height: 1000 });

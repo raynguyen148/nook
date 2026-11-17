@@ -1224,7 +1224,7 @@
   width: var(--control-height-sm);
   height: var(--control-height-sm);
   min-width: var(--control-height-sm);
-  padding: var(--space-1-5);
+  padding: 0;
   border-color: transparent;
   background: transparent;
   color: var(--component-text-muted);
