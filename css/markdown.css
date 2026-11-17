@@ -1107,6 +1107,28 @@
   background: var(--skeleton-base);
 }
 
+.markdown-local-image.image-pending-preview {
+  width: min(100%, 16rem);
+  user-select: none;
+}
+
+.image-pending-preview .image-pending-preview__surface {
+  width: 100%;
+  height: auto;
+  min-height: 6rem;
+  aspect-ratio: 16 / 10;
+  border-radius: var(--radius-control);
+}
+
+.image-pending-preview__caption {
+  display: block;
+  margin-block-start: var(--space-2);
+  color: var(--component-text-muted);
+  font-size: var(--font-size-label);
+  font-weight: var(--font-weight-regular);
+  line-height: 1.45;
+}
+
 .image-resize-handle {
   position: absolute;
   inset-inline-end: var(--space-1);
@@ -1135,30 +1157,101 @@
 .markdown-local-image.is-resizing .image-resize-handle { opacity: 1; }
 
 .image-resize-handle:focus-visible {
-  outline: var(--focus-ring);
+  outline: var(--focus-ring-width) solid var(--focus-ring);
   outline-offset: var(--focus-ring-offset);
 }
 
 .image-upload-status {
-  display: flex; align-items: center; gap: var(--space-3);
-  padding: var(--space-3); border-radius: var(--radius-sm);
-  background: var(--surface-panel); color: var(--text-muted);
-  font-size: var(--font-size-control); overflow-wrap: anywhere;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2-5);
   min-width: 0;
   flex-shrink: 0;
   margin-block-end: var(--space-2);
+  padding: var(--space-2-5) var(--space-3);
+  border: 1px solid var(--component-border);
+  border-radius: var(--radius-control);
+  background: var(--component-surface-muted);
+  color: var(--component-text);
+  font-size: var(--font-size-label);
+  font-weight: var(--font-weight-regular);
+  line-height: 1.45;
+  overflow-wrap: anywhere;
 }
 
-.image-upload-status > [data-image-upload-label] { flex: 1; min-width: 0; }
-.image-upload-status > button { flex: none; align-self: flex-start; }
+.image-upload-status__visual {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: var(--space-6);
+  height: var(--space-6);
+  margin-block-start: var(--space-0-5);
+  color: var(--status-error-text);
+}
 
-.image-upload-status__skeleton {
-  width: var(--control-height-lg); height: var(--control-height-lg);
-  border-radius: var(--radius-sm);
+.image-upload-status__copy {
+  display: grid;
+  gap: var(--space-0-5);
+  flex: 1;
+  min-width: 0;
+}
+
+.image-upload-status__title {
+  color: var(--component-text);
+  font-size: var(--font-size-label);
+  font-weight: var(--font-weight-emphasis);
+}
+
+.image-upload-status__description {
+  color: color-mix(in srgb, var(--component-text-muted) 85%, var(--component-text));
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-regular);
+}
+
+.image-upload-status .image-upload-status__skeleton {
+  width: var(--space-6);
+  height: var(--space-6);
+  border-radius: var(--radius-control);
+}
+
+.image-upload-status__error-icon {
+  width: var(--space-5);
+  height: var(--space-5);
+}
+
+.image-upload-status > .image-upload-status__dismiss {
+  flex: none;
+  width: var(--control-height-sm);
+  height: var(--control-height-sm);
+  min-width: var(--control-height-sm);
+  padding: var(--space-1-5);
+  border-color: transparent;
+  background: transparent;
+  color: var(--component-text-muted);
+  box-shadow: none;
+}
+
+.image-upload-status__dismiss svg {
+  width: var(--space-4);
+  height: var(--space-4);
+}
+
+.image-upload-status > .image-upload-status__dismiss:hover {
+  background: var(--component-surface-muted);
+  color: var(--component-text);
+}
+
+.image-upload-status > .image-upload-status__dismiss:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring);
+  outline-offset: var(--focus-ring-offset);
 }
 
 .image-upload-status:not(.is-error) button { display: none; }
-.image-upload-status.is-error { color: var(--danger-text); }
+.image-upload-status:not(.is-error) .image-upload-status__error-icon { display: none; }
+.image-upload-status.is-error {
+  border-color: color-mix(in srgb, var(--status-error-border) 55%, var(--component-border));
+  background: color-mix(in srgb, var(--status-error-surface) 45%, var(--component-surface));
+}
 
 @media (hover: none) {
   .image-resize-handle { opacity: 1; }
@@ -1166,5 +1259,8 @@
 
 @media (forced-colors: active) {
   .image-resize-handle { border-color: ButtonText; }
-  .markdown-local-image.is-loading { outline: 1px solid CanvasText; }
+  .markdown-local-image.is-loading,
+  .image-pending-preview__surface { outline: 1px solid CanvasText; }
+  .image-upload-status.is-error { border-color: CanvasText; background: Canvas; }
+  .image-upload-status__visual { color: CanvasText; }
 }

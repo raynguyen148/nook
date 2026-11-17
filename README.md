@@ -448,6 +448,9 @@ toolbar. Nook accepts PNG, JPEG, GIF, WebP, and static, self-contained SVG files
 Each image can be up to 10 MB and 24 million pixels; local images share a 50 MB
 budget. An inline skeleton shows image processing, with actionable failures.
 An image is inserted only after it is safely stored; newer typing is preserved.
+Split and Preview show a temporary image skeleton while an insertion is being
+prepared. It stays near the insertion position, clears on failure or cancellation,
+and never becomes part of the saved Markdown or backups.
 Image insertion supports the browser's native Undo/Redo in supported browsers.
 
 Images are stored as binary attachments in IndexedDB. Markdown holds a short

@@ -178,6 +178,9 @@ to preserve Undo/Redo, with `setRangeText` as the compatibility fallback. It
 dispatches synthetic input only when native insertion did not already emit it.
 Active resize cancellation owns Escape before workspace navigation, and focus
 restoration waits for the same image's replacement handle to load.
+Pending insertions have a pane/session-bound preview skeleton near the captured
+source position. It is rebuilt after preview renders and removed on completion,
+failure, or session replacement, without inserting temporary Markdown or IDs.
 
 SVG passes a strict XML/element/URL/CSS validation boundary on paste and import.
 No script, event handler, entity, processing instruction, animation, embedded

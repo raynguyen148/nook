@@ -26,6 +26,7 @@ async function main() {
   let browser;
   const passed = [], errors = [], external = [];
   try {
+    if (process.env.NOOK_SCREENSHOT_DIR) await fs.mkdir(process.env.NOOK_SCREENSHOT_DIR, { recursive: true });
     browser = await chromium.launch({ headless: true, ...(process.env.NOOK_BROWSER_CHANNEL ? { channel: process.env.NOOK_BROWSER_CHANNEL } : {}) });
     const origin = `http://127.0.0.1:${server.address().port}`;
     const context = await browser.newContext({ viewport: { width: 1440, height: 1000 }, reducedMotion: "reduce" });
@@ -262,14 +263,21 @@ async function main() {
     assert.equal(await page.locator("#image-upload-status .skeleton").isVisible(), true);
     assert.equal(await page.locator("#insert-image-btn").isDisabled(), true);
     await uploadLayout("primary", "Pending image insertion");
+    await page.locator("#note-content-preview [data-image-insertion-pending]").waitFor({ state: "visible" });
+    assert.equal(await page.locator("#note-content-preview [data-image-insertion-pending] .skeleton").isVisible(), true);
+    assert.equal(await page.locator("#note-content").inputValue(), storageResult.primary.content);
+    if (process.env.NOOK_SCREENSHOT_DIR) await page.locator("#note-detail-workspace").screenshot({ path: path.join(process.env.NOOK_SCREENSHOT_DIR, "pending-image-split.png") });
     await page.locator("#note-content").press("End"); await page.locator("#note-content").press("X");
+    await page.locator("#note-content-preview [data-image-insertion-pending]").waitFor({ state: "visible" });
     const beforeImagePaste = await page.locator("#note-content").inputValue();
     await page.evaluate(() => { __holdImage = false; __releaseImage(); });
     await page.waitForFunction(() => document.querySelector("#note-content").value.includes("nook-asset:"));
     assert.ok((await page.locator("#note-content").inputValue()).includes("X"));
     await page.waitForFunction(() => document.querySelector("#note-content-preview img")?.naturalWidth > 0);
+    assert.equal(await page.locator("#note-content-preview [data-image-insertion-pending]").count(), 0);
     assert.equal(await page.locator("#image-upload-status").isHidden(), true);
     passed.push("Pasting shows skeleton/busy state and preserves typing during image processing");
+    passed.push("Split shows a transient image skeleton immediately without changing Markdown, including while typing");
     const afterImagePaste = await page.locator("#note-content").inputValue();
     const modifier = await page.evaluate(() => /Mac|iPhone|iPad/.test(navigator.platform) ? "Meta" : "Control");
     await page.keyboard.press(`${modifier}+z`);
@@ -328,10 +336,18 @@ async function main() {
     await page.evaluate(() => __qaApp.api.setNoteEditorMode("split"));
     await page.waitForFunction(() => document.querySelectorAll("#note-content-preview img").length === 2 && [...document.querySelectorAll("#note-content-preview img")].every((image) => image.naturalWidth > 0));
     passed.push("Invalid files and storage failure show recoverable error states; SVG retry succeeds");
+    await page.setViewportSize({ width: 1920, height: 1000 });
+    await page.evaluate(() => __qaApp.api.toggleSidebar(true));
     await page.evaluate(async ({ secondary }) => { await __qaApp.api.openDualPane(); __qaApp.api.openSecondaryNote(secondary, "split"); }, storageResult);
     const sideBeforeImage = await page.locator("#secondary-note-content-editor").inputValue();
+    await page.evaluate(() => { __holdImage = true; });
     await paste("#secondary-note-content-editor", "svg");
+    await page.locator("#secondary-split-preview [data-image-insertion-pending]").waitFor({ state: "visible" });
+    assert.equal(await page.locator("#note-content-preview [data-image-insertion-pending]").count(), 0);
+    await page.evaluate(() => { __holdImage = false; __releaseImage(); });
     await page.waitForFunction(() => document.querySelector("#secondary-split-preview img")?.naturalWidth > 0);
+    assert.equal(await page.locator("#secondary-split-preview [data-image-insertion-pending]").count(), 0);
+    passed.push("Side-note Split shows and removes its own pending image skeleton independently");
     const sideAfterImage = await page.locator("#secondary-note-content-editor").inputValue();
     await page.keyboard.press(`${modifier}+z`);
     assert.equal(await page.locator("#secondary-note-content-editor").inputValue(), sideBeforeImage);
@@ -383,6 +399,11 @@ async function main() {
           await paste(input, "oversize");
           await page.locator(`${status}.is-error:not(.is-hidden)`).waitFor();
           await uploadLayout(pane, `${theme}/${mode}/${pane}/oversize`, mode);
+          assert.equal(await page.locator(`${status} [data-image-upload-title]`).innerText(), "Image not added");
+          assert.equal(await page.locator(`${status} [data-image-upload-label]`).innerText(), "Choose an image up to 10 MB.");
+          if (mode === "edit" && pane === "primary" && process.env.NOOK_SCREENSHOT_DIR) {
+            await page.locator(status).screenshot({ path: path.join(process.env.NOOK_SCREENSHOT_DIR, `notice-${theme}-error.png`) });
+          }
           if (theme === "eink" && mode === "edit" && pane === "primary" && process.env.NOOK_SCREENSHOT_DIR) {
             await page.screenshot({ path: path.join(process.env.NOOK_SCREENSHOT_DIR, "upload-error-desktop.png") });
           }
@@ -392,8 +413,19 @@ async function main() {
           await paste(input, "layout");
           await page.locator(`${status}:not(.is-hidden)`).waitFor();
           await uploadLayout(pane, `${theme}/${mode}/${pane}/loading`, mode);
+          const preview = pane === "primary" ? "#note-content-preview" : "#secondary-split-preview";
+          if (mode === "split") await page.locator(`${preview} [data-image-insertion-pending]`).waitFor({ state: "visible" });
+          assert.equal(await page.locator(`${status} [data-image-upload-title]`).innerText(), "Adding image…");
+          const thumbnail = await page.locator(`${status} .skeleton`).boundingBox();
+          const visual = await page.locator(`${status} .image-upload-status__visual`).boundingBox();
+          assert.equal(Math.round(thumbnail.height), Math.round(visual.height), `${theme}: generic skeleton styles must not flatten the image placeholder`);
+          assert.equal(Math.round(thumbnail.width), Math.round(visual.width));
+          if (mode === "edit" && pane === "primary" && process.env.NOOK_SCREENSHOT_DIR) {
+            await page.locator(status).screenshot({ path: path.join(process.env.NOOK_SCREENSHOT_DIR, `notice-${theme}-loading.png`) });
+          }
           await page.evaluate(() => { __holdImage = false; __releaseImage(); });
           await page.locator(`${status}.is-error`).waitFor();
+          assert.equal(await page.locator(`${preview} [data-image-insertion-pending]`).count(), 0, "Failed insertions must remove the transient preview");
           await uploadLayout(pane, `${theme}/${mode}/${pane}/long-error`, mode);
           await page.locator(`${status} button`).click();
           assert.equal(await page.locator(input).inputValue(), before);
@@ -414,12 +446,15 @@ async function main() {
       await page.locator(`${status}:not(.is-hidden)`).waitFor();
       await page.evaluate((pane) => {
         if (pane === "primary") __qaApp.api.setNoteEditorMode("preview"); else __qaApp.api.setSecondaryNoteMode("preview");
-        __holdImage = false; __releaseImage();
       }, pane);
+      const pendingPreview = pane === "primary" ? "#quick-view-content" : "#secondary-note-content";
+      await page.locator(`${pendingPreview} [data-image-insertion-pending]`).waitFor({ state: "visible" });
+      await page.evaluate(() => { __holdImage = false; __releaseImage(); });
       await page.waitForFunction((message) => document.querySelector("#toast-message").textContent === message && document.querySelector("#toast").classList.contains("is-visible"), previewError);
       await page.locator("#toast").waitFor({ state: "visible" });
       assert.equal(await page.locator("#toast").isVisible(), true);
       assert.equal(await page.locator(status).isVisible(), false);
+      assert.equal(await page.locator(`${pendingPreview} [data-image-insertion-pending]`).count(), 0);
       await page.evaluate((pane) => {
         if (pane === "primary") __qaApp.api.setNoteEditorMode("edit"); else __qaApp.api.setSecondaryNoteMode("edit");
         __qaApp.api.dismissToast(); __failImage = false;
@@ -428,6 +463,18 @@ async function main() {
       passed.push(`${pane}: errors remain visible when switching to Preview during an insertion`);
     }
     await page.evaluate(() => __qaApp.api.setNoteEditorMode("edit"));
+    await page.emulateMedia({ forcedColors: "active" });
+    await paste("#note-content", "oversize");
+    await page.locator("#image-upload-status.is-error:not(.is-hidden)").waitFor();
+    await uploadLayout("primary", "Forced colors", "edit");
+    await page.keyboard.press("Tab");
+    const dismissImageStatus = page.getByRole("button", { name: "Dismiss image status", exact: true });
+    await dismissImageStatus.focus();
+    assert.equal(await dismissImageStatus.evaluate((element) => getComputedStyle(element).outlineStyle !== "none"), true);
+    await dismissImageStatus.press("Enter");
+    assert.equal(await page.locator("#note-content").evaluate((element) => document.activeElement === element), true);
+    await page.emulateMedia({ forcedColors: "none" });
+    passed.push("Image notices retain visible keyboard dismissal in forced-colors mode");
     for (const width of [820, 600, 375, 320]) {
       await page.setViewportSize({ width, height: 812 });
       await paste("#note-content", "oversize");
@@ -478,6 +525,23 @@ async function main() {
     await missingHandle.press("ArrowRight");
     await page.waitForFunction(() => document.activeElement.classList.contains("image-resize-handle"));
     passed.push("Repeated keyboard resize retains focus with a preceding missing image");
+    await page.evaluate(async () => {
+      await __qaApp.api.saveNote(null, { closeAfterSave: false });
+      __layoutImage = new File(['<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64"><rect width="64" height="64"/></svg>'], "pending-switch.svg", { type: "image/svg+xml" });
+      __holdImage = true;
+    });
+    await paste("#note-content", "layout");
+    await page.locator("#note-content-preview [data-image-insertion-pending]").waitFor({ state: "visible" });
+    const switchedSource = await page.evaluate(async ({ secondary }) => {
+      const note = await PersonalNotesStorage.getNote(secondary.id);
+      __qaApp.api.openNoteEditor(note, { initialMode: "split" });
+      return note.content;
+    }, storageResult);
+    assert.equal(await page.locator("#note-content-preview [data-image-insertion-pending]").count(), 0);
+    await page.evaluate(() => { __holdImage = false; __releaseImage(); });
+    await page.waitForTimeout(100);
+    assert.equal(await page.locator("#note-content").inputValue(), switchedSource);
+    passed.push("Switching notes cancels the old preview skeleton without inserting into the new note");
 
     const filePage = await context.newPage(); observe(filePage);
     await filePage.goto(`file://${path.join(root, "index.html")}`); await ready(filePage);

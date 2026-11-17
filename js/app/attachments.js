@@ -6,6 +6,7 @@
     const previews = new Map();
     const images = new Map();
     const inserting = new WeakSet();
+    const pendingImages = new WeakMap();
     let activeImageResize = null;
     let requestedImageFocus = null;
     let reviewing = false;
@@ -16,10 +17,66 @@
       return null;
     }
 
+    function renderPendingImage(container) {
+      container.querySelector("[data-image-insertion-pending]")?.remove();
+      const textarea = previewTextarea(container);
+      const pending = textarea && pendingImages.get(textarea);
+      const primary = textarea === elements.noteContent;
+      const mode = primary ? ui.noteEditorMode : ui.secondaryNoteMode;
+      const activePreview = mode === "split"
+        ? container === (primary ? elements.noteContentPreview : elements.secondarySplitPreview)
+        : mode === "preview" && container === (primary ? elements.quickViewContent : elements.secondaryNoteContent);
+      const show = pending && paneSession(textarea) === pending.session && activePreview;
+      container.querySelector(".markdown-empty")?.classList.toggle("is-hidden", Boolean(show));
+      if (!show) return;
+
+      // This is a transient preview node. Drafts, autosave, history, and backups
+      // retain only real Markdown; a failed insertion cannot leave a fake asset.
+      const placeholder = document.createElement("span");
+      placeholder.className = "markdown-local-image image-pending-preview";
+      placeholder.dataset.imageInsertionPending = "true";
+      placeholder.setAttribute("role", "img");
+      placeholder.setAttribute("aria-label", "Image being added");
+      placeholder.setAttribute("aria-busy", "true");
+      const surface = document.createElement("span");
+      surface.className = "skeleton image-pending-preview__surface";
+      surface.setAttribute("aria-hidden", "true");
+      const caption = document.createElement("span");
+      caption.className = "image-pending-preview__caption";
+      caption.textContent = "Adding image…";
+      placeholder.append(surface, caption);
+
+      const line = textarea.value.slice(0, pending.position()).split("\n").length - 1;
+      const blocks = [...container.children].filter((block) => block.hasAttribute("data-markdown-source-start"));
+      const current = blocks.find((block) => Number(block.dataset.markdownSourceStart) <= line && Number(block.dataset.markdownSourceEnd) > line);
+      const next = blocks.find((block) => Number(block.dataset.markdownSourceStart) > line);
+      if (current) current.after(placeholder);
+      else if (next) next.before(placeholder);
+      else container.append(placeholder);
+      api.scheduleNoteEditorScrollMap?.(container, { synchronize: false });
+    }
+
+    function updatePendingImagePreviews(textarea) {
+      const containers = textarea === elements.noteContent
+        ? [elements.noteContentPreview, elements.quickViewContent]
+        : [elements.secondarySplitPreview, elements.secondaryNoteContent];
+      containers.forEach((container) => {
+        renderPendingImage(container);
+        api.scheduleNoteEditorScrollMap?.(container, { synchronize: false });
+      });
+    }
+
+    function resetImageUploadStatus(textarea) {
+      pendingImages.delete(textarea);
+      updatePendingImagePreviews(textarea);
+      uploadStatus(textarea, "");
+    }
+
     function uploadStatus(textarea, message, failed = false) {
       const status = textarea === elements.noteContent ? elements.imageUploadStatus : elements.secondaryImageUploadStatus;
       status.classList.toggle("is-hidden", !message);
       status.classList.toggle("is-error", failed);
+      status.querySelector("[data-image-upload-title]").textContent = message ? (failed ? "Image not added" : "Adding image…") : "";
       status.querySelector("[data-image-upload-label]").textContent = message;
       status.querySelector(".skeleton").classList.toggle("is-hidden", failed);
       const button = textarea === elements.noteContent ? elements.insertImage : elements.secondaryInsertImage;
@@ -219,6 +276,7 @@
           placeholder.replaceChildren(image);
         }).catch(unavailable);
       });
+      renderPendingImage(container);
     }
 
     function paneSession(textarea) {
@@ -247,6 +305,8 @@
       let start = textarea.selectionStart;
       let end = textarea.selectionEnd;
       let value = textarea.value;
+      const pending = { session, position: () => start };
+      pendingImages.set(textarea, pending);
       // Follow edits made while decoding/persisting without replacing newer
       // typing or inserting into a different editor session.
       function followTyping() {
@@ -263,6 +323,7 @@
       }
       textarea.addEventListener("input", followTyping);
       uploadStatus(textarea, "Opening image…");
+      updatePendingImagePreviews(textarea);
       try {
         const blob = await storage.validateAttachment(file);
         await validateImage(blob);
@@ -274,18 +335,25 @@
         const markdown = `![${label}](nook-asset:${image.id})`;
         if (textarea.value.length - (end - start) + markdown.length > storage.MAX_CONTENT_LENGTH) throw new Error("This note has no room for another image reference. Shorten its content and try again.");
         textarea.removeEventListener("input", followTyping);
+        pendingImages.delete(textarea);
+        updatePendingImagePreviews(textarea);
         api.replaceNoteContentSelection(markdown, start, end, start + markdown.length, start + markdown.length, textarea);
         api.syncEditorDraftRecovery();
         uploadStatus(textarea, "");
-        api.showToast("Image inserted. View it in Split or Preview.");
+        api.showToast("Image added.");
       } catch (error) {
         if (paneSession(textarea) === session) {
-          const status = uploadStatus(textarea, error.message || "The image could not be inserted. Try again.", true);
+          const message = file.size > storage.MAX_IMAGE_BYTES ? "Choose an image up to 10 MB."
+            : file.size === 0 ? "This file is empty. Choose another image."
+              : error.message || "Choose another image and try again.";
+          const status = uploadStatus(textarea, message, true);
           // Use one visible error surface. Preview can hide the source field
           // while an insertion is pending, so retain the toast in that case.
           if (!status.getClientRects().length) api.showError(error, "The image could not be inserted.");
         }
       } finally {
+        if (pendingImages.get(textarea) === pending) pendingImages.delete(textarea);
+        updatePendingImagePreviews(textarea);
         textarea.removeEventListener("input", followTyping);
         inserting.delete(textarea);
         if (paneSession(textarea) !== session) uploadStatus(textarea, "");
@@ -360,7 +428,6 @@
       window.addEventListener("pagehide", () => [...previews.keys()].forEach(releaseMarkdownImages));
     }
 
-    Object.assign(api, { renderMarkdown, releaseMarkdownImages, bindAttachmentEvents,
-      resetImageUploadStatus: (textarea) => uploadStatus(textarea, "") });
+    Object.assign(api, { renderMarkdown, releaseMarkdownImages, bindAttachmentEvents, resetImageUploadStatus });
   });
 })();

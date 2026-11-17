@@ -774,9 +774,17 @@
 
           <div id="note-content-field" class="field note-content-field">
             <div id="image-upload-status" class="image-upload-status is-hidden" role="status">
-              <span class="skeleton image-upload-status__skeleton" aria-hidden="true"></span>
-              <span data-image-upload-label></span>
-              <button class="button button-secondary button-compact" type="button" aria-label="Dismiss image status">Dismiss</button>
+              <span class="image-upload-status__visual" aria-hidden="true">
+                <span class="skeleton image-upload-status__skeleton"></span>
+                <svg class="image-upload-status__error-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.25" /><path d="M12 8v4.5M12 16h.01" /></svg>
+              </span>
+              <span class="image-upload-status__copy">
+                <span class="image-upload-status__title" data-image-upload-title></span>
+                <span class="image-upload-status__description" data-image-upload-label></span>
+              </span>
+              <button class="icon-button image-upload-status__dismiss" type="button" aria-label="Dismiss image status" title="Dismiss">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" aria-hidden="true"><path d="m7 7 10 10M17 7 7 17" /></svg>
+              </button>
             </div>
             <div class="field-label-row">
               <label for="note-content">Markdown</label>
@@ -1364,9 +1372,17 @@
                   </div>
                   <div id="secondary-content-field" class="field note-content-field">
                     <div id="secondary-image-upload-status" class="image-upload-status is-hidden" role="status">
-                      <span class="skeleton image-upload-status__skeleton" aria-hidden="true"></span>
-                      <span data-image-upload-label></span>
-                      <button class="button button-secondary button-compact" type="button" aria-label="Dismiss side-note image status">Dismiss</button>
+                      <span class="image-upload-status__visual" aria-hidden="true">
+                        <span class="skeleton image-upload-status__skeleton"></span>
+                        <svg class="image-upload-status__error-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.25" /><path d="M12 8v4.5M12 16h.01" /></svg>
+                      </span>
+                      <span class="image-upload-status__copy">
+                        <span class="image-upload-status__title" data-image-upload-title></span>
+                        <span class="image-upload-status__description" data-image-upload-label></span>
+                      </span>
+                      <button class="icon-button image-upload-status__dismiss" type="button" aria-label="Dismiss side-note image status" title="Dismiss">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" aria-hidden="true"><path d="m7 7 10 10M17 7 7 17" /></svg>
+                      </button>
                     </div>
                     <div class="note-formatting-toolbar" role="toolbar" aria-label="Markdown formatting">
                       <div class="note-formatting-tool">
