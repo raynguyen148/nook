@@ -25,6 +25,7 @@
       const button = textarea === elements.noteContent ? elements.insertImage : elements.secondaryInsertImage;
       button.disabled = Boolean(message && !failed);
       button.setAttribute("aria-busy", String(Boolean(message && !failed)));
+      return status;
     }
 
     function resizeImage(placeholder, image, container, source) {
@@ -279,8 +280,10 @@
         api.showToast("Image inserted. View it in Split or Preview.");
       } catch (error) {
         if (paneSession(textarea) === session) {
-          uploadStatus(textarea, error.message || "The image could not be inserted. Try again.", true);
-          api.showError(error, "The image could not be inserted.");
+          const status = uploadStatus(textarea, error.message || "The image could not be inserted. Try again.", true);
+          // Use one visible error surface. Preview can hide the source field
+          // while an insertion is pending, so retain the toast in that case.
+          if (!status.getClientRects().length) api.showError(error, "The image could not be inserted.");
         }
       } finally {
         textarea.removeEventListener("input", followTyping);
@@ -348,7 +351,11 @@
       });
       elements.reviewUnusedImages.addEventListener("click", () => void reviewUnusedImages());
       [elements.imageUploadStatus, elements.secondaryImageUploadStatus].forEach((status) => {
-        status.querySelector("button").addEventListener("click", () => status.classList.add("is-hidden"));
+        status.querySelector("button").addEventListener("click", () => {
+          const restoreFocus = status.contains(document.activeElement);
+          status.classList.add("is-hidden");
+          if (restoreFocus) (status === elements.imageUploadStatus ? elements.noteContent : elements.secondaryNoteContentEditor).focus({ preventScroll: true });
+        });
       });
       window.addEventListener("pagehide", () => [...previews.keys()].forEach(releaseMarkdownImages));
     }

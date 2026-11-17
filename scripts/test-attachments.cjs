@@ -49,7 +49,7 @@ async function main() {
                     return original.validateAttachment(file);
                   },
                   async addAttachment(file) {
-                    if (globalThis.__failImage) throw new Error("Not enough browser storage. Free some space and try again.");
+                    if (globalThis.__failImage) throw new Error(typeof globalThis.__failImage === "string" ? globalThis.__failImage : "Not enough browser storage. Free some space and try again.");
                     return original.addAttachment(file);
                   },
                 };
@@ -229,9 +229,31 @@ async function main() {
     async function paste(target, kind = "png") {
       await page.evaluate(({ target, kind }) => {
         const transfer = new DataTransfer();
-        transfer.items.add(kind === "svg" ? __svgFile : kind === "bad" ? new File(["bad file"], "fake.png", { type: "image/png" }) : __imageFile);
+        transfer.items.add(kind === "layout" ? __layoutImage : kind === "oversize" ? __oversizeImage : kind === "svg" ? __svgFile : kind === "bad" ? new File(["bad file"], "fake.png", { type: "image/png" }) : __imageFile);
         document.querySelector(target).dispatchEvent(new ClipboardEvent("paste", { clipboardData: transfer, bubbles: true, cancelable: true }));
       }, { target, kind });
+    }
+    async function uploadLayout(pane, label, expectedMode = null) {
+      await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+      const measured = await page.evaluate((pane) => {
+        const primary = pane === "primary";
+        const status = document.querySelector(primary ? "#image-upload-status" : "#secondary-image-upload-status");
+        const toolbar = document.querySelector(primary ? "#note-dialog .note-formatting-toolbar" : "#secondary-reader-view .note-formatting-toolbar");
+        const textarea = document.querySelector(primary ? "#note-content" : "#secondary-note-content-editor");
+        const rect = (element) => { const r = element.getBoundingClientRect(); return { top: r.top, bottom: r.bottom, left: r.left, right: r.right, height: r.height }; };
+        const bounds = rect(status), toolBounds = rect(toolbar), inputBounds = rect(textarea);
+        const style = getComputedStyle(status);
+        const contentHeight = Math.max(...[...status.children].map((element) => rect(element).height));
+        return { bounds, toolBounds, inputBounds, expectedHeight: contentHeight + parseFloat(style.paddingTop) + parseFloat(style.paddingBottom),
+          pageOverflow: document.documentElement.scrollWidth > innerWidth + 1,
+          mode: primary ? __qaApp.ui.noteEditorMode : __qaApp.ui.secondaryNoteMode };
+      }, pane);
+      const { bounds, toolBounds, inputBounds } = measured;
+      assert.ok(bounds.height <= measured.expectedHeight + 2, `${label}: notice must fit its own content, ${JSON.stringify(measured)}`);
+      assert.ok(bounds.bottom <= inputBounds.top + 1, `${label}: notice overlaps editor, ${JSON.stringify(measured)}`);
+      assert.ok(bounds.bottom <= toolBounds.top + 1 || toolBounds.bottom <= bounds.top + 1, `${label}: notice overlaps toolbar, ${JSON.stringify(measured)}`);
+      assert.equal(measured.pageOverflow, false, `${label}: page overflows viewport`);
+      if (expectedMode) assert.equal(measured.mode, expectedMode, `${label}: requested editor mode must be active`);
     }
     await page.locator("#note-content").evaluate((textarea) => { textarea.setSelectionRange(7, 7); });
     await page.evaluate(() => { __holdImage = true; });
@@ -239,6 +261,7 @@ async function main() {
     await page.locator("#image-upload-status:not(.is-hidden)").waitFor();
     assert.equal(await page.locator("#image-upload-status .skeleton").isVisible(), true);
     assert.equal(await page.locator("#insert-image-btn").isDisabled(), true);
+    await uploadLayout("primary", "Pending image insertion");
     await page.locator("#note-content").press("End"); await page.locator("#note-content").press("X");
     const beforeImagePaste = await page.locator("#note-content").inputValue();
     await page.evaluate(() => { __holdImage = false; __releaseImage(); });
@@ -293,6 +316,7 @@ async function main() {
     await page.locator("#image-upload-status.is-error").waitFor();
     assert.equal(await page.locator("#image-upload-status .skeleton").isVisible(), false);
     assert.equal(await page.locator("#insert-image-btn").isEnabled(), true);
+    await uploadLayout("primary", "Invalid image error");
     await page.locator("#image-upload-status button").click();
     await page.evaluate(() => { __failImage = true; });
     await paste("#note-content"); await page.locator("#image-upload-status.is-error").waitFor();
@@ -337,6 +361,84 @@ async function main() {
     if (process.env.NOOK_SCREENSHOT_DIR) await page.screenshot({ path: path.join(process.env.NOOK_SCREENSHOT_DIR, "images-mobile.png") });
     await page.setViewportSize({ width: 1440, height: 1000 });
     if (process.env.NOOK_SCREENSHOT_DIR) { await fs.mkdir(process.env.NOOK_SCREENSHOT_DIR, { recursive: true }); await page.screenshot({ path: path.join(process.env.NOOK_SCREENSHOT_DIR, "images-desktop.png") }); }
+    await page.setViewportSize({ width: 1920, height: 1000 });
+    await page.evaluate(async ({ secondary }) => {
+      __layoutImage = new File(['<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64"><rect width="64" height="64" fill="teal"/></svg>'], "layout.svg", { type: "image/svg+xml" });
+      __oversizeImage = new File([new Uint8Array(10 * 1024 * 1024 + 1)], "too-large.png", { type: "image/png" });
+      __qaApp.api.setGlass({ enabled: true, transparency: 10, frost: "soft" }, { persist: false });
+      __qaApp.api.toggleSidebar(true);
+      __qaApp.api.setNoteDetailFontSize(20, { persist: false });
+      await __qaApp.api.openDualPane();
+      __qaApp.api.openSecondaryNote(await PersonalNotesStorage.getNote(secondary.id), "edit");
+    }, storageResult);
+    for (const theme of ["light", "dark", "midnight", "aurora", "forest", "coffee", "retro", "eink"]) {
+      await page.evaluate((theme) => __qaApp.api.setTheme(theme, { animate: false, persist: false }), theme);
+      await page.waitForFunction(() => document.querySelector("#nook-theme-stylesheet").sheet);
+      for (const mode of ["edit", "split"]) {
+        await page.evaluate((mode) => { __qaApp.api.setNoteEditorMode(mode); __qaApp.api.setSecondaryNoteMode(mode); }, mode);
+        for (const pane of ["primary", "secondary"]) {
+          const input = pane === "primary" ? "#note-content" : "#secondary-note-content-editor";
+          const status = pane === "primary" ? "#image-upload-status" : "#secondary-image-upload-status";
+          const before = await page.locator(input).inputValue();
+          await paste(input, "oversize");
+          await page.locator(`${status}.is-error:not(.is-hidden)`).waitFor();
+          await uploadLayout(pane, `${theme}/${mode}/${pane}/oversize`, mode);
+          if (theme === "eink" && mode === "edit" && pane === "primary" && process.env.NOOK_SCREENSHOT_DIR) {
+            await page.screenshot({ path: path.join(process.env.NOOK_SCREENSHOT_DIR, "upload-error-desktop.png") });
+          }
+          await page.locator(`${status} button`).click();
+          assert.equal(await page.locator(input).evaluate((element) => document.activeElement === element), true);
+          await page.evaluate(() => { __holdImage = true; __failImage = "Not enough browser storage. Free some space and try again. " + "LongError".repeat(32); });
+          await paste(input, "layout");
+          await page.locator(`${status}:not(.is-hidden)`).waitFor();
+          await uploadLayout(pane, `${theme}/${mode}/${pane}/loading`, mode);
+          await page.evaluate(() => { __holdImage = false; __releaseImage(); });
+          await page.locator(`${status}.is-error`).waitFor();
+          await uploadLayout(pane, `${theme}/${mode}/${pane}/long-error`, mode);
+          await page.locator(`${status} button`).click();
+          assert.equal(await page.locator(input).inputValue(), before);
+          await page.evaluate(() => { __failImage = false; });
+        }
+      }
+      passed.push(`${theme}: loading and wrapped image errors fit both editors in Edit and Split`);
+    }
+    for (const pane of ["primary", "secondary"]) {
+      const input = pane === "primary" ? "#note-content" : "#secondary-note-content-editor";
+      const status = pane === "primary" ? "#image-upload-status" : "#secondary-image-upload-status";
+      const previewError = `The ${pane} image could not be saved while Preview was open. Try again.`;
+      await page.evaluate((message) => {
+        __qaApp.api.setNoteEditorMode("edit"); __qaApp.api.setSecondaryNoteMode("edit"); __qaApp.api.dismissToast();
+        __holdImage = true; __failImage = message;
+      }, previewError);
+      await paste(input, "layout");
+      await page.locator(`${status}:not(.is-hidden)`).waitFor();
+      await page.evaluate((pane) => {
+        if (pane === "primary") __qaApp.api.setNoteEditorMode("preview"); else __qaApp.api.setSecondaryNoteMode("preview");
+        __holdImage = false; __releaseImage();
+      }, pane);
+      await page.waitForFunction((message) => document.querySelector("#toast-message").textContent === message && document.querySelector("#toast").classList.contains("is-visible"), previewError);
+      await page.locator("#toast").waitFor({ state: "visible" });
+      assert.equal(await page.locator("#toast").isVisible(), true);
+      assert.equal(await page.locator(status).isVisible(), false);
+      await page.evaluate((pane) => {
+        if (pane === "primary") __qaApp.api.setNoteEditorMode("edit"); else __qaApp.api.setSecondaryNoteMode("edit");
+        __qaApp.api.dismissToast(); __failImage = false;
+      }, pane);
+      await page.locator(`${status} button`).click();
+      passed.push(`${pane}: errors remain visible when switching to Preview during an insertion`);
+    }
+    await page.evaluate(() => __qaApp.api.setNoteEditorMode("edit"));
+    for (const width of [820, 600, 375, 320]) {
+      await page.setViewportSize({ width, height: 812 });
+      await paste("#note-content", "oversize");
+      await page.locator("#image-upload-status.is-error:not(.is-hidden)").waitFor();
+      await uploadLayout("primary", `Mobile ${width}px`, "edit");
+      if (width === 375 && process.env.NOOK_SCREENSHOT_DIR) await page.screenshot({ path: path.join(process.env.NOOK_SCREENSHOT_DIR, "upload-error-mobile.png") });
+      await page.locator("#image-upload-status button").click();
+      passed.push(`${width}px: image error fits above editor and dismissal restores focus`);
+    }
+    await page.setViewportSize({ width: 1440, height: 1000 });
+    await page.evaluate(() => { __qaApp.api.setTheme("light", { animate: false, persist: false }); __qaApp.api.setNoteDetailFontSize(16, { persist: false }); });
     await page.evaluate(() => __qaApp.api.openOrganize("data"));
     await page.locator("#review-unused-images-btn").click();
     await page.waitForFunction(() => !document.querySelector("#review-unused-images-btn").disabled);
