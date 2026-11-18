@@ -223,13 +223,13 @@
    * font-size: 0 on label hides bare text nodes (type names added via
    * createTextNode) that CSS selectors cannot target.
    * Icon/dot children restore their own font-size.
+   * Keep overflow visible so theme-specific chip rings are not clipped.
    */
   .app-shell.is-sidebar-collapsed .sidebar-filter__label,
   html[data-sidebar-collapsed="true"] .app-shell .sidebar-filter__label {
     gap: 0;
     justify-content: center;
     font-size: 0;
-    overflow: hidden;
   }
 
   .app-shell.is-sidebar-collapsed .sidebar-filter__icon,
