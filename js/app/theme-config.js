@@ -91,8 +91,9 @@
     style.setProperty("--glass-reading-opacity", film(90, 84));
     // Mobile cards sit directly on the backdrop with a lower 72% floor.
     style.setProperty("--glass-mobile-card-opacity", film(90, 72));
-    // Sidebar's small labels keep a stronger tint.
-    style.setProperty("--glass-sidebar-opacity", film(95, 75));
+    // Chrome (sidebar and topbar): clearly glass at the minimum, while small
+    // labels keep a stronger tint than the library film at the maximum.
+    style.setProperty("--glass-sidebar-opacity", film(84, 60));
     // Preserve the existing artwork strength at 20%; 40% doubles its visibility.
     style.setProperty("--glass-reveal", String(value.transparency / 20));
   }

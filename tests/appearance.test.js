@@ -118,9 +118,9 @@ test("transparency eases every film from its default to its readability floor", 
     return films.map(name => parseFloat(properties.get(name)));
   };
   // Minimum keeps the long-standing default tints.
-  assert.deepEqual(at(10), [64, 66, 90, 90, 95]);
+  assert.deepEqual(at(10), [64, 66, 90, 90, 84]);
   // Maximum lands exactly on the CSS floors (library, card, reading, mobile card).
-  assert.deepEqual(at(50), [32, 53, 84, 72, 75]);
+  assert.deepEqual(at(50), [32, 53, 84, 72, 60]);
   // Every film keeps moving through the upper half of the slider.
   const upper = at(40);
   at(30).forEach((value, index) => assert.ok(value > upper[index], films[index] + " still changes above 30%"));
@@ -133,7 +133,7 @@ test("runtime changes remain usable when preference reads and writes are blocked
   assert.equal(document.documentElement.dataset.glass, "true");
   assert.equal(properties.get("--glass-opacity"), "40%");
   assert.equal(properties.get("--glass-reveal"), "2");
-  assert.equal(properties.get("--glass-sidebar-opacity"), "80%");
+  assert.equal(properties.get("--glass-sidebar-opacity"), "66%");
   assert.equal(elements.glassTransparency.disabled, false);
   assert.equal(elements.glassTransparencyValue.textContent, "40%");
   app.api.syncGlassUI();
@@ -156,7 +156,7 @@ test("stacked library layers reveal scenery while reading retains a single prote
     app.api.setGlass({ enabled: true, transparency });
     assert.equal(properties.get("--glass-card-opacity"), card);
     assert.equal(properties.get("--glass-reading-opacity"), reading);
-    assert.equal(properties.get("--glass-sidebar-opacity"), `${100 - transparency / 2}%`);
+    assert.equal(properties.get("--glass-sidebar-opacity"), `${84 - (transparency - 10) * 0.6}%`);
   }
 });
 

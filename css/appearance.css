@@ -16,17 +16,30 @@
     inset 1px 0 0 color-mix(in srgb, var(--glass-edge) 45%, transparent),
     inset -1px 0 0 var(--glass-edge-low),
     inset 0 -1px 0 var(--glass-edge-low);
-  --glass-elevation: 0 12px 36px -16px var(--glass-shadow-ink), 0 2px 7px var(--glass-shadow-near);
-  --glass-elevation-raised: 0 18px 44px -18px var(--glass-shadow-ink), 0 5px 12px var(--glass-shadow-near);
+  /* Specular rim for the large panes and cards: a 1px gradient ring that flares
+   * where light enters (top-left), thins to a faint line along the sides, and
+   * returns as a softer glint at the far corner. Light themes add a dark
+   * hairline just outside it, so pale glass still has an edge on a pale scene. */
+  --glass-spec-flare: rgb(255 255 255 / 96%);
+  --glass-spec-fall: rgb(255 255 255 / 46%);
+  --glass-spec-side: rgb(255 255 255 / 14%);
+  --glass-outline: rgb(28 36 52 / 9%);
+  /* The lens: light pooling under the top edge and a faint bounce at the bottom.
+   * Wide negative spread keeps it a glow along the edge, not a smudge. */
+  --glass-lens:
+    inset 0 14px 22px -20px rgb(255 255 255 / 85%),
+    inset 0 -10px 20px -18px rgb(255 255 255 / 45%);
+  --glass-elevation: 0 0 0 1px var(--glass-outline), 0 22px 48px -22px var(--glass-shadow-ink), 0 3px 10px -3px var(--glass-shadow-near);
+  --glass-elevation-raised: 0 0 0 1px var(--glass-outline), 0 30px 64px -26px var(--glass-shadow-ink), 0 8px 18px -8px var(--glass-shadow-near);
   --glass-sheen: linear-gradient(125deg, var(--glass-reflection), var(--glass-reflection-faint) 35%, transparent 65%);
-  /* Clear frost: a moderate blur plus a lift in saturation keeps the scene
-   * lit and colourful without whitening it. Blur radius is the main GPU cost
-   * of every film, so it stays small, and there is no brightness pass. */
-  --glass-frost-blur: 14px;
-  --glass-reading-frost-blur: 16px;
-  --glass-frost-saturate: 140%;
+  /* Soft frost: a wide blur melts the scene into colour fields, and a strong
+   * saturation lift keeps them vivid instead of greying out (vibrancy). Blur
+   * radius is the main GPU cost of every film; phones cap it further below. */
+  --glass-frost-blur: 22px;
+  --glass-reading-frost-blur: 24px;
+  --glass-frost-saturate: 180%;
   --glass-frost: blur(var(--glass-frost-blur)) saturate(var(--glass-frost-saturate));
-  --glass-reading-frost: blur(var(--glass-reading-frost-blur)) saturate(115%);
+  --glass-reading-frost: blur(var(--glass-reading-frost-blur)) saturate(120%);
   /* Static fine grain for frosted films. Dark specks on light themes, light
    * specks on dark ones; inline so it works through file:// and offline. */
   --glass-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n' x='0' y='0' width='100%25' height='100%25' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0.07 0 0 0 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url%28%23n%29'/%3E%3C/svg%3E") 0 0 / 160px 160px repeat;
@@ -79,6 +92,14 @@ html:is([data-theme="dark"], [data-theme="midnight"], [data-theme="aurora"]) {
   --glass-reflection-faint: rgb(255 255 255 / 1%);
   --glass-shadow-ink: rgb(0 0 0 / 48%);
   --glass-shadow-near: rgb(0 0 0 / 18%);
+  /* Dark glass: a dimmer rim over a black outline, the macOS dark-mode edge. */
+  --glass-spec-flare: rgb(255 255 255 / 42%);
+  --glass-spec-fall: rgb(255 255 255 / 16%);
+  --glass-spec-side: rgb(255 255 255 / 6%);
+  --glass-outline: rgb(0 0 0 / 55%);
+  --glass-lens:
+    inset 0 14px 22px -20px rgb(255 255 255 / 14%),
+    inset 0 -10px 20px -18px rgb(255 255 255 / 6%);
   --glass-haze-ink: rgb(255 255 255 / 3%);
   --glass-card-gloss: linear-gradient(180deg, rgb(255 255 255 / 5%), rgb(255 255 255 / 0%) 38%);
   --glass-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n' x='0' y='0' width='100%25' height='100%25' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0.06 0 0 0 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url%28%23n%29'/%3E%3C/svg%3E") 0 0 / 160px 160px repeat;
@@ -88,25 +109,44 @@ html:is([data-theme="dark"], [data-theme="midnight"], [data-theme="aurora"]) {
  * others only change blur, saturation, haze and grain, never the tint floors
  * that keep text readable. Only Frosted adds the grain and haze layers. */
 html[data-glass-frost="clear"] {
-  --glass-frost-blur: 5px;
-  --glass-reading-frost-blur: 8px;
-  --glass-frost-saturate: 120%;
+  --glass-frost-blur: 8px;
+  --glass-reading-frost-blur: 12px;
+  --glass-frost-saturate: 150%;
 }
 
 html[data-glass-frost="frosted"] {
-  --glass-frost-blur: 26px;
-  --glass-reading-frost-blur: 30px;
-  --glass-frost-saturate: 150%;
+  --glass-frost-blur: 34px;
+  --glass-reading-frost-blur: 38px;
+  --glass-frost-saturate: 190%;
   --glass-haze: linear-gradient(var(--glass-haze-ink), var(--glass-haze-ink));
   --glass-film-texture: var(--glass-grain), var(--glass-haze), var(--glass-sheen);
 }
 
 /* Large backdrop blurs are costly on phones; cap them there. */
 @media (max-width: 820px) {
-  html[data-glass-frost="frosted"] {
-    --glass-frost-blur: 20px;
-    --glass-reading-frost-blur: 22px;
+  html:not([data-glass-frost="clear"]) {
+    --glass-frost-blur: 18px;
+    --glass-reading-frost-blur: 20px;
   }
+
+  html[data-glass-frost="frosted"] {
+    --glass-frost-blur: 22px;
+    --glass-reading-frost-blur: 24px;
+  }
+}
+
+/* Liquid Glass geometry: generous concentric corners and capsule controls.
+ * Retro keeps its boxy cut and Zen its own soft radii. */
+html[data-glass="true"] {
+  --glass-radius-pane: 22px;
+  --glass-radius-card: 16px;
+  --glass-radius-bar: 28px;
+  --glass-radius-control: var(--radius-pill);
+}
+
+/* Only the sidebar ring reads this there: it must match the theme's sidebar. */
+html[data-glass="true"]:is([data-theme="retro"], [data-theme="eink"]) {
+  --glass-radius-pane: var(--surface-radius);
 }
 
 html[data-theme="light"] {
@@ -125,6 +165,8 @@ html[data-theme="coffee"] {
   --ambient-scene: var(--ambient-coffee);
   --nature-sidebar-scene: var(--nature-coffee-sidebar);
   --glass-sidebar-surface: #2b1f18;
+  /* A dark sidebar over a light scene needs more of its own tint for text. */
+  --glass-sidebar-floor: 76%;
   --glass-library-surface: #f7f0e6;
   --glass-detail-surface: #fffdf9;
   /* Café light: caramel by the window, mocha in the corner, latte between. */
@@ -142,6 +184,7 @@ html[data-theme="forest"] {
   --ambient-scene: var(--ambient-forest);
   --nature-sidebar-scene: var(--nature-forest-sidebar);
   --glass-sidebar-surface: #1b3326;
+  --glass-sidebar-floor: 76%;
   --glass-library-surface: #f3f6ee;
   --glass-detail-surface: #fdfefa;
   /* Woodland light: new leaves, a shaft of morning sun, and a stream below. */
@@ -539,14 +582,54 @@ html[data-theme="eink"] {
       isolation: isolate;
       background-color: transparent;
       overflow: visible;
-      border-color: var(--glass-edge-low);
+      border-color: transparent;
       box-shadow: var(--glass-elevation);
+    }
+
+    /* Coffee and Forest pair a dark sidebar with a light scene: the dark
+     * material takes the dimmer rim so its edge does not glare. */
+    html[data-glass="true"]:is([data-theme="coffee"], [data-theme="forest"]) .sidebar {
+      --glass-spec-flare: rgb(255 255 255 / 44%);
+      --glass-spec-fall: rgb(255 255 255 / 18%);
+      --glass-spec-side: rgb(255 255 255 / 7%);
+      --glass-lens:
+        inset 0 14px 22px -20px rgb(255 255 255 / 16%),
+        inset 0 -10px 20px -18px rgb(255 255 255 / 6%);
     }
 
     html[data-glass="true"] .sidebar :is(.space-link, .sidebar-filter).is-active {
       background: var(--glass-sheen), var(--primary-accent-soft);
       border-color: var(--primary-accent-border);
-      box-shadow: inset 0 1px 0 var(--glass-edge);
+      box-shadow: inset 0 1px 0 var(--glass-edge), 0 4px 12px -8px color-mix(in srgb, var(--primary-accent) 55%, transparent);
+    }
+
+    /* Specular rings: a 1px gradient band masked to the host's border box. The
+     * standard mask declarations come last so they win where both exist. */
+    html[data-glass="true"] .notes-panel::after,
+    html[data-glass="true"] .note-detail-surface::after,
+    html[data-glass="true"] :is(#command-dialog, #organize-dialog)::after,
+    html[data-glass="true"] .notes-list .note-card::after,
+    html[data-glass="true"] .sidebar__scroll::before,
+    html[data-glass="true"] .workspace > .topbar:not(.is-actions-pinned)::after {
+      content: "";
+      position: absolute;
+      inset: -1px;
+      box-sizing: border-box;
+      padding: 1px;
+      border-radius: inherit;
+      pointer-events: none;
+      background: linear-gradient(135deg, var(--glass-spec-flare), var(--glass-spec-fall) 12%, var(--glass-spec-side) 34%, var(--glass-spec-side) 66%, var(--glass-spec-fall) 90%, color-mix(in srgb, var(--glass-spec-flare) 70%, transparent));
+      -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor;
+      mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      mask-composite: exclude;
+    }
+
+    /* The sidebar's own pseudo-elements hold its art and film, so its ring hangs
+     * off the inner scroller. That scroller is not positioned, so the ring sizes
+     * to the sidebar and neither scrolls nor clips with the list. */
+    html[data-glass="true"] .sidebar__scroll::before {
+      border-radius: var(--glass-radius-pane);
     }
 
     /* Muted opaque-theme inks lose contrast when artwork shows through. Keep
@@ -569,10 +652,11 @@ html[data-theme="eink"] {
         isolation: isolate;
         z-index: 90;
         background: transparent;
-        border-color: var(--glass-edge-low);
+        border-color: transparent;
         box-shadow: var(--glass-elevation);
       }
 
+      /* Chrome (topbar and sidebar) shares one tint that follows the slider. */
       html[data-glass="true"] .workspace > .topbar::before,
       html[data-glass="true"] :is(.toolbar, .topbar-actions).is-pinned::before {
         content: "";
@@ -584,10 +668,34 @@ html[data-theme="eink"] {
         margin: 0;
         pointer-events: none;
         border-radius: inherit;
-        background: var(--glass-film-texture), color-mix(in srgb, var(--glass-detail-surface) 82%, transparent);
-        box-shadow: var(--glass-rim);
+        background: var(--glass-film-texture), color-mix(in srgb, var(--glass-detail-surface) var(--glass-sidebar-opacity), transparent);
+        box-shadow: var(--glass-lens);
         backdrop-filter: var(--glass-frost);
         -webkit-backdrop-filter: var(--glass-frost);
+      }
+
+      html[data-glass="true"]:not([data-theme="retro"], [data-theme="eink"]) :is(.sidebar, .notes-panel, .note-detail-surface, #command-dialog, #organize-dialog) {
+        border-radius: var(--glass-radius-pane);
+      }
+
+      html[data-glass="true"]:not([data-theme="retro"], [data-theme="eink"]) .workspace > .topbar {
+        border-radius: var(--glass-radius-bar);
+      }
+
+      /* Capsule controls sit concentric inside the capsule bar and pills. */
+      html[data-glass="true"]:not([data-theme="retro"], [data-theme="eink"]) .topbar :is(.search-field input, .sort-field__trigger, .topbar-preferences, .topbar-actions .button),
+      html[data-glass="true"]:not([data-theme="retro"], [data-theme="eink"]) :is(.toolbar, .topbar-actions).is-pinned {
+        border-radius: var(--glass-radius-control);
+      }
+
+      /* The primary action reads as tinted glass: a lit upper face, a crisp top
+       * highlight, and a soft glow in its own accent. */
+      html[data-glass="true"]:not([data-theme="retro"], [data-theme="eink"]) .topbar .button-primary {
+        background-image: linear-gradient(180deg, rgb(255 255 255 / 22%), rgb(255 255 255 / 0%) 60%);
+        box-shadow:
+          inset 0 1px 0 rgb(255 255 255 / 38%),
+          inset 0 -1px 0 rgb(0 0 0 / 10%),
+          0 8px 18px -8px color-mix(in srgb, var(--primary-accent) 70%, transparent);
       }
 
       /* Pinned pills float over scrolling cards, so both share one denser film.
@@ -672,8 +780,8 @@ html[data-theme="eink"] {
       z-index: -2;
       border-radius: inherit;
       pointer-events: none;
-      background: var(--glass-film-texture), color-mix(in srgb, var(--glass-sidebar-surface) var(--glass-sidebar-opacity), transparent);
-      box-shadow: var(--glass-rim);
+      background: var(--glass-film-texture), color-mix(in srgb, var(--glass-sidebar-surface) max(var(--glass-sidebar-floor, 0%), var(--glass-sidebar-opacity)), transparent);
+      box-shadow: var(--glass-lens);
       backdrop-filter: var(--glass-frost);
       -webkit-backdrop-filter: var(--glass-frost);
     }
@@ -703,7 +811,7 @@ html[data-theme="eink"] {
       isolation: isolate;
       background-color: transparent;
       overflow: visible;
-      border-color: var(--glass-edge-low);
+      border-color: transparent;
       box-shadow: var(--glass-elevation);
     }
 
@@ -715,7 +823,7 @@ html[data-theme="eink"] {
       border-radius: inherit;
       pointer-events: none;
       background: var(--glass-film-texture), color-mix(in srgb, var(--glass-library-surface) max(32%, var(--glass-opacity)), transparent);
-      box-shadow: var(--glass-rim);
+      box-shadow: var(--glass-lens);
       backdrop-filter: var(--glass-frost);
       -webkit-backdrop-filter: var(--glass-frost);
     }
@@ -723,15 +831,24 @@ html[data-theme="eink"] {
     html[data-glass="true"] .notes-list .note-card {
       --glass-card-surface: var(--note-card-surface, var(--glass-light));
       background: var(--glass-card-gloss), color-mix(in srgb, var(--glass-card-surface) max(var(--glass-card-tint-floor, 53%), var(--glass-card-opacity)), transparent);
-      border-color: var(--glass-edge-low);
-      box-shadow: var(--glass-rim), 0 10px 22px -14px var(--glass-shadow-ink), 0 2px 5px -2px var(--glass-shadow-near);
+      border-color: transparent;
+      box-shadow: var(--glass-lens), 0 0 0 1px var(--glass-outline), 0 14px 28px -18px var(--glass-shadow-ink), 0 2px 6px -3px var(--glass-shadow-near);
       transition: box-shadow var(--motion-duration-short) var(--motion-ease-out), border-color var(--motion-duration-short) var(--motion-ease-out), background-color var(--motion-duration-short) var(--motion-ease-out);
     }
 
     html[data-glass="true"] .notes-list .note-card:is(:hover, :focus-within, .is-hover) {
       --glass-card-surface: var(--glass-card-hover-surface, var(--note-card-hover-surface, var(--note-card-surface, var(--glass-light))));
       border-color: color-mix(in srgb, var(--primary-accent) 30%, var(--glass-edge));
-      box-shadow: var(--glass-rim), var(--glass-elevation-raised);
+      box-shadow: var(--glass-lens), var(--glass-elevation-raised);
+    }
+
+    html[data-glass="true"]:not([data-theme="retro"], [data-theme="eink"]) .notes-list:not(.notes-list--compact) .note-card {
+      border-radius: var(--glass-radius-card);
+    }
+
+    /* The Pinned tray wraps cards, so its corners stay a step rounder. */
+    html[data-glass="true"]:not([data-theme="retro"], [data-theme="eink"]) .pinned-tray {
+      --pinned-tray-radius: calc(var(--glass-radius-card) + 4px);
     }
 
     /* Pinned cards outside the Pinned tray (Trash, the note switcher) share the
@@ -747,7 +864,7 @@ html[data-theme="eink"] {
 
     html[data-glass="true"] .note-detail-surface {
       overflow: visible;
-      border-color: var(--glass-edge-low);
+      border-color: transparent;
       box-shadow: var(--glass-elevation-raised);
     }
 
@@ -759,7 +876,7 @@ html[data-theme="eink"] {
       border-radius: inherit;
       pointer-events: none;
       background: var(--glass-film-texture), color-mix(in srgb, var(--glass-detail-surface) max(84%, var(--glass-reading-opacity)), transparent);
-      box-shadow: var(--glass-rim);
+      box-shadow: var(--glass-lens);
       backdrop-filter: var(--glass-reading-frost);
       -webkit-backdrop-filter: var(--glass-reading-frost);
     }
@@ -796,7 +913,7 @@ html[data-theme="eink"] {
       background: transparent;
       opacity: 1;
       overflow: visible;
-      border-color: var(--glass-edge-low);
+      border-color: transparent;
       box-shadow: var(--glass-elevation-raised);
     }
 
@@ -867,7 +984,7 @@ html[data-theme="eink"] {
       border-radius: inherit;
       pointer-events: none;
       background: var(--glass-film-texture), color-mix(in srgb, var(--glass-detail-surface) max(88%, var(--glass-reading-opacity)), transparent);
-      box-shadow: var(--glass-rim);
+      box-shadow: var(--glass-lens);
       backdrop-filter: var(--glass-reading-frost);
       -webkit-backdrop-filter: var(--glass-reading-frost);
     }
@@ -903,6 +1020,13 @@ html[data-theme="eink"] {
       html[data-glass="true"] .notes-panel::before {
         background: transparent;
         box-shadow: none;
+      }
+
+      /* Phones have no floating chrome panes or outer panel to outline. */
+      html[data-glass="true"] .notes-panel::after,
+      html[data-glass="true"] .sidebar__scroll::before,
+      html[data-glass="true"] .workspace > .topbar:not(.is-actions-pinned)::after {
+        content: none;
       }
 
       html[data-glass="true"] .workspace > .notes-panel {

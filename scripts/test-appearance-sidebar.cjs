@@ -5,7 +5,7 @@ let server;
 const { chromium } = require(process.env.NOOK_PLAYWRIGHT_MODULE || "playwright");
 // Pin a non-default Frost level so the film checks prove the preference reaches CSS.
 // Desktop "frosted" resolves to these values in css/appearance.css.
-const frost = "frosted", frostFilter = "blur(26px) saturate(1.5)", readingFrostFilter = "blur(30px) saturate(1.15)";
+const frost = "frosted", frostFilter = "blur(34px) saturate(1.9)", readingFrostFilter = "blur(38px) saturate(1.2)";
 const glass = (enabled, transparency) => JSON.stringify({ enabled, transparency, frost });
 async function main() {
   const root = path.resolve(__dirname, ".."), out = process.env.NOOK_SCREENSHOT_DIR || await fs.mkdtemp(path.join(os.tmpdir(), "nook-sidebar-scroll-"));
